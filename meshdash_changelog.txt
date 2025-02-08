@@ -1,0 +1,126 @@
+Version 1.09.42
+MhHerd Liste mit Speicherfunktion
+##################################################################
+Version 1.09.40
+Bugfix Ping LoraIP
+Behebung Fehler: Kompatibilitätsmodus (Quirks).
+Bugfix LoraIpDB Send in Message für Keyword (wurde nie ausgeführt)
+Status von NoTimeSync in Bottom Line
+Bugfix busyTimeout bei PurgeData und getKeywordsData() gesetzt.
+Einstellbare ScrollBack rows unter Einstellungen->Allgemein
+##################################################################
+Version 1.09.38
+Install und Update-Script angepasst
+IP wird nun in Datenbank gespeichert.
+Eigenes CallSign muss jetzt mit angeben werden
+Datenbank-Query optimiert für locked DB Meldung
+Sqlite BusyTimeout 5000ms eingefügt
+Änderung des Calls/IP jetzt unter Einstellungen -> Allgemein
+##################################################################
+Version 1.09.36
+Bugfix beim Speichern der Gruppe, wenn sie leer ist.
+Setzte * als Default Wert
+Fehlerausgabe, wenn Keyword-Script fehlschlägt
+Filter für TimeSync implementiert
+##################################################################
+Version 1.09.34
+Gebe nur noch Meldungen von SQLite3 Fehler, 
+wenn diese im Bereich 1-99 sind.
+Anzeige des PosFilter Status im Bottom Bereich
+Code Refactoring
+Keywords für GPIO Steuerung
+##################################################################
+Version 1.09.32
+Behebung UTF8 Probleme bei Ping-Ausgabe in Windows
+Bezeichnung der Aufruffunktion, wenn ein Sqlite Error Auftritt
+##################################################################
+Version 1.09.30
+Behebung UTF8 Probleme in Anzeige
+##################################################################
+Version 1.09.28
+Prüfen auf Schreibrechte für Log/Datenbank
+Code Refactoring
+##################################################################
+Version 1.09.25
+DebugFunktionen implementiert
+Sqlite 100 Error unterdrückt
+##################################################################
+Version 1.09.24
+Menü Anpassung
+- Allgemein
+  * Checkbox NoPos Data
+  * Check box No DM Alert (noch ohne Funktion)
+
+Log Userdaten nun auch pro Tag mit Datum
+##################################################################
+Version 1.09.22
+Menübelegung
+- Lora IP
+- Data Purge
+- Ping Lora
+Parameter DB auf SQLite angelegt
+Refreshtime Message-Fenster auf 5 sek eingestellt (vorher 1sek).
+Dieses erzeugte leichtes flackern im Edge Browser
+##################################################################
+Version 1.09.16
+Upgrade jquery UI auf jquery-ui-1.14.1.min.js
+Menü eingepflegt. Hier gibt es nur eine Belegung unter Einstellungen,
+der Rest hat noch keine Belegung.
+##################################################################
+Version 1.09.14
+Upgrade jquery auf jquery-3.7.1.min.js
+##################################################################
+Version 1.09.12
+Prüfen ob Lora Ip gesetzt
+Angabe der Lora Ip und setzten der Ip via WebApp
+Prüfen ob Meshdash.db als Datei existiert, wenn nein neu initiieren
+##################################################################
+Version 1.09.10
+Erkenne wenn Zugriff SQLITE3 Datenbank gelockt ist.
+Optimierung beim Schreiben in Db so das die Lockzeiten sehr kurz sind.
+##################################################################
+Version 1.09.08
+Prüfen ob SQLITE3 Modul aktiv ist
+Parsen der php.ini und Hilfestellung bei der Aktivierung/Installation
+Bugfix: html-chars entfernt bei Sonderzeichen wie &
+##################################################################
+Version 1.09.02
+- Speichern der Daten in SQLITE 3 Datenbank
+- Ausgabe der Nachrichten Top-Down 30 Nachrichten
+##################################################################
+Version 1.08.18
+- Timestamp in Json-Quelle hinzugefügt
+- Ausfiltern der geöffneten geschweiften Klammer aus der Nachricht
+- UDP-Listener als Hintergrundprozess gestartet Linux/Windows
+- CSS aus Quellcode ausgelagert
+- Ausgabedatei mit laufendem Datum versehen
+- Statusanzeige, ob der Hintergrundprozess gestartet ist,
+  wird nun mit einem rotem/grünen Punkt angezeigt.
+  Der Punkt ist anklickbar und triggert den Start oder 
+  das Beenden des Prozesses, wenn gewünscht.
+- Favicon hinzugefügt
+- RegeX Pattern mit weiteren möglichen Eingabezeichen erweitert.
+- Die Ausgabe der Nachrichtenbox zeigt jetzt das reale Empfangsdatum
+##################################################################
+Version 1.08.04
+Anpassung der Parser für Jquery
+##################################################################
+Version 1.06
+Senden von Nachrichten hinzugefügt
+Pattern-Prüfung des Sendetextes
+Fehlerausgabe, wenn Fehler erkannt
+Zentrale Parameterdatei für IP param.php
+##################################################################
+Version 1.04
+Initiale Version.
+Angepasst für Linux/Windows Umgebungen.
+Benutzt werden hier für die UDP-Datagramme:
+- Socket_create
+- Socket_Bind
+- Socket_recvfrom
+##################################################################
+TODO
+- Konfiguration über ein Menü
+- Filterfunktionen wie GruppenId oder nach Call
+- Tabs pro GruppenId mit Nachrichten der Gruppe
+ 

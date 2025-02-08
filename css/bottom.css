@@ -1,0 +1,49 @@
+body {
+    margin: 0;
+    background-color: #2E9AFE;
+    color: white;
+    text-align: center;
+    #display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: arial, sans-serif;
+    height: 100%;
+}
+
+.bottomSize14 {
+    font-size:16px;
+}
+
+.bottomSize16 {
+    font-size:16px;
+}
+
+.bottomInputDm {
+    width: 100px;
+    height: 20px;
+    font-size: 14px;
+}
+
+.bottomInputMsg {
+    width: 600px;
+    height: 20px;
+    font-size: 14px;
+}
+
+.bottomInputSubmit
+{
+    font-size: 20px;
+}
+
+.statusContainer {
+    display: flex;
+    justify-content: flex-start; /* Linksbündig ausrichten */
+    gap: 20px; /* Abstand zwischen den beiden */
+    position: absolute;
+    bottom: 10px;
+    width: auto;
+}
+
+.bottomStatus {
+    font-weight: bold;
+}

@@ -1,0 +1,35 @@
+/*
+    Diverse Anpassungen die seit der V1.12.1 etwas krum sind
+ */
+
+.ui-widget-header {
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.ui-dialog .ui-dialog-content {
+    color: #333333;
+}
+
+.ui-widget {
+    font-family: Trebuchet MS,Tahoma,Verdana,Arial,sans-serif;
+    font-size: 1.1em;
+}
+
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active, a.ui-button:active, .ui-button:active, .ui-button.ui-state-active:hover {
+    border: 1px solid #fbd850;
+    background: #ffffff url("../js/images/ui-bg_glass_65_ffffff_1x400.png") 50% 50% repeat-x;
+    font-weight: bold;
+    color: #eb8f00;
+}
+
+.ui-state-active a,
+.ui-state-active a:link,
+.ui-state-active a:visited {
+    color: #CC0000;
+    text-decoration: none;
+}
+
+.ui-datepicker-header {
+    color: #333333;
+}

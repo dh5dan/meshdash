@@ -1,0 +1,25 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+.setFontMsgHeader {
+    font-family: Arial, sans-serif;
+    color:#6E6E6E;
+}
+
+.setFontMsg {
+    color: black;
+    font-family: Arial, sans-serif;
+}
+
+.successHint {
+    background-color: darkgreen;
+    color: whitesmoke;
+}
+
+.failureHint {
+    background-color: red;
+    color: whitesmoke;
+}

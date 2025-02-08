@@ -1,0 +1,13 @@
+test/
+.idea
+.idea/*
+!.idea/encodings.xml
+
+log/**
+!log/**/
+!log/**/.keep
+
+database/**
+!database/**/
+!database/**/.keep
+
