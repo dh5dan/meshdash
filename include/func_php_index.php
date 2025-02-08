@@ -1,24 +1,16 @@
 <?php
 
-function callBackgroundTask($taskFile): bool
+function callWindowsBackgroundTask($taskFile, $execDir = ''): bool
 {
     $actualHost  = (empty($_SERVER['HTTPS']) ? 'http' : 'https');
-    $httpHost    = $_SERVER['HTTP_HOST']; // localhost, 192.168.123
-    $requestUri  = $_SERVER['REQUEST_URI']; // /abcde/
-    $triggerLink = $actualHost . '://' . $httpHost . $requestUri . $taskFile;
+    $triggerLink = $actualHost . '://' . $_SERVER['SERVER_NAME'] . dirname($_SERVER["REQUEST_URI"] . '?') . '/' . 'task_bg.php';
 
-    $debugFlag = false;
+    $postFields = array(
+        'taskFile' => "$taskFile",
+        'execDir' => "$execDir",
+    );
 
-    if ($debugFlag === true)
-    {
-        echo "<br>triggerLink:$triggerLink";
-
-        echo "<pre>";
-        print_r($_SERVER);
-        echo "</pre>";
-
-        return true;
-    }
+    $debugFlag  = true;
 
     #Starte Trigger
     $ch = curl_init();
@@ -30,6 +22,8 @@ function callBackgroundTask($taskFile): bool
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
     #curl_setopt($ch, CURLOPT_TIMEOUT, 1); // Warte max. 1 Sekunden und beende Verbindung
     curl_setopt($ch, CURLOPT_TIMEOUT_MS, 100); // Warte max. 100 ms und beende Verbindung
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
 
     #Ignoriere Timeout Meldung da so gewollt
     if (curl_exec($ch) === false && curl_errno($ch) != 28)
@@ -39,6 +33,23 @@ function callBackgroundTask($taskFile): bool
     }
 
     curl_close($ch);
+
+    if ($debugFlag === true)
+    {
+        echo "<br> Debug: callWindowsBackgroundTask";
+        echo "<br>triggerLink:$triggerLink";
+        echo "<br>taskFile:$taskFile";
+
+        echo "<pre>";
+        print_r($postFields);
+        echo "</pre>";
+
+        echo "<pre>";
+        print_r($ch);
+        echo "</pre>";
+
+        return true;
+    }
 
     return true;
 }
@@ -426,9 +437,22 @@ function checkBgProcess($paramBgProcess)
     else
     {
         #Beende Hintergrundprozess in Linux
-        #das x ist wichtig, weil genau nur dieser Suchbegriff gesucht, wird
-        #das andere tasks gibt die mit php beginnen
-        exec('pkill -x php');
+        #Ermittel PID anhand des Skript-Namens, um
+        #andere Bg Prozesse nicht aus Versehen zu beenden.
+        $taskResultBg = shell_exec($checkTaskCmd);
+
+        #Wenn PID nicht ermittelt wurde, ist der Task schon beendet
+        #oder wurde nicht gestartet.
+        if ($taskResultBg == '')
+        {
+            echo "<br>Kill sektion: Task PID konnte nicht ermittelt werden!";
+            echo "<br>checkTaskCmd: $checkTaskCmd";
+            echo "<br>taskResult PID: " . $taskResultBg;
+        }
+        else
+        {
+            exec('kill -9 ' . $taskResultBg);
+        }
     }
 
     #Gib 1sek Zeit
@@ -440,7 +464,8 @@ function checkBgProcess($paramBgProcess)
     if ($taskResult != '')
     {
         echo "<br>Task wurde nicht beendet!";
-        echo "<br>" . $taskResult;
+        echo "<br>checkTaskCmd: $checkTaskCmd";
+        echo "<br>taskResult PID: " . $taskResult;
     }
     else
     {
@@ -464,7 +489,7 @@ function startBgProcess($paramStartBgProcess)
         if($osIssWindows === true)
         {
             #Unter Windows mit Curl Starten
-            callBackgroundTask('task_bg.php');
+            callWindowsBackgroundTask('udp_receiver.php');
         }
         else
         {

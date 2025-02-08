@@ -1,8 +1,37 @@
 <?php
 
-#Starte Background task für UDP-Receive
-#in Windows. Wichtig! start /B nutzen!
-
 $taskFile = trim($_REQUEST['taskFile']);
+$execDir  = trim($_REQUEST['execDir']);
 
-exec('start /B php -f ' .$taskFile);
+$debugFlag = false;
+
+#Muss hier stehen da chdri sonst das BaseDir verschiebt
+if ($debugFlag === true)
+{
+    echo "<br>taskFile:$taskFile";
+    $errorText = date('Y-m-d H:i:s') . " taskFile:$taskFile execDir: $execDir suffix:" . substr($taskFile,-3) . "<--\n";
+    file_put_contents('log/debug.log', $errorText, FILE_APPEND);
+}
+
+#Execute Skript in SubDir
+if ($execDir != '')
+{
+    chdir($execDir);
+}
+
+if (substr($taskFile,-3) == 'cmd' || substr($taskFile,-3) == 'bat')
+{
+    exec('start /B ' . $taskFile);
+}
+
+if (substr($taskFile,-3) == 'php')
+{
+    #Starte Background task für UDP-Receive
+    #in Windows. Wichtig! start /B nutzen!
+    exec('start /B php -f ' . $taskFile);
+}
+
+
+
+
+

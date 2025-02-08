@@ -1,18 +1,26 @@
 <?php
 
-function execScriptCurl($keyword1Cmd)
+function execScriptCurl($keywordCmd): bool
 {
     $osIssWindows = chkOsIssWindows();
 
-        if($osIssWindows === true)
+    if ($osIssWindows === true)
+    {
+        #Unter Windows mit Curl Starten
+        callWindowsBackgroundTask($keywordCmd, 'execute');
+    }
+    else
+    {
+        if (substr($keywordCmd,-2) == 'sh')
         {
-            #Unter Windows mit Curl Starten
-            callBackgroundTask('task_bg.php');
+            exec('cd execute && nohup ./' . $keywordCmd . ' >/dev/null 2>&1 &');
         }
-        else
+
+        if (substr($keywordCmd,-3) == 'php')
         {
-            #Unter Linux direkt starten
-            #exec('nohup php test_receiver.php >/dev/null 2>&1 &');
-            exec('nohup php udp_receiver.php >/dev/null 2>&1 &');
+            exec('cd execute && nohup php ./' . $keywordCmd . ' >/dev/null 2>&1 &');
         }
+    }
+
+    return true;
 }
