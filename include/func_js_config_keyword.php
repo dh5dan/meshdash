@@ -62,6 +62,54 @@
                 return false;
             }
 
+            // Check if Keywords exists in Return-MSG
+
+            if (keyword1ReturnMsg.includes(keyword1Text) && keyword1Enabled === true) {
+                width       = 600;
+                outputMsg = 'KeyWord1 ist in der Antwort-Nachricht von Keyword1 enthalten!';
+                outputMsg += '<br><br>Das ergibt eine Endlosschleife die nie endet,';
+                outputMsg += '<br>da die Antwort wieder den Start-Key triggert.';
+                outputMsg += '<br><br>Abbruch.';
+
+                dialog(outputMsg, titleMsg, width);
+                return false;
+            }
+
+            if (keyword1ReturnMsg.includes(keyword2Text) && keyword1Enabled === true && keyword2Enabled === true) {
+                width       = 600;
+                outputMsg = 'KeyWord2 ist in der Antwort-Nachricht von Keyword1 enthalten!';
+                outputMsg += '<br><br>Das ergibt eine Endlosschleife die nie endet,';
+                outputMsg += '<br>da die Antwort wieder den Start-Key triggert.';
+                outputMsg += '<br><br>Abbruch.';
+
+                dialog(outputMsg, titleMsg, width);
+                return false;
+            }
+
+            if (keyword2ReturnMsg.includes(keyword1Text) && keyword1Enabled === true && keyword2Enabled === true) {
+                width       = 600;
+                outputMsg  = 'KeyWord1 ist in der Antwort-Nachricht von Keyword2 enthalten!';
+                outputMsg += '<br><br>Das ergibt eine Endlosschleife die nie endet,';
+                outputMsg += '<br>da die Antwort wieder den Start-Key triggert.';
+                outputMsg += '<br><br>Abbruch.';
+
+                dialog(outputMsg, titleMsg, width);
+                return false;
+            }
+
+            if (keyword2ReturnMsg.includes(keyword2Text) && keyword2Enabled === true) {
+                width       = 600;
+                outputMsg  = 'KeyWord2 ist in der Antwort-Nachricht von Keyword2 enthalten!';
+                outputMsg += '<br><br>Das ergibt eine Endlosschleife die nie endet,';
+                outputMsg += '<br>da die Antwort wieder den Start-Key triggert.';
+                outputMsg += '<br><br>Abbruch.';
+
+                dialog(outputMsg, titleMsg, width);
+                return false;
+            }
+
+            width       = 400;
+
             dialogConfirm(outputMsg, titleMsg, width, sendData)
 
             return false;

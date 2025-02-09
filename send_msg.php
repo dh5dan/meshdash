@@ -27,7 +27,7 @@ $osIssWindows = chkOsIssWindows();
 if ($msgText != '')
 {
     $utf8    = utf8_encode('äöü#ÄÖÜß');
-    $addon   = '$%"§'."'";
+    $addon   = '$%"§'."'"."´`";
     $pattern = "/^[0-9a-zA-Z ,()-<>" . $utf8 . $addon . "&.-_\\s\?\!]+\$/";
     $loraIP  = getParamData('loraIp');
 
@@ -38,10 +38,10 @@ if ($msgText != '')
         exit();
     }
 
-    #Ist noch ein Bug in der aktuellen FW
-    if (strlen($msgText) > 125)
+    #Ist noch ein Bug in der aktuellen FW "MeshCom C 4.34m" mit 125 Zeichen
+    if (strlen($msgText) > 160)
     {
-        $errMsg = htmlspecialchars(utf8_encode("Maximale Zeichen länge von 125 Zeichen überschritten. Abbruch!"));
+        $errMsg = htmlspecialchars(utf8_encode("Maximale Zeichen länge von 160 Zeichen überschritten. Abbruch!"));
         header("Location: bottom.php?errMsg=" . $errMsg . "&msgText=" . $msgText . "&dm=" . $directMessage);
         exit();
     }
