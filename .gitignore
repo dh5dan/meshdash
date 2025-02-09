@@ -11,3 +11,5 @@ database/**
 !database/**/
 !database/**/.keep
 
+execute/*.log
+*.log

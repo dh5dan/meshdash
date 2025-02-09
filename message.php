@@ -24,7 +24,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 #Hole Parameter für NoPos und DMA-Alert aus Datenbank
-$loraIp             = (int) getParamData('loraIp');
+$loraIp             = trim(getParamData('loraIp'));
 $noPosData          = (int) getParamData('noPosData');
 $noDmAlertGlobal    = (int) getParamData('noDmAlertGlobal');
 $posStatusValue     = (int) getParamData('noPosData');
@@ -69,7 +69,7 @@ $keyword2DmGrpId   = '*';
 $debugFlag = false;
 
 #Check if Keyword1 is enabled
-if (getParamData('keyword1Enabled') == 1)
+if (getParamData('keyword1Enabled') == 1 || $debugFlag === true)
 {
     $keyword1Text           = getParamData('keyword1Text');
     $keyword1Cmd            = getParamData('keyword1Cmd');
@@ -77,28 +77,28 @@ if (getParamData('keyword1Enabled') == 1)
     $keyword1DmGrpId        = getParamData('keyword1DmGrpId');
 }
 
-if ($debugFlag === true)
-{
-    echo "<br>keyword1Enabled :" .getParamData('keyword1Enabled');
-    echo "<br>keyword1Text:$keyword1Text";
-    echo "<br>keyword1Cmd:$keyword1Cmd";
-    echo "<br>keyword1ReturnMsg:$keyword1ReturnMsg";
-    echo "<br>keyword1DmGrpId:$keyword1DmGrpId";
-
-    echo "<br>keyword2Enabled :" .getParamData('keyword2Enabled');
-    echo "<br>keyword2Text:$keyword2Text";
-    echo "<br>keyword2Cmd:$keyword2Cmd";
-    echo "<br>keyword2ReturnMsg:$keyword2ReturnMsg";
-    echo "<br>keyword2DmGrpId:$keyword2DmGrpId";
-}
-
 #Check if Keyword2 is enabled
-if (getParamData('keyword2Enabled') == 1)
+if (getParamData('keyword2Enabled') == 1 || $debugFlag === true)
 {
     $keyword2Text           = getParamData('keyword2Text');
     $keyword2Cmd            = getParamData('keyword2Cmd');
     $keyword2ReturnMsg      = getParamData('keyword2ReturnMsg');
     $keyword2DmGrpId        = getParamData('keyword2DmGrpId');
+}
+
+if ($debugFlag === true)
+{
+    echo "<br>keyword1Enabled :<b>" .getParamData('keyword1Enabled').'</b>';
+    echo "<br>keyword1Text<b>:$keyword1Text".'</b>';;
+    echo "<br>keyword1Cmd<b>:$keyword1Cmd".'</b>';;
+    echo "<br>keyword1ReturnMsg<b>:$keyword1ReturnMsg".'</b>';;
+    echo "<br>keyword1DmGrpId<b>:$keyword1DmGrpId".'</b>';;
+    echo "<br>---------------------------";
+    echo "<br>keyword2Enabled:<b>" .getParamData('keyword2Enabled').'</b>';;
+    echo "<br>keyword2Text:<b>$keyword2Text".'</b>';;
+    echo "<br>keyword2Cmd:<b>$keyword2Cmd".'</b>';;
+    echo "<br>keyword2ReturnMsg:<b>$keyword2ReturnMsg".'</b>';;
+    echo "<br>keyword2DmGrpId:<b>$keyword2DmGrpId".'</b>';;
 }
 
 #Prevents Error on fetch array
@@ -147,7 +147,7 @@ if ($result !== false)
 
         if ($debugFlag === true)
         {
-            echo "<br>resGetKeywordsData#<pre>";
+            echo "<br>resGetKeywordsData#$msgId#<pre>";
             print_r($resGetKeywordsData);
             echo "</pre>";
         }
@@ -170,7 +170,7 @@ if ($result !== false)
 
         if ($debugFlag === true)
         {
-            echo "<br>msgid: $msgId exec:" . $keywordExecuted;
+            echo "<br>msgid: $msgId exec:" . $keywordExecuted . " loraIp=$loraIp";
         }
 
         #Check auf Keyword1
@@ -184,29 +184,10 @@ if ($result !== false)
 
             if (strpos($msg, $keyword1Text) !== false && $dst == $keyword1DmGrpId)
             {
-                $keyword1Cmd .= '  2>&1';
-                exec($keyword1Cmd,$keyword1ResultArray,$keyword1ErrorCode);
+                execScriptCurl($keyword1Cmd);
 
-                #execScriptCurl($keyword1Cmd);
-
-                if ($debugFlag === true)
-                {
-                    echo "<pre>";
-                    print_r($keyword1ResultArray);
-                    echo "</pre>";
-                    echo "<br>resultCode:$keyword1ErrorCode";
-                }
-
+                $keyword1ErrorCode = 0; //debug
                 $keyword1ErrorText = '';
-                if ($keyword1ErrorCode != 0)
-                {
-                    $keyword1ErrorText = $keyword1ResultArray[0];
-
-                    if ($debugFlag === true)
-                    {
-                        echo "<br>in error1 mit code: $keyword1ErrorCode und text: $keyword1ErrorText";
-                    }
-                }
 
                 setKeywordsData($msgId, 1, $keyword1ErrorCode, $keyword1ErrorText);
 
@@ -233,22 +214,10 @@ if ($result !== false)
         {
             if (strpos($msg, $keyword2Text) !== false && $dst == $keyword2DmGrpId)
             {
-                $keyword2Cmd .= '  2>&1';
-                exec($keyword2Cmd,$keyword2ResultArray,$keyword2ErrorCode);
+                execScriptCurl($keyword2Cmd);
 
-                if ($debugFlag === true)
-                {
-                    echo "<pre>";
-                    print_r($keyword2ResultArray);
-                    echo "</pre>";
-                    echo "<br>resultCode:$keyword2ErrorCode";
-                }
-
+                $keyword2ErrorCode = 0;
                 $keyword2ErrorText = '';
-                if ($keyword2ErrorCode != 0)
-                {
-                    $keyword2ErrorText = $keyword2ResultArray[0];
-                }
 
                 setKeywordsData($msgId, 1, $keyword2ErrorCode, $keyword2ErrorText);
 

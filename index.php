@@ -43,8 +43,8 @@ $debugFlag          = false; // For debug only
 
 #Check what oS is running
 $osIssWindows = chkOsIssWindows();
-$checkTaskCmd = $osIssWindows === true ? 'tasklist | find "php.exe"' : "pgrep -x php";
-
+#Hinweis Pgrep -x funktioniert nicht, wenn man die PHP Datei ermitteln muss
+$checkTaskCmd = $osIssWindows === true ? 'tasklist | find "php.exe"' : "pgrep -a -f udp_receiver.php | grep -v pgrep | awk '{print $1}'";
 echo '<input type="hidden" id="version" value="' . VERSION . '"/>';
 
 #Prüfen, ob schreibrechte für Datenbank und Log existieren
