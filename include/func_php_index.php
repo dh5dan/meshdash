@@ -10,7 +10,7 @@ function callWindowsBackgroundTask($taskFile, $execDir = ''): bool
         'execDir' => "$execDir",
     );
 
-    $debugFlag  = true;
+    $debugFlag  = false;
 
     #Starte Trigger
     $ch = curl_init();
@@ -20,7 +20,6 @@ function callWindowsBackgroundTask($taskFile, $execDir = ''): bool
     curl_setopt($ch, CURLOPT_HEADER, 0);
     curl_setopt($ch, CURLOPT_NOBODY, 1);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-    #curl_setopt($ch, CURLOPT_TIMEOUT, 1); // Warte max. 1 Sekunden und beende Verbindung
     curl_setopt($ch, CURLOPT_TIMEOUT_MS, 100); // Warte max. 100 ms und beende Verbindung
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
@@ -82,6 +81,9 @@ function initSQLiteDatabase($database): bool
                                   altitude INTEGER,
                                   batt INTEGER,
                                   dst TEXT,
+                                  ackReq INTEGER,
+                                  ack INTEGER,
+                                  mhSend INTEGER DEFAULT 0,
                                   PRIMARY KEY('msg_id')
                                 )
                 ");
@@ -280,8 +282,8 @@ function checkLoraIPDb($param)
 
         if (trim($callSign == ''))
         {
-            echo '<br><br><b>Das Call mit SSID  wurde noch nicht gesetzt.';
-            echo '<br><br>Bitte jetzt die Call mit SSID angeben:</b>';
+            echo '<br><br><b>Das Rufzeichen mit SSID wurde noch nicht gesetzt.';
+            echo '<br><br>Bitte jetzt das Rufzeichen mit der SSID angeben:</b>';
             echo '&nbsp;&nbsp;&nbsp;<input type="text" class="inputParamLoraIp" name="inputParamCallSign" id="inputParamCallSign" value="" required placeholder="DB0ABC-99" />';
         }
 

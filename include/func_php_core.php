@@ -255,3 +255,35 @@ function setMheardData($heardData): bool
 
     return true;
 }
+
+function updateMeshDashData($msgId, $key, $value): bool
+{
+    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    $basename       = pathinfo(getcwd())['basename'];
+    $dbFilenameSub  = '../database/meshdash.db';
+    $dbFilenameRoot = 'database/meshdash.db';
+    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+
+    $db = new SQLite3($dbFilename);
+
+    #Escape Value
+    $value = trim(SQLite3::escapeString($value));
+
+    $db->exec(" UPDATE meshdash
+                        SET $key = $value
+                        WHERE msg_id = '$msgId';
+                    ");
+
+    if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+    {
+        echo "<br>setParamData";
+        echo "<br>ErrMsg:" . $db->lastErrorMsg();
+        echo "<br>ErrNum:" . $db->lastErrorCode();
+    }
+
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
+    return true;
+}

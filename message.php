@@ -19,6 +19,7 @@ require_once 'include/func_php_core.php';
 require_once 'include/func_js_message.php';
 require_once 'include/func_php_message.php';
 require_once 'include/func_php_index.php';
+require_once 'include/func_php_mheard.php';
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -89,16 +90,16 @@ if (getParamData('keyword2Enabled') == 1 || $debugFlag === true)
 if ($debugFlag === true)
 {
     echo "<br>keyword1Enabled :<b>" .getParamData('keyword1Enabled').'</b>';
-    echo "<br>keyword1Text<b>:$keyword1Text".'</b>';;
-    echo "<br>keyword1Cmd<b>:$keyword1Cmd".'</b>';;
-    echo "<br>keyword1ReturnMsg<b>:$keyword1ReturnMsg".'</b>';;
-    echo "<br>keyword1DmGrpId<b>:$keyword1DmGrpId".'</b>';;
+    echo "<br>keyword1Text<b>:$keyword1Text".'</b>';
+    echo "<br>keyword1Cmd<b>:$keyword1Cmd".'</b>';
+    echo "<br>keyword1ReturnMsg<b>:$keyword1ReturnMsg".'</b>';
+    echo "<br>keyword1DmGrpId<b>:$keyword1DmGrpId".'</b>';
     echo "<br>---------------------------";
-    echo "<br>keyword2Enabled:<b>" .getParamData('keyword2Enabled').'</b>';;
-    echo "<br>keyword2Text:<b>$keyword2Text".'</b>';;
-    echo "<br>keyword2Cmd:<b>$keyword2Cmd".'</b>';;
-    echo "<br>keyword2ReturnMsg:<b>$keyword2ReturnMsg".'</b>';;
-    echo "<br>keyword2DmGrpId:<b>$keyword2DmGrpId".'</b>';;
+    echo "<br>keyword2Enabled:<b>" .getParamData('keyword2Enabled').'</b>';
+    echo "<br>keyword2Text:<b>$keyword2Text".'</b>';
+    echo "<br>keyword2Cmd:<b>$keyword2Cmd".'</b>';
+    echo "<br>keyword2ReturnMsg:<b>$keyword2ReturnMsg".'</b>';
+    echo "<br>keyword2DmGrpId:<b>$keyword2DmGrpId".'</b>';
 }
 
 #Prevents Error on fetch array
@@ -108,13 +109,18 @@ if ($result !== false)
     {
         ###############################################
         #Common
-        $srcType   = $row['src_type'] ?? ''; // node, lora
-        $type      = $row['type'] ?? '';     // pos / msg
-        $src       = $row['src'] ?? '';     // <call>-<sid>
-        $msg       = $row['msg'] ?? '';     //
-        $msgId     = $row['msg_id']; // 72378728
-        $timestamp = $row['timestamps'] ?? date('Y-m-d H:i:s');  // Timestamp added by myself
-        $dst       = $row['dst'] ?? ''; // 995 | call
+        $srcType     = $row['src_type'] ?? ''; // node, lora
+        $type        = $row['type'] ?? '';     // pos / msg
+        $src         = $row['src'] ?? '';     // <call>-<sid>
+        $msg         = $row['msg'] ?? '';     //
+        $msgId       = $row['msg_id']; // 72378728
+        $timestamp   = $row['timestamps'] ?? date('Y-m-d H:i:s');  // Timestamp added by myself
+        $dst         = $row['dst'] ?? ''; // 995 | call
+        $msgAckReqDb = $row['ackReq'] ?? '';
+        $msgAckDb    = $row['ack'] ?? '';
+        $mhSend      = $row['mhSend'] ?? 0;
+        $msgAckReq   = 0; // Acknowledge Request
+        $msgAck      = 0; // Acknowledge
 
         #Wenn Leer ist es i.d.R. ein eigene Aussendung
         $callSign = getParamData('callSign');
@@ -123,9 +129,10 @@ if ($result !== false)
         $msgSplit = explode('{', $msg);
 
         #Berücksichtige nicht Zeitmeldungen von OE1XAR-45
-        if (count($msgSplit) > 1 && strpos($msgId, '{CET}') != 0)
+        if (count($msgSplit) > 1 && strpos($msg, '{CET}') === false)
         {
-            $msg = $msgSplit[0];
+            $msg        = $msgSplit[0];
+            $msgAckReq  = (int) $msgSplit[1];
         }
 
         #Ersetzte durch aussagekräftige Meldung von OE1XAR-45,
@@ -268,11 +275,48 @@ if ($result !== false)
         {
             $dst = $dst == '' ? 'all' : $dst;
 
+            if ($msgAckReqDb == '')
+            {
+                updateAckReqId($msgId, $msgAckReq);
+            }
+
+            #Prüfe ob ack vorliegt und wenn ja, packe es zur korrespondierenden Nachricht
+            $resCheckMsgAck = checkMsgAck($msg);
+
+            #Wenn MSg ein Ack ist dann nicht anzeigen aber auswerten
+            if ($resCheckMsgAck === true)
+            {
+                continue;
+            }
+
+            if ($mhSend == 0)
+            {
+                checkMheard($msgId, $msg, $src, $dst, $loraIp);
+            }
+
             echo '<h3 class="setFontMsgHeader">';
-            echo 'MsgId: ' . $msgId . ' (' . $srcType . ')<br>' . $timestamp . ' ';
+            echo 'MsgId: ' . $msgId . ' (' . $srcType . ')';
+
+            #Wenn Bestätigung vorliegt dann bild mit grünem Haken einblenden
+            if (($msgAckReqDb != 0 && $msgAckDb != '') && ($msgAckReqDb == $msgAckDb))
+            {
+                echo '<img src="image/ack_icon.png" alt="ack" class="imageAck">';
+            }
+
+            echo '<br>' . $timestamp . ' ';
             echo 'Quelle ' . $src . ' , Ziel ' . $dst . '</h3>';
             echo '<h3 class="setFontMsg">';
-            echo $msg;
+
+            if ($mhSend == 1)
+            {
+                echo $msg;
+                echo "&nbsp;->MH-Liste gesendet.";
+                echo '<img src="image/ack_icon.png" alt="ack" class="imageMheard">';
+            }
+            else
+            {
+                echo $msg;
+            }
             echo '</h3><hr>';
         }
 

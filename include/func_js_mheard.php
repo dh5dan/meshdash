@@ -4,20 +4,7 @@
 
         $("#btnGetMheard").on("click", function ()
         {
-            let titleMsg  = 'Hinweis';
-            let outputMsg;
-            let width     = 700;
             let sendData  = 1;
-            let doSaveMheard = $("#doSaveMheard").is(":checked");
-
-            if (doSaveMheard === true)
-            {
-                outputMsg = 'Mheard jetzt abfragen und speichern?'
-                sendData = 2;
-                dialogConfirm(outputMsg, titleMsg, width, sendData)
-                return false;
-            }
-
             $("#sendData").val(sendData);
             $("#frmMheard").trigger('submit');
         });
