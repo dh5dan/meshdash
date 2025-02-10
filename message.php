@@ -31,6 +31,7 @@ $noDmAlertGlobal    = (int) getParamData('noDmAlertGlobal');
 $posStatusValue     = (int) getParamData('noPosData');
 $noTimeSyncMsgValue = (int) getParamData('noTimeSyncMsg');
 $maxScrollBackRows  = (int) getParamData('maxScrollBackRows');
+$callSign           = trim(getParamData('callSign'));
 
 #Werte für Jquery die dann im Bottom Frame abgebildet werden
 echo '<input type="hidden" id="posStatusValue" value="'. $posStatusValue . '" />';
@@ -291,7 +292,7 @@ if ($result !== false)
 
             if ($mhSend == 0)
             {
-                checkMheard($msgId, $msg, $src, $dst, $loraIp);
+                checkMheard($msgId, $msg, $src, $callSign, $loraIp);
             }
 
             echo '<h3 class="setFontMsgHeader">';

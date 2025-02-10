@@ -1,6 +1,6 @@
 #!/bin/bash
 clear
-echo MeshDash Update-Script V 1.00.18
+echo MeshDash Update-Script V 1.00.20
 echo
 echo UPDATE einer bestehenden MeshDash Installation @5D.
 echo Es wird nur das MeshDash installiert,
