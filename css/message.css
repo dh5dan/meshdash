@@ -23,3 +23,18 @@ body {
     background-color: red;
     color: whitesmoke;
 }
+
+.imageAck {
+    width: 20px;  /* Größe anpassen */
+    height: auto; /* Seitenverhältnis beibehalten */
+    vertical-align: middle; /* Vertikale Ausrichtung im Text */
+    margin-left: 5px; /* Abstand zum Text */
+}
+
+.imageMheard {
+    width: 20px;  /* Größe anpassen */
+    height: auto; /* Seitenverhältnis beibehalten */
+    vertical-align: middle; /* Vertikale Ausrichtung im Text */
+    margin-left: 5px; /* Abstand zum Text */
+    margin-bottom: 2px;
+}

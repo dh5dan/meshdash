@@ -18,7 +18,8 @@ require_once 'include/func_php_core.php';
 $msgText       = $_POST['msgText'] ?? '';
 $directMessage = $_POST['dm'] ?? '*';
 
-$file          = 'log/userdata_' . date('Ymd') . '.log';
+$file          = 'log/user_data_' . date('Ymd') . '.log';
+$fileLogJson   = 'log/user_json_data_' . date('Ymd') . '.log';
 $directMessage = $directMessage == '' ? '*' : $directMessage;
 
 #Check what oS is running
@@ -27,7 +28,7 @@ $osIssWindows = chkOsIssWindows();
 if ($msgText != '')
 {
     $utf8    = utf8_encode('äöü#ÄÖÜß');
-    $addon   = '$%"§'."'"."´`";
+    $addon   = '$%"§'."'|"."´`";
     $pattern = "/^[0-9a-zA-Z ,()-<>" . $utf8 . $addon . "&.-_\\s\?\!]+\$/";
     $loraIP  = getParamData('loraIp');
 
@@ -50,12 +51,18 @@ if ($msgText != '')
     $arraySend['dst']  = $directMessage;
     $arraySend['msg']  = $msgText;
 
-    $message = json_encode($arraySend, JSON_UNESCAPED_UNICODE);
+    $message = json_encode($arraySend, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
     if ($socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP))
     {
         socket_sendto($socket, $message, strlen($message), 0, $loraIP, 1799);
         socket_close($socket);
+
+        // Daten formatieren
+        $dataLogJson = "$message\n";
+
+        // Json-Daten in Datei speichern
+        file_put_contents($fileLogJson, $dataLogJson, FILE_APPEND);
     }
     else
     {

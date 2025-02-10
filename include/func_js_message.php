@@ -3,7 +3,7 @@
 
         window.setTimeout( function() {
             window.location.reload();
-        }, 5000);
+        }, 2000);
 
         setInterval(updatePosStatus, 1000);  // Alle 1 Sekunde Status prüfen
 
