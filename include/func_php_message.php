@@ -106,7 +106,7 @@ function checkMsgAck($msg): bool
     return $ackFound;
 }
 
-function checkMheard($msgId, $msg, $src, $dst, $loraIp)
+function checkMheard($msgId, $msg, $src, $callSign, $loraIp)
 {
     $debugFlag = false;
 
@@ -115,7 +115,7 @@ function checkMheard($msgId, $msg, $src, $dst, $loraIp)
         echo "<br>msgId:$msgId";
         echo "<br>msg:$msg";
         echo "<br>src:$src";
-        echo "<br>dst:$dst";
+        echo "<br>dst:$callSign";
     }
 
     // Regulärer Ausdruck für "mheard", gefolgt von einem Rufzeichen mit optionaler SSID (1-999)
@@ -130,7 +130,7 @@ function checkMheard($msgId, $msg, $src, $dst, $loraIp)
             echo "<br>Gefunden TargetCall: $foundCall";
         }
 
-        if (strcasecmp($foundCall, $dst) === 0)
+        if (strcasecmp($foundCall, $callSign) === 0)
         {
             if ($debugFlag === true)
             {
@@ -143,7 +143,7 @@ function checkMheard($msgId, $msg, $src, $dst, $loraIp)
         {
             if ($debugFlag === true)
             {
-                echo "<br>Kein Match mit DST ($dst).";
+                echo "<br>Kein Match mit DST ($callSign).";
             }
         }
     }

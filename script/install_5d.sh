@@ -1,6 +1,6 @@
 #!/bin/bash
 clear
-echo MeshDash Install-Script V 1.00.18
+echo MeshDash Install-Script V 1.00.20
 echo
 echo Installation MeshCom MeshDash  @5D
 echo 
@@ -50,6 +50,7 @@ echo
 sudo apt-get install php-cgi php-fpm -y -f
 sudo apt-get install php -y -f
 sudo apt-get install php-sqlite3 -y -f
+sudo apt-get install php-xml
 echo
 echo
 sudo lighty-enable-mod fastcgi
@@ -112,7 +113,6 @@ sudo chmod -R 647 /var/www/html/5d/execute
 echo
 # Setzt udp.pid auf 644
 sudo chmod -R 644 /var/www/html/5d/udp.pid
-https://oe1kfr.com/mcmap/
 echo MeschDash ist nun installiert.
 echo
 echo "Starte nun Deinen Webbrowser und gib http://$hostIp ein."

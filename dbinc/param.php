@@ -1,2 +1,2 @@
 <?php
-const VERSION = '1.09.48 Beta';
+const VERSION = '1.09.50 Beta SQL';

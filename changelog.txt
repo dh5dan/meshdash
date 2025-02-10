@@ -1,9 +1,15 @@
+Version 1.09.50beta SQL
+Anpassung der Abfragelogik bei Remote Mheard.
+Änderung der Versionsbenennung in beta SQL
+Bugfix in install.sh PHP-XML Modul fehlte
+Bugfix in update.sh
+##################################################################
 Version 1.09.48beta
 Bugfix Ack-Id Anzeige
 Ack-Request und Ack werden nun gespeichert und ausgewertet.
 Die Msg bekommt dann einen Grünen Haken, wenn sie bestätigt wurde
 Bug in der Mheard in der manuellen Ansicht wurde behoben.
-Remote Mheard Abfrage ist nun implementiert
+Remote Mheard Abfrage ist jetzt implementiert
 Diverse kleine Anpassungen
 ##################################################################
 Version 1.09.46beta
