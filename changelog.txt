@@ -1,17 +1,16 @@
 Version 1.09.48beta
-Bugfix AcknowlegdeID Anzeige
-Ackrequest und Ack werden nun gespeichert und ausgewertet
-Die Msg bekommt dann einen Grünenhaken wenn sie bstätigt wurde
+Bugfix Ack-Id Anzeige
+Ack-Request und Ack werden nun gespeichert und ausgewertet.
+Die Msg bekommt dann einen Grünen Haken, wenn sie bestätigt wurde
 Bug in der Mheard in der manuellen Ansicht wurde behoben.
-
-
-
+Remote Mheard Abfrage ist nun implementiert
+Diverse kleine Anpassungen
 ##################################################################
 Version 1.09.46beta
-Keywordcheck mit Antwort-Text um Trigger-Schleife zu vermeiden
+Keyword-Check mit Antwort-Text um Trigger-Schleife zu vermeiden
 Version mit Beta Status gekennzeichnet.
-Umstellung der Ausführung der Keword Skripte als Backgroundprozess
-Ausführung der Keywordscripte nur noch im Execute Verzeichnis.
+Umstellung der Ausführung der Keyword-Skripte als Background-Prozess
+Ausführung der Keyword-Scripte nur noch im Execute Verzeichnis.
 ##################################################################
 Version 1.09.42
 MhHerd Liste mit Speicherfunktion
