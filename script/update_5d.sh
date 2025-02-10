@@ -1,6 +1,6 @@
 #!/bin/bash
 clear
-echo MeshDash Update-Script V 1.00.20
+echo MeshDash Update-Script V 1.00.22
 echo
 echo UPDATE einer bestehenden MeshDash Installation @5D.
 echo Es wird nur das MeshDash installiert,
@@ -63,6 +63,7 @@ echo
 sudo chmod -R 647 /var/www/html/5d/database
 sudo chmod -R 647 /var/www/html/5d/log
 sudo chmod -R 647 /var/www/html/5d/execute
+sudo chmod -R 647 /var/www/html/5d/sound
 echo
 # Setzt udp.pid auf 644
 sudo chmod -R 644 /var/www/html/5d/udp.pid

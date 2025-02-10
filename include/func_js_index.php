@@ -1,26 +1,40 @@
 <script>
-   // $(document).ready(function () {
    $(function ($) {
+       function updateDateTime() {
+           let now = new Date();
+           let dateTimeString = now.toLocaleString("de-DE", {
+               day: "2-digit",
+               month: "2-digit",
+               year: "numeric",
+               hour: "2-digit",
+               minute: "2-digit",
+               second: "2-digit"
+           });
+           $("#datetime").text(dateTimeString);
+       }
 
-        $("#bgTask").on("click", function ()
-        {
-            let titleMsg  = 'Hinweis';
-            let outputMsg = 'Hintergrundprozess jetzt beenden?'
-            let width     = 700;
-            let sendData  = 1;
+       setInterval(updateDateTime, 1000); // Aktualisiert jede Sekunde
+       updateDateTime(); // Direkt einmal ausführen
 
-            let taskStatusFlag = $("#taskStatusFlag").val();
+       $("#bgTask").on("click", function ()
+       {
+           let titleMsg  = 'Hinweis';
+           let outputMsg = 'Hintergrundprozess jetzt beenden?'
+           let width     = 700;
+           let sendData  = 1;
 
-            if (taskStatusFlag === '0')
-            {
-                outputMsg = 'Hintergrundprozess jetzt starten?';
-                sendData = 2;
-            }
+           let taskStatusFlag = $("#taskStatusFlag").val();
 
-            dialogConfirm(outputMsg, titleMsg, width, sendData)
+           if (taskStatusFlag === '0')
+           {
+               outputMsg = 'Hintergrundprozess jetzt starten?';
+               sendData  = 2;
+           }
 
-            return false;
-        });
+           dialogConfirm(outputMsg, titleMsg, width, sendData)
+
+           return false;
+       });
 
        $("#btnSetParamLoraIp").on("click", function ()
        {
@@ -127,6 +141,9 @@
            switch(action) {
                case 'config_generally':
                    iframeSrc = 'menu/config_generally.php';
+                   break;
+               case 'config_alerting':
+                   iframeSrc = 'menu/config_alerting.php';
                    break;
                case 'config_keyword':
                    iframeSrc = 'menu/config_keyword.php';

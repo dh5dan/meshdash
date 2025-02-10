@@ -79,9 +79,9 @@ $keyword2EnabledChecked = $keyword2Enabled == 1 ? 'checked' : '';
 $keyword1DmGrpId = $keyword1DmGrpId == '' ? '*' : $keyword1DmGrpId;
 $keyword2DmGrpId = $keyword2DmGrpId == '' ? '*' : $keyword2DmGrpId;
 
-echo "<br><h2>Keyword-Definition zur Ausführung von Kommandos</h2>";
+echo "<h2>Keyword-Definition zur Ausführung von Kommandos</h2>";
+echo "<h5>(Dateien müssen im Execute-Verzeichnis vorhanden sein und ausführbar)</h5>";
 
-echo "<br><br>";
 echo '<form id="frmConfigKeyword" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
 echo '<table>';

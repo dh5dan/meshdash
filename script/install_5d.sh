@@ -1,6 +1,6 @@
 #!/bin/bash
 clear
-echo MeshDash Install-Script V 1.00.20
+echo MeshDash Install-Script V 1.00.22
 echo
 echo Installation MeshCom MeshDash  @5D
 echo 
@@ -109,6 +109,7 @@ echo
 # Setzt speziell database und log auf 647 damit Dateien darin erzeugt werden dürfen
 sudo chmod -R 647 /var/www/html/5d/database
 sudo chmod -R 647 /var/www/html/5d/log
+sudo chmod -R 647 /var/www/html/5d/execute
 sudo chmod -R 647 /var/www/html/5d/execute
 echo
 # Setzt udp.pid auf 644

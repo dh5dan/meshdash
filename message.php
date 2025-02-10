@@ -33,6 +33,30 @@ $noTimeSyncMsgValue = (int) getParamData('noTimeSyncMsg');
 $maxScrollBackRows  = (int) getParamData('maxScrollBackRows');
 $callSign           = trim(getParamData('callSign'));
 
+$alertSoundFileSrc = getParamData('alertSoundFileSrc');
+$alertEnabledSrc   = getParamData('alertEnabledSrc');
+$alertSoundCallSrc = getParamData('alertSoundCallSrc');
+
+$alertSoundFileDst = getParamData('alertSoundFileDst');
+$alertEnabledDst   = getParamData('alertEnabledDst');
+$alertSoundCallDst = getParamData('alertSoundCallDst');
+
+$sqlAddon = '';
+
+if ($noPosData == 1)
+{
+    $sqlAddon .= ' AND type != "pos" ';
+}
+
+if ($noTimeSyncMsgValue == 1)
+{
+    $sqlAddon .= ' AND msgIsTimeSync = 0 ';
+}
+
+#Soundfiles Preload
+echo '<audio id="alertSoundSrc" src="sound\\' . $alertSoundFileSrc . '" preload="auto"></audio>';
+echo '<audio id="alertSoundDst" src="sound\\' . $alertSoundFileDst . '" preload="auto"></audio>';
+
 #Werte für Jquery die dann im Bottom Frame abgebildet werden
 echo '<input type="hidden" id="posStatusValue" value="'. $posStatusValue . '" />';
 echo '<input type="hidden" id="noTimeSyncMsgValue" value="'. $noTimeSyncMsgValue . '" />';
@@ -53,6 +77,8 @@ $db->busyTimeout(5000); // warte wenn busy in millisekunden
 // Hole mir die letzten 30 Nachrichten aus der Datenbank
 $result = $db->query("SELECT * 
                               FROM meshdash
+                              WHERE msgIsAck = 0
+                              $sqlAddon
                           ORDER BY timestamps DESC
                              LIMIT $maxScrollBackRows");
 # Maybe False when Database is locked
@@ -110,16 +136,19 @@ if ($result !== false)
     {
         ###############################################
         #Common
-        $srcType     = $row['src_type'] ?? ''; // node, lora
-        $type        = $row['type'] ?? '';     // pos / msg
-        $src         = $row['src'] ?? '';     // <call>-<sid>
-        $msg         = $row['msg'] ?? '';     //
-        $msgId       = $row['msg_id']; // 72378728
-        $timestamp   = $row['timestamps'] ?? date('Y-m-d H:i:s');  // Timestamp added by myself
-        $dst         = $row['dst'] ?? ''; // 995 | call
-        $msgAckReqDb = $row['ackReq'] ?? '';
-        $msgAckDb    = $row['ack'] ?? '';
-        $mhSend      = $row['mhSend'] ?? 0;
+        $srcType          = $row['src_type'] ?? ''; // node, lora
+        $type             = $row['type'] ?? '';     // pos / msg
+        $src              = $row['src'] ?? '';     // <call>-<sid>
+        $msg              = $row['msg'] ?? '';     //
+        $msgId            = $row['msg_id']; // 72378728
+        $timestamp        = $row['timestamps'] ?? date('Y-m-d H:i:s');  // Timestamp added by myself
+        $dst              = $row['dst'] ?? ''; // 995 | call
+        $msgAckReqDb      = $row['ackReq'] ?? '';
+        $msgAckDb         = $row['ack'] ?? '';
+        $mhSend           = $row['mhSend'] ?? 0;
+        $alertExecutedSrc = $row['alertExecutedSrc'] ?? 0;
+        $alertExecutedDst = $row['alertExecutedDst'] ?? 0;
+
         $msgAckReq   = 0; // Acknowledge Request
         $msgAck      = 0; // Acknowledge
 
@@ -145,6 +174,8 @@ if ($result !== false)
         }
         else if (strpos($msg, '{CET}') !== false && $noTimeSyncMsgValue == 1)
         {
+            #Wird jetzt in SQL abgefangen
+            updateMeshDashData($msgId,'msgIsTimeSync', 1);
             continue;
         }
 
@@ -287,6 +318,8 @@ if ($result !== false)
             #Wenn MSg ein Ack ist dann nicht anzeigen aber auswerten
             if ($resCheckMsgAck === true)
             {
+                #Wird jetzt in SQL abgefangen
+                updateMeshDashData($msgId,'msgIsAck', 1);
                 continue;
             }
 
@@ -296,7 +329,7 @@ if ($result !== false)
             }
 
             echo '<h3 class="setFontMsgHeader">';
-            echo 'MsgId: ' . $msgId . ' (' . $srcType . ')';
+            echo $timestamp . ' ' . 'MsgId: ' . $msgId . ' (' . $srcType . ')';
 
             #Wenn Bestätigung vorliegt dann bild mit grünem Haken einblenden
             if (($msgAckReqDb != 0 && $msgAckDb != '') && ($msgAckReqDb == $msgAckDb))
@@ -304,20 +337,64 @@ if ($result !== false)
                 echo '<img src="image/ack_icon.png" alt="ack" class="imageAck">';
             }
 
-            echo '<br>' . $timestamp . ' ';
-            echo 'Quelle ' . $src . ' , Ziel ' . $dst . '</h3>';
+            $parts     = explode(',', $src);
+            $firstCall = array_shift($parts); // Nimmt das erste Rufzeichen und entfernt es aus dem Array
+            $restCalls = implode(',', $parts);
+
+            echo '<br>VIA: ' . $restCalls . '</h3>';
             echo '<h3 class="setFontMsg">';
+
+            #Source Call.
+            #
+            #Nur ausführen wenn:
+            #src call = AlertSrc Call.
+            #Der sound noch nicht ausgeführt wurde.
+            #Global die alert Sounds nicht abgeschaltet sind.
+            #Der SrcAlert eingeschaltet ist
+            if (strcasecmp($firstCall, $alertSoundCallSrc) === 0 && $alertExecutedSrc == 0 && $noDmAlertGlobal == 0 && $alertEnabledSrc == 1)
+            {
+                echo '<script>';
+                echo 'document.getElementById("alertSoundSrc").play();'; // Ton abspielen
+                echo '</script>';
+
+                updateMeshDashData($msgId,'alertExecutedSrc', 1);
+            }
+
+            #DestinatationCall
+            if (strcasecmp($dst, $alertSoundCallDst) === 0 && $alertExecutedDst == 0 && $noDmAlertGlobal == 0 && $alertEnabledDst == 1)
+            {
+                echo '<script>';
+                echo 'document.getElementById("alertSoundDst").play();'; // Ton abspielen
+                echo '</script>';
+
+                updateMeshDashData($msgId,'alertExecutedDst', 1);
+            }
+
+            $alertSrcCss = '';
+
+            if (strcasecmp($firstCall, $alertSoundCallSrc) === 0 && $alertEnabledSrc == 1)
+            {
+                $alertSrcCss = 'failureHint';
+            }
+
+            $alertDstCss = '';
+
+            #DestinatationCall
+            if (strcasecmp($dst, $alertSoundCallDst) === 0 && $alertEnabledDst == 1)
+            {
+                $alertDstCss = 'failureHint';
+            }
+
+            $dstTxt = $dst == '*' ? 'all' : $dst;
+
+            echo '<span class="' . $alertSrcCss . '">' . $firstCall. '</span>' . ' > ' .'<span class="' . $alertDstCss . '">' . $dstTxt . '</span> : ' . $msg;
 
             if ($mhSend == 1)
             {
-                echo $msg;
                 echo "&nbsp;->MH-Liste gesendet.";
                 echo '<img src="image/ack_icon.png" alt="ack" class="imageMheard">';
             }
-            else
-            {
-                echo $msg;
-            }
+
             echo '</h3><hr>';
         }
 
