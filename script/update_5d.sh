@@ -1,8 +1,8 @@
 #!/bin/bash
 clear
-echo MeshDash Update-Script V 1.00.22
+echo MeshDash Update-Script V 1.00.28
 echo
-echo UPDATE einer bestehenden MeshDash Installation @5D.
+echo UPDATE einer bestehenden MeshDash SQL Installation.
 echo Es wird nur das MeshDash installiert,
 echo kein PHP oder sonstige Tools.
 echo Zur installation der nötigen Tools wie PHP, Webbrowser bitte die install.sh ausführen.
@@ -27,6 +27,9 @@ fi
 echo "OK, es geht weiter mit dem Update..."
 sleep 2
 
+######################################
+###### Update Web-Application   ######
+######################################
 hostIp=$(hostname -I | awk '{print $1}')
 
 echo Lösche meshdash Verzeichnis und erzeuge es neu
@@ -46,27 +49,26 @@ sudo rm meshdash*.zip
 echo
 echo Erzeuge Verzeichnis 5d in /var/www/html
 sudo mkdir -p /var/www/html/5d
-sudo chmod -R 645 /var/www/html/5d
+sudo chmod -R 755 /var/www/html/5d
 echo
 echo Installiere nun das Update
 echo
 sudo cp -r ./* /var/www/html/5d/
+sudo cp -r ./.htaccess /var/www/html/5d/
+sudo cp -r ./.user.ini /var/www/html/5d/
 echo
 echo
 # Setzt alle .php-Dateien auf global 644 (r--)
 sudo find /var/www/html/5d/ -type f -name "*.php" -exec chmod 644 {} \;
 echo
 # Setzt alle Verzeichnisse auf global 645 (r-x)
-sudo find /var/www/html/5d/ -type d -exec chmod 645 {} \;
+sudo find /var/www/html/5d/ -type d -exec chmod 755 {} \;
 echo
-# Setzt speziell database und log auf 647 damit Dateien darin erzeugt werden dürfen
-sudo chmod -R 647 /var/www/html/5d/database
-sudo chmod -R 647 /var/www/html/5d/log
-sudo chmod -R 647 /var/www/html/5d/execute
-sudo chmod -R 647 /var/www/html/5d/sound
 echo
-# Setzt udp.pid auf 644
+# Setzt udp.pid auf 644. Not Halt für BG-Prozess udp_receiver.php
 sudo chmod -R 644 /var/www/html/5d/udp.pid
+#Setzte Owner und Gruppe für Web-Server im gesamten Verzeichnis
+sudo chown -R www-data:www-data /var/www/html/5d
 echo
 echo FERTIG!
 echo

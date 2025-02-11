@@ -1,0 +1,59 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.successHint {
+    background-color: darkgreen;
+    color: whitesmoke;
+    font-weight: bold;
+}
+
+.failureHint {
+    background-color: red;
+    color: whitesmoke;
+    font-weight: bold;
+}
+
+/* backup Tabelle */
+
+.scrollable-container {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+    width: 28.1%;  /* Container-Breite anpassen */
+
+    -ms-overflow-style: none;  /* Für IE und Edge */
+    scrollbar-width: none;     /* Für Firefox */
+}
+
+.scrollable-container::-webkit-scrollbar {
+    display: none;             /* Für Chrome, Safari, Opera */
+}
+
+table.backupTable {
+    border-collapse: collapse;
+    width: 30%;
+}
+table.backupTable th, table.backupTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+table.backupTable tr:nth-child(even) {background-color: #f2f2f2;}
+table.backupTable tr:hover {background-color: #ddd;}
+table.backupTable th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #4CAF50;
+    color: white;
+}
+
+.imageDownload {
+    width: 25px;
+}
+
+.imageDelete {
+    width: 25px;
+    cursor: pointer;
+}

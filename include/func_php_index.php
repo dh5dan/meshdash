@@ -216,6 +216,7 @@ function showMenu()
         <li data-action="config_generally">Allgemein</li>
         <li data-action="config_alerting">Benachrichtigung</li>
         <li data-action="config_keyword">Keyword</li>
+        <li data-action="config_update">Update</li>
         <li data-action="config_data_purge">Data-Purge</li>
         <li data-action="config_ping_lora">Ping Lora</li>
       </ul>

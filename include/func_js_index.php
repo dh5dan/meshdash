@@ -1,20 +1,33 @@
 <script>
    $(function ($) {
-       function updateDateTime() {
-           let now = new Date();
-           let dateTimeString = now.toLocaleString("de-DE", {
-               day: "2-digit",
-               month: "2-digit",
-               year: "numeric",
-               hour: "2-digit",
-               minute: "2-digit",
-               second: "2-digit"
+       let serverTime = null;
+       let offset = 0;
+
+       function fetchServerTime() {
+           $.getJSON("ajax_time.php", function (data) {
+               serverTime = new Date(data.time);
+               offset = serverTime - new Date(); // Differenz zwischen Server- und Clientzeit
            });
-           $("#datetime").text(dateTimeString);
        }
 
-       setInterval(updateDateTime, 1000); // Aktualisiert jede Sekunde
-       updateDateTime(); // Direkt einmal ausführen
+       function updateDateTime() {
+           if (serverTime) {
+               let now = new Date(new Date().getTime() + offset); // Korrigierte Zeit
+               let dateTimeString = now.toLocaleString("de-DE", {
+                   day: "2-digit",
+                   month: "2-digit",
+                   year: "numeric",
+                   hour: "2-digit",
+                   minute: "2-digit",
+                   second: "2-digit"
+               });
+               $("#datetime").text(dateTimeString);
+           }
+       }
+
+       fetchServerTime(); // Initial holen
+       setInterval(fetchServerTime, 10000); // Alle 10 Sekunden Serverzeit abrufen
+       setInterval(updateDateTime, 1000); // Jede Sekunde lokale Zeit aktualisieren
 
        $("#bgTask").on("click", function ()
        {
@@ -147,6 +160,9 @@
                    break;
                case 'config_keyword':
                    iframeSrc = 'menu/config_keyword.php';
+                   break;
+               case 'config_update':
+                   iframeSrc = 'menu/config_update.php';
                    break;
                case 'config_data_purge':
                    iframeSrc = 'menu/config_data_purge.php';
