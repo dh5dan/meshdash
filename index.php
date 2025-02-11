@@ -11,7 +11,7 @@ echo '<head><title>MeshDash 4</title>';
   echo '<script type="text/javascript" src="jquery/jquery-ui.js"></script>';
   echo '<link rel="stylesheet" href="jquery/jquery-ui.css">';
   echo '<link rel="stylesheet" href="jquery/css/jq_custom.css">';
-  echo '<link rel="stylesheet" href="css/main.css?' . microtime() . '">';
+  echo '<link rel="stylesheet" href="css/index.css?' . microtime() . '">';
   echo '<link rel="icon" type="image/png" sizes="16x16" href="favicon.png">';
 
 echo '</head>';
@@ -43,18 +43,20 @@ $debugFlag          = false; // For debug only
 
 #Check what oS is running
 $osIssWindows = chkOsIssWindows();
+
 #Hinweis Pgrep -x funktioniert nicht, wenn man die PHP Datei ermitteln muss
 $checkTaskCmd = $osIssWindows === true ? 'tasklist | find "php.exe"' : "pgrep -a -f udp_receiver.php | grep -v pgrep | awk '{print $1}'";
 echo '<input type="hidden" id="version" value="' . VERSION . '"/>';
 
 #Prüfen, ob schreibrechte für Datenbank und Log existieren
-if (!is_writable('database') || !is_writable('log'))
+if (!is_writable('database') || !is_writable('log') || !is_writable('execute') || !is_writable('sound'))
 {
     echo '<span class="unsetDisplayFlex">';
-    echo "<br>";
+    echo '<br>';
 
-    echo "<br><b>Sie besitzen nicht die nötigen Schreibrechte für das Verzeichnis database und/oder log!";
-    echo "<br>Bitte die Installation/Update mit SUDO SU ausführen.</b>";
+    echo '<br><b>Sie besitzen nicht die nötigen Schreibrechte für das Verzeichnis:';
+    echo '<br> database, execute, sound und/oder log!';
+    echo '<br>Bitte die Installation/Update mit SUDO SU ausführen.</b>';
     echo '</span>';
 
     if ($debugFlag === true)
@@ -200,7 +202,6 @@ if ($debugFlag === true)
     file_put_contents('log/debug.log', $errorText, FILE_APPEND);
 }
 
-
 #Muss ich den Process beenden?
 if ($sendData == 1)
 {
@@ -242,10 +243,17 @@ echo '<h1 class="topText">';
 showMenu();
 
 echo '<div class="topLeft">';
-echo '<img src="'.$imgTaskStatus.'" id="bgTask" class="imagePoint" alt="running">';
+echo '<img src="' . $imgTaskStatus . '" id="bgTask" class="topImagePoint" alt="statusColor">';
 echo '</div>';
-echo'MeshDash V ' . VERSION . '</h1>';
+
+echo'MeshDash V ' . VERSION;
+
+// Neues Div für Uhrzeit, ohne das Layout zu zerstören
+echo '<div class="topRight" id="datetime">xxx</div>';
+
+echo '</h1>';
 echo '</div>';
+
 
 echo '<form id="frmIndex" method="post"  action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';

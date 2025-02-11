@@ -40,7 +40,7 @@
                 }
                 else if (callSignPattern.test(callSign) === false) {
                     width     = 600;
-                    outputMsg = 'Das Rufzeichen inkl. SSID hat nicht das gültige Format';
+                    outputMsg = 'Das CallSign inkl. SSID hat nicht das gültige Format';
                     outputMsg += '<br> oder die SSID ist > 99 oder ist 0.';
                     outputMsg += '<br><br>Bitte Prüfen.';
                     dialog(outputMsg, titleMsg, width);

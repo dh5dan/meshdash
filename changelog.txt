@@ -1,3 +1,13 @@
+Version 1.09.52beta SQL
+Datum Uhrzeit oben rechts (Basis Systemzeit)
+Neuanordnung von Src Call und Via calls und Ziel zur besseren Lesbarkeit.
+Benachrichtigungston bei Src oder Zielcall einstellbar.
+Es sind 2 Beispiel Sounddateien dabei.
+Bugfix in Message Sql select. Angezeigte Nachrichten wurden weniger,
+wenn POs und oder TimeSync-Filter drin sind.
+Ack Msg werden nun uch via SQL gefiltert.
+Anpassung Install-/Update-Script auf 1.00.22
+##################################################################
 Version 1.09.50beta SQL
 Anpassung der Abfragelogik bei Remote Mheard.
 Änderung der Versionsbenennung in beta SQL

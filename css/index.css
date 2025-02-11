@@ -2,9 +2,17 @@ body {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
+    display: flex;
+    overscroll-behavior-y: contain;
+    flex-direction: column;
+    height: 100vh; /* Vollbildhöhe */
 }
+
+
+/* Top Section */
 .top {
     background-color: #2e9afe;
+    position: relative;
 }
 
 .topText {
@@ -12,6 +20,37 @@ body {
     text-align: center;
 }
 
+.topLeft {
+    position: absolute;
+    left: 60px;
+}
+
+.topImagePoint {
+    margin-top: 4px;
+    cursor: pointer;
+    width: 30px;
+}
+
+/* Neues Styling für die Uhrzeit */
+.topRight {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.topImagePoint {
+    margin-top: 4px;
+    cursor: pointer;
+    width: 30px;
+}
+
+
+/*  Bottom Frame            */
 .bottom {
     background-color: black;
     width: 100%;
@@ -28,13 +67,6 @@ body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-}
-
-body {
-    display: flex;
-    overscroll-behavior-y: contain;
-    flex-direction: column;
-    height: 100vh; /* Vollbildhöhe */
 }
 
 iframe {
@@ -59,16 +91,7 @@ iframe {
     font-family: Arial, sans-serif;
 }
 
-.topLeft {
-    position: absolute;
-    margin-left: 60px;
-}
 
-.imagePoint {
-    margin-top: 4px;
-    cursor: pointer;
-    width: 30px;
-}
 
 .unsetDisplayFlex {
     display: unset;
@@ -103,7 +126,7 @@ iframe {
 #menu-icon {
     font-size: 30px;
     cursor: pointer;
-    top:16px;
+    /*top:16px;*/
 }
 
 #menu {

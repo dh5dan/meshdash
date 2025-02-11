@@ -15,7 +15,7 @@ function saveGenerallySettings(): bool
     setParamData('noDmAlertGlobal', $noDmAlertGlobal);
     setParamData('noTimeSyncMsg', $noTimeSyncMsg);
     setParamData('loraIp', $loraIp, 'txt');
-    setParamData('callSign', strtoupper($callSign), 'txt');
+    setParamData('callSign', strtoupper(trim($callSign)), 'txt');
     setParamData('maxScrollBackRows', $maxScrollBackRows);
 
     return true;

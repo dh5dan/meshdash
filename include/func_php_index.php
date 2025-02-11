@@ -84,6 +84,10 @@ function initSQLiteDatabase($database): bool
                                   ackReq INTEGER,
                                   ack INTEGER,
                                   mhSend INTEGER DEFAULT 0,
+                                  alertExecutedSrc INTEGER DEFAULT 0,
+                                  alertExecutedDst INTEGER DEFAULT 0,
+                                  msgIsTimeSync INTEGER DEFAULT 0,
+                                  msgIsAck INTEGER DEFAULT 0,
                                   PRIMARY KEY('msg_id')
                                 )
                 ");
@@ -132,7 +136,13 @@ function initSQLiteDatabase($database): bool
                                        ('keyword1DmGrpId', '','*'),
                                        ('keyword2DmGrpId', '','*'),
                                        ('noTimeSyncMsg', 0 , ''),
-                                       ('maxScrollBackRows', 60 , '')
+                                       ('maxScrollBackRows', 60 , ''),
+                                       ('alertSoundFileSrc', '' , 'callsign_src_alert.wav'),
+                                       ('alertEnabledSrc', 0 , ''),
+                                       ('alertSoundCallSrc', '' , ''),
+                                       ('alertSoundFileDst', '' , 'callsign_dst_alert.wav'),
+                                       ('alertEnabledDst', 0 , ''),
+                                       ('alertSoundCallDst', '' , '')
            ");
 
         #Close and write Back WAL
@@ -204,6 +214,7 @@ function showMenu()
     <li>Einstellung
       <ul class="submenu">
         <li data-action="config_generally">Allgemein</li>
+        <li data-action="config_alerting">Benachrichtigung</li>
         <li data-action="config_keyword">Keyword</li>
         <li data-action="config_data_purge">Data-Purge</li>
         <li data-action="config_ping_lora">Ping Lora</li>
