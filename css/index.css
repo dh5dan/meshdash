@@ -177,3 +177,26 @@ iframe {
     left: 100%; /* Zielposition links an das übergeordnete li */
 }
 
+/*    Top Tabs */
+#top-tabs {
+    text-align: center;
+    background-color: #2e9afe;
+}
+
+#top-tabs .tab {
+    display: inline-block;
+    margin: 0 5px;
+    padding: 5px 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#top-tabs .tab.active {
+    background-color: #4CAF50;
+    color: #fff;
+    border-color: #4CAF50;
+}
+

@@ -1,3 +1,10 @@
+Version 1.09.58beta SQL
+Gruppen Tabs
+Gruppen Pflege im Menü
+Skript-Anpassung  V1.0.30
+ für Update/install für Rechte bei Execute (755)
+ Bei Install autobestätigung php module
+#################################################################
 Version 1.09.56beta SQL
 Bug Snd-File wird beim Speichern großgeschrieben.
 bug keyword mit ack zuerst, wird ack nicht angezeigt.

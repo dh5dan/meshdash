@@ -201,7 +201,27 @@ function initSQLiteDatabase($database): bool
         $db->close();
         unset($db);
     }
+    elseif ($database == 'groups')
+    {
+        #Open Database
+        $db = new SQLite3('database/groups.db');
+        $db->exec('PRAGMA journal_mode = wal;');
+        $db->exec('PRAGMA synchronous = NORMAL;');
 
+        // Tabelle erstellen wenn nicht vorhanden
+        $db->exec("CREATE TABLE IF NOT EXISTS groups 
+                                (
+                                  groupId INTEGER NOT NULL UNIQUE,              
+                                  groupNumber INTEGER NOT NULL,
+                                  groupEnabled INTEGER NOT NULL,
+                                  PRIMARY KEY('groupId')
+                                )
+                ");
+
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+    }
     return true;
 }
 
@@ -224,20 +244,6 @@ function showMenu()
     <li>Gruppen
       <ul class="submenu">
         <li data-action="grp_definition">Gruppen definieren</li>
-        <li data-action="grp_emergency">Notfallgruppe festlegen</li>
-        <li data-action="grp_alerting">Gruppen Benachrichtigung einstellen</li>
-      </ul>
-    </li>
-    <li>Hilfe
-      <ul class="submenu">
-        <li data-action="hlp_groups">Hilfe Gruppen</li>
-        <li data-action="hlp_msg_send">Hilfe zu Msg senden</li>
-        <li data-action="hlp_bugs">Hilfe zu Fehlermeldungen</li>
-      </ul>
-    </li>
-    <li>&uuml;ber
-      <ul class="submenu">
-        <li data-action="about_version">MeshDash Version</li>
       </ul>
     </li>
     <li data-action="mHeard">MHeard</li>
