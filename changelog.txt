@@ -1,3 +1,17 @@
+Version 1.09.54beta SQL
+Bug Snd-File wird beim Speichern großgeschrieben.
+bug keyword mit ack zuerst, wird ack nicht angezeigt.
+Log für Keyword Antwort implementiert
+PHP Time auf Zeitzone Europe/Berlin gesetzt
+Zeitanzeige auf von Jquery auf PHP Time umgestellt.
+Update-/Backup-Funktion eingebaut
+Änderung des Namens in MeshDash-SQL
+Setting php_value upload_max_filesize 30M via .htaccess/.user.ini
+Anpassung Webserverrechte bei Install-/Update-Script
+Anpassung des Update-/InstallScripts für php-xml auf V 1.00.28
+Es muss bei der Version zwingend einmal das Install ausgeführt werden,
+da ein neues PHP Module (ZIP) benötigt wird!
+#################################################################
 Version 1.09.52beta SQL
 Datum Uhrzeit oben rechts (Basis Systemzeit)
 Neuanordnung von Src Call und Via calls und Ziel zur besseren Lesbarkeit.

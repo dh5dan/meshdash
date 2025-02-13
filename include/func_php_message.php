@@ -84,6 +84,7 @@ function updateAckId($ackId): bool
     return true;
 }
 
+#Regiere auf ack<integer>
 function checkMsgAck($msg): bool
 {
     $debugFlag = false;

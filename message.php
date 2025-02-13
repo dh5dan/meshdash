@@ -21,6 +21,17 @@ require_once 'include/func_php_message.php';
 require_once 'include/func_php_index.php';
 require_once 'include/func_php_mheard.php';
 
+if(!file_exists('database/meshdash.db') ||
+    !file_exists('database/parameter.db') ||
+    !file_exists('database/mheard.db') ||
+    !file_exists('database/keywords.db'))
+{
+    echo "<h3>Es wurden ein oder mehrere Datenbanken nicht gefunden!";
+    echo "<br><br>Wenn gerade ein Update stattfindet dann bitte warten bis es abgeschlossen ist.";
+    echo "<br>Wenn nicht bitte das Verzeichnis <b>database</b> prüfen.</hr>";
+    exit();
+}
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -237,10 +248,14 @@ if ($result !== false)
                     $arraySend['dst']  = $keyword1DmGrpId;
                     $arraySend['msg']  = $keyword1ReturnMsg;
 
-                    $message = json_encode($arraySend);
+                    $message = json_encode($arraySend, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
                     if ($socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP))
                     {
+                        $errorText  = date('Y-m-d H:i:s') . ' Keyword1-ReturnMsg:' . $keyword1ReturnMsg . "\n";
+                        $errorText .= date('Y-m-d H:i:s') . ' Keyword1-ReturnMsg JSON:' . $message . "\n";
+                        file_put_contents('log/keyword_return_data_' . date('Ymd') . '.log', $errorText, FILE_APPEND);
+
                         socket_sendto($socket, $message, strlen($message), 0, $loraIp, 1799);
                         socket_close($socket);
                     }
@@ -266,10 +281,14 @@ if ($result !== false)
                     $arraySend['dst']  = $keyword2DmGrpId;
                     $arraySend['msg']  = $keyword2ReturnMsg;
 
-                    $message = json_encode($arraySend);
+                    $message = json_encode($arraySend, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
                     if ($socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP))
                     {
+                        $errorText  = date('Y-m-d H:i:s') . ' Keyword2-ReturnMsg:' . $keyword2ReturnMsg . "\n";
+                        $errorText .= date('Y-m-d H:i:s') . ' Keyword2-ReturnMsg JSON:' . $message . "\n";
+                        file_put_contents('log/keyword_return_data_' . date('Ymd') . '.log', $errorText, FILE_APPEND);
+
                         socket_sendto($socket, $message, strlen($message), 0, $loraIp, 1799);
                         socket_close($socket);
                     }
@@ -387,7 +406,13 @@ if ($result !== false)
 
             $dstTxt = $dst == '*' ? 'all' : $dst;
 
-            echo '<span class="' . $alertSrcCss . '">' . $firstCall. '</span>' . ' > ' .'<span class="' . $alertDstCss . '">' . $dstTxt . '</span> : ' . $msg;
+            // URL in der Text-Variable suchen und als Link umwandeln
+            $pattern    = '/https?:\/\/[a-zA-Z0-9\.-]+\.[a-zA-Z]{2,3}(\/\S*)?/';
+            $replace    = '<a href="$0" target="_blank">$0</a>';
+            $linkedText = preg_replace($pattern, $replace, $msg);
+
+
+            echo '<span class="' . $alertSrcCss . '">' . $firstCall. '</span>' . ' > ' .'<span class="' . $alertDstCss . '">' . $dstTxt . '</span> : ' . $linkedText;
 
             if ($mhSend == 1)
             {

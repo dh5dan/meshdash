@@ -1,4 +1,4 @@
-WebApp MeshDash SQL für MeshCom 4
+WebApp MeshDash-SQL für MeshCom 4
 
 Installation
 ----------------
@@ -6,7 +6,6 @@ Unter Windows einfach in einen http Ordner packen.
 Getestet wurde das unter Windows 10 mit Apache2.
 
 Unter Linux muss zwingend das Install-Skript genutzt werden,  
-bzw. bei Updates das Update-Skript.  
 Es gibt hier sonst Rechte-Probleme, wenn man die Dateien  
 manuell kopiert.
 
@@ -22,7 +21,13 @@ extension=php_pdo_sqlite.dll
 extension=php_pdo_sqlite.dll
 
 Unter Linux bitte die install.sh ausführen.  
-Hier werden alle nötigen Dienste installiert.
+Hier werden alle nötigen Dienste/Module für PHP installiert.
+
+Genutzte PHP-Module:
+- XML
+- ZIP
+- Sqlite3
+
 
 Ziel Ip Lora-Gerät:
 --------------------
@@ -30,7 +35,11 @@ Die Ip-Adresse des Lora-Gerätes wird
 bei der Neuinstallation abgefragt und in der Sqlite3-DB gespeichert
 Erst dann ist auch das Senden von Nachrichten möglich.
 
+Update via Weboberfläche:
+-----------------------
+Updates können bequem über die Weboberfläche  
+ausgeführt werden.
+
 TODO
 - Filterfunktionen wie Gruppen-Id oder nach Call
 - Tabs pro GruppenId mit Nachrichten der Gruppe
-- Online Update Funktion

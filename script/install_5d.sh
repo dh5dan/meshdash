@@ -1,8 +1,8 @@
 #!/bin/bash
 clear
-echo MeshDash Install-Script V 1.00.22
+echo MeshDash Install-Script V 1.00.28
 echo
-echo Installation MeshCom MeshDash  @5D
+echo Installation Von MeshDash SQL
 echo 
 echo "Das Zip File muss bereits im /home Verzeichnis des Aktuellen Users kopiert sein!"
 echo
@@ -51,6 +51,7 @@ sudo apt-get install php-cgi php-fpm -y -f
 sudo apt-get install php -y -f
 sudo apt-get install php-sqlite3 -y -f
 sudo apt-get install php-xml
+sudo apt-get install php-zip
 echo
 echo
 sudo lighty-enable-mod fastcgi
@@ -69,11 +70,11 @@ echo
 echo
 sudo adduser www-data gpio
 echo
-###################### Install Web-Application
+#######################################
+###### Install Web-Application   ######
+#######################################
 hostIp=$(hostname -I | awk '{print $1}')
-echo
-echo Installiere jetzt die MeshDash WEB-Applikation
-echo
+
 echo Lösche meshdash Verzeichnis und erzeuge es neu
 sudo rm -rf meshdash
 sudo mkdir meshdash
@@ -84,7 +85,6 @@ sudo cp meshdash*.zip meshdash
 echo
 cd meshdash || exit
 echo
-echo
 echo Entpacke nun das zip Packet
 sudo unzip meshdash*.zip
 echo entferne das Zip Packet aus dem meshdash Verzeichnis
@@ -92,29 +92,30 @@ sudo rm meshdash*.zip
 echo
 echo Erzeuge Verzeichnis 5d in /var/www/html
 sudo mkdir -p /var/www/html/5d
-sudo chmod -R 645 /var/www/html/5d
+sudo chmod -R 755 /var/www/html/5d
 echo
-echo Installiere nun die Web-Applikation
+echo Installiere nun das Update
 echo
-echo
-sudo cp -r * /var/www/html/5d/
+sudo cp -r ./* /var/www/html/5d/
+sudo cp -r ./.htaccess /var/www/html/5d/
+sudo cp -r ./.user.ini /var/www/html/5d/
 echo
 echo
 # Setzt alle .php-Dateien auf global 644 (r--)
 sudo find /var/www/html/5d/ -type f -name "*.php" -exec chmod 644 {} \;
 echo
 # Setzt alle Verzeichnisse auf global 645 (r-x)
-sudo find /var/www/html/5d/ -type d -exec chmod 645 {} \;
+sudo find /var/www/html/5d/ -type d -exec chmod 755 {} \;
 echo
-# Setzt speziell database und log auf 647 damit Dateien darin erzeugt werden dürfen
-sudo chmod -R 647 /var/www/html/5d/database
-sudo chmod -R 647 /var/www/html/5d/log
-sudo chmod -R 647 /var/www/html/5d/execute
-sudo chmod -R 647 /var/www/html/5d/execute
 echo
-# Setzt udp.pid auf 644
+# Setzt udp.pid auf 644. Not Halt für BG-Prozess udp_receiver.php
 sudo chmod -R 644 /var/www/html/5d/udp.pid
-echo MeschDash ist nun installiert.
+#Setzte Owner und Gruppe für Web-Server im gesamten Verzeichnis
+sudo chown -R www-data:www-data /var/www/html/5d
+echo
+echo FERTIG!
+echo
+echo
 echo
 echo "Starte nun Deinen Webbrowser und gib http://$hostIp ein."
 echo

@@ -246,10 +246,10 @@ echo '<div class="topLeft">';
 echo '<img src="' . $imgTaskStatus . '" id="bgTask" class="topImagePoint" alt="statusColor">';
 echo '</div>';
 
-echo'MeshDash V ' . VERSION;
+echo'MeshDash-SQL V ' . VERSION;
 
 // Neues Div für Uhrzeit, ohne das Layout zu zerstören
-echo '<div class="topRight" id="datetime">xxx</div>';
+echo '<div class="topRight" id="datetime">No Time!</div>';
 
 echo '</h1>';
 echo '</div>';

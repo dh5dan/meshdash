@@ -10,13 +10,13 @@ function saveAlertingSettings(): bool
     $alertEnabledDst   = $_REQUEST['alertEnabledDst'] ?? 0;
     $alertSoundCallDst = $_REQUEST['alertSoundCallDst'] ?? '';
 
-    setParamData('alertSoundFileSrc', strtoupper($alertSoundFileSrc), 'txt');
+    setParamData('alertSoundFileSrc', $alertSoundFileSrc, 'txt');
     setParamData('alertEnabledSrc', $alertEnabledSrc);
-    setParamData('alertSoundCallSrc', $alertSoundCallSrc, 'txt');
+    setParamData('alertSoundCallSrc', strtoupper($alertSoundCallSrc), 'txt');
 
-    setParamData('alertSoundFileDst', strtoupper($alertSoundFileDst), 'txt');
+    setParamData('alertSoundFileDst', $alertSoundFileDst, 'txt');
     setParamData('alertEnabledDst', $alertEnabledDst);
-    setParamData('alertSoundCallDst', $alertSoundCallDst, 'txt');
+    setParamData('alertSoundCallDst', strtoupper($alertSoundCallDst), 'txt');
 
     return true;
 }
