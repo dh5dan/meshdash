@@ -1,6 +1,6 @@
 #!/bin/bash
 clear
-echo MeshDash Install-Script V 1.00.28
+echo MeshDash Install-Script V 1.00.30
 echo
 echo Installation Von MeshDash SQL
 echo 
@@ -50,8 +50,8 @@ echo
 sudo apt-get install php-cgi php-fpm -y -f
 sudo apt-get install php -y -f
 sudo apt-get install php-sqlite3 -y -f
-sudo apt-get install php-xml
-sudo apt-get install php-zip
+sudo apt-get install php-xml -f -y
+sudo apt-get install php-zip -f -y
 echo
 echo
 sudo lighty-enable-mod fastcgi
@@ -104,12 +104,14 @@ echo
 # Setzt alle .php-Dateien auf global 644 (r--)
 sudo find /var/www/html/5d/ -type f -name "*.php" -exec chmod 644 {} \;
 echo
-# Setzt alle Verzeichnisse auf global 645 (r-x)
+# Setzt alle Verzeichnisse auf global 755 (r-x)
 sudo find /var/www/html/5d/ -type d -exec chmod 755 {} \;
 echo
 echo
 # Setzt udp.pid auf 644. Not Halt für BG-Prozess udp_receiver.php
 sudo chmod -R 644 /var/www/html/5d/udp.pid
+# Setzt execute Verzeichnis auf 755 da hier die Ausführbaren Dateien sind für Keyword
+sudo chmod -R 755 /var/www/html/5d/execute
 #Setzte Owner und Gruppe für Web-Server im gesamten Verzeichnis
 sudo chown -R www-data:www-data /var/www/html/5d
 echo

@@ -24,6 +24,7 @@ require_once 'dbinc/param.php';
 require_once 'include/func_php_index.php';
 require_once 'include/func_js_index.php';
 require_once 'include/func_php_core.php';
+require_once 'include/func_php_grp_definition.php';
 
 #Show all Errors for debugging
 error_reporting(E_ALL);
@@ -99,6 +100,11 @@ if (!file_exists('database/keywords.db'))
 if (!file_exists('database/mheard.db'))
 {
     initSQLiteDatabase('mheard');
+}
+
+if (!file_exists('database/groups.db'))
+{
+    initSQLiteDatabase('groups');
 }
 
 #Setzte Leere LoraIp neu in param.php
@@ -210,6 +216,16 @@ if ($sendData == 1)
     checkBgProcess($paramBgProcess);
 }
 
+######################################################################################
+##########  Top bereich
+#####################################################################################
+
+// Beispiel-Daten, die du aus der SQLite-Datenbank holen könntest
+$tabsJson = getGroupTabsJson();
+
+echo '<input type="hidden" id="tabConfig" value=\'' . $tabsJson . '\' />';
+
+
 #Check TaskStatus
 $taskResult = shell_exec($checkTaskCmd);
 
@@ -254,6 +270,8 @@ echo '<div class="topRight" id="datetime">No Time!</div>';
 echo '</h1>';
 echo '</div>';
 
+// Hier kommen die Tabs
+echo '<div id="top-tabs"></div>';
 
 echo '<form id="frmIndex" method="post"  action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';

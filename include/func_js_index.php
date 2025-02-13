@@ -173,21 +173,6 @@
                case 'grp_definition':
                    iframeSrc = 'menu/grp_definition.php';
                    break;
-               case 'grp_emergency':
-                   iframeSrc = 'menu/grp_emergency.php';
-                   break;
-               case 'grp_alerting':
-                   iframeSrc = 'menu/grp_alerting.php';
-                   break;
-               case 'hlp_groups':
-                   iframeSrc = 'menu/hlp_groups.php';
-                   break;
-               case 'hlp_msg_send':
-                   iframeSrc = 'menu/hlp_msg_send.php';
-                   break;
-               case 'hlp_bugs':
-                   iframeSrc = 'menu/hlp_bugs.php';
-                   break;
                case 'message':
                    iframeSrc = 'message.php';
                    break;
@@ -198,7 +183,7 @@
                    iframeSrc = ''; // Fallback
            }
 
-           if (iframeSrc != '')
+           if (iframeSrc !== '')
            {
                $('#menu').hide();
                $('.submenu').removeClass('active');
@@ -207,32 +192,57 @@
                let iframe = $('#message-frame')[0]; // Zugriff auf das Iframe-Element
                iframe.src = iframeSrc; // Setze den neuen src-Wert
 
-               // Optional: Manuelle Aufforderung, das Iframe neu zu laden
-               //iframe.contentWindow.location.reload();
-           }
-
-           // About
-           if (action === 'about_version')
-           {
-               $('#menu').hide();
-               $('.submenu').removeClass('active');
-
-               let titleMsg    = 'Hinweis';
-               let outputMsg;
-               let width       = 700;
-
-               let version = $("#version").val();
-
-               outputMsg = 'Sie benutzten derzeit die MeshDash Version ' + version;
-
-               dialog(outputMsg, titleMsg, width);
-               return false;
+               //Muss einmal komplett geladen werden, damit Top aktualisiert wird
+               if (iframeSrc === 'message.php')
+               {
+                   //ruf die aktuelle URL neu auf
+                   window.location.href = '';
+               }
            }
        });
 
        // Listener erst hinzufügen, wenn das Iframe geladen ist
-       $('#message-frame, #bottom-frame').on('load', function () {
+       $('#message-frame, #bottom-frame').on('load', function ()
+       {
            addIframeClickListeners();
+       });
+
+       ///////////////// Top Tabs
+
+       // JSON aus dem Hidden-Feld auslesen und parsen
+       let tabs = JSON.parse($('#tabConfig').val());
+
+       // Container für Tabs
+       let tabsContainer = $('#top-tabs');
+       tabsContainer.empty();
+
+       // Erstelle für jeden Tab einen Button oder ein Element
+       $.each(tabs, function (index, tabData)
+       {
+           let tab = $('<button class="tab"></button>')
+               .text(tabData.label)
+               .attr('data-group', tabData.id);
+
+           // Setze z. B. den "Alles"-Tab als aktiv
+           if (tabData.id === -1)
+           {
+               tab.addClass('active');
+           }
+           tabsContainer.append(tab);
+       });
+
+       // Klick-Handler für Tabs
+       $('#top-tabs .tab').on('click', function ()
+       {
+           let groupId = $(this).data('group');
+
+           // Markiere den angeklickten Tab als aktiv
+           $('#top-tabs .tab').removeClass('active');
+           $(this).addClass('active');
+
+           // Update die Message-iframe-URL mit dem Filter
+           // Annahme: message.php akzeptiert einen GET-Parameter "group"
+           $('#message-frame').attr('src', 'message.php?group=' + groupId);
        });
 
        ///////////// Dialog Section

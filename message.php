@@ -24,6 +24,7 @@ require_once 'include/func_php_mheard.php';
 if(!file_exists('database/meshdash.db') ||
     !file_exists('database/parameter.db') ||
     !file_exists('database/mheard.db') ||
+    !file_exists('database/groups.db') ||
     !file_exists('database/keywords.db'))
 {
     echo "<h3>Es wurden ein oder mehrere Datenbanken nicht gefunden!";
@@ -53,6 +54,18 @@ $alertEnabledDst   = getParamData('alertEnabledDst');
 $alertSoundCallDst = getParamData('alertSoundCallDst');
 
 $sqlAddon = '';
+
+$group = $_REQUEST['group'] ?? -1;
+echo '<input type="hidden" id="group" value="' . $group . '" />';
+
+if ($group > 0)
+{
+    $sqlAddon .= ' AND dst = "' . $group . '" ';
+}
+else if ($group == 0)
+{
+    $sqlAddon .= ' AND dst = "*" ';
+}
 
 if ($noPosData == 1)
 {
