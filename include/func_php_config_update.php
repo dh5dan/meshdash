@@ -231,6 +231,54 @@ function showBackups()
     echo '</div>';
 }
 
+function checkValidUpdatePackage($uploadFile)
+{
+    $expectedFiles = [
+        'backup/',
+        'css/',
+        'database/',
+        'dbinc/',
+        'dbinc/param.php',
+        'execute/',
+        'image/',
+        'image/loader/ajax-loader1.gif',
+        'image/loader/ajax-loader2.gif',
+        'include/',
+        'jquery/',
+        'jquery/css/',
+        'menu/',
+        'script/',
+        'sound/',
+        '.htaccess',
+        '.user.ini',
+        // Weitere erwartete Dateien und Verzeichnisse
+    ];
+
+    $zip = new ZipArchive();
+    if ($zip->open($_FILES['updateFile']['tmp_name']) === true)
+    {
+        // ZIP-Datei erfolgreich geöffnet
+        $valid = true;
+        foreach ($expectedFiles as $expectedFile)
+        {
+            if ($zip->locateName($expectedFile) === false)
+            {
+                #echo "Fehler: Die erwartete Datei oder das Verzeichnis '$expectedFile' fehlt in der ZIP-Datei.<br>";
+                $valid = false;
+            }
+        }
+
+        $zip->close();
+
+        return $valid;
+    }
+    else
+    {
+        echo '<br><span class="failureHint">Fehler: Die ZIP-Datei ' . $uploadFile . 'konnte nicht geöffnet werden.</span>';
+        exit;
+    }
+}
+
 
 
 

@@ -1,10 +1,11 @@
-Version 1.09.54beta SQL
+Version 1.09.56beta SQL
 Bug Snd-File wird beim Speichern großgeschrieben.
 bug keyword mit ack zuerst, wird ack nicht angezeigt.
 Log für Keyword Antwort implementiert
 PHP Time auf Zeitzone Europe/Berlin gesetzt
 Zeitanzeige auf von Jquery auf PHP Time umgestellt.
-Update-/Backup-Funktion eingebaut
+Update-/Backup-Funktion eingebaut.
+Packet-Prüfung für Update eingebaut.
 Änderung des Namens in MeshDash-SQL
 Setting php_value upload_max_filesize 30M via .htaccess/.user.ini
 Anpassung Webserverrechte bei Install-/Update-Script
@@ -19,7 +20,7 @@ Benachrichtigungston bei Src oder Zielcall einstellbar.
 Es sind 2 Beispiel Sounddateien dabei.
 Bugfix in Message Sql select. Angezeigte Nachrichten wurden weniger,
 wenn POs und oder TimeSync-Filter drin sind.
-Ack Msg werden nun uch via SQL gefiltert.
+Ack Msg werden nun auch via SQL gefiltert.
 Anpassung Install-/Update-Script auf 1.00.22
 ##################################################################
 Version 1.09.50beta SQL
