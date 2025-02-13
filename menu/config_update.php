@@ -56,63 +56,71 @@ if ($sendData === '1')
     {
         $uploadFile = $_FILES['updateFile']['tmp_name'];
 
-        // Erstelle ein Backup der aktuellen Version
-        $backupFile = backupApp($rootDir, $backupDir);
+        $resCheckValidUpdatePackage = checkValidUpdatePackage($uploadFile);
 
-        if ($backupFile === false)
+        if ($resCheckValidUpdatePackage)
         {
-            echo '<br><span class="failureHint">Fehler beim Erstellen des Backups!</span>';
-            echo "<pre>";
-            print_r($_FILES);
-            echo "</pre>";
-            exit;
-        }
-        else
-        {
-            echo '<br><span class="successHint">Backupfile ' . $backupFile . ' erfolgreich erstellt!</span>';
-        }
+            // Erstelle ein Backup der aktuellen Version
+            $backupFile = backupApp($rootDir, $backupDir);
 
-        if ($doUpdate === true)
-        {
-            if (file_exists($tempDir))
+            if ($backupFile === false)
             {
-                #Falls noch reste drin sein sollten
-                cleanUp($tempDir);
-            }
-
-            // Prüfen, ob das Verzeichnis existiert, wenn nicht, dann erstellen
-            if (!is_dir($tempDir))
-            {
-                mkdir($tempDir, 0755, true);
-            }
-
-            // Entpacke die Update-Datei
-            if (unzipUpdate($uploadFile, $tempDir))
-            {
-                echo '<br><span class="successHint">Update-Datei erfolgreich entpackt.</span>';
-
-                updateFiles($tempDir, $rootDir, $protectedDirs);
-
-                if ($osIssWindows === false)
-                {
-                    // Berechtigungen anpassen (Optional)
-                    setPermissions($rootDir);
-                }
-
-                // Aufräumen
-                cleanUp($tempDir);
-
-                echo '<br><span class="successHint">Update abgeschlossen!</span>';
+                echo '<br><span class="failureHint">Fehler beim Erstellen des Backups!</span>';
+                echo "<pre>";
+                print_r($_FILES);
+                echo "</pre>";
+                exit;
             }
             else
             {
-                echo '<br><span class="failureHint">Fehler beim Entpacken der Update-Datei!</span>';
+                echo '<br><span class="successHint">Backupfile ' . $backupFile . ' erfolgreich erstellt!</span>';
             }
+
+            if ($doUpdate === true)
+            {
+                if (file_exists($tempDir))
+                {
+                    #Falls noch reste drin sein sollten
+                    cleanUp($tempDir);
+                }
+
+                // Prüfen, ob das Verzeichnis existiert, wenn nicht, dann erstellen
+                if (!is_dir($tempDir))
+                {
+                    mkdir($tempDir, 0755, true);
+                }
+
+                // Entpacke die Update-Datei
+                if (unzipUpdate($uploadFile, $tempDir))
+                {
+                    echo '<br><span class="successHint">Update-Datei erfolgreich entpackt.</span>';
+
+                    updateFiles($tempDir, $rootDir, $protectedDirs);
+
+                    if ($osIssWindows === false)
+                    {
+                        // Berechtigungen anpassen (Optional)
+                        setPermissions($rootDir);
+                    }
+
+                    // Aufräumen
+                    cleanUp($tempDir);
+
+                    echo '<br><span class="successHint">Update abgeschlossen!</span>';
+                }
+                else
+                {
+                    echo '<br><span class="failureHint">Fehler beim Entpacken der Update-Datei!</span>';
+                }
+            }
+        }
+        else
+        {
+            echo '<br><span class="failureHint">Dies ist kein gültiges Meshdash-SQL Update Packet!</span>';
         }
     }
     else
     {
-
         echo '<br><span class="failureHint">Keine Datei hochgeladen oder Fehler beim Upload!</span>';
     }
 }
