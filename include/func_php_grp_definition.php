@@ -121,7 +121,11 @@ function getGroupTabsJson()
 
     #Userdefined Tabs
     $resGetGroupParameter = getGroupParameter(1);
-    $tabs                 = array_merge($tabs, $resGetGroupParameter);
+
+    if ($resGetGroupParameter !== false)
+    {
+        $tabs = array_merge($tabs, $resGetGroupParameter);
+    }
 
     return json_encode($tabs);
 }
