@@ -21,7 +21,7 @@ body {
     overflow-y: auto;
     border: 1px solid #ddd;
     margin-bottom: 20px;
-    width: 28.1%;  /* Container-Breite anpassen */
+    width: 496px;  /* Container-Breite anpassen */
 
     -ms-overflow-style: none;  /* Für IE und Edge */
     scrollbar-width: none;     /* Für Firefox */
@@ -56,4 +56,8 @@ table.backupTable th {
 .imageDelete {
     width: 25px;
     cursor: pointer;
+}
+
+.reloadMsg {
+    font-size: 20px;
 }

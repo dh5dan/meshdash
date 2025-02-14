@@ -111,13 +111,16 @@ function getGroupParameter(int $mode = 0)
 
 function getGroupTabsJson()
 {
-    $tabs = array();
+    $tabs     = array();
+    $callSign = getParamData('callSign');
 
     #Predefined Tabs
-    $tabs[-1]['id'] = -1;
-    $tabs[-1]['label'] = 'Alles';
-    $tabs[0]['id'] = 0;
-    $tabs[0]['label'] = 'All *';
+    $tabs[0]['id'] = -2;
+    $tabs[0]['label'] = $callSign;
+    $tabs[1]['id'] = -1;
+    $tabs[1]['label'] = 'Kein Filter';
+    $tabs[2]['id'] = 0;
+    $tabs[2]['label'] = '*';
 
     #Userdefined Tabs
     $resGetGroupParameter = getGroupParameter(1);

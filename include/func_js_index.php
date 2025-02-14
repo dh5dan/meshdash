@@ -240,9 +240,19 @@
            $('#top-tabs .tab').removeClass('active');
            $(this).addClass('active');
 
+          // $('#bottom-frame').contents().find('#bottomInputDm').val(groupId);
+
+
            // Update die Message-iframe-URL mit dem Filter
            // Annahme: message.php akzeptiert einen GET-Parameter "group"
            $('#message-frame').attr('src', 'message.php?group=' + groupId);
+
+           // // Schreibe Gruppennummer in Bottom Iframe und da in das DM-Feld
+
+           //Schreibe Werte um für KeinFilter und *
+           groupId = groupId === -1 || groupId === -2 ? '' : groupId;
+           groupId = groupId === 0 ? '*' : groupId;
+           $('#bottom-frame').contents().find('#bottomDm').val(groupId);
        });
 
        ///////////// Dialog Section
