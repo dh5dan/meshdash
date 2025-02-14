@@ -1,4 +1,10 @@
 Version 1.09.58beta SQL
+Anpassung Default tabs: <Rufzeichen>|KeinFilter | *
+Gruppen ID wird in DM-Feld übernommen
+Reload Button im Update Bereich eingepflegt.
+BUGFIX: Inhalt im execute order ist nicht ausführbar
+#################################################################
+Version 1.09.58beta SQL
 Gruppen Tabs
 Gruppen Pflege im Menü
 Skript-Anpassung  V1.0.30

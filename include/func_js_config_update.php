@@ -50,6 +50,13 @@
             return false;
         });
 
+        $("#btnConfigUpdateReload").on("click", function ()
+        {
+            // Ermittelt die Base-URL dynamisch
+            let baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]+\/[^\/]+\/?$/, '');
+            window.top.location.href = baseUrl;
+        });
+
         $(".imageDelete").on("click", function ()
         {
             let titleMsg  = 'Hinweis';

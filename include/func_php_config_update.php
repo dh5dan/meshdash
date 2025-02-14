@@ -137,15 +137,35 @@ function setPermissions($dir)
 {
     $iterator = new RecursiveIteratorIterator(
         new RecursiveDirectoryIterator($dir),
+        FilesystemIterator::SKIP_DOTS,
         RecursiveIteratorIterator::LEAVES_ONLY
     );
 
     foreach ($iterator as $file)
     {
-        if ($file->isDir()) {
+        $filePath = $file->getPathname(); // Absoluter Pfad
+
+        if ($file->isDir())
+        {
             // Verzeichnisse auf 755 setzen
             chmod($file, 0755);
-        } else {
+
+            // Falls das Verzeichnis "execute" heißt, setze auch seinen Inhalt auf 755
+            if ($file->getFilename() === 'execute')
+            {
+                $subIterator = new RecursiveIteratorIterator(
+                    new RecursiveDirectoryIterator($filePath, FilesystemIterator::SKIP_DOTS),
+                    RecursiveIteratorIterator::SELF_FIRST
+                );
+
+                foreach ($subIterator as $subFile)
+                {
+                    chmod($subFile->getPathname(), 0755);
+                }
+            }
+        }
+        else
+        {
             // Dateien auf 644 setzen
             chmod($file, 0644);
         }
@@ -231,7 +251,7 @@ function showBackups()
     echo '</div>';
 }
 
-function checkValidUpdatePackage($uploadFile)
+function checkValidUpdatePackage($uploadFile, $debugFlag)
 {
     $expectedFiles = [
         'backup/',
@@ -264,6 +284,16 @@ function checkValidUpdatePackage($uploadFile)
             if ($zip->locateName($expectedFile) === false)
             {
                 #echo "Fehler: Die erwartete Datei oder das Verzeichnis '$expectedFile' fehlt in der ZIP-Datei.<br>";
+
+                if ($debugFlag === true)
+                {
+                    $tt        = " Die erwartete Datei oder das Verzeichnis: $expectedFile fehlt in der ZIP-Datei.";
+                    $errorText = date('Y-m-d H:i:s') . ' filesArray:' . $tt . "\n";
+
+                    file_put_contents('../log/debug_update.log', $errorText, FILE_APPEND);
+                }
+
+
                 $valid = false;
             }
         }
@@ -275,6 +305,14 @@ function checkValidUpdatePackage($uploadFile)
     else
     {
         echo '<br><span class="failureHint">Fehler: Die ZIP-Datei ' . $uploadFile . 'konnte nicht geöffnet werden.</span>';
+
+        if ($debugFlag === true)
+        {
+            $tt        = " Fehler: Die ZIP-Datei ' . $uploadFile . 'konnte nicht geöffnet werden.Exit";
+            $errorText = date('Y-m-d H:i:s') . ' filesArray:' . $tt . "\n";
+
+            file_put_contents('../log/debug_update.log', $errorText, FILE_APPEND);
+        }
         exit;
     }
 }

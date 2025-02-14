@@ -54,8 +54,8 @@ $alertEnabledDst   = getParamData('alertEnabledDst');
 $alertSoundCallDst = getParamData('alertSoundCallDst');
 
 $sqlAddon = '';
+$group    = $_REQUEST['group'] ?? -1;
 
-$group = $_REQUEST['group'] ?? -1;
 echo '<input type="hidden" id="group" value="' . $group . '" />';
 
 if ($group > 0)
@@ -65,6 +65,10 @@ if ($group > 0)
 else if ($group == 0)
 {
     $sqlAddon .= ' AND dst = "*" ';
+}
+else if ($group == -2)
+{
+    $sqlAddon .= ' AND dst = "' . $callSign . '" ';
 }
 
 if ($noPosData == 1)

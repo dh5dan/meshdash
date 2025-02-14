@@ -31,14 +31,30 @@ ini_set('memory_limit', '256M'); // Falls nötig das Speicherlimit erhöhen (128
 $sendData = $_REQUEST['sendData'] ?? 0;
 $doUpdate = true;
 
+$debugFlag = $_REQUEST['debug'] == 1;
+
 if ($doUpdate === false)
 {
     echo '<span class="failureHint">Update Funktion disabled!</span>';
 }
 
+if ($debugFlag === true)
+{
+    echo "<br>Debug enabled";
+}
+
 #Check what oS is running
 $osIssWindows = chkOsIssWindows();
 $osName       = $osIssWindows === true ? 'Windows' : 'Linux';
+
+echo '<h1>MeshDash-SQL Update</h1>';
+echo "<h5>(Update-Datei muss im MeshDash-SQL Format als Zip vorliegen.)</h5>";
+
+if ($debugFlag === true)
+{
+    $errorText = date('Y-m-d H:i:s') . ' SendData:' . $sendData . "\n";
+    file_put_contents('../log/debug_update.log', $errorText, FILE_APPEND);
+}
 
 #Update
 if ($sendData === '1')
@@ -51,29 +67,80 @@ if ($sendData === '1')
     $backupDir = $rootDir . '/backup'; // Backup Verzeichnis für das Backup
     $tempDir   = $rootDir . '/update_temp'; // Temporäres Verzeichnis für das entpackte Update
 
+    if ($debugFlag === true)
+    {
+        $errorText = date('Y-m-d H:i:s') . ' rootDir:' . $rootDir . "\n";
+        $errorText .= date('Y-m-d H:i:s') . ' backupDir:' . $backupDir . "\n";
+        $errorText .= date('Y-m-d H:i:s') . ' tempDir:' . $tempDir . "\n";
+        file_put_contents('../log/debug_update.log', $errorText, FILE_APPEND);
+    }
+
     // Prüft, ob eine Datei hochgeladen wurde und ob sie eine ZIP-Datei ist
     if (isset($_FILES['updateFile']) && $_FILES['updateFile']['error'] === UPLOAD_ERR_OK)
     {
         $uploadFile = $_FILES['updateFile']['tmp_name'];
 
-        $resCheckValidUpdatePackage = checkValidUpdatePackage($uploadFile);
+
+        if ($debugFlag === true)
+        {
+            echo "<pre>";
+            print_r($_FILES);
+            echo "</pre>";
+
+            $filesArray = implode(", ", $_FILES['updateFile']);
+            $errorText = date('Y-m-d H:i:s') . ' filesArray:' . $filesArray . "\n";
+            $errorText .= date('Y-m-d H:i:s') . ' uploadFile:' . $uploadFile . "\n";
+            file_put_contents('../log/debug_update.log', $errorText, FILE_APPEND);
+        }
+
+        $resCheckValidUpdatePackage = checkValidUpdatePackage($uploadFile, $debugFlag);
 
         if ($resCheckValidUpdatePackage)
         {
+
+            if ($debugFlag === true)
+            {
+                $tt        = " Führe backupApp aus\n";
+                $tt        .= " rootDir:$rootDir\n";
+                $tt        .= " backupDir:$backupDir\n";
+                $errorText = date('Y-m-d H:i:s') . ' result:' . $tt . "\n";
+
+                file_put_contents('../log/debug_update.log', $errorText, FILE_APPEND);
+            }
+
             // Erstelle ein Backup der aktuellen Version
             $backupFile = backupApp($rootDir, $backupDir);
 
             if ($backupFile === false)
             {
                 echo '<br><span class="failureHint">Fehler beim Erstellen des Backups!</span>';
+
                 echo "<pre>";
                 print_r($_FILES);
                 echo "</pre>";
+
+                if ($debugFlag === true)
+                {   $tArray = implode(',',$_FILES);
+                    $tt        = "Fehler beim Erstellen des Backups!\n";
+                    $tt        .= "tArray: $tArray\n";
+                    $errorText = date('Y-m-d H:i:s') . ' filesArray:' . $tt . "\n";
+
+                    file_put_contents('../log/debug_update.log', $errorText, FILE_APPEND);
+                }
+
                 exit;
             }
             else
             {
                 echo '<br><span class="successHint">Backupfile ' . $backupFile . ' erfolgreich erstellt!</span>';
+
+                if ($debugFlag === true)
+                {
+                    $tt        = "Backupfile ' . $backupFile . ' erfolgreich erstellt!\n";
+                    $errorText .= date('Y-m-d H:i:s') . ' result:' . $tt . "\n";
+
+                    file_put_contents('../log/debug_update.log', $errorText, FILE_APPEND);
+                }
             }
 
             if ($doUpdate === true)
@@ -95,6 +162,14 @@ if ($sendData === '1')
                 {
                     echo '<br><span class="successHint">Update-Datei erfolgreich entpackt.</span>';
 
+                    if ($debugFlag === true)
+                    {
+                        $tt        = "Update-Datei erfolgreich entpackt.\n";
+                        $errorText = date('Y-m-d H:i:s') . ' result:' . $tt . "\n";
+
+                        file_put_contents('../log/debug_update.log', $errorText, FILE_APPEND);
+                    }
+
                     updateFiles($tempDir, $rootDir, $protectedDirs);
 
                     if ($osIssWindows === false)
@@ -107,21 +182,52 @@ if ($sendData === '1')
                     cleanUp($tempDir);
 
                     echo '<br><span class="successHint">Update abgeschlossen!</span>';
+
+                    if ($debugFlag === true)
+                    {
+                        $tt        = "Update abgeschlossen!\n";
+                        $errorText = date('Y-m-d H:i:s') . ' result:' . $tt . "\n";
+
+                        file_put_contents('../log/debug_update.log', $errorText, FILE_APPEND);
+                    }
                 }
                 else
                 {
                     echo '<br><span class="failureHint">Fehler beim Entpacken der Update-Datei!</span>';
+
+                    if ($debugFlag === true)
+                    {
+                        $tt        = "UFehler beim Entpacken der Update-Datei!\n";
+                        $errorText = date('Y-m-d H:i:s') . ' result:' . $tt . "\n";
+
+                        file_put_contents('../log/debug_update.log', $errorText, FILE_APPEND);
+                    }
                 }
             }
         }
         else
         {
             echo '<br><span class="failureHint">Dies ist kein gültiges Meshdash-SQL Update Packet!</span>';
+
+            if ($debugFlag === true)
+            {
+                $tt        = "Dies ist kein gültiges Meshdash-SQL Update Packet!\n";
+                $errorText = date('Y-m-d H:i:s') . ' result:' . $tt . "\n";
+
+                file_put_contents('../log/debug_update.log', $errorText, FILE_APPEND);
+            }
         }
     }
     else
     {
         echo '<br><span class="failureHint">Keine Datei hochgeladen oder Fehler beim Upload!</span>';
+        if ($debugFlag === true)
+        {
+            $tt        = "Keine Datei hochgeladen oder Fehler beim Upload!\n";
+            $errorText = date('Y-m-d H:i:s') . ' result:' . $tt . "\n";
+
+            file_put_contents('../log/debug_update.log', $errorText, FILE_APPEND);
+        }
     }
 }
 
@@ -171,28 +277,42 @@ if ($sendData === '3')
     }
 }
 
-echo '<h1>MeshDash-SQL Update</h1>';
-echo "<h5>(Update-Datei muss im MeshDash-SQL Format als Zip vorliegen.)</h5>";
+
 echo '<form id="frmConfigUpdate" action="' . $_SERVER['REQUEST_URI'] . '" method="post" enctype="multipart/form-data">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
 echo '<input type="hidden" name="deleteFileImage" id="deleteFileImage" value="" />';
 echo '<input type="hidden" name="MAX_FILE_SIZE" value="30000000" />';
+
 echo '<table>';
-
 echo '<tr>';
-echo '<td ><label for="updateFile">Wähle das Update (Zip-Datei):&nbsp;</label></td>';
-echo '<td><input type="file" name="updateFile" id="updateFile" required></td>';
-echo '</tr>';
+if ($sendData == 0)
+{
+    echo '<td ><label for="updateFile">Wähle das Update (Zip-Datei):&nbsp;</label></td>';
+    echo '<td><input type="file" name="updateFile" id="updateFile" required></td>';
+    echo '</tr>';
 
-echo '<tr>';
-echo '<td colspan="2">&nbsp;</td>';
-echo '</tr>';
+    echo '<tr>';
+    echo '<td colspan="2">&nbsp;</td>';
+    echo '</tr>';
 
-echo '<tr>';
-echo '<td><input type="button" id="btnConfigUpdateBackup" value="Nur Backup anlegen"/></td>';
-echo '<td><input type="button" id="btnConfigUpdate" value="Update Hochladen"/></td>';
-echo '</tr>';
+    echo '<tr>';
+    echo '<td><input type="button" id="btnConfigUpdateBackup" value="Nur Backup anlegen"/></td>';
+    echo '<td><input type="button" id="btnConfigUpdate" value="Update Hochladen"/></td>';
+}
+else
+{
+    echo '<td colspan="2">&nbsp;</td>';
+    echo '</tr>';
 
+    echo '<tr>';
+    echo '<td ><label for="btnConfigUpdateReload" class="reloadMsg">MeshDash-Seite jetzt neu laden:&nbsp;</label></td>';
+    echo '<td><input type="button" id="btnConfigUpdateReload" value="MeshDash-Seite neu laden"/></td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td colspan="2">&nbsp;</td>';
+}
+echo '</tr>';
 echo '</table>';
 
 echo "<br><br>";

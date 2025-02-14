@@ -152,7 +152,7 @@ function checkMheard($msgId, $msg, $src, $callSign, $loraIp)
     {
         if ($debugFlag === true)
         {
-            echo "<br>Kein gültiges mheard-Muster gefunden.";
+            echo "<br>Kein gültiges Mheard-Muster gefunden.";
         }
     }
 }
