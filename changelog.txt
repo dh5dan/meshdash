@@ -1,9 +1,8 @@
-Version 1.09.62beta SQL
+Version 1.09.64beta SQL
+
+Smooth Scrolling im Message-Frame eingebaut.
 Logfile abschaltbar
 Update/install-Script 1.00.32 checkmh.service/checkmh.sh
-
-#################################################################
-Version 1.09.60beta SQL
 Anpassung Default tabs: <Rufzeichen>|KeinFilter | *
 Gruppen ID wird in DM-Feld übernommen
 Reload Button im Update Bereich eingepflegt.
