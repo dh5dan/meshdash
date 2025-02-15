@@ -142,7 +142,8 @@ function initSQLiteDatabase($database): bool
                                        ('alertSoundCallSrc', '' , ''),
                                        ('alertSoundFileDst', '' , 'callsign_dst_alert.wav'),
                                        ('alertEnabledDst', 0 , ''),
-                                       ('alertSoundCallDst', '' , '')
+                                       ('alertSoundCallDst', '' , ''),
+                                       ('doLogEnable', 1 , '')
            ");
 
         #Close and write Back WAL

@@ -69,10 +69,12 @@ $noTimeSyncMsg     = getParamData('noTimeSyncMsg');
 $loraIp            = getParamData('loraIp');
 $callSign          = getParamData('callSign');
 $maxScrollBackRows = getParamData('maxScrollBackRows');
+$doLogEnable       = getParamData('doLogEnable');
 
 $noPosDataChecked       = $noPosData == 1 ? 'checked' : '';
 $noDmAlertGlobalChecked = $noDmAlertGlobal == 1 ? 'checked' : '';
 $noTimeSyncMsgChecked   = $noTimeSyncMsg == 1 ? 'checked' : '';
+$doLogEnableChecked     = $doLogEnable == 1 ? 'checked' : '';
 
 echo "<br><h2>Basiseinstellungen von Meshdash</h2>";
 
@@ -109,6 +111,11 @@ echo '</tr>';
 echo '<tr>';
 echo '<td>Keine Time Sync-Meldung erhalten:</td>';
 echo '<td><input type="checkbox" name="noTimeSyncMsg" ' . $noTimeSyncMsgChecked . ' id="noTimeSyncMsg" value="1" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td>Logfile-Erstellung:</td>';
+echo '<td><input type="checkbox" name="doLogEnable" ' . $doLogEnableChecked . ' id="doLogEnable" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
