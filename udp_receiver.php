@@ -132,8 +132,12 @@ while (true)
     $bufJsonDecodedArray['timestamp'] = date('Y-m-d H:i:s');
     $bufJson                          = json_encode($bufJsonDecodedArray);
 
-    $bufJsonLog = $bufJson . ",\n";
-    file_put_contents($file, $bufJsonLog, FILE_APPEND);
+    #Prüfe ob Logging aktiv ist
+    if (getParamData('doLogEnable') == 1)
+    {
+        $bufJsonLog = $bufJson . ",\n";
+        file_put_contents($file, $bufJsonLog, FILE_APPEND);
+    }
 
     $dbArraySqliteJson = json_decode($bufJson, true);
 

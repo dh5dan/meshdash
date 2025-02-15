@@ -53,6 +53,9 @@ $alertSoundFileDst = getParamData('alertSoundFileDst');
 $alertEnabledDst   = getParamData('alertEnabledDst');
 $alertSoundCallDst = getParamData('alertSoundCallDst');
 
+#Prüfe ob Logging aktiv ist
+$doLogEnable = getParamData('doLogEnable');
+
 $sqlAddon = '';
 $group    = $_REQUEST['group'] ?? -1;
 
@@ -269,9 +272,12 @@ if ($result !== false)
 
                     if ($socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP))
                     {
-                        $errorText  = date('Y-m-d H:i:s') . ' Keyword1-ReturnMsg:' . $keyword1ReturnMsg . "\n";
-                        $errorText .= date('Y-m-d H:i:s') . ' Keyword1-ReturnMsg JSON:' . $message . "\n";
-                        file_put_contents('log/keyword_return_data_' . date('Ymd') . '.log', $errorText, FILE_APPEND);
+                        if ($doLogEnable == 1)
+                        {
+                            $errorText = date('Y-m-d H:i:s') . ' Keyword1-ReturnMsg:' . $keyword1ReturnMsg . "\n";
+                            $errorText .= date('Y-m-d H:i:s') . ' Keyword1-ReturnMsg JSON:' . $message . "\n";
+                            file_put_contents('log/keyword_return_data_' . date('Ymd') . '.log', $errorText, FILE_APPEND);
+                        }
 
                         socket_sendto($socket, $message, strlen($message), 0, $loraIp, 1799);
                         socket_close($socket);
@@ -302,9 +308,12 @@ if ($result !== false)
 
                     if ($socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP))
                     {
-                        $errorText  = date('Y-m-d H:i:s') . ' Keyword2-ReturnMsg:' . $keyword2ReturnMsg . "\n";
-                        $errorText .= date('Y-m-d H:i:s') . ' Keyword2-ReturnMsg JSON:' . $message . "\n";
-                        file_put_contents('log/keyword_return_data_' . date('Ymd') . '.log', $errorText, FILE_APPEND);
+                        if ($doLogEnable == 1)
+                        {
+                            $errorText = date('Y-m-d H:i:s') . ' Keyword2-ReturnMsg:' . $keyword2ReturnMsg . "\n";
+                            $errorText .= date('Y-m-d H:i:s') . ' Keyword2-ReturnMsg JSON:' . $message . "\n";
+                            file_put_contents('log/keyword_return_data_' . date('Ymd') . '.log', $errorText, FILE_APPEND);
+                        }
 
                         socket_sendto($socket, $message, strlen($message), 0, $loraIp, 1799);
                         socket_close($socket);
@@ -427,7 +436,6 @@ if ($result !== false)
             $pattern    = '/https?:\/\/[a-zA-Z0-9\.-]+\.[a-zA-Z]{2,3}(\/\S*)?/';
             $replace    = '<a href="$0" target="_blank">$0</a>';
             $linkedText = preg_replace($pattern, $replace, $msg);
-
 
             echo '<span class="' . $alertSrcCss . '">' . $firstCall. '</span>' . ' > ' .'<span class="' . $alertDstCss . '">' . $dstTxt . '</span> : ' . $linkedText;
 

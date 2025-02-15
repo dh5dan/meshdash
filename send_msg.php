@@ -25,6 +25,9 @@ $directMessage = $directMessage == '' ? '*' : $directMessage;
 #Check what oS is running
 $osIssWindows = chkOsIssWindows();
 
+#Prüfe ob Logging aktiv ist
+$doLogEnable = getParamData('doLogEnable');
+
 if ($msgText != '')
 {
     $utf8    = utf8_encode('äöü#ÄÖÜß');
@@ -58,11 +61,14 @@ if ($msgText != '')
         socket_sendto($socket, $message, strlen($message), 0, $loraIP, 1799);
         socket_close($socket);
 
-        // Daten formatieren
-        $dataLogJson = "$message\n";
+        if ($doLogEnable == 1)
+        {
+            // Daten formatieren
+            $dataLogJson = "$message\n";
 
-        // Json-Daten in Datei speichern
-        file_put_contents($fileLogJson, $dataLogJson, FILE_APPEND);
+            // Json-Daten in Datei speichern
+            file_put_contents($fileLogJson, $dataLogJson, FILE_APPEND);
+        }
     }
     else
     {
@@ -72,20 +78,20 @@ if ($msgText != '')
     }
 }
 
-// Daten formatieren
-$data = "$directMessage $msgText\n";
+if ($doLogEnable == 1)
+{
+    // Daten formatieren
+    $data = "$directMessage $msgText\n";
 
-// Daten in Datei speichern
-if (file_put_contents($file, $data, FILE_APPEND))
-{
-    //    echo "Daten erfolgreich gespeichert!<br>";
-    header("Location: bottom.php?dm=" . $directMessage);
+    // Daten in Datei speichern
+    if (!file_put_contents($file, $data, FILE_APPEND))
+    {
+        $errMsg = "Fehler beim Speichern der Log-Daten.";
+        header("Location: bottom.php?errMsg=" . $errMsg . "&msgText=" . $msgText . "&dm=" . $directMessage);
+    }
 }
-else
-{
-    $errMsg = "Fehler beim Speichern der Log-Daten.";
-    header("Location: bottom.php?errMsg=" . $errMsg . "&msgText=" . $msgText . "&dm=" . $directMessage);
-}
+
+header("Location: bottom.php?dm=" . $directMessage);
 
 echo '</body>';
 echo '</html>';

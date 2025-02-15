@@ -1,17 +1,17 @@
 <script>
     $(function ($) {
 
-        // window.setTimeout(function() {
-        //     // Hole den Gruppenwert aus dem Hidden-Feld
-        //     let group = $('#group').val();
-        //
-        //     // Nutze URLSearchParams, um den Query-String zu aktualisieren
-        //     let params = new URLSearchParams(window.location.search);
-        //     params.set('group', group);
-        //
-        //     // Baue die neue URL zusammen (ohne den Hash, falls vorhanden)
-        //     window.location.href = window.location.protocol + "//" + window.location.host + window.location.pathname + "?" + params.toString();
-        // }, 2000);
+        window.setTimeout(function() {
+            // Hole den Gruppenwert aus dem Hidden-Feld
+            let group = $('#group').val();
+
+            // Nutze URLSearchParams, um den Query-String zu aktualisieren
+            let params = new URLSearchParams(window.location.search);
+            params.set('group', group);
+
+            // Baue die neue URL zusammen (ohne den Hash, falls vorhanden)
+            window.location.href = window.location.protocol + "//" + window.location.host + window.location.pathname + "?" + params.toString();
+        }, 2000);
 
 
         setInterval(updatePosStatus, 1000);  // Alle 1 Sekunde Status prüfen

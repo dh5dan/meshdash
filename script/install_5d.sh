@@ -1,6 +1,6 @@
 #!/bin/bash
 clear
-echo MeshDash Install-Script V 1.00.30
+echo MeshDash Install-Script V 1.00.32
 echo
 echo Installation Von MeshDash SQL
 echo 
@@ -76,18 +76,19 @@ echo
 hostIp=$(hostname -I | awk '{print $1}')
 
 echo Lösche meshdash Verzeichnis und erzeuge es neu
-sudo rm -rf meshdash
+sudo rm -rf meshdash_5d
+sudo mkdir meshdash_5d
 sudo mkdir meshdash
 echo
 echo
 echo Kopiere Zipdatei in das meshdash Verzeichnis
 sudo cp meshdash*.zip meshdash
 echo
-cd meshdash || exit
+cd meshdash_5d || exit
 echo
 echo Entpacke nun das zip Packet
 sudo unzip meshdash*.zip
-echo entferne das Zip Packet aus dem meshdash Verzeichnis
+echo entferne das Zip Packet aus dem meshdash_5d Verzeichnis
 sudo rm meshdash*.zip
 echo
 echo Erzeuge Verzeichnis 5d in /var/www/html
@@ -100,13 +101,11 @@ sudo cp -r ./* /var/www/html/5d/
 sudo cp -r ./.htaccess /var/www/html/5d/
 sudo cp -r ./.user.ini /var/www/html/5d/
 echo
-echo
 # Setzt alle .php-Dateien auf global 644 (r--)
 sudo find /var/www/html/5d/ -type f -name "*.php" -exec chmod 644 {} \;
 echo
 # Setzt alle Verzeichnisse auf global 755 (r-x)
 sudo find /var/www/html/5d/ -type d -exec chmod 755 {} \;
-echo
 echo
 # Setzt udp.pid auf 644. Not Halt für BG-Prozess udp_receiver.php
 sudo chmod -R 644 /var/www/html/5d/udp.pid
@@ -115,13 +114,17 @@ sudo chmod -R 755 /var/www/html/5d/execute
 #Setzte Owner und Gruppe für Web-Server im gesamten Verzeichnis
 sudo chown -R www-data:www-data /var/www/html/5d
 echo
+echo Kopiere Dateien und setzte Rechte für Systemdienst checkmh.service
+sudo chmod -R 755 script/checkmh.sh
+sudo chmod -R 644 script/checkmh.service
+sudo cp script/checkmh.service /etc/systemd/system/
+sudo cp script/checkmh.sh ../meshdash/
+echo
+echo Aktiviere Systemdienst checkmh.service
+sudo systemctl daemon-reload
+sudo systemctl enable checkmh.service
+sudo systemctl start checkmh.service
+echo
 echo FERTIG!
 echo
-echo
-echo
 echo "Starte nun Deinen Webbrowser und gib http://$hostIp ein."
-echo
-echo
-
-
-
