@@ -1,5 +1,9 @@
-Version 1.09.66beta SQL
+Version 1.09.68beta SQL
+Bugfix MenuContent wird durch Message überschrieben
+Link des Src Call zu qrz.com
 
+#################################################################
+Version 1.09.66beta SQL
 Smooth Scrolling im Message-Frame eingebaut.
 Logfile abschaltbar
 Update/install-Script 1.00.32 checkmh.service/checkmh.sh
