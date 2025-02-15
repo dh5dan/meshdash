@@ -5,8 +5,8 @@ After=multi-user.target
 
 [Service]
 User=root
-WorkingDirectory=/home/pi/meshdash/
-ExecStart=/bin/bash /home/pi/meshdash/checkmh.sh
+WorkingDirectory=/home/pi/meshdash/script/
+ExecStart=/bin/bash /home/pi/meshdash/script/checkmh.sh
 # optional items below
 Restart=always
 RestartSec=3

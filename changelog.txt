@@ -1,7 +1,15 @@
+Version 1.09.70beta SQL
+Bugfix: Install/Update UNZIP-Verzeichnis war falsch
+Anpassung checkmh Service
+Disable andere Services um Fehler zu vermeiden (4QB).
+Neue Version 1.0.34 für Install/Update-Script
+BUGFIX: Wenn der TAB gewechselt wurde, wurde teilweise noch der Inhalt
+des vorherigen Tabs angezeigt.
+Reload funktion angepasst, um NS_BINDING_ABORTED zu vermeiden
+#################################################################
 Version 1.09.68beta SQL
 Bugfix MenuContent wird durch Message überschrieben
 Link des Src Call zu qrz.com
-
 #################################################################
 Version 1.09.66beta SQL
 Smooth Scrolling im Message-Frame eingebaut.
@@ -16,7 +24,7 @@ Scroll-Stop, wenn man etwas runter gescrollt hat (Nachrichten lesen)
 Version 1.09.58beta SQL
 Gruppen Tabs
 Gruppen Pflege im Menü
-Skript-Anpassung  V1.0.30
+Skript-Anpassung. Neue Version V1.0.30
  für Update/install für Rechte bei Execute (755)
  Bei Install autobestätigung php module
 #################################################################

@@ -119,8 +119,6 @@ function getGroupTabsJson()
     $tabs[0]['label'] = $callSign;
     $tabs[1]['id'] = -1;
     $tabs[1]['label'] = 'Kein Filter';
-    $tabs[2]['id'] = 0;
-    $tabs[2]['label'] = '*';
 
     #Userdefined Tabs
     $resGetGroupParameter = getGroupParameter(1);

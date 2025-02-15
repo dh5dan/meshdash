@@ -1,6 +1,6 @@
 #!/bin/bash
 clear
-echo MeshDash Install-Script V 1.00.32
+echo MeshDash Install-Script V 1.00.34
 echo
 echo Installation Von MeshDash SQL
 echo 
@@ -11,21 +11,19 @@ echo
 echo
 echo Wenn ja, geht es sofort weiter, wenn nein, wird die Installation abgebrochen.
 echo
-echo
+######################################
 read -r -p "Installation jetzt ausführen ja, oder nein? " A
 if [ "$A" == "ja" ];then
-	echo "Führe Installation jetzt aus."
+	 echo "Führe Installation jetzt aus!"
 elif [ "$A" == "nein" ];then
-	echo "Keine Installation. ENDE."
-	exit
+	   echo "Keine Installation. ENDE."
+	   exit
 else
 		echo "Keine Installation. ENDE."
   	exit
 fi
-
 echo "OK, es geht weiter mit der Installation..."
 sleep 2
-echo
 #############Apt Install php, php-sqlite3, lighttpd
 echo
 echo Installiere jetzt weitere notwendige Software
@@ -71,31 +69,44 @@ echo
 sudo adduser www-data gpio
 echo
 #######################################
+echo
+echo Stoppe und Disable andere Services um Fehler zu vermeiden
+######## Stop other running services
+sudo systemctl stop allmeshcom.service
+sudo systemctl stop checkmsg.service
+sudo systemctl stop checkled.service
+######## Disable other running services
+sudo systemctl disable allmeshcom.service
+sudo systemctl disable checkmsg.service
+sudo systemctl disable checkled.service
+echo
+#######################################
 ###### Install Web-Application   ######
 #######################################
 hostIp=$(hostname -I | awk '{print $1}')
-
+echo
+echo Stoppe checkmh Service da neue Version ggf. kopiert wird
+sudo systemctl stop checkmh.service
+echo
 echo Lösche meshdash Verzeichnis und erzeuge es neu
-sudo rm -rf meshdash_5d
-sudo mkdir meshdash_5d
+sudo rm -rf meshdash
 sudo mkdir meshdash
 echo
-echo
-echo Kopiere Zipdatei in das meshdash Verzeichnis
+echo Kopiere Zipdateien in das meshdash Verzeichnis
 sudo cp meshdash*.zip meshdash
 echo
-cd meshdash_5d || exit
+cd meshdash || exit
 echo
-echo Entpacke nun das zip Packet
+echo Entpacke nun das zip Paket
 sudo unzip meshdash*.zip
-echo entferne das Zip Packet aus dem meshdash_5d Verzeichnis
+echo entferne das Zip Paket aus dem meshdash Verzeichnis
 sudo rm meshdash*.zip
 echo
 echo Erzeuge Verzeichnis 5d in /var/www/html
 sudo mkdir -p /var/www/html/5d
 sudo chmod -R 755 /var/www/html/5d
 echo
-echo Installiere nun das Update
+echo Kopiere nun die Daten in das Zielverzeichnis
 echo
 sudo cp -r ./* /var/www/html/5d/
 sudo cp -r ./.htaccess /var/www/html/5d/

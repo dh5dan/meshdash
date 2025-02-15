@@ -12,49 +12,61 @@ echo
 echo
 echo Wenn ja, geht es sofort weiter, wenn nein, wird das Update abgebrochen.
 echo
-
+######################################
 read -r -p "Update jetzt ausführen ja, oder nein? " A
 if [ "$A" == "ja" ];then
-	echo "Führe Update jetzt aus."
+	 echo "Führe Update jetzt aus!"
 elif [ "$A" == "nein" ];then
-	echo "Kein Update. ENDE."
-	exit
+	   echo "Kein Update. ENDE."
+	   exit
 else
 		echo "Kein Update. ENDE."
   	exit
 fi
-
 echo "OK, es geht weiter mit dem Update..."
 sleep 2
-
+######################################
+echo
+echo Stoppe und Disable andere Services um Fehler zu vermeiden
+######## Stop other running services
+sudo systemctl stop allmeshcom.service
+sudo systemctl stop checkmsg.service
+sudo systemctl stop checkled.service
+######## Disable other running services
+sudo systemctl disable allmeshcom.service
+sudo systemctl disable checkmsg.service
+sudo systemctl disable checkled.service
+echo
 ######################################
 ###### Update Web-Application   ######
 ######################################
 hostIp=$(hostname -I | awk '{print $1}')
-
+echo
+echo Stoppe checkmh Service da neue Version ggf. kopiert wird
+sudo systemctl stop checkmh.service
+echo
 echo Lösche meshdash Verzeichnis und erzeuge es neu
-sudo rm -rf meshdash_5d
-sudo mkdir meshdash_5d
+sudo rm -rf meshdash
+sudo mkdir meshdash
 echo
 echo erzeuge Verzeichnis für Systemdienst checkmh.service
 sudo mkdir meshdash
 echo
+echo Kopiere Zipdateien in das meshdash Verzeichnis
+sudo cp meshdash*.zip meshdash
 echo
-echo Kopiere Zipdatei in das meshdash_5d Verzeichnis
-sudo cp meshdash*.zip meshdash_5d
+cd meshdash || exit
 echo
-cd meshdash_5d || exit
-echo
-echo Entpacke nun das zip Packet
+echo Entpacke nun das zip Paket
 sudo unzip meshdash*.zip
-echo entferne das Zip Packet aus dem meshdash Verzeichnis
+echo entferne das Zip Paket aus dem meshdash Verzeichnis
 sudo rm meshdash*.zip
 echo
 echo Erzeuge Verzeichnis 5d in /var/www/html
 sudo mkdir -p /var/www/html/5d
 sudo chmod -R 755 /var/www/html/5d
 echo
-echo Installiere nun das Update
+echo Kopiere nun die Daten in das Zielverzeichnis
 echo
 sudo cp -r ./* /var/www/html/5d/
 sudo cp -r ./.htaccess /var/www/html/5d/
