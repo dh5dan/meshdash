@@ -29,27 +29,30 @@
        setInterval(fetchServerTime, 10000); // Alle 10 Sekunden Serverzeit abrufen
        setInterval(updateDateTime, 1000); // Jede Sekunde lokale Zeit aktualisieren
 
-       //Lade message via Ajax so das man sauber scrollen kann
        function loadNewMessages()
        {
            let messageFrame   = $("#message-frame"); // ID des Iframes
            let groupValue     = messageFrame.contents().find("#group").val();
+           let currentSrc     = messageFrame.attr("src");
+
            let scrollPosition = messageFrame.contents().scrollTop(); // Aktuelle Scroll-Position merken
 
            // Prüfen, ob der Benutzer ganz oben ist (Scroll-Position = 0)
            let isAtTop = (scrollPosition === 0);
-
-           // `message.php` ruft die neuen Nachrichten ab
-           $.get("message.php", { group: groupValue }, function (data)
+           if (currentSrc && currentSrc.includes("message.php"))
            {
-               // Wenn der Benutzer ganz oben ist, neue Nachrichten laden
-               if (isAtTop)
+               // `message.php` ruft die neuen Nachrichten ab
+               $.get("message.php", {group: groupValue}, function (data)
                {
-                   let doc = messageFrame.contents();
-                   doc.find("body").html(data); // Neuen Inhalt einfügen
-                   doc.scrollTop(scrollPosition); // Scroll-Position wiederherstellen
-               }
-           });
+                   // Wenn der Benutzer ganz oben ist, neue Nachrichten laden
+                   if (isAtTop)
+                   {
+                       let doc = messageFrame.contents();
+                       doc.find("body").html(data); // Neuen Inhalt einfügen
+                       doc.scrollTop(scrollPosition); // Scroll-Position wiederherstellen
+                   }
+               });
+           }
        }
 
        setInterval(loadNewMessages, 2000); // Alle 2 Sekunden aktualisieren

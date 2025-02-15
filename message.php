@@ -437,7 +437,12 @@ if ($result !== false)
             $replace    = '<a href="$0" target="_blank">$0</a>';
             $linkedText = preg_replace($pattern, $replace, $msg);
 
-            echo '<span class="' . $alertSrcCss . '">' . $firstCall. '</span>' . ' > ' .'<span class="' . $alertDstCss . '">' . $dstTxt . '</span> : ' . $linkedText;
+            $patternQrz    = '/\b([a-zA-Z0-9]+)(?:-\d+)?\b/';
+            $replaceQrz    = '<a href="https://qrz.com/db/$1" target="_blank">$0</a>';
+            $linkedTextQrz = preg_replace($patternQrz, $replaceQrz, $firstCall);
+
+            #echo '<span class="' . $alertSrcCss . '">' . $firstCall. '</span>' . ' > ' .'<span class="' . $alertDstCss . '">' . $dstTxt . '</span> : ' . $linkedText;
+            echo '<span class="' . $alertSrcCss . '">' . $linkedTextQrz. '</span>' . ' > ' .'<span class="' . $alertDstCss . '">' . $dstTxt . '</span> : ' . $linkedText;
 
             if ($mhSend == 1)
             {
