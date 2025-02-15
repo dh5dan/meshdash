@@ -6,7 +6,7 @@
        function fetchServerTime() {
            $.getJSON("ajax_time.php", function (data) {
                serverTime = new Date(data.time);
-               offset = serverTime - new Date(); // Differenz zwischen Server- und Clientzeit
+               offset = serverTime - new Date(); // Differenz zwischen Server- und Client Zeit
            });
        }
 
@@ -29,25 +29,30 @@
        setInterval(fetchServerTime, 10000); // Alle 10 Sekunden Serverzeit abrufen
        setInterval(updateDateTime, 1000); // Jede Sekunde lokale Zeit aktualisieren
 
-        // Lade message via Ajax so das man sauber scrollen kann
+       //Lade message via Ajax so das man sauber scrollen kann
        function loadNewMessages()
        {
-           let groupValue = $("#message-frame").contents().find("#group").val();
-
            let messageFrame   = $("#message-frame"); // ID des Iframes
-           let scrollPosition = messageFrame.contents().scrollTop(); // Aktuelle Scrollposition merken
+           let groupValue     = messageFrame.contents().find("#group").val();
+           let scrollPosition = messageFrame.contents().scrollTop(); // Aktuelle Scroll-Position merken
 
+           // Prüfen, ob der Benutzer ganz oben ist (Scroll-Position = 0)
+           let isAtTop = (scrollPosition === 0);
+
+           // `message.php` ruft die neuen Nachrichten ab
            $.get("message.php", { group: groupValue }, function (data)
-           { // `message.php` ruft die neuen Nachrichten ab
-               let doc = messageFrame.contents();
-               doc.find("body").html(data); // Neuen Inhalt einfügen
-               doc.scrollTop(scrollPosition); // Scrollposition wiederherstellen
+           {
+               // Wenn der Benutzer ganz oben ist, neue Nachrichten laden
+               if (isAtTop)
+               {
+                   let doc = messageFrame.contents();
+                   doc.find("body").html(data); // Neuen Inhalt einfügen
+                   doc.scrollTop(scrollPosition); // Scroll-Position wiederherstellen
+               }
            });
        }
 
        setInterval(loadNewMessages, 2000); // Alle 2 Sekunden aktualisieren
-
-
 
 
        $("#bgTask").on("click", function ()
@@ -148,7 +153,7 @@
            }
        });
 
-       // Zugriff auf die Iframes um Click für Menüclose abzufangen
+       // Zugriff auf die Iframes um Click für Menu-Close abzufangen
        function addIframeClickListeners() {
            const iframes = ['#message-frame', '#bottom-frame'];
 
@@ -170,7 +175,7 @@
        $('#menu li').on('click', function () {
            let action = $(this).data('action'); // Holt sich die Aktion für den angeklickten Punkt
 
-           let iframeSrc = '';
+           let iframeSrc;
 
            switch(action) {
                case 'config_generally':

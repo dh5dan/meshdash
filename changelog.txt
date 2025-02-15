@@ -1,4 +1,4 @@
-Version 1.09.64beta SQL
+Version 1.09.66beta SQL
 
 Smooth Scrolling im Message-Frame eingebaut.
 Logfile abschaltbar
@@ -7,6 +7,7 @@ Anpassung Default tabs: <Rufzeichen>|KeinFilter | *
 Gruppen ID wird in DM-Feld übernommen
 Reload Button im Update Bereich eingepflegt.
 BUGFIX: Inhalt im execute order ist nicht ausführbar
+Scroll-Stop, wenn man etwas runter gescrollt hat (Nachrichten lesen)
 #################################################################
 Version 1.09.58beta SQL
 Gruppen Tabs

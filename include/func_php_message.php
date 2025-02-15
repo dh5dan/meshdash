@@ -36,7 +36,7 @@ function updateAckReqId($msgId, $ackReqId): bool
     $db = new SQLite3($dbFilename);
     #$db->busyTimeout(5000); // warte wenn busy in millisekunden
 
-    $db->exec(" UPDATE meshdash
+    @$db->exec(" UPDATE meshdash
                           SET ackReq = $ackReqId
                         WHERE msg_id = '$msgId'
                     ");
