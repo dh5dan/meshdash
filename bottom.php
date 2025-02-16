@@ -19,6 +19,12 @@ $errMsg  = utf8_decode($_REQUEST['errMsg'] ?? '');
 $msgText = $_REQUEST['msgText'] ?? '';
 $dm      = $_REQUEST['dm'] ?? '';
 $loraIP  = getParamData('loraIp');
+$group   = $_REQUEST['group'] ?? '';
+
+
+echo "<br>group:$group";
+#Wenn Filter Own Call dann DM Feld wieder leer setzen nach Aussendung
+$dm = $group == -2 ? '' : $dm;
 
 if ($errMsg != '')
 {
@@ -30,6 +36,7 @@ echo '</head>';
 echo '<body>';
  echo '<br>';
     echo '<form action="send_msg.php" method="POST">';
+    echo '<input type="hidden" id="groupId" name="group" value="0">';
         echo '<span class="bottomSize16">DM:</span> <input class="bottomInputDm" id="bottomDm" type="text" value="' . $dm . '" size="20" id="dm" name="dm">';
         echo str_repeat('&nbsp;', 10);
         echo '<span class="bottomSize16">MSG:</span> <input class="bottomInputMsg" type="text" value="' . $msgText . '" id="msgText" name="msgText" required>';

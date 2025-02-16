@@ -65,7 +65,7 @@
 
        setInterval(loadNewMessages, 2000); // Alle 2 Sekunden aktualisieren
 
-        //Kreis anklicken um BG-Prozess zu starten/stoppen
+        //Kreis anklicken, um BG-Prozess zu starten oder zu stoppen
        $("#bgTask").on("click", function ()
        {
            let titleMsg  = 'Hinweis';
@@ -292,6 +292,7 @@
        {
            isTabClick = true; // loadNewMessages blockieren
            let groupId = $(this).data('group');
+           let bottomFrame = $('#bottom-frame');
 
            // Markiere den angeklickten Tab als aktiv
            $('#top-tabs .tab').removeClass('active');
@@ -301,12 +302,14 @@
            // Annahme: message.php akzeptiert einen GET-Parameter "group"
            $('#message-frame').attr('src', 'message.php?group=' + groupId);
 
-           // // Schreibe Gruppennummer in Bottom Iframe und da in das DM-Feld
-
            //Schreibe Werte um für KeinFilter und *
-           groupId = groupId === -1 ? '' : groupId;
+           let groupBottom = groupId; // Unveränderter wert für Bottom own Call Filter
+
+           // // Schreibe Gruppennummer in Abhängig vom Tab in Bottom Iframe und da in das DM-Feld
+           groupId = groupId === -1 || groupId === -2 ? '' : groupId;
            groupId = groupId === 0 ? '*' : groupId;
-           $('#bottom-frame').contents().find('#bottomDm').val(groupId);
+           bottomFrame.contents().find('#bottomDm').val(groupId);
+           bottomFrame.contents().find('#groupId').val(groupBottom);
 
            setTimeout(() => { isTabClick = false; }, 500); // warte 500ms ds seite geladen wurde
        });
