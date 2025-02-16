@@ -17,6 +17,7 @@ require_once 'include/func_php_core.php';
 // Daten aus dem Formular abrufen
 $msgText       = $_POST['msgText'] ?? '';
 $directMessage = $_POST['dm'] ?? '*';
+$group         = $_POST['group'] ?? '';
 
 $file          = 'log/user_data_' . date('Ymd') . '.log';
 $fileLogJson   = 'log/user_json_data_' . date('Ymd') . '.log';
@@ -73,7 +74,7 @@ if ($msgText != '')
     else
     {
         $errMsg = "Kann Socket nicht erstellen. Abbruch!";
-        header("Location: bottom.php?errMsg=" . $errMsg . "&msgText=" . $msgText . "&dm=" . $directMessage);
+        header("Location: bottom.php?errMsg=" . $errMsg . "&msgText=" . $msgText . "&dm=" . $directMessage . "&group=" . $group);
         exit();
     }
 }
@@ -87,11 +88,11 @@ if ($doLogEnable == 1)
     if (!file_put_contents($file, $data, FILE_APPEND))
     {
         $errMsg = "Fehler beim Speichern der Log-Daten.";
-        header("Location: bottom.php?errMsg=" . $errMsg . "&msgText=" . $msgText . "&dm=" . $directMessage);
+        header("Location: bottom.php?errMsg=" . $errMsg . "&msgText=" . $msgText . "&dm=" . $directMessage . "&group=" . $group);
     }
 }
 
-header("Location: bottom.php?dm=" . $directMessage);
+header("Location: bottom.php?dm=" . $directMessage . "&group=" . $group);
 
 echo '</body>';
 echo '</html>';
