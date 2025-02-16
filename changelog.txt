@@ -1,5 +1,13 @@
-Version 1.09.72beta SQL
+Version 1.09.74beta SQL
+Debug-Code aus bottom-frame entfernt.
+Die Höhenangabe sind in Fuss.
+Diese werden nun umgerechnet in Meter.
+BUGFIX Mheard gibt nicht aktuelle Liste wieder.
+Global reload umgestellt, da sonst u.U. ein erneutes Senden von Submits erzeugt wird.
 
+#################################################################
+Version 1.09.72beta SQL
+Bugfix: DM Feld leeren nach senden, wenn im Tab own Call
 #################################################################
 Version 1.09.70beta SQL
 Bugfix: Install/Update UNZIP-Verzeichnis war falsch
@@ -197,8 +205,3 @@ Benutzt werden hier für die UDP-Datagramme:
 - Socket_Bind
 - Socket_recvfrom
 ##################################################################
-TODO
-- Konfiguration über ein Menü
-- Filterfunktionen wie GruppenId oder nach Call
-- Tabs pro GruppenId mit Nachrichten der Gruppe
- 

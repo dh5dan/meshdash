@@ -52,18 +52,22 @@
 
         $("#btnConfigUpdateReload").on("click", function ()
         {
-            //Rufe die Basis URL neu auf und verhinder, dass diese synchron ausgeführt wird
-            // das verhindert ein NS_BINDING_ABORTED
-            setTimeout(function() {
-                // Dynamische Base-URL ermitteln
-                let baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]+\/[^\/]+\/?$/, '');
+            // Ermittelt die Base-URL dynamisch
+            let baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]+\/[^\/]+\/?$/, '');
+            window.top.location.href = baseUrl;
 
-                // URL ohne Neuladen der Seite ändern
-                history.pushState(null, null, baseUrl);
-
-                // Dann das vollständige Neuladen durchführen
-                location.reload();
-            }, 100);
+            // //Rufe die Basis URL neu auf und verhinder, dass diese synchron ausgeführt wird
+            // // das verhindert ein NS_BINDING_ABORTED
+            // setTimeout(function() {
+            //     // Dynamische Base-URL ermitteln
+            //     let baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]+\/[^\/]+\/?$/, '');
+            //
+            //     // URL ohne Neuladen der Seite ändern
+            //     history.pushState(null, null, baseUrl);
+            //
+            //     // Dann das vollständige Neuladen durchführen
+            //     location.reload();
+            // }, 100);
         });
 
         $(".imageDelete").on("click", function ()

@@ -50,6 +50,8 @@ sudo apt-get install php -y -f
 sudo apt-get install php-sqlite3 -y -f
 sudo apt-get install php-xml -f -y
 sudo apt-get install php-zip -f -y
+sudo apt-get install unzip -f -y
+sudo apt-get install lynx -f -y
 echo
 echo
 sudo lighty-enable-mod fastcgi

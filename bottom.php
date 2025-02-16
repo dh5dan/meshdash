@@ -21,8 +21,6 @@ $dm      = $_REQUEST['dm'] ?? '';
 $loraIP  = getParamData('loraIp');
 $group   = $_REQUEST['group'] ?? '';
 
-
-echo "<br>group:$group";
 #Wenn Filter Own Call dann DM Feld wieder leer setzen nach Aussendung
 $dm = $group == -2 ? '' : $dm;
 
