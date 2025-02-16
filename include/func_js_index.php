@@ -1,5 +1,7 @@
 <script>
-   $(function ($) {
+   $(function ($)
+   {
+       // Zeit vom Server holen und in den Update_Pausen via Jquery weiter führen
        let serverTime = null;
        let offset = 0;
 
@@ -29,18 +31,24 @@
        setInterval(fetchServerTime, 10000); // Alle 10 Sekunden Serverzeit abrufen
        setInterval(updateDateTime, 1000); // Jede Sekunde lokale Zeit aktualisieren
 
+       let isTabClick = false; // Globale Variable die prüft, ob Tab geklickt wurde
+
+       //Refresh via Ajax für message.php
        function loadNewMessages()
        {
+           if (isTabClick) return; // Falls gerade ein Tab-Klick aktiv ist, beende die Funktion
+
            let messageFrame   = $("#message-frame"); // ID des Iframes
-           let groupValue     = messageFrame.contents().find("#group").val();
            let currentSrc     = messageFrame.attr("src");
 
-           let scrollPosition = messageFrame.contents().scrollTop(); // Aktuelle Scroll-Position merken
-
-           // Prüfen, ob der Benutzer ganz oben ist (Scroll-Position = 0)
-           let isAtTop = (scrollPosition === 0);
            if (currentSrc && currentSrc.includes("message.php"))
            {
+               let groupValue     = messageFrame.contents().find("#group").val();
+               let scrollPosition = messageFrame.contents().scrollTop(); // Aktuelle Scroll-Position merken
+
+               // Prüfen, ob der Benutzer ganz oben ist (Scroll-Position = 0)
+               let isAtTop = (scrollPosition === 0);
+
                // `message.php` ruft die neuen Nachrichten ab
                $.get("message.php", {group: groupValue}, function (data)
                {
@@ -57,7 +65,7 @@
 
        setInterval(loadNewMessages, 2000); // Alle 2 Sekunden aktualisieren
 
-
+        //Kreis anklicken um BG-Prozess zu starten/stoppen
        $("#bgTask").on("click", function ()
        {
            let titleMsg  = 'Hinweis';
@@ -78,6 +86,7 @@
            return false;
        });
 
+       //Bei Neuinstallation loraIp/Call setzen
        $("#btnSetParamLoraIp").on("click", function ()
        {
            let loraIp          = $("#paramSetLoraIp").val();
@@ -127,6 +136,7 @@
            return false;
        });
 
+       //Bei Update meshdash komplet neu laden, damit updates greifen
        $("#btnParamReload").on("click", function ()
        {
            $("#frmParamIp").trigger('submit');
@@ -137,27 +147,32 @@
        /*      Menüfunktion                        */
        /*                                  */
        // Menü umschalten, wenn auf das Menü-Icon geklickt wird
-       $('#menu-icon').on("click", function () {
+       $('#menu-icon').on("click", function ()
+       {
            $('#menu').toggle();
        });
 
        // Klick auf ein Menüelement (li), um das Submenü ein- oder auszublenden
-       $('#menu > ul > li').on("click", function (e) {
+       $('#menu > ul > li').on("click", function (e)
+       {
            e.stopPropagation(); // Verhindert, dass der Klick das Dokument schließt
            $(this).toggleClass('active'); // Toggle die 'active'-Klasse für das Submenü
            $(this).siblings().removeClass('active'); // Entfernt die 'active'-Klasse von anderen Submenüs
        });
 
        // Klick auf das Dokument außerhalb des Menüs schließt das Menü und Submenüs
-       $(document).on("click", function (e) {
-           if (!$(e.target).closest('#menu, #menu-icon').length) {
+       $(document).on("click", function (e)
+       {
+           if (!$(e.target).closest('#menu, #menu-icon').length)
+           {
                $('#menu > ul > li').removeClass('active'); // Alle Submenüs ausblenden
                $('#menu').hide(); // Menü ausblenden
            }
        });
 
        // Zugriff auf die Iframes um Click für Menu-Close abzufangen
-       function addIframeClickListeners() {
+       function addIframeClickListeners()
+       {
            const iframes = ['#message-frame', '#bottom-frame'];
 
            iframes.forEach(function (iframeId)
@@ -175,9 +190,9 @@
        }
 
        // Event-Listener für Klicks auf Menüeinträge
-       $('#menu li').on('click', function () {
+       $('#menu li').on('click', function ()
+       {
            let action = $(this).data('action'); // Holt sich die Aktion für den angeklickten Punkt
-
            let iframeSrc;
 
            switch(action) {
@@ -224,8 +239,20 @@
                //Muss einmal komplett geladen werden, damit Top aktualisiert wird
                if (iframeSrc === 'message.php')
                {
-                   //ruf die aktuelle URL neu auf
-                   window.location.href = '';
+                   isTabClick = true;
+
+                   //Rufe die Basis URL neu auf und verhinder, dass diese synchron ausgeführt wird.
+                   // das verhindert ein NS_BINDING_ABORTED
+                   setTimeout(function() {
+                       // Dynamische Base-URL ermitteln
+                       let baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]+\/[^\/]+\/?$/, '');
+
+                       // URL ohne Neuladen der Seite ändern
+                       history.pushState(null, null, baseUrl);
+
+                       // Dann das vollständige Neuladen durchführen
+                       location.reload();
+                   }, 100);
                }
            }
        });
@@ -263,14 +290,12 @@
        // Klick-Handler für Tabs
        $('#top-tabs .tab').on('click', function ()
        {
+           isTabClick = true; // loadNewMessages blockieren
            let groupId = $(this).data('group');
 
            // Markiere den angeklickten Tab als aktiv
            $('#top-tabs .tab').removeClass('active');
            $(this).addClass('active');
-
-          // $('#bottom-frame').contents().find('#bottomInputDm').val(groupId);
-
 
            // Update die Message-iframe-URL mit dem Filter
            // Annahme: message.php akzeptiert einen GET-Parameter "group"
@@ -279,9 +304,11 @@
            // // Schreibe Gruppennummer in Bottom Iframe und da in das DM-Feld
 
            //Schreibe Werte um für KeinFilter und *
-           groupId = groupId === -1 || groupId === -2 ? '' : groupId;
+           groupId = groupId === -1 ? '' : groupId;
            groupId = groupId === 0 ? '*' : groupId;
            $('#bottom-frame').contents().find('#bottomDm').val(groupId);
+
+           setTimeout(() => { isTabClick = false; }, 500); // warte 500ms ds seite geladen wurde
        });
 
        ///////////// Dialog Section

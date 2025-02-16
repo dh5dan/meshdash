@@ -28,10 +28,9 @@ ini_set('upload_max_filesize', '30M'); // Erhöht die maximale Upload-Dateigrö�
 ini_set('post_max_size', '30M'); // Erhöht die maximale POST-Daten-Größe auf 25 MB (8M)
 ini_set('memory_limit', '256M'); // Falls nötig das Speicherlimit erhöhen (128M)
 
-$sendData = $_REQUEST['sendData'] ?? 0;
-$doUpdate = true;
-
-$debugFlag = $_REQUEST['debug'] == 1;
+$sendData  = $_REQUEST['sendData'] ?? 0;
+$debugFlag = $_REQUEST['debug'] ?? 0 == 1;
+$doUpdate  = true;
 
 if ($doUpdate === false)
 {
@@ -136,7 +135,7 @@ if ($sendData === '1')
 
                 if ($debugFlag === true)
                 {
-                    $tt        = "Backupfile ' . $backupFile . ' erfolgreich erstellt!\n";
+                    $tt        = "Backup-File ' . $backupFile . ' erfolgreich erstellt!\n";
                     $errorText .= date('Y-m-d H:i:s') . ' result:' . $tt . "\n";
 
                     file_put_contents('../log/debug_update.log', $errorText, FILE_APPEND);
