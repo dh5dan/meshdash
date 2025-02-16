@@ -26,9 +26,10 @@ ini_set('display_errors',1);
 
 $debugFlag = false;
 $loraIp    = getParamData('loraIp');
+$callSign  = trim(getParamData('callSign'));
 $sendData  = $_REQUEST['sendData'] ?? 0;
 
-echo '<br><h2>Mheard Liste von ' . $loraIp . '</h2>';
+echo '<br><h2>Lokale Mheard-Liste von '.$callSign .' mit Lora-IP: ' . $loraIp . '</h2>';
 
 echo '<form id="frmMheard" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
@@ -36,7 +37,7 @@ echo '<table>';
 
 echo '<tr>';
 echo '<td>&nbsp;</td>';
-echo '<td><input type="button" id="btnGetMheard" value="Mheard abfragen"  /></td>';
+echo '<td><input type="button" id="btnGetMheard" value="Lokale Mheard-Liste abfragen"  /></td>';
 echo '</tr>';
 
 echo '</table>';
@@ -47,7 +48,7 @@ if($sendData == 1)
     getMheard($loraIp);
 }
 
-showMheard();
+showMheard($callSign);
 
 echo '</body>';
 echo '</html>';

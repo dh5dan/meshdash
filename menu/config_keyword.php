@@ -153,6 +153,7 @@ echo '</tr>';
 
 echo '<tr>';
     echo '<td>&nbsp;</td>';
+    echo '<td>&nbsp;</td>';
     echo '<td><input type="button" id="btnSaveConfigKeyword" value="Settings speichern"  /></td>';
 echo '</tr>';
 

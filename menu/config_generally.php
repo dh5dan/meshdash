@@ -76,7 +76,7 @@ $noDmAlertGlobalChecked = $noDmAlertGlobal == 1 ? 'checked' : '';
 $noTimeSyncMsgChecked   = $noTimeSyncMsg == 1 ? 'checked' : '';
 $doLogEnableChecked     = $doLogEnable == 1 ? 'checked' : '';
 
-echo "<br><h2>Basiseinstellungen von Meshdash</h2>";
+echo "<br><h2>Basiseinstellungen von MeshDash-SQL</h2>";
 
 echo "<br><br>";
 echo '<form id="frmConfigGenerally" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
