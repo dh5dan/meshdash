@@ -1,0 +1,21 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.successHint {
+    background-color: darkgreen;
+    color: whitesmoke;
+    font-weight: bold;
+}
+
+.failureHint {
+    background-color: crimson;
+    color: whitesmoke;
+    font-weight: bold;
+}
+
+.hintText {
+    font-size: 16px;
+    font-weight: bold;
+
+}

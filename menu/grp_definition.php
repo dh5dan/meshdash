@@ -10,7 +10,7 @@ echo '<script type="text/javascript" src="../jquery/jquery.min.js"></script>';
 echo '<script type="text/javascript" src="../jquery/jquery-ui.js"></script>';
 echo '<link rel="stylesheet" href="../jquery/jquery-ui.css">';
 echo '<link rel="stylesheet" href="../jquery/css/jq_custom.css">';
-echo '<link rel="stylesheet" href="../css/config_keyword.css?' . microtime() . '">';
+echo '<link rel="stylesheet" href="../css/grp_definition.css?' . microtime() . '">';
 echo '<link rel="stylesheet" href="../css/loader.css?' . microtime() . '">';
 echo '</head>';
 echo '<body>';
@@ -68,7 +68,8 @@ $groupNumber4 = $resGetGroupParameter[4]['groupNumber'] ?? 0;
 $groupNumber5 = $resGetGroupParameter[5]['groupNumber'] ?? 0;
 $groupNumber6 = $resGetGroupParameter[6]['groupNumber'] ?? 0; // Notfall gruppe
 
-echo "<h2>Gruppen-Definition zur Filterung der Nachrichten</h2>";
+echo "<h2>Gruppen-Definition zur Filterung der Nachrichten";
+echo '<br><span class="hintText failureHint">Hinweis: Die Änderung wird erst nach einem Reload der Seite sichtbar!</span></h2>';
 
 echo '<form id="frmGrpDefinition" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
@@ -115,12 +116,21 @@ echo '<td><input type="checkbox" name="groupNumber6Enabled" ' . $groupNumber6Ena
 echo '</tr>';
 
 echo '<tr>';
-echo '<td colspan="2"><hr></td>';
+echo '<td colspan="3"><hr></td>';
 echo '</tr>';
+
 
 echo '<tr>';
 echo '<td>&nbsp;</td>';
-echo '<td><input type="button" id="btnSaveGrpDefinition" value="Settings speichern"  /></td>';
+echo '<td>&nbsp;</td>';
+if ($sendData === '1')
+{
+    echo '<td><input type="button" class="failureHint" id="btnGrpDefinitionReload" value="MeshDash-Seite neu laden"/></td>';
+}
+else
+{
+    echo '<td><input type="button" id="btnSaveGrpDefinition" value="Settings speichern" /></td>';
+}
 echo '</tr>';
 
 echo '</table>';

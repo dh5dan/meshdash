@@ -78,6 +78,7 @@ function getMheard($loraIp)
     {
         echo '<h3>Keine MHeard-Daten gefunden.';
         echo '<br>Zeige zuletzt gespeicherte Werte wenn vorhanden.</br>';
+        return false;
     }
 
     if ($debugFlag === true)
@@ -87,19 +88,19 @@ function getMheard($loraIp)
         print_r($heardData);
         echo '</pre>';
     }
+
+    return true;
 }
 
-function showMheard()
+function showMheard($localCallSign)
 {
     $db = new SQLite3('database/mheard.db', SQLITE3_OPEN_READONLY);
     $db->busyTimeout(5000); // warte wenn busy in millisekunden
 
     // Hole mir die letzten 30 Nachrichten aus der Datenbank
     $result = $db->query("SELECT timestamps from mheard
-                
-                                        GROUP BY timestamps
-                                        ORDER BY timestamps DESC
-                                        LIMIT 1;
+                               GROUP BY timestamps
+                                  LIMIT 1;
                         ");
 
     $dsData = $result->fetchArray(SQLITE3_ASSOC);
@@ -110,10 +111,10 @@ function showMheard()
     {
         $timeStamp = $dsData['timestamps'];
 
-        $resultMh = $db->query("SELECT * FROM mheard
-                
-                                        WHERE timestamps = '$timeStamp'
-                                        ORDER BY timestamps DESC;
+        $resultMh = $db->query("SELECT * 
+                                        FROM mheard
+                                       WHERE timestamps = '$timeStamp'
+                                    ORDER BY mhTime DESC;
                         ");
 
         if ($resultMh !== false)
@@ -124,7 +125,7 @@ function showMheard()
             echo '<table class="table">';
 
             echo '<tr>';
-            echo '<th colspan="10" class="thCenter">Letzte gespeicherte Mheard Liste vom '.$timeStamp.'</th>';
+            echo '<th colspan="10" class="thCenter">Letzte gespeicherte Mheard-Liste (' . $localCallSign . ') vom ' . $timeStamp . '</th>';
             echo '</tr>';
             echo '<tr>';
             echo '<th colspan="10" ><hr></th>';

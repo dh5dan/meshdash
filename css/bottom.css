@@ -25,7 +25,7 @@ body {
 }
 
 .bottomInputMsg {
-    width: 600px;
+    width: 750px;
     height: 20px;
     font-size: 14px;
 }
@@ -35,15 +35,32 @@ body {
     font-size: 20px;
 }
 
-.statusContainer {
+.bottomDmMsgLine {
+    position: absolute;
+    margin-left: 25%;
+}
+
+.bottomSubmitLine {
+    position: absolute;
+    margin-left: 52%;
+    bottom: 20px;
+}
+
+.bottomStatusContainer {
     display: flex;
     justify-content: flex-start; /* Linksbündig ausrichten */
     gap: 20px; /* Abstand zwischen den beiden */
     position: absolute;
     bottom: 10px;
     width: auto;
+    margin-left: 10px;
 }
 
 .bottomStatus {
     font-weight: bold;
+}
+
+.bottomErrorMsg {
+    color:white;
+    background:red;
 }

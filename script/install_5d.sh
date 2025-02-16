@@ -1,6 +1,6 @@
 #!/bin/bash
 clear
-echo MeshDash Install-Script V 1.00.34
+echo MeshDash Install-Script V 1.00.36
 echo
 echo Installation Von MeshDash SQL
 echo 
@@ -50,6 +50,8 @@ sudo apt-get install php -y -f
 sudo apt-get install php-sqlite3 -y -f
 sudo apt-get install php-xml -f -y
 sudo apt-get install php-zip -f -y
+sudo apt-get install unzip -f -y
+sudo apt-get install lynx -f -y
 echo
 echo
 sudo lighty-enable-mod fastcgi
@@ -66,7 +68,9 @@ echo
 echo Füge GPIO zur Gruppe www-data hinzu
 echo
 echo
-sudo adduser www-data gpio
+if getent group gpio >/dev/null; then
+    sudo adduser www-data gpio
+fi
 echo
 #######################################
 echo

@@ -332,8 +332,9 @@ if ($result !== false)
             $aprsSymbol      = $row['aprs_symbol']; // #
             $aprsSymbolGroup = $row['aprs_symbol_group']; // /
             $hwId            = $row['hw_id']; // 3
-            $altitude        = $row['altitude']; // 344 (Höhe in m)
+            $altitude        = $row['altitude']; // 344 (Höhe in Fuss)
             $batteryCapacity = $row['batt'];  // Batt Kapazität in %
+            $altitude        = number_format($altitude * 0.3048, 0); // Umrechnung Fuss -> Meter
 
             echo '<h3 class="setFontMsgHeader">';
             echo 'MsgId: ' . $msgId . ' (' . $srcType . ')<br>' . $timestamp . ' ';
@@ -343,7 +344,7 @@ if ($result !== false)
             echo "<br>";
             echo 'Breitengrad: ' . $long . ' ' . $longDir;
             echo "<br>";
-            echo 'H&ouml;he: ' . $altitude . ' m';
+            echo 'Höhe: ' . $altitude . ' m';
             echo "<br>";
             echo 'Batteriekapazität: ' . $batteryCapacity . ' %';
             echo '</h3><hr>';
@@ -368,6 +369,7 @@ if ($result !== false)
                 continue;
             }
 
+            #Prüfe ob Mheard Keyword geschickt wurde
             if ($mhSend == 0)
             {
                 checkMheard($msgId, $msg, $src, $callSign, $loraIp);

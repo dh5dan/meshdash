@@ -1,5 +1,16 @@
+Version 1.09.74beta SQL
+Debug-Code aus bottom-frame entfernt.
+Die Höhenangabe sind in Fuss. Diese werden nun umgerechnet in Meter.
+BUGFIX: Mheard gibt nicht aktuelle Liste wieder.
+Global-Reload umgestellt. Hier kann es u.U. zu einem erneuten Senden eines Submits kommen.
+Anpassung der Texte im Mheard-Menu das diese sich nur auf den lokalen Node beziehen.
+Bugfix: DM-Rückstellung auf Filtergruppe, wenn in DM was anderes angeben wurde.
+Ausgabe einer Meldung, wenn keine MH-Liste bei Abfrage vorhanden.
+Anpassungen am CSS im Bottom-Frame
+Gruppen anlegen: Hinweistext für reload und Reload Button eingefügt.
+#################################################################
 Version 1.09.72beta SQL
-
+Bugfix: DM Feld leeren nach senden, wenn im Tab own Call
 #################################################################
 Version 1.09.70beta SQL
 Bugfix: Install/Update UNZIP-Verzeichnis war falsch
@@ -197,8 +208,3 @@ Benutzt werden hier für die UDP-Datagramme:
 - Socket_Bind
 - Socket_recvfrom
 ##################################################################
-TODO
-- Konfiguration über ein Menü
-- Filterfunktionen wie GruppenId oder nach Call
-- Tabs pro GruppenId mit Nachrichten der Gruppe
- 

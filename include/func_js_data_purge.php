@@ -40,6 +40,13 @@
             return false;
         });
 
+        $("#btnPurgeNew").on("click", function ()
+        {
+            $("#sendData").val(0);
+            $("#frmPurgeData").trigger('submit');
+            return false;
+        });
+
         function dialogConfirm(output_msg, title_msg, width, sendData) {
             width      = !width ? 300 : width;
             title_msg  = !width ? '' : title_msg;

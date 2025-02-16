@@ -240,19 +240,20 @@
                if (iframeSrc === 'message.php')
                {
                    isTabClick = true;
-
-                   //Rufe die Basis URL neu auf und verhinder, dass diese synchron ausgeführt wird.
-                   // das verhindert ein NS_BINDING_ABORTED
-                   setTimeout(function() {
-                       // Dynamische Base-URL ermitteln
-                       let baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]+\/[^\/]+\/?$/, '');
-
-                       // URL ohne Neuladen der Seite ändern
-                       history.pushState(null, null, baseUrl);
-
-                       // Dann das vollständige Neuladen durchführen
-                       location.reload();
-                   }, 100);
+                   window.location.href = '';
+                   //
+                   // //Rufe die Basis URL neu auf und verhinder, dass diese synchron ausgeführt wird.
+                   // // das verhindert ein NS_BINDING_ABORTED
+                   // setTimeout(function() {
+                   //     // Dynamische Base-URL ermitteln
+                   //     let baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]+\/[^\/]+\/?$/, '');
+                   //
+                   //     // URL ohne Neuladen der Seite ändern
+                   //     history.pushState(null, null, baseUrl);
+                   //
+                   //     // Dann das vollständige Neuladen durchführen
+                   //     location.reload();
+                   // }, 100);
                }
            }
        });

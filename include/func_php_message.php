@@ -138,6 +138,7 @@ function checkMheard($msgId, $msg, $src, $callSign, $loraIp)
                 echo "<br>Übereinstimmung! Funktion wird ausgeführt...";
             }
 
+            $resGetMheard = getMheard($loraIp); //Hole aktuelle Mh-Liste
             sendMheard($msgId, $src, $loraIp);
         }
         else
@@ -178,10 +179,10 @@ function sendMheard($msgId, $src, $loraIp)
     {
         $timeStamp = $dsData['timestamps'];
 
-        $resultMh = $db->query("SELECT * FROM mheard
-                
-                                        WHERE timestamps = '$timeStamp'
-                                        ORDER BY timestamps DESC;
+        $resultMh = $db->query("SELECT * 
+                                        FROM mheard
+                                       WHERE timestamps = '$timeStamp'
+                                    ORDER BY timestamps DESC;
                         ");
 
         if ($resultMh !== false)
@@ -209,6 +210,8 @@ function sendMheard($msgId, $src, $loraIp)
 
             #Letztes Zeichen entfernen und auch 160 Zeichen begrenzen
             $sendMheardList = substr(rtrim($sendMheardList, "|"), 0, 160);
+
+            $sendMheardList = $sendMheardList == '' ? 'Keine MH-Liste vorhanden.' : $sendMheardList;
 
             $arraySend['type'] = 'msg';
             $arraySend['dst']  = $src;

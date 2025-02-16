@@ -78,6 +78,12 @@
             return false;
         });
 
+        $("#btnGrpDefinitionReload").on("click", function ()
+        {
+            // Ermittelt die Base-URL dynamisch und führe reload aus.
+            window.top.location.href = window.location.origin + window.location.pathname.replace(/\/[^\/]+\/[^\/]+\/?$/, '');
+        });
+
         function dialogConfirm(output_msg, title_msg, width, sendData) {
             width      = !width ? 300 : width;
             title_msg  = !width ? '' : title_msg;
