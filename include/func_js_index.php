@@ -312,6 +312,9 @@
            bottomFrame.contents().find('#bottomDm').val(groupId);
            bottomFrame.contents().find('#groupId').val(groupBottom);
 
+           sessionStorage.setItem('groupId', groupId);  // Speichern der Gruppen-ID für die aktuelle Instanz
+
+
            setTimeout(() => { isTabClick = false; }, 500); // warte 500ms ds seite geladen wurde
        });
 
