@@ -8,6 +8,7 @@ Bugfix: DM-Rückstellung auf Filtergruppe, wenn in DM was anderes angeben wurde.
 Ausgabe einer Meldung, wenn keine MH-Liste bei Abfrage vorhanden.
 Anpassungen am CSS im Bottom-Frame
 Gruppen anlegen: Hinweistext für reload und Reload Button eingefügt.
+Update install.sh (1.00.36): unzip/lynx hinzugefügt. Check ob Gruppe gpio vorhanden bei adduser
 #################################################################
 Version 1.09.72beta SQL
 Bugfix: DM Feld leeren nach senden, wenn im Tab own Call
