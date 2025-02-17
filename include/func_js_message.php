@@ -14,6 +14,11 @@
         // }, 2000);
 
 
+        let savedGroupId = sessionStorage.getItem('groupId');
+        if (savedGroupId) {
+            $('#group').val(savedGroupId);
+        }
+
         setInterval(updatePosStatus, 1000);  // Alle 1 Sekunde Status prüfen
 
         function updatePosStatus() {

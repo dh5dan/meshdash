@@ -71,6 +71,11 @@ function getMheard($loraIp)
 
     if (count($heardData) > 0)
     {
+        if ($debugFlag === true)
+        {
+            echo "<br>SetMehardData: speichern";
+        }
+
         setMheardData($heardData);
     }
 
@@ -84,7 +89,8 @@ function getMheard($loraIp)
     if ($debugFlag === true)
     {
         // Ausgabe der extrahierten Daten
-        echo '#Debug#heardData#<br><pre>';
+        echo "<br>CountData:".count($heardData);
+        echo '<br>#Debug#heardData#<br><pre>';
         print_r($heardData);
         echo '</pre>';
     }
@@ -100,6 +106,7 @@ function showMheard($localCallSign)
     // Hole mir die letzten 30 Nachrichten aus der Datenbank
     $result = $db->query("SELECT timestamps from mheard
                                GROUP BY timestamps
+                               ORDER BY timestamps DESC
                                   LIMIT 1;
                         ");
 

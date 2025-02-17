@@ -1,3 +1,9 @@
+Version 1.09.76beta SQL
+Multi-Tabs sind nun möglich via sessionStorage.
+Auch parallele Abfragen behalten ihre aktivierten Gruppen.
+BUGFIX MHEARD: Es wurde nicht der aktuelle Eintrag angezeigt
+BUGFIX: Im Beispielscript led_off.sh stand noch ledon.py drin
+#################################################################
 Version 1.09.74beta SQL
 Debug-Code aus bottom-frame entfernt.
 Die Höhenangabe sind in Fuss. Diese werden nun umgerechnet in Meter.
