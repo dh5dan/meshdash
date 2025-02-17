@@ -1,46 +1,55 @@
-# WebApp MeshDash-SQL für MeshCom 4
+# MeshDash
 
-Installation
-----------------
-Unter Windows einfach in einen http Ordner packen.  
-Weiterhin die u.a. **_php.ini_** anpassen für die Module.  
-Getestet wurde das unter Windows 10 mit Apache2.
+## Was ist MeshDash?
 
-Unter Linux muss zwingend das Install-Skript genutzt werden,  
-Es gibt hier sonst Rechte-Probleme, wenn man die Dateien  
-manuell kopiert.  
-Es fehlen u.U. auch noch gewisse Programme die benötigt werden.
+MeshDash ist eine Webanwendung zur Anzeige und Verwaltung von Nachrichten  
+auf ESP32-basierten Geräten, die mit der Firmware MeshCom arbeiten.
 
-Besonderheiten:
-------------------
-Der UDP Port 1179 darf nicht durch einen anderen Prozess blockiert sein.  
-Funktioniert ab PHP V 7.4.x >
+Einige Funktionen von MeshDash:
 
-<ins>**Unter Windows:**</ins>  
-hier müssen einige Module in der PHP.ini aktiviert sein.  
-extension=***php_pdo_sqlite.dll***  
-extension=***php_sqlite3.dll***  
-extension=***php_zip.dll***
+- Eigene Filtergruppen anlegen
+- Steuerung von Skripten via Keywords
+- Remote Mheard-Abfragen
+- Soundbenachrichtigungen für eigene Nachrichten
+- Update über die Weboberfläche
 
-<ins>**Unter Linux:**</ins>  
-Hier bitte die install.sh einmalig ausführen.  
-Hier werden alle nötigen Dienste/Module für PHP installiert.
+Das Projekt befindet sich derzeit in der **Beta-Phase**, daher können noch Fehler auftreten.  
+Falls Probleme auftreten, bitte im Issue-Bereich von GitHub melden,  
+sofern sie nicht schon dort vorhanden sind.
 
-Genutzte PHP-Module:
-- XML
-- ZIP
-- Sqlite3
-- unzip
-- lynx
+## Wo finde ich die Releases?
+
+Die aktuellen Versionen von MeshDash sind direkt auf  
+GitHub unter **Releases hier auf der rechten Seite** verfügbar.  
+
+### Hier dann einfach "Latest" anklicken!
+![RELEASE](/docs/release.jpg)
+
+🔴 **Wichtiger Hinweis für neue Benutzer:**
+
+Die Dateien befinden sich unter **Assets** – bitte darauf klicken, um die Liste auszuklappen!
+
+![ASSETS](/docs/assets.jpg)
+
+**Für die Installation sind nur folgende Dateien relevant:**  
+Hier ein Beispiel:
+- meshdash-sql_V1.09.76.Beta.zip (Das Hauptprogramm)
+- install.sh (Installation-Skript)
+- update.sh (Das Update-Skript ist optional, da Webupdate vorhanden)
+
+![FILES](/docs/files.jpg)
 
 
-Ziel Ip Lora-Gerät:
---------------------
-Die Ip-Adresse des Lora-Gerätes wird  
-bei der Neuinstallation abgefragt und in der Sqlite3-DB gespeichert.  
-Erst dann ist auch das Senden von Nachrichten möglich.
+## Was steht in der Kurzanleitung.pdf?
 
-Update via Weboberfläche:
------------------------
-Updates können bequem über die Weboberfläche  
-ausgeführt werden.
+Die **Kurzanleitung.pdf** enthält:
+
+
+- Eine kleine Installations-Anleitung mit den wichtigsten Schritten zur Einrichtung von MeshDash.
+
+- Ein **kurzes User-Manual** mit Screenshots der Weboberfläche und Erklärungen zu den Menüpunkten.
+
+Diese Datei hilft dir, MeshDash schnell zu installieren und zu nutzen.
+
+  
+  
