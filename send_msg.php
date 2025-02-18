@@ -51,6 +51,8 @@ if ($msgText != '')
         exit();
     }
 
+    #Workaround da Anführungszeichen derzeit via UDP nicht übertragen werden. Möglicher FW Bug
+    $msgText = str_replace('"','``', $msgText); // tausche mit Accent aigu
     $arraySend['type'] = 'msg';
     $arraySend['dst']  = $directMessage;
     $arraySend['msg']  = $msgText;

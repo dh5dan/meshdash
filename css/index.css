@@ -22,11 +22,11 @@ body {
 
 .topLeft {
     position: absolute;
-    left: 60px;
+    left: 45px;
 }
 
 .topImagePoint {
-    margin-top: 4px;
+    margin-top: 7px;
     cursor: pointer;
     width: 30px;
 }
@@ -43,22 +43,8 @@ body {
     white-space: nowrap;
 }
 
-.topImagePoint {
-    margin-top: 4px;
-    cursor: pointer;
-    width: 30px;
-}
-
-
-/*  Bottom Frame            */
-.bottom {
-    background-color: black;
-    width: 100%;
-    margin-top: 100px; /* Platz für den fixierten oberen Bereich */
-    height: calc(100vh - 100px); /* Restliche Höhe nach dem fixierten Bereich */
-    overflow-y: scroll; /* Ermöglicht das Scrollen im unteren Bereich */
-    padding: 20px;
-    box-sizing: border-box;
+.topTitle {
+    font-size: 28px;
 }
 
 /*  Frame Section */
@@ -85,13 +71,12 @@ iframe {
 }
 
 #bottom-frame {
-    height: 110px;
+    height: auto;
+    max-height: 110px; /* Maximale Höhe, um das Layout zu steuern */
     overscroll-behavior-y: contain;
-    flex: 0 0 90px; /* Feste Höhe für den Footer */
     font-family: Arial, sans-serif;
+    overflow: hidden; /* Verhindert Overflow */
 }
-
-
 
 .unsetDisplayFlex {
     display: unset;
@@ -200,3 +185,36 @@ iframe {
     border-color: #4CAF50;
 }
 
+/* Media Query für Smartphones */
+@media (max-width: 768px) {
+
+    .topTitle {
+        font-size: 20px; /* Etwas größere Schrift für mobile Ansicht */
+        margin-top: 10px; /* Abstand nach oben */
+        margin-left: 14%;
+    }
+
+    .topLeft {
+        margin-bottom: 10px; /* Abstand nach dem Bild */
+    }
+
+    .topRight {
+        position: relative;
+        top: auto;
+        right: auto;
+        margin-top: 10px; /* Abstand oben */
+        margin-left: 10px; /* Leichter Abstand nach links */
+    }
+
+    #message-frame {
+        flex: 1; /* Nimmt den verfügbaren Platz ein */
+        min-height: 50vh; /* Mindestens die Hälfte des Screens */
+        max-height: calc(100vh - 310px); /* Verhindert Überlappung */
+    }
+
+    #bottom-frame {
+        height: auto;
+        min-height: 60px; /* Sicherstellen, dass es sichtbar bleibt */
+        max-height: 120px; /* Begrenzung nach oben */
+    }
+}

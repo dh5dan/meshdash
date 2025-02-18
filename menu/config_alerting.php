@@ -72,7 +72,7 @@ echo '</tr>';
 echo '<tr>';
 echo '<td>SoundFile für SRC-CALL :</td>';
 echo '<td><input type="text" name="alertSoundFileSrc" id="alertSoundFileSrc" value="' . $alertSoundFileSrc . '" placeholder="Soundfile wav,mp3"  /></td>';
-echo '<td><input type="checkbox" name="alertEnabledSrc" ' . $alertEnabledSrcChecked . ' id="alertEnabledSrc" value="1" />aktiv/inaktiv</td>';
+echo '<td><input type="checkbox" name="alertEnabledSrc" ' . $alertEnabledSrcChecked . ' id="alertEnabledSrc" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
@@ -87,7 +87,7 @@ echo '</tr>';
 echo '<tr>';
 echo '<td>SoundFile für DST-CALL :</td>';
 echo '<td><input type="text" name="alertSoundFileDst" id="alertSoundFileDst" value="' . $alertSoundFileDst . '" placeholder="Soundfile wav,mp3"  /></td>';
-echo '<td><input type="checkbox" name="alertEnabledDst" ' . $alertEnabledDstChecked . ' id="alertEnabledDst" value="1" />aktiv/inaktiv</td>';
+echo '<td><input type="checkbox" name="alertEnabledDst" ' . $alertEnabledDstChecked . ' id="alertEnabledDst" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';

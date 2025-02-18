@@ -1,5 +1,6 @@
 body {
     font-family: Arial, sans-serif;
+    padding: 0;
 }
 
 .successHint {
@@ -9,7 +10,55 @@ body {
 }
 
 .failureHint {
-    background-color: red;
+    background-color: crimson;
     color: whitesmoke;
     font-weight: bold;
+}
+
+td {
+    padding: 4px;
+    vertical-align: middle;
+}
+
+input[type="checkbox"] {
+    transform: scale(1.2);
+}
+
+.successHint, .failureHint {
+    display: block;
+    padding: 10px;
+    margin: 10px 0;
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    table {
+        font-size: 14px;
+    }
+
+    td:first-child {
+        width: 50%; /* Lässt genug Platz für den Text */
+    }
+
+    td:nth-child(2) {
+        width: 40%; /* Fixe Breite für Eingabefelder */
+    }
+
+    td:nth-child(3) {
+        width: 10%; /* Checkbox bleibt sichtbar */
+    }
+
+    input[type="text"] {
+        max-width: 150px; /* Oder andere passende Breite */
+    }
+
+    input[type="text"], input[type="checkbox"] {
+        width: 100%;
+    }
+
+    input[type="button"] {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+    }
 }

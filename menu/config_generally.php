@@ -76,9 +76,8 @@ $noDmAlertGlobalChecked = $noDmAlertGlobal == 1 ? 'checked' : '';
 $noTimeSyncMsgChecked   = $noTimeSyncMsg == 1 ? 'checked' : '';
 $doLogEnableChecked     = $doLogEnable == 1 ? 'checked' : '';
 
-echo "<br><h2>Basiseinstellungen von MeshDash-SQL</h2>";
+echo "<h2>Basiseinstellungen von MeshDash-SQL</h2>";
 
-echo "<br><br>";
 echo '<form id="frmConfigGenerally" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
 echo '<table>';
@@ -130,7 +129,11 @@ echo '</tr>';
 
 echo '<tr>';
 echo '<td>Rufzeichen:</td>';
-echo '<td><input type="text" name="callSign"  id="callSign" value="' . $callSign . '" /></td>';
+echo '<td xmlns="http://www.w3.org/1999/html"><input type="text" name="callSign"  id="callSign" value="' . $callSign . '" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td xmlns="http://www.w3.org/1999/html" colspan="2"><span class="failureHint">Das Rufzeichen  muss mit Angabe<br>im Lora übereinstimmen!</span></td>';
 echo '</tr>';
 
 echo '<tr>';
@@ -138,8 +141,7 @@ echo '<tr>';
 echo '</tr>';
 
 echo '<tr>';
-    echo '<td>&nbsp;</td>';
-    echo '<td><input type="button" id="btnSaveConfigGenerally" value="Settings speichern"  /></td>';
+    echo '<td colspan="2"><input type="button" id="btnSaveConfigGenerally" value="Settings speichern"  /></td>';
 echo '</tr>';
 
 echo '</table>';
