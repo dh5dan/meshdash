@@ -1,9 +1,15 @@
-# MeshDash
+# MeshDash-SQL
 
-## Was ist MeshDash?
+## Was ist MeshDash-SQL?
 
-MeshDash ist eine Webanwendung zur Anzeige und Verwaltung von Nachrichten  
-auf ESP32-basierten Geräten, die mit der Firmware MeshCom arbeiten.
+MeshDash_SQL ist eine Webanwendung zur Anzeige und Verwaltung von Nachrichten  
+auf ESP32-basierten Geräten, die mit der Firmware MeshCom arbeiten.  
+Die Verarbeitung und Speicherung der Daten erfolgt über Sqlite3 daher auch der Zusatz SQL.
+
+Dieses Projekt basiert ursprünglich auf ein Projekt von DL4QB.  
+Mit seiner tatkräftigen Unterstützung wurde daraus dann dieses Projekt geschaffen.   
+Dies ist ein Freizeit-Hobbyprojekt, welches die Anwendung und Bedienung von MeshCom  
+auf eine webbasierte Plattform bringen soll.
 
 Einige Funktionen von MeshDash:
 
