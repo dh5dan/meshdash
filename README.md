@@ -57,5 +57,11 @@ Die **Kurzanleitung.pdf** enthält:
 
 Diese Datei hilft dir, MeshDash schnell zu installieren und zu nutzen.
 
+## Noch offene Punkte die auf der Todo stehen:
+- Responsive Design für die mobile Ansicht.
+- visuelle Kennzeichnung im Tab, wenn neue Nachrichten da sind.
+- MHeard konfigurierbar machen für Request-/Acknowledged Ziele.
+
+
   
   
