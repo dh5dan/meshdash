@@ -70,11 +70,14 @@ $loraIp            = getParamData('loraIp');
 $callSign          = getParamData('callSign');
 $maxScrollBackRows = getParamData('maxScrollBackRows');
 $doLogEnable       = getParamData('doLogEnable');
+$doNotBackupDb     = getParamData('doNotBackupDb');
 
 $noPosDataChecked       = $noPosData == 1 ? 'checked' : '';
 $noDmAlertGlobalChecked = $noDmAlertGlobal == 1 ? 'checked' : '';
 $noTimeSyncMsgChecked   = $noTimeSyncMsg == 1 ? 'checked' : '';
 $doLogEnableChecked     = $doLogEnable == 1 ? 'checked' : '';
+$doNotBackupDbChecked   = $doNotBackupDb == 1 ? 'checked' : '';
+
 
 echo "<h2>Basiseinstellungen von MeshDash-SQL</h2>";
 
@@ -115,6 +118,11 @@ echo '</tr>';
 echo '<tr>';
 echo '<td>Logfile-Erstellung:</td>';
 echo '<td><input type="checkbox" name="doLogEnable" ' . $doLogEnableChecked . ' id="doLogEnable" value="1" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td>DB vom Backup ausschließen:</td>';
+echo '<td><input type="checkbox" name="doNotBackupDb" ' . $doNotBackupDbChecked . ' id="doNotBackupDb" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';

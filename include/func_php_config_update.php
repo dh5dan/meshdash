@@ -5,6 +5,7 @@ function backupApp($sourceDir, $backupDir)
     $zip            = new ZipArchive();
     $backupFullPath = $backupDir . '/backup_' . date('Ymd_His') . '.zip';
     $backupFile     = 'backup_' . date('Ymd_His') . '.zip';
+    $doNotBackupDb  = getParamData('doNotBackupDb');
 
     $excludeList = [
         'backup/',   // komplettes Verzeichnis
@@ -13,6 +14,13 @@ function backupApp($sourceDir, $backupDir)
         'test/',      // komplettes Verzeichnis
         '.gitignore', // einzelne Datei
     ];
+
+    #Wenn Datenbank ausgeschlossen werden soll, dann Verzeichnis mit im Array aufführen
+    if ($doNotBackupDb == 1)
+    {
+        echo "<br>nix db sichern";
+        $excludeList[] = "database/";   // komplettes Verzeichnis
+    }
 
     if ($zip->open($backupFullPath, ZipArchive::CREATE) === true)
     {

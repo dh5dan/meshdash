@@ -133,17 +133,18 @@ function initSQLiteDatabase($database): bool
                                        ('keyword12Enabled', '0', ''),
                                        ('keyword1ReturnMsg', '', ''),
                                        ('keyword2ReturnMsg', '', ''),
-                                       ('keyword1DmGrpId', '','*'),
-                                       ('keyword2DmGrpId', '','*'),
+                                       ('keyword1DmGrpId', '', '*'),
+                                       ('keyword2DmGrpId', '', '*'),
                                        ('noTimeSyncMsg', 0 , ''),
                                        ('maxScrollBackRows', 60 , ''),
-                                       ('alertSoundFileSrc', '' , 'callsign_src_alert.wav'),
-                                       ('alertEnabledSrc', 0 , ''),
-                                       ('alertSoundCallSrc', '' , ''),
-                                       ('alertSoundFileDst', '' , 'callsign_dst_alert.wav'),
-                                       ('alertEnabledDst', 0 , ''),
-                                       ('alertSoundCallDst', '' , ''),
-                                       ('doLogEnable', 1 , '')
+                                       ('alertSoundFileSrc','' , 'callsign_src_alert.wav'),
+                                       ('alertEnabledSrc',0 , ''),
+                                       ('alertSoundCallSrc','' , ''),
+                                       ('alertSoundFileDst','' , 'callsign_dst_alert.wav'),
+                                       ('alertEnabledDst',0 , ''),
+                                       ('alertSoundCallDst','' , ''),
+                                       ('doLogEnable',1 , ''),
+                                       ('doNotBackupDb', 0, '')
            ");
 
         #Close and write Back WAL

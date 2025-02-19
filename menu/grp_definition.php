@@ -78,31 +78,31 @@ echo '<table>';
 echo '<tr>';
 echo '<td>Gruppe1 :</td>';
 echo '<td><input type="text" name="groupNumber1" id="groupNumber1" value="' . $groupNumber1 . '" placeholder="1-99999"  /></td>';
-echo '<td><input type="checkbox" name="groupNumber1Enabled" ' . $groupNumber1EnabledChecked . ' id="groupNumber1Enabled" value="1" />aktiv/inaktiv</td>';
+echo '<td><input type="checkbox" name="groupNumber1Enabled" ' . $groupNumber1EnabledChecked . ' id="groupNumber1Enabled" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
 echo '<td>Gruppe2 :</td>';
 echo '<td><input type="text" name="groupNumber2" id="groupNumber2" value="' . $groupNumber2 . '" placeholder="1-99999"  /></td>';
-echo '<td><input type="checkbox" name="groupNumber2Enabled" ' . $groupNumber2EnabledChecked . ' id="groupNumber2Enabled" value="1" />aktiv/inaktiv</td>';
+echo '<td><input type="checkbox" name="groupNumber2Enabled" ' . $groupNumber2EnabledChecked . ' id="groupNumber2Enabled" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
 echo '<td>Gruppe3 :</td>';
 echo '<td><input type="text" name="groupNumber3" id="groupNumber3" value="' . $groupNumber3 . '" placeholder="1-99999"  /></td>';
-echo '<td><input type="checkbox" name="groupNumber3Enabled" ' . $groupNumber3EnabledChecked . ' id="groupNumber3Enabled" value="1" />aktiv/inaktiv</td>';
+echo '<td><input type="checkbox" name="groupNumber3Enabled" ' . $groupNumber3EnabledChecked . ' id="groupNumber3Enabled" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
 echo '<td>Gruppe4 :</td>';
 echo '<td><input type="text" name="groupNumber4" id="groupNumber4" value="' . $groupNumber4 . '" placeholder="1-99999"  /></td>';
-echo '<td><input type="checkbox" name="groupNumber4Enabled" ' . $groupNumber4EnabledChecked . ' id="groupNumber4Enabled" value="1" />aktiv/inaktiv</td>';
+echo '<td><input type="checkbox" name="groupNumber4Enabled" ' . $groupNumber4EnabledChecked . ' id="groupNumber4Enabled" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
 echo '<td>Gruppe5 :</td>';
 echo '<td><input type="text" name="groupNumber5" id="groupNumber5" value="' . $groupNumber5 . '" placeholder="1-99999"  /></td>';
-echo '<td><input type="checkbox" name="groupNumber5Enabled" ' . $groupNumber5EnabledChecked . ' id="groupNumber5Enabled" value="1" />aktiv/inaktiv</td>';
+echo '<td><input type="checkbox" name="groupNumber5Enabled" ' . $groupNumber5EnabledChecked . ' id="groupNumber5Enabled" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
@@ -112,7 +112,7 @@ echo '</tr>';
 echo '<tr>';
 echo '<td>Notfall-Gruppe :</td>';
 echo '<td><input type="text" name="groupNumber6" id="groupNumber6" value="' . $groupNumber6 . '" placeholder="1-99999"  /></td>';
-echo '<td><input type="checkbox" name="groupNumber6Enabled" ' . $groupNumber6EnabledChecked . ' id="groupNumber6Enabled" value="1" />aktiv/inaktiv</td>';
+echo '<td><input type="checkbox" name="groupNumber6Enabled" ' . $groupNumber6EnabledChecked . ' id="groupNumber6Enabled" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
@@ -121,16 +121,16 @@ echo '</tr>';
 
 
 echo '<tr>';
-echo '<td>&nbsp;</td>';
-echo '<td>&nbsp;</td>';
+echo '<td colspan="2">';
 if ($sendData === '1')
 {
-    echo '<td><input type="button" class="failureHint" id="btnGrpDefinitionReload" value="MeshDash-Seite neu laden"/></td>';
+    echo '<input type="button" class="failureHint" id="btnGrpDefinitionReload" value="MeshDash-Seite neu laden"/>';
 }
 else
 {
-    echo '<td><input type="button" id="btnSaveGrpDefinition" value="Settings speichern" /></td>';
+    echo '<input type="button" id="btnSaveGrpDefinition" value="Settings speichern" />';
 }
+echo '</td>';
 echo '</tr>';
 
 echo '</table>';
