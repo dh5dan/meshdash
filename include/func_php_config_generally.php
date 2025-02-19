@@ -11,6 +11,7 @@ function saveGenerallySettings(): bool
     $callSign          = $_REQUEST['callSign'] ?? '';
     $maxScrollBackRows = $_REQUEST['maxScrollBackRows'] ?? 60;
     $maxScrollBackRows = $maxScrollBackRows == '' ? 60 : $maxScrollBackRows;
+    $doNotBackupDb     = $_REQUEST['doNotBackupDb'] ?? 0;
 
     setParamData('noPosData', $noPosData);
     setParamData('noDmAlertGlobal', $noDmAlertGlobal);
@@ -19,6 +20,7 @@ function saveGenerallySettings(): bool
     setParamData('loraIp', $loraIp, 'txt');
     setParamData('callSign', strtoupper(trim($callSign)), 'txt');
     setParamData('maxScrollBackRows', $maxScrollBackRows);
+    setParamData('doNotBackupDb', $doNotBackupDb);
 
     return true;
 }

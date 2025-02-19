@@ -71,9 +71,8 @@
                 return false;
             }
 
-            width = 400;
-
-            dialogConfirm(outputMsg, titleMsg, width, sendData)
+            $("#sendData").val(sendData);
+            $("#frmGrpDefinition").trigger('submit');
 
             return false;
         });

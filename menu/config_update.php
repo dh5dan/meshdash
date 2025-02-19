@@ -28,9 +28,9 @@ ini_set('upload_max_filesize', '30M'); // Erhöht die maximale Upload-Dateigrö�
 ini_set('post_max_size', '30M'); // Erhöht die maximale POST-Daten-Größe auf 25 MB (8M)
 ini_set('memory_limit', '256M'); // Falls nötig das Speicherlimit erhöhen (128M)
 
-$sendData  = $_REQUEST['sendData'] ?? 0;
-$debugFlag = $_REQUEST['debug'] ?? 0 == 1;
-$doUpdate  = true;
+$sendData      = $_REQUEST['sendData'] ?? 0;
+$debugFlag     = $_REQUEST['debug'] ?? 0 == 1;
+$doUpdate      = true;
 
 if ($doUpdate === false)
 {
@@ -284,7 +284,7 @@ echo '<input type="hidden" name="MAX_FILE_SIZE" value="30000000" />';
 
 echo '<table>';
 echo '<tr>';
-if ($sendData == 0)
+if ($sendData != 1)
 {
     echo '<td ><label for="updateFile">Wähle das Update (Zip-Datei):&nbsp;</label></td>';
     echo '<td><input type="file" name="updateFile" id="updateFile" required></td>';

@@ -1,3 +1,11 @@
+Version 1.09.80beta SQL
+Schalter implementiert, um DB vom Backup auszuschliessen.
+Dies verhindert u.U. das sich ein Backup oder Update aufhängt. (locked File)
+BUG: Beim reinen Backup wird der Button Seite neu laden angezeigt.
+Responsive Design: Anpassung Gruppen
+Set Lock-Flag in Menu Event-Handler for Ajax Refresh with isTabClick.
+
+#################################################################
 Version 1.09.78beta SQL
 Workaround für Bug mit Anführungszeichen. Ersetzten durch ``
 Textanpassung: Hinweis Eingabe/Änderung CallSign. Muss mit Angabe im Lora übereinstimmen.

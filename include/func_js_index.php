@@ -194,6 +194,7 @@
        {
            let action = $(this).data('action'); // Holt sich die Aktion für den angeklickten Punkt
            let iframeSrc;
+           isTabClick = true;
 
            switch(action) {
                case 'config_generally':
@@ -226,6 +227,8 @@
                default:
                    iframeSrc = ''; // Fallback
            }
+
+           setTimeout(() => { isTabClick = false; }, 500); // warte 500ms das seite geladen wurde
 
            if (iframeSrc !== '')
            {
