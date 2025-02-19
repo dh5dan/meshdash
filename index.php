@@ -2,7 +2,7 @@
 
 echo '<!DOCTYPE html>';
 echo '<html lang="de">';
-echo '<head><title>MeshDash 4</title>';
+echo '<head><title>MeshDash-SQL</title>';
   echo '<meta charset="UTF-8">';
   echo '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
   echo '<meta http-equiv="content-type" content="text/html; charset=utf-8">';
@@ -262,10 +262,10 @@ echo '<div class="topLeft">';
 echo '<img src="' . $imgTaskStatus . '" id="bgTask" class="topImagePoint" alt="statusColor">';
 echo '</div>';
 
-echo'MeshDash-SQL V ' . VERSION;
+echo '<span class="topTitle" >MeshDash-SQL V ' . VERSION.'</span>';
 
 // Neues Div für Uhrzeit, ohne das Layout zu zerstören
-echo '<div class="topRight" id="datetime">No Time!</div>';
+echo '<div class="topRight" id="datetime">Hole Zeit!</div>';
 
 echo '</h1>';
 echo '</div>';

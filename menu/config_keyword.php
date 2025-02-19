@@ -104,7 +104,7 @@ echo '</tr>';
 echo '<tr>';
 echo '<td>KeyWord1 :</td>';
 echo '<td><input type="text" name="keyword1Text" id="keyword1Text" value="' . $keyword1Text . '" placeholder="Keyword"  /></td>';
-echo '<td><input type="checkbox" name="keyword1Enabled" ' . $keyword1EnabledChecked . ' id="keyword1Enabled" value="1" />aktiv/inaktiv</td>';
+echo '<td><input type="checkbox" name="keyword1Enabled" ' . $keyword1EnabledChecked . ' id="keyword1Enabled" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
@@ -129,7 +129,7 @@ echo '</tr>';
 echo '<tr>';
 echo '<td>KeyWord2 :</td>';
 echo '<td><input type="text" name="keyword2Text" id="keyword2Text" value="' . $keyword2Text . '" placeholder="Keyword" /></td>';
-echo '<td><input type="checkbox" name="keyword2Enabled" ' . $keyword2EnabledChecked . ' id="keyword2Enabled" value="1" />aktiv/inaktiv</td>';
+echo '<td><input type="checkbox" name="keyword2Enabled" ' . $keyword2EnabledChecked . ' id="keyword2Enabled" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
@@ -152,9 +152,7 @@ echo '<td colspan="2"><hr></td>';
 echo '</tr>';
 
 echo '<tr>';
-    echo '<td>&nbsp;</td>';
-    echo '<td>&nbsp;</td>';
-    echo '<td><input type="button" id="btnSaveConfigKeyword" value="Settings speichern"  /></td>';
+    echo '<td colspan="3"><input type="button" id="btnSaveConfigKeyword" value="Settings speichern"  /></td>';
 echo '</tr>';
 
 echo '</table>';

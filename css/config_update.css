@@ -9,7 +9,7 @@ body {
 }
 
 .failureHint {
-    background-color: red;
+    background-color: crimson;
     color: whitesmoke;
     font-weight: bold;
 }

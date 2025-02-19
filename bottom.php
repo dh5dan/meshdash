@@ -36,9 +36,8 @@ else
 echo '<form action="send_msg.php" method="POST">';
 echo '<input type="hidden" id="groupId" name="group" value="' . $group . '">';
     echo '<div class="bottomDmMsgLine">';
-     echo '<span class="bottomSize16">DM:</span> <input class="bottomInputDm" id="bottomDm" type="text" value="' . $dm . '" size="20" id="dm" name="dm" />';
-     echo str_repeat('&nbsp;', 10);
-      echo '<span class="bottomSize16">MSG:</span> <input class="bottomInputMsg" type="text" value="' . $msgText . '" id="msgText" name="msgText" required />';
+     echo '<span class="bottomSize16">DM:</span><input class="bottomInputDm" id="bottomDm" type="text" value="' . $dm . '" size="20" id="dm" name="dm" />';
+     echo '<span class="bottomSize16">MSG:</span><input class="bottomInputMsg" type="text" value="' . $msgText . '" id="msgText" name="msgText" required />';
     echo '</div>';
 
     echo '<div class="bottomSubmitLine">';

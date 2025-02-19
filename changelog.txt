@@ -1,3 +1,9 @@
+Version 1.09.78beta SQL
+Workaround für Bug mit Anführungszeichen. Ersetzten durch ``
+Textanpassung: Hinweis Eingabe/Änderung CallSign. Muss mit Angabe im Lora übereinstimmen.
+Responsive-Design für die Menüpunkte angepasst.
+Getestet auf einem Samsung Galaxy S23 SE unter Chrome
+#################################################################
 Version 1.09.76beta SQL
 Multi-Tabs sind nun möglich via sessionStorage.
 Auch parallele Abfragen behalten ihre aktivierten Gruppen.
@@ -6,7 +12,7 @@ BUGFIX: Im Beispielscript led_off.sh stand noch ledon.py drin
 #################################################################
 Version 1.09.74beta SQL
 Debug-Code aus bottom-frame entfernt.
-Die Höhenangabe sind in Fuss. Diese werden nun umgerechnet in Meter.
+Die Höhenangabe sind in Fuss. Diese werden jetzt umgerechnet in Meter.
 BUGFIX: Mheard gibt nicht aktuelle Liste wieder.
 Global-Reload umgestellt. Hier kann es u.U. zu einem erneuten Senden eines Submits kommen.
 Anpassung der Texte im Mheard-Menu das diese sich nur auf den lokalen Node beziehen.

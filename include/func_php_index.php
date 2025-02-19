@@ -294,19 +294,19 @@ function checkLoraIPDb($param)
 
         if (trim($loraIP == '0.0.0.0'))
         {
-            echo '<br><br><b>Die Lora-Ip wurde noch nicht gesetzt.';
+            echo '<br><br><u><b>Die Lora-Ip wurde noch nicht gesetzt.</b></u>';
             echo '<br><br>Bitte jetzt die IP angeben:</b>';
             echo '&nbsp;&nbsp;&nbsp;<input type="text" class="inputParamLoraIp" name="paramSetLoraIp" id="paramSetLoraIp" value="" required placeholder="Ip im IPv4 Format" />';
         }
 
         if (trim($callSign == ''))
         {
-            echo '<br><br><b>Das Rufzeichen mit SSID wurde noch nicht gesetzt.';
-            echo '<br><br>Bitte jetzt das Rufzeichen mit der SSID angeben:</b>';
+            echo '<br><br><u><b>Das Rufzeichen mit SSID wurde noch nicht gesetzt.</b></u>';
+            echo '<br><br>Bitte jetzt das Rufzeichen mit der SSID angeben, wie im Lora hinterlegt:';
             echo '&nbsp;&nbsp;&nbsp;<input type="text" class="inputParamLoraIp" name="inputParamCallSign" id="inputParamCallSign" value="" required placeholder="DB0ABC-99" />';
         }
 
-        echo '&nbsp;&nbsp;&nbsp;<input type="button" class="submitParamLoraIp" id="btnSetParamLoraIp" value="Parameter jetzt setzen"  />';
+        echo '<br><br><input type="button" class="submitParamLoraIp" id="btnSetParamLoraIp" value="Parameter jetzt setzen"  />';
 
         echo '</form>';
 

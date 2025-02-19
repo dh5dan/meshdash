@@ -1,5 +1,6 @@
 body {
     font-family: Arial, sans-serif;
+    padding: 0;
 }
 
 .successHint {
@@ -9,7 +10,56 @@ body {
 }
 
 .failureHint {
-    background-color: red;
+    background-color: crimson;
     color: whitesmoke;
     font-weight: bold;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    max-width: 600px;
+}
+
+td {
+    padding: 4px;
+    vertical-align: middle;
+}
+
+input[type="text"] {
+    width: 100%;
+    max-width: 90px;
+    padding: 5px;
+}
+
+input[type="checkbox"] {
+    transform: scale(1.2);
+}
+
+.successHint, .failureHint {
+    display: block;
+    padding: 10px;
+    margin: 10px 0;
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    table {
+        font-size: 14px;
+    }
+
+    td:first-child {
+        white-space: nowrap;
+    }
+
+
+    input[type="text"], input[type="checkbox"] {
+        width: 100%;
+    }
+
+    input[type="button"] {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+    }
 }

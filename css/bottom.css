@@ -3,64 +3,138 @@ body {
     background-color: #2E9AFE;
     color: white;
     text-align: center;
-    #display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: arial, sans-serif;
-    height: 100%;
+    font-family: Arial, sans-serif;
+    overflow-x: hidden; /* Verhindert horizontalen Overflow */
 }
 
 .bottomSize14 {
-    font-size:16px;
+    font-size: 16px;
 }
 
 .bottomSize16 {
-    font-size:16px;
+    font-size: 16px;
 }
 
 .bottomInputDm {
     width: 100px;
-    height: 20px;
     font-size: 14px;
 }
 
 .bottomInputMsg {
-    width: 750px;
-    height: 20px;
+    width: 100%;
+    max-width: 750px;
     font-size: 14px;
+    box-sizing: border-box;
 }
 
-.bottomInputSubmit
-{
+.bottomInputSubmit {
     font-size: 20px;
+    padding: 8px 15px;
+    border: none;
+    background-color: #0056b3;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
 }
 
 .bottomDmMsgLine {
-    position: absolute;
-    margin-left: 25%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    width: 100%; /* Verhindert Overflow */
+    box-sizing: border-box;
 }
 
 .bottomSubmitLine {
-    position: absolute;
-    margin-left: 52%;
-    bottom: 20px;
+    display: flex;
+    justify-content: center; /* Button bleibt mittig */
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 10px; /* Abstand nach unten */
+    width: 100%; /* Verhindert Overflow */
 }
 
+/* Standard: StatusContainer bleibt neben dem Button */
 .bottomStatusContainer {
     display: flex;
-    justify-content: flex-start; /* Linksbündig ausrichten */
-    gap: 20px; /* Abstand zwischen den beiden */
+    justify-content: flex-start;
+    align-items: center;
+    gap: 20px;
     position: absolute;
-    bottom: 10px;
-    width: auto;
-    margin-left: 10px;
+    left: 10px;
+    bottom: 20px; /* Höhe des Buttons */
+    max-width: calc(100% - 20px);
+    white-space: nowrap;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 .bottomStatus {
     font-weight: bold;
 }
 
+/* Fehlernachricht */
 .bottomErrorMsg {
-    color:white;
-    background:red;
+    color: white;
+    background: crimson;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+/* Media Query für Smartphones */
+@media (max-width: 768px) {
+    .bottomDmMsgLine {
+        display: flex;
+        width: 100%;
+        justify-content: flex-start; /* Span und Input links ausrichten */
+        gap: 0;
+    }
+
+    .bottomDmMsgLine span {
+        margin-left: 10px; /* Kleiner Abstand links vor "DM:" */
+        margin-right: 0;  /* Abstand zwischen Span und Input entfernen */
+    }
+
+    .bottomInputDm {
+        width: 50px; /* Klein genug für 5 Zeichen */
+        max-width: 100%; /* Sicherstellen, dass es den verfügbaren Platz nutzt */
+        flex-shrink: 0; /* Verhindert Verkleinerung */
+        text-align: center;
+    }
+
+    .bottomInputMsg {
+        flex-grow: 1; /* Nutzt den restlichen Platz */
+        width: auto;
+        margin-right: 10px;
+    }
+
+    .bottomInputSubmit {
+        font-size: 16px; /* Kleinere Schriftgröße */
+        padding: 6px 12px; /* Weniger Padding für kleinere Größe */
+    }
+
+    .bottomSubmitLine {
+        flex-direction: column;
+        align-items: flex-end; /* Button rechts angelehnt */
+        margin-right: 10px;
+        padding-right: 10px;
+        width: auto;
+        max-width: 100%; /* Verhindert Overflow */
+    }
+
+    .bottomStatusContainer {
+        position: absolute; /* Entfernt den Container aus dem Layoutfluss */
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1px; /* Weniger Abstand zwischen den zeilen für mobile Ansicht */
+        bottom: 15px;
+        white-space: nowrap;
+        font-size: smaller;
+        overflow: hidden;
+        box-sizing: border-box;
+    }
 }
