@@ -1,5 +1,10 @@
-Version 1.09.82beta SQL
+Version 1.09.84beta SQL
+Bugfix: command funktion braucht sudo apt-get install php-curl
+Zum Installer hinzugefügt. V 1.00.40
 
+
+#################################################################
+Version 1.09.82beta SQL
 Bugfix:Update Install/Update checke Service, bevor dieser gestoppt/disabled wird.
 Neue Script-version: 1.0.38
 Neu: Menüpunkt sende Befehl. Sende Kommandos an Lora inkl. vordefinierter Button.
