@@ -144,7 +144,8 @@ function initSQLiteDatabase($database): bool
                                        ('alertEnabledDst',0 , ''),
                                        ('alertSoundCallDst','' , ''),
                                        ('doLogEnable',1 , ''),
-                                       ('doNotBackupDb', 0, '')
+                                       ('doNotBackupDb', 0, ''),
+                                       ('onClickCallQrzCom', 0, '')
            ");
 
         #Close and write Back WAL
@@ -249,6 +250,7 @@ function showMenu()
       </ul>
     </li>
     <li data-action="mHeard">MHeard</li>
+    <li data-action="send_command">Sende Befehl</li>
     <li data-action="message">Message</li>
   </ul>
 </div>

@@ -44,28 +44,16 @@ input[type="checkbox"] {
     }
 
     td:first-child {
-        width: 50%; /* Lässt genug Platz für den Text */
-    }
-
-    td:nth-child(2) {
-        width: 40%; /* Fixe Breite für Eingabefelder */
-    }
-
-    td:nth-child(3) {
-        width: 10%; /* Checkbox bleibt sichtbar */
+        white-space: nowrap;
     }
 
     input[type="text"] {
-        max-width: 150px; /* Oder andere passende Breite */
-    }
-
-    input[type="text"], input[type="checkbox"] {
-        width: 100%;
+        max-width: 162px; /* Oder andere passende Breite */
     }
 
     input[type="button"] {
         width: 100%;
         padding: 10px;
-        font-size: 16px;
+        font-size: 14px;
     }
 }

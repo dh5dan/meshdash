@@ -221,6 +221,9 @@
                case 'message':
                    iframeSrc = 'message.php';
                    break;
+               case 'send_command':
+                   iframeSrc = 'menu/send_command.php';
+                   break;
                case 'mHeard':
                    iframeSrc = 'mheard.php';
                    break;

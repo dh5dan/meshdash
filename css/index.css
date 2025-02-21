@@ -189,8 +189,7 @@ iframe {
 @media (max-width: 768px) {
 
     .topTitle {
-        font-size: 20px; /* Etwas größere Schrift für mobile Ansicht */
-        margin-top: 10px; /* Abstand nach oben */
+        font-size: medium; /* Etwas größere Schrift für mobile Ansicht */
         margin-left: 14%;
     }
 

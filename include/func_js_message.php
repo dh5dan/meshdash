@@ -87,4 +87,16 @@
         }
 
     });
+
+    function sendToBottomFrame(callSign) {
+        let bottomFrame = parent.document.getElementById("bottom-frame");
+        if (bottomFrame) {
+            let bottomDoc = bottomFrame.contentDocument || bottomFrame.contentWindow.document;
+            let inputField = bottomDoc.getElementById("bottomDm");
+            if (inputField) {
+                inputField.value = callSign;
+            }
+        }
+    }
+
 </script>
