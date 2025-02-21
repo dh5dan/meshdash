@@ -1,6 +1,6 @@
 #!/bin/bash
 clear
-echo MeshDash Install-Script V 1.00.36
+echo MeshDash Install-Script V 1.00.38
 echo
 echo Installation Von MeshDash SQL
 echo 
@@ -76,13 +76,18 @@ echo
 echo
 echo Stoppe und Disable andere Services um Fehler zu vermeiden
 ######## Stop other running services
-sudo systemctl stop allmeshcom.service
-sudo systemctl stop checkmsg.service
-sudo systemctl stop checkled.service
-######## Disable other running services
-sudo systemctl disable allmeshcom.service
-sudo systemctl disable checkmsg.service
-sudo systemctl disable checkled.service
+if systemctl is-active --quiet allmeshcom.service; then
+    sudo systemctl stop allmeshcom.service
+    sudo systemctl disable allmeshcom.service
+fi
+if systemctl is-active --quiet checkmsg.service; then
+    sudo systemctl stop checkmsg.service
+    sudo systemctl disable checkmsg.service
+fi
+if systemctl is-active --quiet checkled.service; then
+    sudo systemctl stop checkled.service
+    sudo systemctl disable checkled.service
+fi
 echo
 #######################################
 ###### Install Web-Application   ######

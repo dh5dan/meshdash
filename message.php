@@ -52,6 +52,7 @@ $alertSoundCallSrc = getParamData('alertSoundCallSrc');
 $alertSoundFileDst = getParamData('alertSoundFileDst');
 $alertEnabledDst   = getParamData('alertEnabledDst');
 $alertSoundCallDst = getParamData('alertSoundCallDst');
+$onClickCallQrzCom = getParamData('onClickCallQrzCom');
 
 #Prüfe ob Logging aktiv ist
 $doLogEnable = getParamData('doLogEnable');
@@ -71,7 +72,10 @@ else if ($group == 0)
 }
 else if ($group == -2)
 {
-    $sqlAddon .= ' AND dst = "' . $callSign . '" ';
+    $sqlAddon .= ' AND (dst = "' . $callSign . '" OR src = "' . $callSign . '") ';
+    $sqlAddon .= " AND src GLOB '[A-Za-z]*' "; // src muss ein Rufzeichen sein
+    $sqlAddon .= " AND dst GLOB '[A-Za-z]*' "; // dst muss ein Rufzeichen sein
+    $sqlAddon .= " AND type = 'msg' ";
 }
 
 if ($noPosData == 1)
@@ -439,12 +443,23 @@ if ($result !== false)
             $replace    = '<a href="$0" target="_blank">$0</a>';
             $linkedText = preg_replace($pattern, $replace, $msg);
 
-            $patternQrz    = '/\b([a-zA-Z0-9]+)(?:-\d+)?\b/';
-            $replaceQrz    = '<a href="https://qrz.com/db/$1" target="_blank">$0</a>';
-            $linkedTextQrz = preg_replace($patternQrz, $replaceQrz, $firstCall);
 
-            #echo '<span class="' . $alertSrcCss . '">' . $firstCall. '</span>' . ' > ' .'<span class="' . $alertDstCss . '">' . $dstTxt . '</span> : ' . $linkedText;
-            echo '<span class="' . $alertSrcCss . '">' . $linkedTextQrz. '</span>' . ' > ' .'<span class="' . $alertDstCss . '">' . $dstTxt . '</span> : ' . $linkedText;
+            if ($onClickCallQrzCom == 1)
+            {
+                $patternQrz = '/\b([a-zA-Z0-9]+)(?:-\d+)?\b/';
+                $replaceQrz    = '<a href="https://qrz.com/db/$1" target="_blank">$0</a>';
+                $linkedTextQrz = preg_replace($patternQrz, $replaceQrz, $firstCall);
+
+                echo '<span class="' . $alertSrcCss . '">' . $linkedTextQrz . '</span>' . ' > ' . '<span class="' . $alertDstCss . '">' . $dstTxt . '</span> : ' . $linkedText;
+            }
+            else
+            {
+                $patternQrz    = '/\b([a-zA-Z0-9]+(?:-\d+)?)\b/';
+                $replaceQrz    = '<a href="#" onclick="sendToBottomFrame(\'$1\')">$0</a>';
+                $linkedTextQrz = preg_replace($patternQrz, $replaceQrz, $firstCall);
+
+                echo '<span class="' . $alertSrcCss . '">' . $linkedTextQrz. '</span> > ' . '<span class="' . $alertDstCss . '">' . $dstTxt . '</span> : ' . $linkedText;
+            }
 
             if ($mhSend == 1)
             {
