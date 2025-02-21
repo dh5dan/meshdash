@@ -37,7 +37,7 @@ if ($sendData === '1')
 
     if ($resSaveGenerallySetting)
     {
-        echo '<span class="successHint">Settings wurden erfolgreich abgespeichert!</span>';
+        echo '<span class="successHint">'.date('H:i:s').'-Settings wurden erfolgreich abgespeichert!</span>';
 
         echo "<script>reloadBottomFrame();</script>";
     }
@@ -148,7 +148,7 @@ echo '<td xmlns="http://www.w3.org/1999/html"><input type="text" name="callSign"
 echo '</tr>';
 
 echo '<tr>';
-echo '<td xmlns="http://www.w3.org/1999/html" colspan="2"><span class="failureHint">Das Rufzeichen  muss mit Angabe<br>im Lora übereinstimmen!</span></td>';
+echo '<td xmlns="http://www.w3.org/1999/html" colspan="2"><span class="failureHint">Das Rufzeichen muss mit Angabe<br>im Lora übereinstimmen!</span></td>';
 echo '</tr>';
 
 echo '<tr>';

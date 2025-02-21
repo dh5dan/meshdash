@@ -1,6 +1,6 @@
 <?php
 
-function backupApp($sourceDir, $backupDir)
+function backupApp2($sourceDir, $backupDir)
 {
     $zip            = new ZipArchive();
     $backupFullPath = $backupDir . '/backup_' . date('Ymd_His') . '.zip';
@@ -58,6 +58,78 @@ function backupApp($sourceDir, $backupDir)
         return false;
     }
 }
+
+function backupApp($sourceDir, $backupDir)
+{
+    $zip            = new ZipArchive();
+    $backupFullPath = $backupDir . '/backup_' . date('Ymd_His') . '.zip';
+    $backupFile     = 'backup_' . date('Ymd_His') . '.zip';
+    $doNotBackupDb  = getParamData('doNotBackupDb');
+
+    $excludeList = [
+        'backup/',   // komplettes Verzeichnis
+        '.git/',     // komplettes Verzeichnis
+        '.idea/',    // komplettes Verzeichnis
+        'test/',     // komplettes Verzeichnis
+        '.gitignore' // einzelne Datei
+    ];
+
+    // Nur diese Dateitypen in "execute/" sichern
+    $allowedExecuteExtensions = ['sh', 'py', 'cmd', 'bat', 'exe', 'com'];
+    $executeDir               = 'execute/';
+
+    # Falls Datenbank-Backup ausgeschlossen werden soll
+    if ($doNotBackupDb == 1)
+    {
+        echo '<span class="failureHint">Datenbank wird nicht gesichert!</span>';
+        $excludeList[] = "database/";   // komplettes Verzeichnis
+    }
+
+    if ($zip->open($backupFullPath, ZipArchive::CREATE) === true)
+    {
+        $iterator = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($sourceDir, FilesystemIterator::SKIP_DOTS),
+            RecursiveIteratorIterator::LEAVES_ONLY
+        );
+
+        foreach ($iterator as $file)
+        {
+            if ($file->isDir()) continue; // Verzeichnisse überspringen
+
+            // Relativen Pfad berechnen (richtig für Windows und Linux)
+            $relativePath = str_replace($sourceDir . DIRECTORY_SEPARATOR, '', $file->getPathname());
+            $relativePath = str_replace('\\', '/', $relativePath); // Für Windows korrigieren
+
+            // Prüfen, ob die Datei oder ihr Verzeichnis ausgeschlossen werden soll
+            foreach ($excludeList as $excluded)
+            {
+                if (preg_match('/^' . preg_quote($excluded, '/') . '/', $relativePath))
+                {
+                    continue 2; // Datei überspringen
+                }
+            }
+
+            // Falls Datei im "execute/"-Verzeichnis liegt, nur *.sh und *.py zulassen
+            if (preg_match('/^' . preg_quote($executeDir, '/') . '/', $relativePath))
+            {
+                $fileExtension = pathinfo($relativePath, PATHINFO_EXTENSION);
+                if (!in_array($fileExtension, $allowedExecuteExtensions))
+                {
+                    continue; // Alle anderen Dateien in "execute/" werden ignoriert
+                }
+            }
+
+            // Datei ins ZIP-Archiv hinzufügen
+            $zip->addFile($file->getPathname(), $relativePath);
+        }
+
+        $zip->close();
+        return $backupFile;
+    } else {
+        return false;
+    }
+}
+
 
 function unzipUpdate($zipFile, $tempDir): bool
 {

@@ -1,17 +1,28 @@
+Version 1.09.88beta SQL
+Codeanpassung Backup. Verhindert das exkludierte Verzeichnisnamen
+auch Dateinamen mit Bestandteil des namens nicht sichern.
+Backup sichert im execute Verzeichnis nur noch:
+'sh', 'py', 'cmd', 'bat', 'exe', 'com'
+Verhindert, das python Pipe-Datei oder andere Temp_dateien
+das Backup blockieren.
+Speicher-/Fehlermeldungen mit Uhrzeit-Angabe, um zu erkennen,
+dass es neuen Meldungen sind, wenn man mehrfach speichert.
+Einheitliches Wording benutzt.
+#################################################################
 Version 1.09.86beta SQL
-IP beim Button zum setzen von --extupdip falsch. Da muss die vom Host rein.
+IP beim Button zum Setzen von --extupdip falsch. Da muss die vom Host rein.
 Sind mehrere Ip an der EthernetSchnittstelle definiert, werden diese separat gelistet.
 #################################################################
 Version 1.09.84beta SQL
 Bugfix: command funktion braucht sudo apt-get install php-curl.
 Zum Installer hinzugefügt. V 1.00.40
-Erst wenn curl installiert ist, erscheint der Menüpunkt "Sende Befehl"
+Erst, wenn curl installiert ist, erscheint der Menüpunkt "Sende Befehl"
 #################################################################
 Version 1.09.82beta SQL
-Bugfix:Update Install/Update checke Service, bevor dieser gestoppt/disabled wird.
+Bugfix: Update Install/Update checke Service, bevor dieser gestoppt/disabled wird.
 Neue Script-version: 1.0.38
 Neu: Menüpunkt sende Befehl. Sende Kommandos an Lora inkl. vordefinierter Button.
-BUGFIX: Eigene gesendete Nachrichten erscheinen nicht im Call-Tab
+BUGFIX: Eigene gesendete Nachrichten erscheinen nicht im Call-Tab.
 Neu: Klick auf Src-Call nun wahlweise einstellbar. Qrz.com oder ins DM-Feld.
 Responsive Design: Titeltext angepasst. Font-size: medium
 #################################################################
