@@ -5,16 +5,21 @@
        let serverTime = null;
        let offset = 0;
 
-       function fetchServerTime() {
-           $.getJSON("ajax_time.php", function (data) {
+       function fetchServerTime()
+       {
+           $.getJSON("ajax_time.php", function (data)
+           {
                serverTime = new Date(data.time);
-               offset = serverTime - new Date(); // Differenz zwischen Server- und Client Zeit
+               offset     = serverTime - new Date(); // Differenz zwischen Server- und Client Zeit
+               data       = null;
            });
        }
 
-       function updateDateTime() {
-           if (serverTime) {
-               let now = new Date(new Date().getTime() + offset); // Korrigierte Zeit
+       function updateDateTime()
+       {
+           if (serverTime)
+           {
+               let now            = new Date(new Date().getTime() + offset); // Korrigierte Zeit
                let dateTimeString = now.toLocaleString("de-DE", {
                    day: "2-digit",
                    month: "2-digit",
@@ -56,9 +61,12 @@
                    if (isAtTop)
                    {
                        let doc = messageFrame.contents();
-                       doc.find("body").html(data); // Neuen Inhalt einfügen
+                       //doc.find("body").html(data); // Neuen Inhalt einfügen
+                       doc.find("body").empty().append(data); // mal probieren
                        doc.scrollTop(scrollPosition); // Scroll-Position wiederherstellen
                    }
+
+                   data = null; // Speicher freigeben
                });
            }
        }

@@ -1,3 +1,7 @@
+Version 1.09.90beta SQL
+Optimization Ajax call to prevent memory leaks in DOM on some Browsers
+
+#################################################################
 Version 1.09.88beta SQL
 Codeanpassung Backup. Verhindert das exkludierte Verzeichnisnamen
 auch Dateinamen mit Bestandteil des namens nicht sichern.
