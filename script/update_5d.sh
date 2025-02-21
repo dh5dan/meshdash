@@ -1,6 +1,6 @@
 #!/bin/bash
 clear
-echo MeshDash Update-Script V 1.00.38
+echo MeshDash Update-Script V 1.00.40
 echo
 echo UPDATE einer bestehenden MeshDash SQL Installation.
 echo Es wird nur das MeshDash installiert,

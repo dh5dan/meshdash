@@ -1,6 +1,6 @@
 #!/bin/bash
 clear
-echo MeshDash Install-Script V 1.00.38
+echo MeshDash Install-Script V 1.00.40
 echo
 echo Installation Von MeshDash SQL
 echo 
@@ -52,6 +52,7 @@ sudo apt-get install php-xml -f -y
 sudo apt-get install php-zip -f -y
 sudo apt-get install unzip -f -y
 sudo apt-get install lynx -f -y
+sudo apt-get install php-curl -f -y
 echo
 echo
 sudo lighty-enable-mod fastcgi
