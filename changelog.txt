@@ -1,8 +1,8 @@
 Version 1.09.84beta SQL
-Bugfix: command funktion braucht sudo apt-get install php-curl
+Bugfix: command funktion braucht sudo apt-get install php-curl.
 Zum Installer hinzugefügt. V 1.00.40
 
-
+Erst wenn curl installiert ist, erscheint der Menüpunkt "Sende Befehl"
 #################################################################
 Version 1.09.82beta SQL
 Bugfix:Update Install/Update checke Service, bevor dieser gestoppt/disabled wird.
