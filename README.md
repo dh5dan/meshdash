@@ -7,9 +7,16 @@ auf ESP32-basierten Geräten, die mit der Firmware MeshCom arbeiten.
 Die Verarbeitung und Speicherung der Daten erfolgt über Sqlite3 daher auch der Zusatz SQL.
 
 Dieses Projekt basiert ursprünglich auf ein Projekt von DL4QB.  
-Mit seiner tatkräftigen Unterstützung wurde daraus dann dieses Projekt geschaffen.   
+Mit seiner tatkräftigen Unterstützung wurde daraus dann dieses Projekt geschaffen.  
 Dies ist ein Freizeit-Hobbyprojekt, welches die Anwendung und Bedienung von MeshCom  
 auf eine webbasierte Plattform bringen soll.
+
+![RELEASE](/docs/front_menu.jpg)
+
+Vornehmlich ist die Applikation für Linux ausgelegt, sie ist aber auch  
+unter Windows lauffähig. Hier muss allerdings schon ein funktionierende Webserver  
+mit aktiven PHP-Modulen die nötigt sind vorhanden sein.  
+Hier läuft die App unter Win10 mit einem Apache und PHP >= 7.4.23.
 
 Einige Funktionen von MeshDash:
 
@@ -18,6 +25,7 @@ Einige Funktionen von MeshDash:
 - Remote Mheard-Abfragen
 - Soundbenachrichtigungen für eigene Nachrichten
 - Update über die Weboberfläche
+- Senden von Befehlen an den Lora
 
 Das Projekt befindet sich derzeit in der **Beta-Phase**, daher können noch Fehler auftreten.  
 Falls Probleme auftreten, bitte im Issue-Bereich von GitHub melden,  
@@ -58,10 +66,19 @@ Die **Kurzanleitung.pdf** enthält:
 Diese Datei hilft dir, MeshDash schnell zu installieren und zu nutzen.
 
 ## Noch offene Punkte die auf der Todo stehen:
-- Responsive Design für die mobile Ansicht.
 - visuelle Kennzeichnung im Tab, wenn neue Nachrichten da sind.
 - MHeard konfigurierbar machen für Request-/Acknowledged Ziele.
 
+## Hier noch ein paar Bilder aus den Menüpunkten:
+
+![FILES](/docs/01_config.jpg)
+![FILES](/docs/02_alert.jpg)
+![FILES](/docs/03_keyword.jpg)
+![FILES](/docs/04_update.jpg)
+![FILES](/docs/10_groups.jpg)
+![FILES](/docs/20_mheard.jpg)
+![FILES](/docs/30_send_command.jpg)
+![FILES](/docs/40_message.jpg)
 
   
   
