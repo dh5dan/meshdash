@@ -249,8 +249,14 @@ function showMenu()
         <li data-action="grp_definition">Gruppen definieren</li>
       </ul>
     </li>
-    <li data-action="mHeard">MHeard</li>
-    <li data-action="send_command">Sende Befehl</li>
+    <li data-action="mHeard">MHeard</li>';
+
+    if (function_exists('curl_version'))
+    {
+        echo '  <li data-action="send_command">Sende Befehl</li>';
+    }
+
+    echo '
     <li data-action="message">Message</li>
   </ul>
 </div>
