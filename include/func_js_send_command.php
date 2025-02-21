@@ -22,6 +22,8 @@
                 return false;
             }
 
+            $("#btnSendCommand").prop('disabled', true);
+            $(".btnPreCmd").prop('disabled', true);
             $("#sendData").val(sendData);
             $("#frmSendCommand").trigger('submit');
 

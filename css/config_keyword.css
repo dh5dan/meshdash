@@ -25,13 +25,21 @@ input[type="checkbox"] {
 }
 
 .successHint, .failureHint {
-    display: block;
+
     padding: 10px;
     margin: 10px 0;
     text-align: center;
 }
 
 @media (max-width: 600px) {
+
+    .successHint, .failureHint {
+        display: block;
+        padding: 10px;
+        margin: 10px 0;
+        text-align: center;
+    }
+
     table {
         font-size: 14px;
     }

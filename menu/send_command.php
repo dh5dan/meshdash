@@ -47,11 +47,11 @@ if ($sendData === '1')
 
     if ($resSendCommand)
     {
-        echo '<span class="successHint">Befehl wurden gesendet!</span>';
+        echo '<span class="successHint">'.date('H:i:s').'-Befehl erfolgreich gesendet!</span>';
     }
     else
     {
-        echo '<span class="failureHint">Es gab einen Fehler beim Senden des Befehls!</span>';
+        echo '<span class="failureHint">'.date('H:i:s').'-Fehler beim Senden des Befehls!</span>';
     }
 }
 

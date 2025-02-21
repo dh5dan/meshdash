@@ -37,7 +37,7 @@ if ($sendData === '1')
 
     if ($resSaveAlertingSetting)
     {
-        echo '<span class="successHint">Settings wurden erfolgreich abgespeichert!</span>';
+        echo '<span class="successHint">'.date('H:i:s').'-Settings erfolgreich abgespeichert!</span>';
     }
     else
     {

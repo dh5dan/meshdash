@@ -2,13 +2,11 @@
 
 function sendCommand($loraCmd, $loraIp): bool
 {
-
     $loraCmd = trim($loraCmd);
 
     $actualHost  = (empty($_SERVER['HTTPS']) ? 'http' : 'https');
     $triggerLink = $actualHost . '://' . $loraIp . '/?command=' . urlencode($loraCmd);
-
-    $debugFlag  = false;
+    $debugFlag   = false;
 
     #Starte Trigger
     $ch = curl_init();
@@ -21,11 +19,15 @@ function sendCommand($loraCmd, $loraIp): bool
     curl_setopt($ch, CURLOPT_VERBOSE, true);
     curl_setopt($ch, CURLOPT_TIMEOUT_MS, 5000); // Warte max. 5 Sek.
 
-    #Ignoriere Timeout Meldung da so gewollt
+    #Fehler abfangen
     if (curl_exec($ch) === false)
     {
-        echo 'Curl error: ' . curl_error($ch);
-        echo 'Curl error: ' . curl_errno($ch);
+        echo '<span>Curl error: ' . curl_error($ch) . '</span>';
+        #echo '<br>Curl error: ' . curl_errno($ch);
+        echo '<br>';
+        echo '<br>';
+        curl_close($ch);
+        return false;
     }
 
     curl_close($ch);
@@ -42,5 +44,5 @@ function sendCommand($loraCmd, $loraIp): bool
         return true;
     }
 
-    return true;
+    return false;
 }
