@@ -32,6 +32,15 @@ $osIssWindows = chkOsIssWindows();
 $osName       = $osIssWindows === true ? 'Windows' : 'Linux';
 $loraIp       = getParamData('loraIp');
 
+$ips = [];
+foreach (gethostbynamel(gethostname()) as $ip) {
+    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+        $ips[] = $ip;
+    }
+}
+
+$countIps = count($ips);
+
 if ($sendData === '1')
 {
     $resSendCommand = sendCommand($sendCommand, $loraIp);
@@ -71,10 +80,24 @@ echo '<tr>';
 echo '<td colspan="2"><hr></td>';
 echo '</tr>';
 
-echo '<tr>';
-echo '<td>Setzte UDP Ziel-Ip :</td>';
-echo '<td><input type="button" class="btnPreCmd" data-cmd="cmd1" value="--extudpip ' . $loraIp . '" /></td>';
-echo '</tr>';
+
+if ($countIps == 1)
+{
+    echo '<tr>';
+    echo '<td>Setzte UDP Ziel-Ip :</td>';
+    echo '<td><input type="button" class="btnPreCmd" data-cmd="cmd1" value="--extudpip ' . $ips[0] . '" /></td>';
+    echo '</tr>';
+}
+else
+{
+    for ($t = 0;$t < $countIps;++$t)
+    {
+        echo '<tr>';
+        echo '<td>Setzte UDP Ziel-Ip' . $t . ' :</td>';
+        echo '<td><input type="button" class="btnPreCmd" data-cmd="cmd1" value="--extudpip ' . $ips[$t] . '" /></td>';
+        echo '</tr>';
+    }
+}
 
 echo '<tr>';
 echo '<td>Aktiviere UDP :</td>';

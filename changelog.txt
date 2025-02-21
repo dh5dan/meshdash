@@ -1,7 +1,10 @@
+Version 1.09.86beta SQL
+IP beim Button zum setzen von --extupdip falsch. Da muss die vom Host rein.
+Sind mehrere Ip an der EthernetSchnittstelle definiert, werden diese separat gelistet.
+#################################################################
 Version 1.09.84beta SQL
 Bugfix: command funktion braucht sudo apt-get install php-curl.
 Zum Installer hinzugefügt. V 1.00.40
-
 Erst wenn curl installiert ist, erscheint der Menüpunkt "Sende Befehl"
 #################################################################
 Version 1.09.82beta SQL
