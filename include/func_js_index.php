@@ -39,17 +39,52 @@
        let isTabClick = false; // Globale Variable die prüft, ob Tab geklickt wurde
 
        //Refresh via Ajax für message.php
+       // function loadNewMessages()
+       // {
+       //     if (isTabClick) return; // Falls gerade ein Tab-Klick aktiv ist, beende die Funktion
+       //
+       //     let messageFrame   = $("#message-frame"); // ID des Iframes
+       //     let currentSrc     = messageFrame.attr("src");
+       //
+       //     if (currentSrc && currentSrc.includes("message.php"))
+       //     {
+       //         let groupValue     = messageFrame.contents().find("#group").val();
+       //         let scrollPosition = messageFrame.contents().scrollTop(); // Aktuelle Scroll-Position merken
+       //
+       //         // Prüfen, ob der Benutzer ganz oben ist (Scroll-Position = 0)
+       //         let isAtTop = (scrollPosition === 0);
+       //
+       //         // `message.php` ruft die neuen Nachrichten ab
+       //         $.get("message.php", {group: groupValue}, function (data)
+       //         {
+       //             // Wenn der Benutzer ganz oben ist, neue Nachrichten laden
+       //             if (isAtTop)
+       //             {
+       //                 let doc = messageFrame.contents();
+       //                 //doc.find("body").html(data); // Neuen Inhalt einfügen
+       //                 doc.find("body").empty().append(data); // mal probieren
+       //                 doc.scrollTop(scrollPosition); // Scroll-Position wiederherstellen
+       //             }
+       //
+       //             data = null; // Speicher freigeben
+       //         });
+       //     }
+       // }
+       //        setInterval(loadNewMessages, 5000); // Alle 5 Sekunden aktualisieren
+
+       // Refresh via Ajax für message.php
        function loadNewMessages()
        {
            if (isTabClick) return; // Falls gerade ein Tab-Klick aktiv ist, beende die Funktion
 
-           let messageFrame   = $("#message-frame"); // ID des Iframes
-           let currentSrc     = messageFrame.attr("src");
+           let messageFrame = $("#message-frame"); // ID des Iframes
+           let currentSrc   = messageFrame.attr("src");
 
            if (currentSrc && currentSrc.includes("message.php"))
            {
-               let groupValue     = messageFrame.contents().find("#group").val();
-               let scrollPosition = messageFrame.contents().scrollTop(); // Aktuelle Scroll-Position merken
+               let doc            = messageFrame.contents();
+               let groupValue     = doc.find("#group").val();
+               let scrollPosition = doc.scrollTop(); // Aktuelle Scroll-Position merken
 
                // Prüfen, ob der Benutzer ganz oben ist (Scroll-Position = 0)
                let isAtTop = (scrollPosition === 0);
@@ -57,21 +92,24 @@
                // `message.php` ruft die neuen Nachrichten ab
                $.get("message.php", {group: groupValue}, function (data)
                {
-                   // Wenn der Benutzer ganz oben ist, neue Nachrichten laden
                    if (isAtTop)
                    {
-                       let doc = messageFrame.contents();
-                       //doc.find("body").html(data); // Neuen Inhalt einfügen
-                       doc.find("body").empty().append(data); // mal probieren
+                       let body = doc.find("body");
+                       body.empty();        // Vorherigen Inhalt sicher entfernen
+                       body.append(data);   // Neuen Inhalt einfügen
                        doc.scrollTop(scrollPosition); // Scroll-Position wiederherstellen
                    }
 
-                   data = null; // Speicher freigeben
+                   // Referenzen explizit freigeben
+                   data = null;
+                   doc = null;
+                   body = null;
                });
            }
        }
 
        setInterval(loadNewMessages, 5000); // Alle 5 Sekunden aktualisieren
+
 
         //Kreis anklicken, um BG-Prozess zu starten oder zu stoppen
        $("#bgTask").on("click", function ()
@@ -216,6 +254,9 @@
                    break;
                case 'config_update':
                    iframeSrc = 'menu/config_update.php';
+                   break;
+               case 'lora_info':
+                   iframeSrc = 'menu/lora_info.php';
                    break;
                case 'config_data_purge':
                    iframeSrc = 'menu/config_data_purge.php';
