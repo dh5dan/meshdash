@@ -32,12 +32,7 @@ $osIssWindows = chkOsIssWindows();
 $osName       = $osIssWindows === true ? 'Windows' : 'Linux';
 $loraIp       = getParamData('loraIp');
 
-$ips = [];
-foreach (gethostbynamel(gethostname()) as $ip) {
-    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-        $ips[] = $ip;
-    }
-}
+$ips = $osIssWindows ? getLocalIpAddressesWin() : getLocalIpAddressesLinux();
 
 $countIps = count($ips);
 
