@@ -33,7 +33,7 @@
        }
 
        fetchServerTime(); // Initial holen
-       setInterval(fetchServerTime, 10000); // Alle 10 Sekunden Serverzeit abrufen
+       setInterval(fetchServerTime, 60000); // Alle 60 Sekunden Serverzeit abrufen
        setInterval(updateDateTime, 1000); // Jede Sekunde lokale Zeit aktualisieren
 
        let isTabClick = false; // Globale Variable die prüft, ob Tab geklickt wurde
@@ -71,7 +71,7 @@
            }
        }
 
-       setInterval(loadNewMessages, 2000); // Alle 2 Sekunden aktualisieren
+       setInterval(loadNewMessages, 5000); // Alle 5 Sekunden aktualisieren
 
         //Kreis anklicken, um BG-Prozess zu starten oder zu stoppen
        $("#bgTask").on("click", function ()

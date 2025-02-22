@@ -1,6 +1,6 @@
 #!/bin/bash
 clear
-echo MeshDash Update-Script V 1.00.40
+echo MeshDash Update-Script V 1.00.42
 echo
 echo UPDATE einer bestehenden MeshDash SQL Installation.
 echo Es wird nur das MeshDash installiert,
@@ -26,8 +26,67 @@ fi
 echo "OK, es geht weiter mit dem Update..."
 sleep 2
 ######################################
+# Funktion, um das Verzeichnis /home/pi zu überprüfen
+check_home_pi() {
+    if [ "$(pwd)" == "/home/pi" ]; then
+        # Wenn wir bereits im Verzeichnis /home/pi sind
+        echo "Wir sind bereits im Verzeichnis /home/pi."
+        return 0
+    elif [ -d "/home/pi" ]; then
+        # Wenn /home/pi existiert, aber nicht das aktuelle Verzeichnis ist
+        echo "Das Verzeichnis /home/pi existiert."
+        return 1
+    else
+        # Wenn /home/pi nicht existiert
+        echo "Es muss einmalig Install ausgeführt werden!"
+        echo "Neue Updates werden dann nur noch über MeshDash oder alternativ mit dem Update Skript installiert."
+        exit 1
+    fi
+}
+
+# Dateien, die kopiert werden sollen
+FILE1="install_5d.sh"
+FILE2="update_5d.sh"
+ZIPFILE=$(ls *.zip)
+
+# Funktion zum Kopieren der Dateien
+copy_files() {
+
+    echo "Kopiere Dateien nach /home/pi..."
+
+    sudo cp "$FILE1" /home/pi/
+    sudo cp "$FILE2" /home/pi/
+
+    # Überprüfen, ob eine .zip Datei existiert
+    if [ -z "$ZIPFILE" ]; then
+        echo "Keine .zip Datei gefunden."
+        exit 1
+    else
+        sudo cp "$ZIPFILE" /home/pi/
+    fi
+
+    if [ $? -eq 0 ]; then
+        echo "Dateien erfolgreich kopiert."
+    else
+        echo "Fehler beim Kopieren der Dateien."
+        exit 1
+    fi
+}
+
+# Hauptlogik
+check_home_pi
+if [ $? -eq 0 ]; then
+    echo "Installationsvorgang kann fortgesetzt werden."
+      echo "Wechseln ins Verzeichnis /home/pi..."
+        cd /home/pi
+else
+    copy_files
+    echo "Haupt-Installation wird nun ausgeführt."
+      echo "Wechseln ins Verzeichnis /home/pi..."
+         cd /home/pi
+fi
+######################################
 echo
-echo Stoppe und Disable andere Services um Fehler zu vermeiden
 echo Stoppe und Disable andere Services um Fehler zu vermeiden
 ######## Stop other running services
 if systemctl is-active --quiet allmeshcom.service; then
@@ -48,8 +107,10 @@ echo
 ######################################
 hostIp=$(hostname -I | awk '{print $1}')
 echo
-echo Stoppe checkmh Service da neue Version ggf. kopiert wird
-sudo systemctl stop checkmh.service
+if systemctl is-active --quiet checkmh.service; then
+  echo Stoppe checkmh Service da neue Version ggf. kopiert wird
+  sudo systemctl stop checkmh.service
+fi
 echo
 echo Lösche meshdash Verzeichnis und erzeuge es neu
 sudo rm -rf meshdash
@@ -104,4 +165,4 @@ sudo systemctl start checkmh.service
 echo
 echo FERTIG!
 echo
-echo "Starte nun Deinen Webbrowser und gib http://$hostIp ein."
+echo "Starte nun Deinen Webbrowser und gib http://$hostIp/5d ein."
