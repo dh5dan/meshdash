@@ -1,5 +1,10 @@
+Version 1.09.94beta SQL
+Optimierung Iframe memory Leak
+Bugfix: Log-Date wurde nicht aktualisiert.
+Auslesen der Lora-Info Daten on demand.
+Grad-Celsius Zeichen in Pattern aufgenommen zum Senden
+#################################################################
 Version 1.09.92beta SQL
-
 Prüfe, ob wir uns im /home/pi Verzeichnis befinden.
 Wenn nicht, wird es erstellt und die Installation autom. dort weitergeführt.
 Install/Update auf V 1.00.42 angehoben.

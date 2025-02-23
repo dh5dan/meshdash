@@ -32,7 +32,7 @@ $doLogEnable = getParamData('doLogEnable');
 if ($msgText != '')
 {
     $utf8    = utf8_encode('äöü#ÄÖÜß');
-    $addon   = '$%"§'."'|"."´`";
+    $addon   = '$%"°§'."'|"."´`";
     $pattern = "/^[0-9a-zA-Z ,()-<>" . $utf8 . $addon . "&.-_\\s\?\!]+\$/";
     $loraIP  = getParamData('loraIp');
 

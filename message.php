@@ -1,16 +1,17 @@
 <?php
+header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1.
+header("Pragma: no-cache"); // HTTP 1.0.
+header("Expires: 0"); // Proxies.
+
 echo '<!DOCTYPE html>';
 echo '<html lang="de">';
 echo '<head><title>Einstellungen</title>';
 
 #Prevnts UTF8 Errors on misconfigured php.ini
 ini_set( 'default_charset', 'UTF-8' );
-
 echo '<script type="text/javascript" src="jquery/jquery.min.js"></script>';
-echo '<script type="text/javascript" src="jquery/jquery-ui.js"></script>';
-echo '<link rel="stylesheet" href="jquery/jquery-ui.css">';
-echo '<link rel="stylesheet" href="jquery/css/jq_custom.css">';
 echo '<link rel="stylesheet" href="css/message.css">';
+
 echo '</head>';
 echo '<body>';
 

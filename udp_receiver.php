@@ -116,8 +116,10 @@ if (!@socket_bind($sock, "0.0.0.0", 1799))
 //Infinite Iteration to Receive UDP Data from Bind Port
 while (true)
 {
-    $bufJson = '';
-    $r = socket_recvfrom($sock, $bufJson, 512, 0, $remote_ip, $remote_port);
+    $bufJson   = '';
+    $r         = socket_recvfrom($sock, $bufJson, 512, 0, $remote_ip, $remote_port);
+    $file      = 'log/msg_data_' . date('Ymd') . '.log';
+    $errorFile = 'log/error_' . date('Ymd') . '.log';
 
     if ($r === false)
     {
