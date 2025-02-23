@@ -71,15 +71,17 @@ $callSign          = getParamData('callSign');
 $maxScrollBackRows = getParamData('maxScrollBackRows');
 $doLogEnable       = getParamData('doLogEnable');
 $doNotBackupDb     = getParamData('doNotBackupDb');
-$onClickCallQrzCom = getParamData('onClickCallQrzCom');
+$clickOnCall       = getParamData('clickOnCall');
 
 $noPosDataChecked         = $noPosData == 1 ? 'checked' : '';
 $noDmAlertGlobalChecked   = $noDmAlertGlobal == 1 ? 'checked' : '';
 $noTimeSyncMsgChecked     = $noTimeSyncMsg == 1 ? 'checked' : '';
 $doLogEnableChecked       = $doLogEnable == 1 ? 'checked' : '';
 $doNotBackupDbChecked     = $doNotBackupDb == 1 ? 'checked' : '';
-$onClickCallQrzComChecked = $onClickCallQrzCom == 1 ? 'checked' : '';
 
+$onClickOnCallChecked0 = $clickOnCall == 0 ? 'checked' : '';
+$onClickOnCallChecked1 = $clickOnCall == 1 ? 'checked' : '';
+$onClickOnCallChecked2 = $clickOnCall == 2 ? 'checked' : '';
 
 echo "<h2>Basiseinstellungen von MeshDash-SQL</h2>";
 
@@ -128,8 +130,23 @@ echo '<td><input type="checkbox" name="doNotBackupDb" ' . $doNotBackupDbChecked 
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Klick auf Call öffnet QRZ.com:</td>';
-echo '<td><input type="checkbox" name="onClickCallQrzCom" ' . $onClickCallQrzComChecked . ' id="onClickCallQrzCom" value="1" /></td>';
+echo '<td>Klick auf Call:</td>';
+echo '<td>&nbsp</td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td>&nbsp;- Setzt Call in DM-Feld:</td>';
+echo '<td><input type="radio" name="clickOnCall" ' . $onClickOnCallChecked0 . ' id="clickOnCall0" value="0" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td>&nbsp;- Öffnet QRZ.com:</td>';
+echo '<td><input type="radio" name="clickOnCall" ' . $onClickOnCallChecked1 . ' id="clickOnCall1" value="1" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td>&nbsp;- Setzt Call in Msg-Feld:</td>';
+echo '<td><input type="radio" name="clickOnCall" ' . $onClickOnCallChecked2 . ' id="clickOnCall2" value="2" /></td>';
 echo '</tr>';
 
 echo '<tr>';

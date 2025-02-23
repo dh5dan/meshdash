@@ -4,7 +4,7 @@ body {
 }
 
 .table {
-    width: 100%;
+    width: auto;
     border-collapse: collapse;
     margin: 20px 0;
     font-family: Arial, sans-serif;
@@ -57,5 +57,22 @@ body {
         width: 100%;
         padding: 10px;
         font-size: 14px;
+    }
+}
+
+/* Media Query für Smartphones */
+@media (max-width: 768px) {
+
+    h2 {
+        font-size: medium;
+    }
+
+    input[type="button"] {
+        display: inline-block;
+        background: #007bff;
+        color: white;
+        /*padding: 5px 10px;*/
+        border-radius: 5px;
+        cursor: pointer;
     }
 }

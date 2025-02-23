@@ -10,7 +10,7 @@ echo '<head><title>Einstellungen</title>';
 #Prevnts UTF8 Errors on misconfigured php.ini
 ini_set( 'default_charset', 'UTF-8' );
 echo '<script type="text/javascript" src="jquery/jquery.min.js"></script>';
-echo '<link rel="stylesheet" href="css/message.css">';
+echo '<link rel="stylesheet" href="css/message.css?' . microtime() . '">';
 
 echo '</head>';
 echo '<body>';
@@ -53,7 +53,7 @@ $alertSoundCallSrc = getParamData('alertSoundCallSrc');
 $alertSoundFileDst = getParamData('alertSoundFileDst');
 $alertEnabledDst   = getParamData('alertEnabledDst');
 $alertSoundCallDst = getParamData('alertSoundCallDst');
-$onClickCallQrzCom = getParamData('onClickCallQrzCom');
+$clickOnCall       = getParamData('clickOnCall');
 
 #Prüfe ob Logging aktiv ist
 $doLogEnable = getParamData('doLogEnable');
@@ -445,7 +445,15 @@ if ($result !== false)
             $linkedText = preg_replace($pattern, $replace, $msg);
 
 
-            if ($onClickCallQrzCom == 1)
+            if ($clickOnCall == 0)
+            {
+                $patternQrz    = '/\b([a-zA-Z0-9]+(?:-\d+)?)\b/';
+                $replaceQrz    = '<a href="#" onclick="sendToBottomFrame(\'$1\')">$0</a>';
+                $linkedTextQrz = preg_replace($patternQrz, $replaceQrz, $firstCall);
+
+                echo '<span class="' . $alertSrcCss . '">' . $linkedTextQrz. '</span> > ' . '<span class="' . $alertDstCss . '">' . $dstTxt . '</span> : ' . $linkedText;
+            }
+            if ($clickOnCall == 1)
             {
                 $patternQrz = '/\b([a-zA-Z0-9]+)(?:-\d+)?\b/';
                 $replaceQrz    = '<a href="https://qrz.com/db/$1" target="_blank">$0</a>';
@@ -456,7 +464,7 @@ if ($result !== false)
             else
             {
                 $patternQrz    = '/\b([a-zA-Z0-9]+(?:-\d+)?)\b/';
-                $replaceQrz    = '<a href="#" onclick="sendToBottomFrame(\'$1\')">$0</a>';
+                $replaceQrz    = '<a href="#" onclick="sendToBottomMsgFrame(\'$1\')">$0</a>';
                 $linkedTextQrz = preg_replace($patternQrz, $replaceQrz, $firstCall);
 
                 echo '<span class="' . $alertSrcCss . '">' . $linkedTextQrz. '</span> > ' . '<span class="' . $alertDstCss . '">' . $dstTxt . '</span> : ' . $linkedText;

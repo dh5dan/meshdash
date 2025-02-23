@@ -63,10 +63,8 @@ if ($sendData == 1)
     }
 }
 
-echo "<br>";
 echo "<h2>Ping Lora IP: ". $loraIp .'</h2>';
 
-echo "<br><br>";
 echo '<form id="frmPingLora" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
 echo '<input type="hidden" name="loraIp" id="loraIP" value="' . $loraIp . '" />';

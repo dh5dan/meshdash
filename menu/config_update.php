@@ -1,4 +1,5 @@
 <?php
+ob_start(); // Output Buffering starten
 echo '<!DOCTYPE html>';
 echo '<html lang="de">';
 echo '<head><title>Update</title>';
@@ -46,7 +47,7 @@ if ($debugFlag === true)
 $osIssWindows = chkOsIssWindows();
 $osName       = $osIssWindows === true ? 'Windows' : 'Linux';
 
-echo '<h1>MeshDash-SQL Update</h1>';
+echo '<h2>MeshDash-SQL Update</h2>';
 echo "<h5>(Update-Datei muss im MeshDash-SQL Format als Zip vorliegen.)</h5>";
 
 if ($debugFlag === true)
@@ -276,7 +277,12 @@ if ($sendData === '3')
     }
 }
 
-
+#Lod latest Release from GitHub
+if ($sendData === '4')
+{
+  getLatestRelease();
+}
+ob_end_flush(); // Ausgabe abschließen
 echo '<form id="frmConfigUpdate" action="' . $_SERVER['REQUEST_URI'] . '" method="post" enctype="multipart/form-data">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
 echo '<input type="hidden" name="deleteFileImage" id="deleteFileImage" value="" />';
@@ -288,6 +294,11 @@ if ($sendData != 1)
 {
     echo '<td ><label for="updateFile">Wähle das Update (Zip-Datei):&nbsp;</label></td>';
     echo '<td><input type="file" name="updateFile" id="updateFile" required></td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td ><label for="updateFile">Lade letztes Release von GitHub herunter:&nbsp;</label></td>';
+    echo '<td><input type="button" id="btnDwnLatestRelease" value="Hole letzte Release-Version"></td>';
     echo '</tr>';
 
     echo '<tr>';

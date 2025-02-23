@@ -38,3 +38,15 @@ body {
     margin-left: 5px; /* Abstand zum Text */
     margin-bottom: 2px;
 }
+
+/* Media Query für Smartphones */
+@media (max-width: 768px) {
+
+    .setFontMsgHeader {
+      font-size: smaller;
+    }
+
+    .setFontMsg {
+     font-size: smaller;
+    }
+}

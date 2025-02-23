@@ -50,6 +50,7 @@ function setParamData($key, $value, $mode = 'int'): bool
     $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
 
     $db = new SQLite3($dbFilename);
+    $db->busyTimeout(5000); // warte wenn busy in millisekunden
 
     #Escape Value
     $value = SQLite3::escapeString($value);

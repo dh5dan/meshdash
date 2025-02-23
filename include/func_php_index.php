@@ -145,7 +145,7 @@ function initSQLiteDatabase($database): bool
                                        ('alertSoundCallDst','' , ''),
                                        ('doLogEnable',1 , ''),
                                        ('doNotBackupDb', 0, ''),
-                                       ('onClickCallQrzCom', 0, '')
+                                       ('clickOnCall', 0, '')
            ");
 
         #Close and write Back WAL

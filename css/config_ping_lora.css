@@ -1,3 +1,21 @@
 body {
     font-family: Arial, sans-serif;
 }
+
+
+/* Media Query für Smartphones */
+@media (max-width: 768px) {
+
+    h2 {
+        font-size: medium;
+    }
+
+    input[type="button"] {
+        display: inline-block;
+        background: #007bff;
+        color: white;
+        /*padding: 5px 10px;*/
+        border-radius: 5px;
+        cursor: pointer;
+    }
+}

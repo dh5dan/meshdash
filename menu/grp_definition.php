@@ -121,7 +121,7 @@ echo '</tr>';
 
 
 echo '<tr>';
-echo '<td colspan="2">';
+echo '<td colspan="3">';
 if ($sendData === '1')
 {
     echo '<input type="button" class="failureHint" id="btnGrpDefinitionReload" value="MeshDash-Seite neu laden"/>';

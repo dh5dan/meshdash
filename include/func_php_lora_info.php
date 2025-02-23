@@ -49,12 +49,9 @@ function getLoraInfo($loraIp)
             elseif ($key == 'Call')
             {
                 $info['Call'] = explode(' ', $value)[0];
+
                 // Die Hardware-Version extrahieren und als "hardware" speichern
-                preg_match('/TLORA_V2_[\d_]+/', $value, $matches);
-                if (isset($matches[0]))
-                {
-                    $info['Hardware'] = $matches[0];
-                }
+                $info['Hardware'] = explode('...', $value)[1];
             }
             // Wenn "UTC-OFF" gefunden wird
             elseif ($key == 'UTC-OFF')
