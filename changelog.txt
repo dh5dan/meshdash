@@ -1,3 +1,12 @@
+Version 1.09.96beta SQL
+Bugfix. Index Warning "Hardware" bei Lora-info
+Bugfix: Fehlermeldung beim Senden eines Befehls obwohl erfolgreich.
+Bugfix: Neuausrichtung Top-Frame. Statuspunkt nun rechts um sicheren Menü-Touch zu gewährleisten.
+Feature: Download-Button um die letzte aktuelle Release-Version von GitHub zu laden.
+Feature: Click auf Call: DM, QRZ.com oder in Msg: @<call>:
+Responsive-Design: Anpassung der Schriftgröße in den Menüs und dem Message-Frame.
+                   Weitere Anpassungen am css zur besseren Darstellung
+#################################################################
 Version 1.09.94beta SQL
 Optimierung Iframe memory Leak
 Bugfix: Log-Date wurde nicht aktualisiert.

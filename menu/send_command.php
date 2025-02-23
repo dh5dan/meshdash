@@ -58,10 +58,6 @@ echo '<input type="hidden"id="loraIp" value="' . $loraIp . '" />';
 echo '<table>';
 
 echo '<tr>';
-echo '<td colspan="2">&nbsp;</td>';
-echo '</tr>';
-
-echo '<tr>';
 echo '<td>Befehlszeile :</td>';
 echo '<td><input type="text" name="sendCommand"  size="30" id="sendCommand" value="' . $sendCommand . '" placeholder="--extudpip on"  /></td>';
 echo '</tr>';

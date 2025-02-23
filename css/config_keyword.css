@@ -33,6 +33,10 @@ input[type="checkbox"] {
 
 @media (max-width: 600px) {
 
+    h2 {
+        font-size: medium;
+    }
+
     .successHint, .failureHint {
         display: block;
         padding: 10px;
@@ -60,13 +64,15 @@ input[type="checkbox"] {
         max-width: 150px; /* Oder andere passende Breite */
     }
 
-    /*input[type="text"], input[type="checkbox"] {*/
-    /*    width: 100%;*/
-    /*}*/
-
     input[type="button"] {
         width: 100%;
         padding: 10px;
         font-size: 16px;
+        display: inline-block;
+        background: #007bff;
+        color: white;
+        /*padding: 5px 10px;*/
+        border-radius: 5px;
+        cursor: pointer;
     }
 }

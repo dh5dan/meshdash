@@ -47,13 +47,30 @@
         }
     });
 
-    function sendToBottomFrame(callSign) {
+    function sendToBottomFrame(callSign)
+    {
         let bottomFrame = parent.document.getElementById("bottom-frame");
-        if (bottomFrame) {
-            let bottomDoc = bottomFrame.contentDocument || bottomFrame.contentWindow.document;
+        if (bottomFrame)
+        {
+            let bottomDoc  = bottomFrame.contentDocument || bottomFrame.contentWindow.document;
             let inputField = bottomDoc.getElementById("bottomDm");
-            if (inputField) {
+            if (inputField)
+            {
                 inputField.value = callSign;
+            }
+        }
+    }
+
+    function sendToBottomMsgFrame(callSign)
+    {
+        let bottomFrame = parent.document.getElementById("bottom-frame");
+        if (bottomFrame)
+        {
+            let bottomDoc  = bottomFrame.contentDocument || bottomFrame.contentWindow.document;
+            let inputField = bottomDoc.getElementById("msgText");
+            if (inputField)
+            {
+                inputField.value = '@' + callSign + ': ';
             }
         }
     }

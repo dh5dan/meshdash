@@ -100,8 +100,7 @@ echo '<td colspan="2"><hr></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>&nbsp;</td>';
-echo '<td><input type="button" id="btnSaveConfigAlerting" value="Settings speichern"  /></td>';
+echo '<td colspan="2"><input type="button" id="btnSaveConfigAlerting" value="Settings speichern"  /></td>';
 echo '</tr>';
 
 echo '</table>';

@@ -11,7 +11,7 @@ echo '<script type="text/javascript" src="../jquery/jquery-ui.js"></script>';
 
 echo '<link rel="stylesheet" href="../jquery/jquery-ui.css">';
 echo '<link rel="stylesheet" href="../jquery/css/jq_custom.css">';
-echo '<link rel="stylesheet" href="../css/data_purge.css?' . microtime() . '">';
+echo '<link rel="stylesheet" href="../css/config_data_purge.css?' . microtime() . '">';
 echo '<link rel="stylesheet" href="../css/loader.css?' . microtime() . '">';
 echo '</head>';
 echo '<body>';

@@ -61,3 +61,52 @@ table.backupTable th {
 .reloadMsg {
     font-size: 20px;
 }
+
+/* Media Query für Smartphones */
+@media (max-width: 768px) {
+
+    h2,h5 {
+        font-size: smaller;
+    }
+
+    td {
+     font-size: smaller;
+    }
+
+    table.backupTable {
+        font-size: smaller;
+    }
+
+    table.backupTable th,
+    table.backupTable td{
+        padding: 2px;
+    }
+
+    .imageDownload, .imageDelete{
+        width: 15px;
+        margin: 0 5px; /* Links & Rechts 5px Abstand */
+    }
+
+    input[type="file"]::-webkit-file-upload-button {
+        visibility: hidden;
+    }
+
+    input[type="file"]::before {
+        content: "Datei auswählen";
+        display: inline-block;
+        background: #007bff;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    input[type="button"] {
+        display: inline-block;
+        background: #007bff;
+        color: white;
+        /*padding: 5px 10px;*/
+        border-radius: 5px;
+        cursor: pointer;
+    }
+}

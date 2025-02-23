@@ -50,6 +50,16 @@
             return false;
         });
 
+        $("#btnDwnLatestRelease").on("click", function ()
+        {
+            let sendData  = 4;
+            $("#sendData").val(sendData);
+            $("#frmConfigUpdate").trigger('submit');
+            $("#pageLoading").show();
+
+            return false;
+        });
+
         $("#btnConfigUpdateReload").on("click", function ()
         {
             // Ermittelt die Base-URL dynamisch

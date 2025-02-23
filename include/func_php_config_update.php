@@ -1,64 +1,5 @@
 <?php
 
-function backupApp2($sourceDir, $backupDir)
-{
-    $zip            = new ZipArchive();
-    $backupFullPath = $backupDir . '/backup_' . date('Ymd_His') . '.zip';
-    $backupFile     = 'backup_' . date('Ymd_His') . '.zip';
-    $doNotBackupDb  = getParamData('doNotBackupDb');
-
-    $excludeList = [
-        'backup/',   // komplettes Verzeichnis
-        '.git/',   // komplettes Verzeichnis
-        '.idea/',        // komplettes Verzeichnis
-        'test/',      // komplettes Verzeichnis
-        '.gitignore', // einzelne Datei
-    ];
-
-    #Wenn Datenbank ausgeschlossen werden soll, dann Verzeichnis mit im Array aufführen
-    if ($doNotBackupDb == 1)
-    {
-        echo "<br>nix db sichern";
-        $excludeList[] = "database/";   // komplettes Verzeichnis
-    }
-
-    if ($zip->open($backupFullPath, ZipArchive::CREATE) === true)
-    {
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($sourceDir, FilesystemIterator::SKIP_DOTS),
-            RecursiveIteratorIterator::LEAVES_ONLY
-        );
-
-        foreach ($iterator as $file)
-        {
-            if ($file->isDir()) continue; // Verzeichnisse überspringen
-
-            // Relativen Pfad berechnen (richtig für Windows und Linux)
-            $relativePath = str_replace($sourceDir . DIRECTORY_SEPARATOR, '', $file->getPathname());
-            $relativePath = str_replace('\\', '/', $relativePath); // Für Windows korrigieren
-
-            // Prüfen, ob die Datei oder ihr Verzeichnis ausgeschlossen werden soll
-            foreach ($excludeList as $excluded)
-            {
-                if (strpos($relativePath, $excluded) === 0)
-                {
-                    continue 2; // Datei überspringen
-                }
-            }
-
-            // Datei ins ZIP-Archiv hinzufügen
-            $zip->addFile($file->getPathname(), $relativePath);
-        }
-
-        $zip->close();
-        return $backupFile;
-    }
-    else
-    {
-        return false;
-    }
-}
-
 function backupApp($sourceDir, $backupDir)
 {
     $zip            = new ZipArchive();
@@ -129,7 +70,6 @@ function backupApp($sourceDir, $backupDir)
         return false;
     }
 }
-
 
 function unzipUpdate($zipFile, $tempDir): bool
 {
@@ -395,6 +335,54 @@ function checkValidUpdatePackage($uploadFile, $debugFlag)
         }
         exit;
     }
+}
+
+function getLatestRelease()
+{
+    // get_latest_release.php
+
+    $repoOwner = 'dh5dan';  // Deinen GitHub-Nutzername
+    $repoName  = 'meshdash';         // Repository-Name
+    $apiUrl    = "https://api.github.com/repos/{$repoOwner}/{$repoName}/releases/latest";
+
+    // cURL initialisieren
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $apiUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_USERAGENT, 'MeshDash-Update-Script'); // User-Agent muss gesetzt sein
+
+    $response = curl_exec($ch);
+    if (curl_errno($ch))
+    {
+        die('Fehler: ' . curl_error($ch));
+    }
+    curl_close($ch);
+
+    $releaseData = json_decode($response, true);
+    if (!$releaseData)
+    {
+        die('Konnte Release-Daten nicht lesen.');
+    }
+
+    // Gehe davon aus, dass du ein bestimmtes Release-Asset herunterladen möchtest,
+    // zum Beispiel eine ZIP-Datei, und suche danach:
+    $downloadUrl = '';
+    foreach ($releaseData['assets'] as $asset)
+    {
+        if (stripos($asset['name'], 'MeshDash') !== false)
+        { // Passende Datei finden
+            $downloadUrl = $asset['browser_download_url'];
+            break;
+        }
+    }
+
+    if (!$downloadUrl)
+    {
+        die('Kein passendes Release-Asset gefunden.');
+    }
+
+    // Umleiten auf die Download-URL – der Browser startet dann den Download
+    header('Location: ' . $downloadUrl);
 }
 
 

@@ -11,11 +11,6 @@ body {
     width: max(25%, min(801px, 100%));
     margin-bottom: 0px;
 }
-@media screen and (min-width: 801px) {
-    button, table, th, td {
-        font-size: 16px;
-    }
-}
 
 html {
     font-family: Helvetica;
@@ -27,3 +22,24 @@ html {
 .thCenter {
     text-align: center;
 }
+
+@media screen and (max-width: 768px) {
+
+    td {
+        padding: 5px;
+    }
+
+    h2 {
+        font-size: medium !important;
+    }
+
+    input[type="button"] {
+        display: inline-block;
+        background: #007bff;
+        color: white;
+        /*padding: 5px 10px;*/
+        border-radius: 5px;
+        cursor: pointer;
+    }
+}
+
