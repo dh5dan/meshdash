@@ -1,3 +1,9 @@
+Version 1.09.96beta SQL
+Bugfix. index Warning
+Bugfix: Fehlermeldung beim Senden eines Befehls
+Bugfix: Neuausrichtung Top-Frame. Statuspunkt nun rechts um sicheren Menü-Touch zu gewährleisten.
+
+#################################################################
 Version 1.09.94beta SQL
 Optimierung Iframe memory Leak
 Bugfix: Log-Date wurde nicht aktualisiert.

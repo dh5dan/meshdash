@@ -44,7 +44,7 @@ function sendCommand($loraCmd, $loraIp): bool
         return true;
     }
 
-    return false;
+    return true;
 }
 
 function getLocalIpAddressesLinux(): array

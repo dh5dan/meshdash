@@ -22,7 +22,7 @@ body {
 
 .topLeft {
     position: absolute;
-    left: 45px;
+    left: 65px;
 }
 
 .topImagePoint {
@@ -189,12 +189,18 @@ iframe {
 @media (max-width: 768px) {
 
     .topTitle {
-        font-size: medium; /* Etwas größere Schrift für mobile Ansicht */
-        margin-left: 14%;
+        font-size: medium;
+        text-align: center;
+        margin: 0 auto;
+        width: 100%;
     }
 
     .topLeft {
-        margin-bottom: 10px; /* Abstand nach dem Bild */
+        position: absolute;
+        left: auto; /* Desktop-Left-Wert ausschalten */
+        /* Gib dem Container eine Breite oder setze auch right, damit der Inhalt einen definierten Raum hat */
+        right: 15px; /* oder width: calc(100% - 80px); */
+        text-align: right;
     }
 
     .topRight {
