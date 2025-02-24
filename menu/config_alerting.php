@@ -58,8 +58,9 @@ $alertSoundCallDst = getParamData('alertSoundCallDst');
 $alertEnabledSrcChecked = $alertEnabledSrc == 1 ? 'checked' : '';
 $alertEnabledDstChecked = $alertEnabledDst == 1 ? 'checked' : '';
 
-echo "<h2>Benachrichtigungen Einstellen</h2>";
-echo "<h5>(Dateien müssen im Sound-Verzeichnis vorhanden sein und ausführbar)</h5>";
+echo '<h2>Benachrichtigungen Einstellen';
+echo '<span class="hintText"><br>(Dateien müssen im Sound-Verzeichnis<span class="lineBreak">vorhanden und ausführbar sein)</span></span>';
+echo '</h2>';
 
 echo '<form id="frmConfigAlerting" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
@@ -96,11 +97,11 @@ echo '<td><input type="text" name="alertSoundCallDst" id="alertSoundCallDst" val
 echo '</tr>';
 
 echo '<tr>';
-echo '<td colspan="2"><hr></td>';
+echo '<td colspan="3"><hr></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td colspan="2"><input type="button" id="btnSaveConfigAlerting" value="Settings speichern"  /></td>';
+echo '<td colspan="3"><input type="button" id="btnSaveConfigAlerting" value="Settings speichern"  /></td>';
 echo '</tr>';
 
 echo '</table>';

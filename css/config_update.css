@@ -62,11 +62,23 @@ table.backupTable th {
     font-size: 20px;
 }
 
+.hintText {
+    font-size: 14px;
+}
+
 /* Media Query für Smartphones */
 @media (max-width: 768px) {
 
-    h2,h5 {
-        font-size: smaller;
+    .hintText {
+        font-size: 12px;
+    }
+
+    .lineBreak {
+        display: block;
+    }
+
+    h2 {
+        font-size: medium;
     }
 
     td {

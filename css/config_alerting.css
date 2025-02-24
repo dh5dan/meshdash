@@ -30,7 +30,25 @@ input[type="checkbox"] {
     text-align: center;
 }
 
+
+td {
+    padding: 4px;
+    vertical-align: middle;
+}
+
+.hintText {
+    font-size: 14px;
+}
+
 @media (max-width: 600px) {
+
+    .lineBreak {
+        display: block;
+    }
+
+    .hintText {
+        font-size: 12px;
+    }
 
     .successHint, .failureHint {
         display: block;
@@ -44,11 +62,12 @@ input[type="checkbox"] {
     }
 
     td:first-child {
-        width: 50%; /* Lässt genug Platz für den Text */
+        width: 30%; /* Lässt genug Platz für den Text */
     }
 
     td:nth-child(2) {
-        width: 40%; /* Fixe Breite für Eingabefelder */
+        /*width: 40%; !* Fixe Breite für Eingabefelder *!*/
+        width: 60%; /* Fixe Breite für Eingabefelder */
     }
 
     td:nth-child(3) {
@@ -56,7 +75,8 @@ input[type="checkbox"] {
     }
 
     input[type="text"] {
-        max-width: 150px; /* Oder andere passende Breite */
+        /*max-width: 150px; !* Oder andere passende Breite *!*/
+        max-width: 180px; /* Oder andere passende Breite */
     }
 
     input[type="text"], input[type="checkbox"] {
@@ -68,10 +88,6 @@ input[type="checkbox"] {
         padding: 10px;
         font-size: 16px;
     }
-}
-
-/* Media Query für Smartphones */
-@media (max-width: 768px) {
 
     h2 {
         font-size: medium;

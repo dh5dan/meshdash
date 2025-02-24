@@ -47,8 +47,9 @@ if ($debugFlag === true)
 $osIssWindows = chkOsIssWindows();
 $osName       = $osIssWindows === true ? 'Windows' : 'Linux';
 
-echo '<h2>MeshDash-SQL Update</h2>';
-echo "<h5>(Update-Datei muss im MeshDash-SQL Format als Zip vorliegen.)</h5>";
+echo '<h2>MeshDash-SQL Update';
+echo '<span class="hintText"><br>(Update-Datei muss im MeshDash-SQL Format<span class="lineBreak">als Zip vorliegen.)</span></span>';
+echo '</h2>';
 
 if ($debugFlag === true)
 {
