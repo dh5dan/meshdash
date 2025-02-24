@@ -25,13 +25,24 @@ input[type="checkbox"] {
 }
 
 .successHint, .failureHint {
-
     padding: 10px;
     margin: 10px 0;
     text-align: center;
 }
 
+.hintText {
+    font-size: 14px;
+}
+
 @media (max-width: 600px) {
+
+    .hintText {
+        font-size: 12px;
+    }
+
+    .lineBreak {
+        display: block;
+    }
 
     h2 {
         font-size: medium;

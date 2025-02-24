@@ -79,27 +79,26 @@ $keyword2EnabledChecked = $keyword2Enabled == 1 ? 'checked' : '';
 $keyword1DmGrpId = $keyword1DmGrpId == '' ? '*' : $keyword1DmGrpId;
 $keyword2DmGrpId = $keyword2DmGrpId == '' ? '*' : $keyword2DmGrpId;
 
-echo "<h2>Keyword-Definition zur Ausführung von Kommandos</h2>";
-echo "<h5>(Dateien müssen im Execute-Verzeichnis vorhanden sein und ausführbar)</h5>";
+echo '<h2>Keyword-Definition zur Ausführung<span class="lineBreak">von Kommandos</span>';
+echo '<span class="hintText">(Dateien müssen im Execute-Verzeichnis<span class="lineBreak">vorhanden und ausführbar sein)</span></span>';
+echo '</h2>';
 
 echo '<form id="frmConfigKeyword" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
 echo '<table>';
 
 echo '<tr>';
-    echo '<td>OS: '. $osName .'</td>';
+    echo '<td>OS:</td>';
+    echo '<td>'. $osName .'</td>';
 echo '</tr>';
 
 if ($hardware != '')
 {
     echo '<tr>';
-    echo '<td>Hardware: '. $hardware .'</td>';
+        echo '<td>Hardware:</td>';
+        echo '<td>'. $hardware .'</td>';
     echo '</tr>';
 }
-
-echo '<tr>';
-    echo '<td colspan="2">&nbsp;</td>';
-echo '</tr>';
 
 echo '<tr>';
 echo '<td>KeyWord1 :</td>';

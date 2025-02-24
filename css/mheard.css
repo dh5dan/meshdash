@@ -23,21 +23,29 @@ html {
     text-align: center;
 }
 
+.lineBreak {
+    display: block;
+}
+
 @media screen and (max-width: 768px) {
 
     td {
-        padding: 5px;
+        padding: 2px 1px 2px 1px;
     }
 
     h2 {
         font-size: medium !important;
     }
 
+    .table {
+        width: max-content;
+    }
+
     input[type="button"] {
         display: inline-block;
         background: #007bff;
         color: white;
-        /*padding: 5px 10px;*/
+        padding: 5px 10px;
         border-radius: 5px;
         cursor: pointer;
     }

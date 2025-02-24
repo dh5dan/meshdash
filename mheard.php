@@ -29,15 +29,14 @@ $loraIp    = getParamData('loraIp');
 $callSign  = trim(getParamData('callSign'));
 $sendData  = $_REQUEST['sendData'] ?? 0;
 
-echo '<h2>Lokale Mheard-Liste von '.$callSign .' mit Lora-IP: ' . $loraIp . '</h2>';
+echo '<h2>Lokale Mheard-Liste<span class="lineBreak">von '.$callSign .' mit Lora-IP: ' . $loraIp . '</span></h2>';
 
 echo '<form id="frmMheard" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
 echo '<table>';
 
 echo '<tr>';
-echo '<td>&nbsp;</td>';
-echo '<td><input type="button" id="btnGetMheard" value="Lokale Mheard-Liste abfragen"  /></td>';
+echo '<td colspan="2"><input type="button" id="btnGetMheard" value="Lokale Mheard-Liste abfragen"  /></td>';
 echo '</tr>';
 
 echo '</table>';
