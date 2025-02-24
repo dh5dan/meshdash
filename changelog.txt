@@ -1,3 +1,7 @@
+Version 1.09.98beta SQL
+BUGFIX: Bei der "Klick auf Call"-Einstellung -> "DM-Feld", wurde die Nachricht doppelt angezeigt.
+
+#################################################################
 Version 1.09.96beta SQL
 Bugfix. Index Warning "Hardware" bei Lora-info
 Bugfix: Fehlermeldung beim Senden eines Befehls obwohl erfolgreich.
