@@ -1,6 +1,13 @@
+Version 1.10.00beta SQL
+Feature: Reboot zu "Sende Befehle" hinzugefügt
+Feature: Diverse Text-/Formatanpassungen
+Feature: Info-Button mit Auflistung der Node-Befehlskommandos.
+Feature: Einleitung OTA-Update mit Tab-Wechsel nach 5 Sek.
+BUGFIX: Vordefinierte Befehle im Button wird falsch abgesetzt
+BUGFIX: Korrektur Befehl --extudp on/off
+#################################################################
 Version 1.09.98beta SQL
 BUGFIX: Bei der "Klick auf Call"-Einstellung -> "DM-Feld", wurde die Nachricht doppelt angezeigt.
-
 #################################################################
 Version 1.09.96beta SQL
 Bugfix. Index Warning "Hardware" bei Lora-info

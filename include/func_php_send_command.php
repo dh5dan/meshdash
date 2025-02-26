@@ -8,6 +8,14 @@ function sendCommand($loraCmd, $loraIp): bool
     $triggerLink = $actualHost . '://' . $loraIp . '/?command=' . urlencode($loraCmd);
     $debugFlag   = false;
 
+    if ($debugFlag === true)
+    {
+        echo "<br> Debug: sendCommand";
+        echo "<br>triggerLink:$triggerLink";
+
+        return true;
+    }
+
     #Starte Trigger
     $ch = curl_init();
 
@@ -20,7 +28,7 @@ function sendCommand($loraCmd, $loraIp): bool
     curl_setopt($ch, CURLOPT_TIMEOUT_MS, 5000); // Warte max. 5 Sek.
 
     #Fehler abfangen
-    if (curl_exec($ch) === false)
+    if (curl_exec($ch) === false && $loraCmd != '--ota-update')
     {
         echo '<span>Curl error: ' . curl_error($ch) . '</span>';
         #echo '<br>Curl error: ' . curl_errno($ch);
@@ -34,7 +42,7 @@ function sendCommand($loraCmd, $loraIp): bool
 
     if ($debugFlag === true)
     {
-        echo "<br> Debug: callWindowsBackgroundTask";
+        echo "<br> Debug: sendCommand";
         echo "<br>triggerLink:$triggerLink";
 
         echo "<pre>";
