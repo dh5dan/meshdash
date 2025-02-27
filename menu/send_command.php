@@ -54,7 +54,7 @@ echo "<h2>Befehl an Lora senden</h2>";
 
 echo '<form id="frmSendCommand" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
-echo '<input type="hidden"id="loraIp" value="' . $loraIp . '" />';
+echo '<input type="hidden" id="loraIp" value="' . $loraIp . '" />';
 echo '<table>';
 
 echo '<tr>';
@@ -64,35 +64,52 @@ echo '</tr>';
 
 echo '<tr>';
 echo '<td>&nbsp;</td>';
-echo '<td><input type="button" id="btnSendCommand" value="Sende Befehl"  /></td>';
+echo '<td>';
+echo '<img src="../image/info_blau.png" class="infoImagePoint" id="infoImagePoint" alt="info" />';
+echo '<input type="button" id="btnSendCommand" value="Sende Befehl" />';
+echo'</td>';
 echo '</tr>';
 
 echo '<tr>';
 echo '<td colspan="2"><hr></td>';
 echo '</tr>';
 
+echo '<tr>';
+echo '<td xmlns="http://www.w3.org/1999/html" colspan="2">';
+echo '<span class="failureHint">Bei der erstmaligen UDP-Aktivierung,<br>muss einmalig ein Reboot ausgeführt werden!</span></td>';
+echo '</tr>';
 
 if ($countIps == 1)
 {
     echo '<tr>';
     echo '<td>Setzte UDP Ziel-Ip :</td>';
-    echo '<td><input type="button" class="btnPreCmd" data-cmd="cmd1" value="--extudpip ' . $ips[0] . '" /></td>';
+    echo '<td><input type="button" class="btnPreCmd" data-cmd="--extudpip ' . $ips[0] . '" value="--extudpip ' . $ips[0] . '" /></td>';
     echo '</tr>';
 }
 else
 {
-    for ($t = 0;$t < $countIps;++$t)
+    for ($t = 0; $t < $countIps; ++$t)
     {
         echo '<tr>';
         echo '<td>Setzte UDP Ziel-Ip' . $t . ' :</td>';
-        echo '<td><input type="button" class="btnPreCmd" data-cmd="cmd1" value="--extudpip ' . $ips[$t] . '" /></td>';
+        echo '<td><input type="button" class="btnPreCmd" data-cmd="--extudpip ' . $ips[$t] . '" value="--extudpip ' . $ips[$t] . '" /></td>';
         echo '</tr>';
     }
 }
 
 echo '<tr>';
 echo '<td>Aktiviere UDP :</td>';
-echo '<td><input type="button" class="btnPreCmd" data-cmd="cmd2" value="--extudpip on" /></td>';
+echo '<td><input type="button" class="btnPreCmd" data-cmd="--extudp on" value="--extudp on" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td>Deaktiviere UDP :</td>';
+echo '<td><input type="button" class="btnPreCmd" data-cmd="--extudp off" value="--extudp off" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td>Reboot Lora :</td>';
+echo '<td><input type="button" class="btnPreCmd" data-cmd="--reboot" value="--reboot" /></td>';
 echo '</tr>';
 
 echo '<tr>';
@@ -100,13 +117,18 @@ echo '<td colspan="2">&nbsp;</td>';
 echo '</tr>';
 
 echo '<tr>';
+echo '<td>OTA-Update :</td>';
+echo '<td><input type="button" class="btnPreCmd" data-cmd="--ota-update" value="--ota-update" /></td>';
+echo '</tr>';
+
+echo '<tr>';
 echo '<td>Gateway ON :</td>';
-echo '<td><input type="button" class="btnPreCmd" data-cmd="cmd3" value="--gateway on" /></td>';
+echo '<td><input type="button" class="btnPreCmd" data-cmd="--gateway on" value="--gateway on" /></td>';
 echo '</tr>';
 
 echo '<tr>';
 echo '<td>Gateway OFF :</td>';
-echo '<td><input type="button" class="btnPreCmd" data-cmd="cmd4" value="--gateway off" /></td>';
+echo '<td><input type="button" class="btnPreCmd" data-cmd="--gateway off" value="--gateway off" /></td>';
 echo '</tr>';
 
 echo '</table>';

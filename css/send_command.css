@@ -13,6 +13,14 @@ body {
     background-color: crimson;
     color: whitesmoke;
     font-weight: bold;
+    display: block;
+}
+
+.infoImagePoint {
+    margin-right: 10px;
+    margin-bottom: -10px;
+    cursor: pointer;
+    width: 30px;
 }
 
 td {
@@ -30,7 +38,30 @@ input[type="checkbox"] {
     text-align: center;
 }
 
+.indented  {
+    padding-left: 13px;
+    display: block; /* Wichtig für den Umbruch */
+}
+
 @media (max-width: 600px) {
+
+    .indented  {
+        padding-left: 13px;
+        display: block; /* Wichtig für den Umbruch */
+    }
+
+    td:has(#infoImagePoint) {
+        display: flex;
+        align-items: center;
+    }
+
+    .infoImagePoint {
+        margin-right: 10px;
+        width: 30px;
+        cursor: pointer;
+        margin-bottom: 0;
+    }
+
 
     .successHint, .failureHint {
         display: block;

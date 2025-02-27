@@ -80,7 +80,7 @@ $keyword1DmGrpId = $keyword1DmGrpId == '' ? '*' : $keyword1DmGrpId;
 $keyword2DmGrpId = $keyword2DmGrpId == '' ? '*' : $keyword2DmGrpId;
 
 echo '<h2>Keyword-Definition zur Ausführung<span class="lineBreak">von Kommandos</span>';
-echo '<span class="hintText">(Dateien müssen im Execute-Verzeichnis<span class="lineBreak">vorhanden und ausführbar sein)</span></span>';
+echo '<span class="hintText"><br>(Dateien müssen im Execute-Verzeichnis<span class="lineBreak">vorhanden und ausführbar sein)</span></span>';
 echo '</h2>';
 
 echo '<form id="frmConfigKeyword" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
