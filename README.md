@@ -79,7 +79,7 @@ Diese Datei hilft dir, MeshDash schnell zu installieren und zu nutzen.
 
 
 ### Nun auch mit Tab-Benachrichtigungen bei neuen Nachrichten.
-![FILES](/docs/60_desktop_tab alert.jpg)
+![FILES](/docs/60_desktop_tab_alert.jpg)
 ![FILES](/docs/61_handy_Tab_alert.jpg)
 
 ## Noch offene Punkte die auf der To-do-Liste stehen:
