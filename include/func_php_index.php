@@ -157,7 +157,7 @@ function initSQLiteDatabase($database): bool
         #Open Database
         $db = new SQLite3('database/keywords.db');
         $db->exec('PRAGMA journal_mode = wal;');
-        #$db->exec("PRAGMA synchronous = 1");
+        $db->exec('PRAGMA synchronous = NORMAL;');
 
         // Tabelle erstellen wenn nicht vorhanden
         $db->exec("CREATE TABLE IF NOT EXISTS keywords 
@@ -206,6 +206,10 @@ function initSQLiteDatabase($database): bool
     }
     elseif ($database == 'groups')
     {
+        #0: OFF – SQLite führt keine Synchronisierung durch (geringe Sicherheit, aber schnellere Schreiboperationen).
+        #1: NORMAL – Standardmodus, SQLite führt eine Synchronisierung durch, aber nicht für alle Schreibvorgänge (bessere Sicherheit, aber etwas langsamer).
+        #2: FULL – Höchste Sicherheit, bei dem alle Schreibvorgänge synchronisiert werden (höchste Sicherheit, aber auch langsamer).
+
         #Open Database
         $db = new SQLite3('database/groups.db');
         $db->exec('PRAGMA journal_mode = wal;');

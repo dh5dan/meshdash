@@ -51,6 +51,7 @@ function setParamData($key, $value, $mode = 'int'): bool
 
     $db = new SQLite3($dbFilename);
     $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->exec('PRAGMA synchronous = NORMAL;');
 
     #Escape Value
     $value = SQLite3::escapeString($value);
@@ -140,6 +141,7 @@ function setKeywordsData($msgId, $value, int $errCode, string $errText): bool
     $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
 
     $db = new SQLite3($dbFilename);
+    $db->exec('PRAGMA synchronous = NORMAL;');
 
     #Escape Value
     $msgId   = SQLite3::escapeString($msgId);
@@ -198,6 +200,7 @@ function setMheardData($heardData): bool
     $mhTimeStamps   = date('Y-m-d H:i:s');
 
     $db = new SQLite3($dbFilename);
+    $db->exec('PRAGMA synchronous = NORMAL;');
 
     foreach ($heardData AS $key)
     {
@@ -266,6 +269,7 @@ function updateMeshDashData($msgId, $key, $value): bool
     $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
 
     $db = new SQLite3($dbFilename);
+    $db->exec('PRAGMA synchronous = NORMAL;');
 
     #Escape Value
     $value = trim(SQLite3::escapeString($value));

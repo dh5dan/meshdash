@@ -1,3 +1,9 @@
+Version 1.10.02beta SQL
+
+Feature: Optimize SQLite 3 write operations with PRAGMA synchronous = NORMAL
+Feature: Benachrichtigung im Tab, bei neuen Nachrichten.
+Feature: Ergänzender Hinweis zu PopUp-Blocker bei OTA Update.
+#################################################################
 Version 1.10.00beta SQL
 Feature: Reboot zu "Sende Befehle" hinzugefügt
 Feature: Diverse Text-/Formatanpassungen

@@ -1,6 +1,65 @@
 <script>
    $(function ($)
    {
+      /////////////////////////////////////////Tab Indikator /////////////////////////////////////
+
+       // Objekt für jede Gruppe, um den letzten Fokusverlust zu speichern
+       let lastFocusLostTimestamps = {};
+
+        // Variable zur Speicherung der aktuell aktiven Gruppe
+       let activeGroupId = -1; // init Wert -1 = Kein Filter
+       lastFocusLostTimestamps[activeGroupId] = Math.floor(Date.now() / 1000); // Setze Timestamp für den initialen Tab
+
+        // Intervall-Timer zur Überprüfung neuer Nachrichten
+       setInterval(() => {
+           $(".tab").each(function ()
+           {
+               let groupId = $(this).data("group"); // Gruppen-ID aus data-group holen
+
+               // Falls für diese Gruppe noch kein Wert existiert, setze einen
+               if (!(groupId in lastFocusLostTimestamps))
+               {
+                   lastFocusLostTimestamps[groupId] = Math.floor(Date.now() / 1000);
+               }
+
+               // Wenn die Gruppe aktiv ist, nicht überschreiben!
+               let lastChecked = (groupId === activeGroupId)
+                   ? lastFocusLostTimestamps[groupId]  // Bleibt unverändert für den aktiven Tab
+                   : lastFocusLostTimestamps[groupId]; // Letzter gespeicherter Wert für inaktive Tabs
+
+              //console.log("lastChecked:" + new Date(lastChecked * 1000).toLocaleString() + " groupId:" + groupId);
+
+               checkNewMessages(groupId, lastChecked);
+           });
+       }, 5000);
+
+        // Funktion zur Nachrichtenprüfung
+       function checkNewMessages(groupId, lastChecked)
+       {
+           //console.log("ajax checkmsg groupId: "+groupId + " lastChecked: " + new Date(lastChecked * 1000).toLocaleString()+ " lastChecked: "+lastChecked+ " activeGroupId:"+activeGroupId);
+
+           // $(`.tab[data-group="999"]`).addClass("new-message-indicator"); // Markierung setzen
+           // $(`.tab[data-group="995"]`).addClass("new-message-indicator"); // Markierung setzen
+           // $(`.tab[data-group="-1"]`).addClass("new-message-indicator"); // Markierung setzen
+           // $(`.tab[data-group="-2"]`).addClass("new-message-indicator"); // Markierung setzen
+
+           $.getJSON(`check_messages.php?lastChecked=${lastChecked}`, function (data)
+           {
+               // console.log("ajax checkmsg groupId: "+groupId + " activeGroupId:"+activeGroupId);
+               // console.log(data);
+
+               if (data.newMessages.includes(groupId))
+               {
+                   if (groupId !== activeGroupId)
+                   {
+                       $(`.tab[data-group="${groupId}"]`).addClass("new-message-indicator"); // Markierung setzen
+                   }
+               }
+           });
+       }
+
+       /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
        // Zeit vom Server holen und in den Update_Pausen via Jquery weiter führen
        let serverTime = null;
        let offset = 0;
@@ -36,41 +95,9 @@
        setInterval(fetchServerTime, 60000); // Alle 60 Sekunden Serverzeit abrufen
        setInterval(updateDateTime, 1000); // Jede Sekunde lokale Zeit aktualisieren
 
-       let isTabClick = false; // Globale Variable die prüft, ob Tab geklickt wurde
+       /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-       //Refresh via Ajax für message.php
-       // function loadNewMessages()
-       // {
-       //     if (isTabClick) return; // Falls gerade ein Tab-Klick aktiv ist, beende die Funktion
-       //
-       //     let messageFrame   = $("#message-frame"); // ID des Iframes
-       //     let currentSrc     = messageFrame.attr("src");
-       //
-       //     if (currentSrc && currentSrc.includes("message.php"))
-       //     {
-       //         let groupValue     = messageFrame.contents().find("#group").val();
-       //         let scrollPosition = messageFrame.contents().scrollTop(); // Aktuelle Scroll-Position merken
-       //
-       //         // Prüfen, ob der Benutzer ganz oben ist (Scroll-Position = 0)
-       //         let isAtTop = (scrollPosition === 0);
-       //
-       //         // `message.php` ruft die neuen Nachrichten ab
-       //         $.get("message.php", {group: groupValue}, function (data)
-       //         {
-       //             // Wenn der Benutzer ganz oben ist, neue Nachrichten laden
-       //             if (isAtTop)
-       //             {
-       //                 let doc = messageFrame.contents();
-       //                 //doc.find("body").html(data); // Neuen Inhalt einfügen
-       //                 doc.find("body").empty().append(data); // mal probieren
-       //                 doc.scrollTop(scrollPosition); // Scroll-Position wiederherstellen
-       //             }
-       //
-       //             data = null; // Speicher freigeben
-       //         });
-       //     }
-       // }
-       //        setInterval(loadNewMessages, 5000); // Alle 5 Sekunden aktualisieren
+       let isTabClick = false; // Globale Variable die prüft, ob Tab geklickt wurde
 
        // Refresh via Ajax für message.php
        function loadNewMessages()
@@ -110,6 +137,8 @@
 
        setInterval(loadNewMessages, 5000); // Alle 5 Sekunden aktualisieren
 
+       /////////////////////////////
+       // Bg Task Start/Stop
 
         //Kreis anklicken, um BG-Prozess zu starten oder zu stoppen
        $("#bgTask").on("click", function ()
@@ -340,6 +369,7 @@
            {
                tab.addClass('active');
            }
+
            tabsContainer.append(tab);
        });
 
@@ -369,6 +399,26 @@
 
            sessionStorage.setItem('groupId', groupId);  // Speichern der Gruppen-ID für die aktuelle Instanz
 
+           ////////////////////////////// Start Tab-Timestamp
+           // Erkenne Tab-Wechsel und aktualisiere Timestamp,
+           // für den tab der den Fokus verloren hat.
+           let newGroupId = $(this).data("group"); // Neue Gruppe
+
+           //console.log('TabOnClick newGroupId:'+ newGroupId + " activeGroupId:"+activeGroupId);
+
+           if (activeGroupId !== null && activeGroupId !== newGroupId) {
+               // Setze den Timestamp NUR für die alte aktive Gruppe
+               lastFocusLostTimestamps[activeGroupId] = Math.floor(Date.now() / 1000);
+           }
+
+           // Aktualisiere die aktive Gruppe
+           activeGroupId = newGroupId;
+
+            // Entferne den roten Punkt beim aktuellen Tab
+           $(this).removeClass("new-message-indicator");
+
+           //console.log("Tab gewechselt zu Gruppe:", activeGroupId);
+           ///////////////////////////// END Tab-Timestamp
 
            setTimeout(() => { isTabClick = false; }, 500); // warte 500ms ds seite geladen wurde
        });
