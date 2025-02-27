@@ -162,6 +162,7 @@ while (true)
 
     #Open Database
     $db = new SQLite3('database/meshdash.db');
+    $db->exec('PRAGMA synchronous = NORMAL;');
 
     #Escape Msg
     $msg = SQLite3::escapeString($msg);

@@ -45,14 +45,16 @@ Die Dateien befinden sich unter **Assets** – bitte darauf klicken, um die List
 
 ![ASSETS](/docs/assets.jpg)
 
+### In MeshDash ist nun ein Abruf der aktuellen Release-Version möglich.
+![FILES](/docs/50_md_release_version.jpg)
+
 **Für die Installation sind nur folgende Dateien relevant:**  
-Hier ein Beispiel:
+Hier mal ein Beispiel:
 - meshdash-sql_V1.09.76.Beta.zip (Das Hauptprogramm)
 - install.sh (Installation-Skript)
 - update.sh (Das Update-Skript ist optional, da Webupdate vorhanden)
 
 ![FILES](/docs/files.jpg)
-
 
 ## Was steht in der Kurzanleitung.pdf?
 
@@ -65,10 +67,6 @@ Die **Kurzanleitung.pdf** enthält:
 
 Diese Datei hilft dir, MeshDash schnell zu installieren und zu nutzen.
 
-## Noch offene Punkte die auf der Todo stehen:
-- visuelle Kennzeichnung im Tab, wenn neue Nachrichten da sind.
-- MHeard konfigurierbar machen für Request-/Acknowledged Ziele.
-
 ## Hier noch ein paar Bilder aus den Menüpunkten:
 
 ![FILES](/docs/01_config.jpg)
@@ -78,7 +76,15 @@ Diese Datei hilft dir, MeshDash schnell zu installieren und zu nutzen.
 ![FILES](/docs/10_groups.jpg)
 ![FILES](/docs/20_mheard.jpg)
 ![FILES](/docs/30_send_command.jpg)
-![FILES](/docs/40_message.jpg)
+
+
+### Nun auch mit Tab-Benachrichtigungen bei neuen Nachrichten.
+![FILES](/docs/60_desktop_tab alert.jpg)
+![FILES](/docs/61_handy_Tab_alert.jpg)
+
+## Noch offene Punkte die auf der To-do-Liste stehen:
+- MHeard konfigurierbar machen für Request-/Acknowledged Ziele.
+
 
   
   

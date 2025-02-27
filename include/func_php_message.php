@@ -34,6 +34,7 @@ function updateAckReqId($msgId, $ackReqId): bool
     $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
 
     $db = new SQLite3($dbFilename);
+    $db->exec('PRAGMA synchronous = NORMAL;');
     #$db->busyTimeout(5000); // warte wenn busy in millisekunden
 
     @$db->exec(" UPDATE meshdash
@@ -64,6 +65,7 @@ function updateAckId($ackId): bool
     $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
 
     $db = new SQLite3($dbFilename);
+    $db->exec('PRAGMA synchronous = NORMAL;');
 
     $db->exec(" UPDATE meshdash
                           SET ack = $ackId

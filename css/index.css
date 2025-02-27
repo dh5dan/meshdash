@@ -185,8 +185,29 @@ iframe {
     border-color: #4CAF50;
 }
 
+.tab {
+    position: relative; /* Muss für die ::after-Pseudo-Klasse gesetzt werden */
+}
+
+/* Tab new-Message Markierung*/
+
+.new-message-indicator::after {
+    content: "•";
+    color: red;
+    font-size: 1.2em;  /* Verwenden von relativer Schriftgröße */
+    position: absolute;
+    top: 2px;  /* Etwas anpassen, um den Punkt korrekt im Tab zu platzieren */
+    right: 5px; /* Rechts oben platzieren */
+    transform: translate(50%, -50%); /* Sorgt dafür, dass der Punkt schön positioniert wird */
+}
+
 /* Media Query für Smartphones */
 @media (max-width: 768px) {
+
+    .new-message-indicator::after {
+        font-size: 1.5em;  /* Verwenden von relativer Schriftgröße */
+        top: 5px;  /* Etwas anpassen, um den Punkt korrekt im Tab zu platzieren */
+    }
 
     .topTitle {
         font-size: medium;

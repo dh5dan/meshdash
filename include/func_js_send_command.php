@@ -12,6 +12,7 @@
             let titleMsg = 'Hinweis';
             let outputMsg = '';
             let width = 700;
+            let loraIp = $("#loraIp").val();
 
             outputMsg += '<b>−−extudpip <IPv4-Ziel></b> Setzte Zielhost wohin UDP-Pakete <span class="indented">gesendet werden sollen</span><br>';
             outputMsg += '<b>−−extudp on/off</b> Aktiviere/Deaktiviere die Aussendung <span class="indented">von UDP-Paketen an das eingestelltes Ziel.</span><br>';
@@ -94,15 +95,17 @@
             let sendData        = 1;
             let loraIp = $("#loraIp").val();
             let titleMsg = 'OTA-Update';
-            let maxHeight = '';
+            let maxHeight = '300';
             let outputMsg;
             let width = 700;
 
             if (sendCommandData === '--ota-update')
             {
-                outputMsg ='Ota-Update erkannt.<br>'
+                outputMsg ='<b>Ota-Update erkannt!</b><br>'
                 outputMsg +='Sie werden im Anschluss auf die Webseite in einem neuen Tab<br>';
                 outputMsg +='zum Lora Gerät umgeleitet, um dort das Update auszuführen.<br><br>'
+                outputMsg +='<b><u>Wichtig!</u></b><br><span style="color: red">Sollte ein Popup-Blocker aktiv sein,<br>'
+                outputMsg +='muss die Lora Seite <u><b>http://'+loraIp +'</b></u><br>manuell geöffnet werden!</span><br><br>'
                 outputMsg +='Die Umleitung erfolgt ca 5sek. nach Ausführung des Befehls,<br>'
                 outputMsg +='da das Gerät etwas Zeit braucht um den OTA-Mode zu starten.<br>'
                 outputMsg +='Ansonsten einfach den Refresh des Browsers nutzen,<br>'
@@ -128,9 +131,9 @@
         function dialogConfirm(outputMsg, titleMsg, width, sendData, sendCommandData, maxHeight, callback) {
             let isMobile = window.innerWidth <= 600; // Prüfen, ob es ein Smartphone ist
 
-            width = isMobile ? "auto" : (width || 300); // Auto-Breite für Smartphones
+            width     = isMobile ? "auto" : (width || 300); // Auto-Breite für Smartphones
             maxHeight = maxHeight || 400; // Standardhöhe setzen, falls nichts übergeben wird
-            titleMsg = titleMsg || '';
+            titleMsg  = titleMsg || '';
             outputMsg = outputMsg || '';
 
             // Dynamische Schriftgröße abhängig von der Fensterbreite
@@ -175,7 +178,6 @@
                                     sendData: sendData
                                 },
                                 success: function () {
-
 
                                     // **Countdown starten**
                                     setInterval(function ()

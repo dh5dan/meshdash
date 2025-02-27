@@ -25,6 +25,7 @@ function saveGroupsSettings(): bool
     $updateArray[6]['enabled'] = $_REQUEST['groupNumber6Enabled'] ?? 0;
 
     $db = new SQLite3($dbFilename);
+    $db->exec('PRAGMA synchronous = NORMAL;');
 
     for ($groupId = 1; $groupId <= 6; $groupId++)
     {
