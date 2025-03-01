@@ -10,6 +10,7 @@
             let loraIp            = $("#loraIp").val();
             let callSign          = $("#callSign").val();
             let maxScrollBackRows = $("#maxScrollBackRows").val();
+            let retentionDays     = $("#retentionDays").val();
 
             let ipv4Pattern     = /^(\d{1,3}\.){3}\d{1,3}$/;
             let callSignPattern = /^[a-zA-Z]{2}[0-9]{1}[a-zA-Z]{1,3}-([1-9][0-9]?)$/;
@@ -55,7 +56,6 @@
                 dialog(outputMsg, titleMsg, width);
                 return false;
             }
-            //else if (!$.isNumeric(maxScrollBackRows))
             else if (!numberPattern.test(maxScrollBackRows))
             {
                 width = 600;
@@ -67,7 +67,30 @@
             {
                 width     = 600;
                 outputMsg = 'Der eingegebene Wert für ScrollBack ist ausserhalb des Wertebereichs.';
-                outputMsg += '<br> Erlaubt ist 30-200.';
+                outputMsg += '<br>Erlaubt ist 30-200.';
+                dialog(outputMsg, titleMsg, width);
+                return false;
+            }
+
+            if (retentionDays === '')
+            {
+                width = 600;
+                outputMsg = 'Bitte einen Wert im Bereich 1-n für die Aufbewahrungszeit angeben.';
+                dialog(outputMsg, titleMsg, width);
+                return false;
+            }
+            else if (!numberPattern.test(retentionDays))
+            {
+                width = 600;
+                outputMsg = 'Der eingegebene Wert für die Aufbewahrungszeit ist keine Zahl.';
+                dialog(outputMsg, titleMsg, width);
+                return false;
+            }
+            else if (retentionDays === '0')
+            {
+                width     = 600;
+                outputMsg = 'Der eingegebene Wert für die Aufbewahrungszeit darf nicht 0 sein.';
+                outputMsg += '<br>Erlaubt ist 1-n.';
                 dialog(outputMsg, titleMsg, width);
                 return false;
             }

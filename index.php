@@ -32,8 +32,6 @@ require_once 'include/func_php_grp_definition.php';
 error_reporting(E_ALL);
 ini_set('display_errors',1);
 
-// Überprüfen, ob der Prozess bereits läuft
-
 $autostartBgProcess = true;
 $sendData           = $_REQUEST['sendData'] ?? 0;
 $sendDataCheck      = $_REQUEST['sendDataCheck'] ?? 0;
@@ -47,8 +45,8 @@ $debugFlag          = false; // For debug only
 #Check what oS is running
 $osIssWindows = chkOsIssWindows();
 
-#Hinweis Pgrep -x funktioniert nicht, wenn man die PHP Datei ermitteln muss
-$checkTaskCmd = $osIssWindows === true ? 'tasklist | find "php.exe"' : "pgrep -a -f udp_receiver.php | grep -v pgrep | awk '{print $1}'";
+#Hole Task Command abhängig vom OS
+$checkTaskCmd = getTaskCmd();
 echo '<input type="hidden" id="version" value="' . VERSION . '"/>';
 
 #Prüfen, ob schreibrechte für Datenbank und Log existieren
@@ -87,6 +85,10 @@ if ($debugFlag === true)
 if (!file_exists('database/meshdash.db'))
 {
     initSQLiteDatabase('meshdash');
+}
+else
+{
+    checkDbUpgrade('meshdash');
 }
 
 if (!file_exists('database/parameter.db'))
@@ -159,24 +161,24 @@ if ($debugFlag === true)
     if ($chkExtension1 === false)
     {
         $errorText = date('Y-m-d H:i:s') . ' chkExtension1 = false. (pdo_sqlite)' . "\n";
-        file_put_contents('log/debug.log', $errorText, FILE_APPEND);
     }
     else
     {
         $errorText = date('Y-m-d H:i:s') . ' chkExtension1 = true. (pdo_sqlite)' . "\n";
-        file_put_contents('log/debug.log', $errorText, FILE_APPEND);
     }
+
+    file_put_contents('log/debug.log', $errorText, FILE_APPEND);
 
     if ($chkExtension2 === false)
     {
         $errorText = date('Y-m-d H:i:s') . ' chkExtension2 = false. (sqlite3)' . "\n";
-        file_put_contents('log/debug.log', $errorText, FILE_APPEND);
     }
     else
     {
         $errorText = date('Y-m-d H:i:s') . ' chkExtension2 = true. (sqlite3)' . "\n";
-        file_put_contents('log/debug.log', $errorText, FILE_APPEND);
     }
+
+    file_put_contents('log/debug.log', $errorText, FILE_APPEND);
 }
 
 if ($chkExtension1 === false || $chkExtension2 === false)
@@ -191,20 +193,20 @@ if ($chkExtension1 === false || $chkExtension2 === false)
 
 if ($debugFlag === true)
 {
-    $errorText = date('Y-m-d H:i:s') . ' MeshdasH DB found database/meshdash.db' . "\n";
+    $errorText = date('Y-m-d H:i:s') . ' MeshDash DB found database/meshdash.db' . "\n";
 
     if (!file_exists('database/meshdash.db'))
     {
-        $errorText = date('Y-m-d H:i:s') . ' MeshdasH DB NOT found database/meshdash.db' . "\n";
+        $errorText = date('Y-m-d H:i:s') . ' MeshDash DB NOT found database/meshdash.db' . "\n";
     }
 
     file_put_contents('log/debug.log', $errorText, FILE_APPEND);
 
-    $errorText = date('Y-m-d H:i:s') . ' MeshdasH DB found database/parameter.db' . "\n";
+    $errorText = date('Y-m-d H:i:s') . ' MeshDash DB found database/parameter.db' . "\n";
 
     if (!file_exists('database/parameter.db'))
     {
-        $errorText = date('Y-m-d H:i:s') . ' MeshdasH DB NOT found database/parameter.db' . "\n";
+        $errorText = date('Y-m-d H:i:s') . ' MeshDash DB NOT found database/parameter.db' . "\n";
     }
 
     file_put_contents('log/debug.log', $errorText, FILE_APPEND);

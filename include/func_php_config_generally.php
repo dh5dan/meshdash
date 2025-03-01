@@ -13,6 +13,10 @@ function saveGenerallySettings(): bool
     $maxScrollBackRows = $maxScrollBackRows == '' ? 60 : $maxScrollBackRows;
     $doNotBackupDb     = $_REQUEST['doNotBackupDb'] ?? 0;
     $clickOnCall       = $_REQUEST['clickOnCall'] ?? 0;
+    $chronLogEnable    = $_REQUEST['chronLogEnable'] ?? 0;
+    $retentionDays     = $_REQUEST['retentionDays'] ?? 7;
+    $chronMode         = $_REQUEST['chronMode'] == '' ? 'zip' : $_REQUEST['chronMode'];
+    $strictCallEnable  = $_REQUEST['strictCallEnable'] ?? 0;
 
     setParamData('noPosData', $noPosData);
     setParamData('noDmAlertGlobal', $noDmAlertGlobal);
@@ -23,6 +27,10 @@ function saveGenerallySettings(): bool
     setParamData('maxScrollBackRows', $maxScrollBackRows);
     setParamData('doNotBackupDb', $doNotBackupDb);
     setParamData('clickOnCall', $clickOnCall);
+    setParamData('chronLogEnable', $chronLogEnable);
+    setParamData('retentionDays', $retentionDays);
+    setParamData('chronMode', trim($chronMode), 'txt');
+    setParamData('strictCallEnable', $strictCallEnable);
 
     return true;
 }

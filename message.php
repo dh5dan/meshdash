@@ -29,8 +29,8 @@ if(!file_exists('database/meshdash.db') ||
     !file_exists('database/keywords.db'))
 {
     echo "<h3>Es wurden ein oder mehrere Datenbanken nicht gefunden!";
-    echo "<br><br>Wenn gerade ein Update stattfindet dann bitte warten bis es abgeschlossen ist.";
-    echo "<br>Wenn nicht bitte das Verzeichnis <b>database</b> prüfen.</hr>";
+    echo "<br><br>Wenn gerade ein Update stattfindet, dann bitte warten bis es abgeschlossen ist.";
+    echo "<br>Wenn nicht, bitte das Verzeichnis <b>database</b> prüfen.</hr>";
     exit();
 }
 
@@ -58,8 +58,18 @@ $clickOnCall       = getParamData('clickOnCall');
 #Prüfe ob Logging aktiv ist
 $doLogEnable = getParamData('doLogEnable');
 
+#Prüfe, ob das reine Rufzeichen nur genommen werden soll ohne SSID
+$strictCallEnable = getParamData('strictCallEnable') ?? 0;
+
 $sqlAddon = '';
 $group    = $_REQUEST['group'] ?? -1;
+
+$callSignSql = $callSign;
+
+if ($strictCallEnable == 1)
+{
+    $callSignSql = explode("-", $callSign, 2)[0]; // Trennen nach dem ersten '-'
+}
 
 echo '<input type="hidden" id="group" value="' . $group . '" />';
 
@@ -73,7 +83,7 @@ else if ($group == 0)
 }
 else if ($group == -2)
 {
-    $sqlAddon .= ' AND (dst = "' . $callSign . '" OR src = "' . $callSign . '") ';
+    $sqlAddon .= ' AND (dst like "' . $callSignSql . '%" OR src like "' . $callSignSql . '%") ';
     $sqlAddon .= " AND src GLOB '[A-Za-z]*' "; // src muss ein Rufzeichen sein
     $sqlAddon .= " AND dst GLOB '[A-Za-z]*' "; // dst muss ein Rufzeichen sein
     $sqlAddon .= " AND type = 'msg' ";
@@ -327,7 +337,7 @@ if ($result !== false)
             }
         }
 
-        #Check ob es nur Positionsdaten sind
+        #Check, ob es nur Positionsdaten sind
         if ($type === 'pos' && $noPosData == 0)
         {
             $lat             = $row['latitude'];     // 51.5012
@@ -339,20 +349,26 @@ if ($result !== false)
             $hwId            = $row['hw_id']; // 3
             $altitude        = $row['altitude']; // 344 (Höhe in Fuss)
             $batteryCapacity = $row['batt'];  // Batt Kapazität in %
-            $altitude        = number_format($altitude * 0.3048, 0); // Umrechnung Fuss -> Meter
+            $firmware        = $row['firmware'] ?? '';  // Batt Kapazität in %
+            $altitude        = number_format($altitude * 0.3048); // Umrechnung Fuss -> Meter
 
             echo '<h3 class="setFontMsgHeader">';
             echo 'MsgId: ' . $msgId . ' (' . $srcType . ')<br>' . $timestamp . ' ';
-            echo 'Quelle ' . $src . ' , Ziel all</h3>';
-            echo '<h3 class="setFontMsg">';
-            echo 'Längengrad: ' . $lat . ' ' . $latDir;
-            echo "<br>";
-            echo 'Breitengrad: ' . $long . ' ' . $longDir;
-            echo "<br>";
-            echo 'Höhe: ' . $altitude . ' m';
-            echo "<br>";
-            echo 'Batteriekapazität: ' . $batteryCapacity . ' %';
+            echo 'Quelle ' . $src . ', Ziel all</h3>';
+
+            echo '<div class="info-container">';
+                echo '<div class="info-row"><span class="info-label">Längengrad: </span><span class="info-value">'.$lat . ' ' . $latDir.'</span></div>';
+                echo '<div class="info-row"><span class="info-label">Breitengrad: </span><span class="info-value">'.$long . ' ' . $longDir.'</span></div>';
+                echo '<div class="info-row"><span class="info-label">Höhe: </span><span class="info-value">' . $altitude . ' m</span></div>';
+                echo '<div class="info-row"><span class="info-label">Batteriekapazität: </span><span class="info-value">' . $batteryCapacity . ' %</span></div>';
+                if ($firmware != '')
+                {
+                    echo '<div class="info-row"><span class="info-label">Firmware: </span><span class="info-value">' . $firmware .'</span></div>';
+                }
+            echo '</div>';
+
             echo '</h3><hr>';
+
         }
         else if ($type === 'msg')
         {

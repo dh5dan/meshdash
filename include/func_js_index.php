@@ -305,6 +305,21 @@
                case 'mHeard':
                    iframeSrc = 'mheard.php';
                    break;
+               case 'about':
+                   let titleMsg  = 'Info'
+                   let outputMsg = '';
+                   let version   = $("#version").val();
+                   let width     = 600;
+
+                   outputMsg  = 'MeshDash ' + version;
+                   outputMsg += '<br>Basierend auf der ursprünglichen Version von Andre DL4QB';
+                   outputMsg += '<br><br>Erweitert als reine PHP-Version mit tatkräftiger';
+                   outputMsg += '<br>Unterstützung von Andre, wie auch zahlreichen Beta-Tester.';
+                   outputMsg += '<br><br>73 Christian DH5DAN.';
+
+                   dialog(outputMsg, titleMsg, width)
+                   return false;
+
                default:
                    iframeSrc = ''; // Fallback
            }

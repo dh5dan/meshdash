@@ -3,7 +3,8 @@
 function getLoraInfo($loraIp)
 {
     // URL der Seite
-    $url = 'http://' . $loraIp . '/info';
+    $actualHost = (empty($_SERVER['HTTPS']) ? 'http' : 'https');
+    $url        = $actualHost . '://' . $loraIp . '/info';
 
     // HTML-Inhalt abrufen
     $htmlContent = @file_get_contents($url);
@@ -180,7 +181,7 @@ function showLoraInfo($localInfoArray)
 
     echo '<tr>';
     echo '<th class="thCenter">Lora-Infoseite</th>';
-    echo '<th colspan="2"><input type="button" id="btnLoadLoraInfo"value="Info-Seite neu laden" /></th>';
+    echo '<th colspan="2"><input type="button" id="btnLoadLoraInfo" value="Info-Seite neu laden" /></th>';
     echo '</tr>';
 
     echo '<tr>';

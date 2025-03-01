@@ -58,7 +58,7 @@ echo '<input type="hidden" id="loraIp" value="' . $loraIp . '" />';
 echo '<table>';
 
 echo '<tr>';
-echo '<td>Befehlszeile :</td>';
+echo '<td>Befehlszeile:</td>';
 echo '<td><input type="text" name="sendCommand"  size="30" id="sendCommand" value="' . $sendCommand . '" placeholder="--extudpip on"  /></td>';
 echo '</tr>';
 
@@ -75,7 +75,7 @@ echo '<td colspan="2"><hr></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td xmlns="http://www.w3.org/1999/html" colspan="2">';
+echo '<td xmlns="https://www.w3.org/1999/html" colspan="2">';
 echo '<span class="failureHint">Bei der erstmaligen UDP-Aktivierung,<br>muss einmalig ein Reboot ausgeführt werden!</span></td>';
 echo '</tr>';
 

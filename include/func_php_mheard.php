@@ -6,7 +6,8 @@ function getMheard($loraIp)
     $heardData = [];
 
     // URL der Remote-Seite
-    $url = 'http://' . $loraIp . '/mheard';
+    $actualHost = (empty($_SERVER['HTTPS']) ? 'http' : 'https');
+    $url        = $actualHost . '://' . $loraIp . '/mheard';
 
     // Holen des HTML-Inhalts von der Remote-Seite
     $htmlContent = @file_get_contents($url);

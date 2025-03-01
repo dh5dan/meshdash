@@ -12,6 +12,8 @@ if ($debugFlag === true)
 }
 #$_GET['lastChecked'] = 1740291656; // '2025-02-23 07:20:56'
 
+#Trigger Chron-Log
+chronLog();
 
 // Verbindung zur ersten DB (groups)
 $db1 = new SQLite3('database/groups.db');
@@ -86,14 +88,9 @@ if ($debugFlag === false)
 {
     // JSON-Ausgabe für das Frontend
     header('Content-Type: application/json');
-    echo json_encode([
-        'newMessages' => $mergedData // Gruppen wo neue daten gefunden wurden
-    ]);
 }
-else
-{
-    echo json_encode([
-        'newMessages' => $mergedData // Gruppen wo neue daten gefunden wurden
-    ]);
-}
+
+echo json_encode([
+    'newMessages' => $mergedData // Gruppen wo neue daten gefunden wurden
+]);
 

@@ -211,6 +211,9 @@ function cleanUp($tempDir)
 
 function showBackups()
 {
+    $maxBackups      = 5; //max. Anzahl Backups
+    $maxBackupsCount = 0; //Counter für Backups
+
     $backupDir = dirname(__DIR__) . '/backup'; // Verzeichnis der Backups
 
     if (!is_dir($backupDir)) {
@@ -241,14 +244,23 @@ function showBackups()
         echo'<th>Uhrzeit</th>';
         echo'<th>Backup-Datei</th>';
         echo'<th colspan="2">&nbsp;</th>';
-        #echo'<th>&nbsp;</th>';
     echo'</tr>';
 
-    foreach ($files as $file) {
+    foreach ($files as $file)
+    {
         $filename = basename($file);
-        if (preg_match('/backup_(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})\.zip/', $filename, $matches)) {
-            $datum   = "{$matches[3]}.{$matches[2]}.{$matches[1]}";
-            $uhrzeit = "{$matches[4]}:{$matches[5]}:{$matches[6]}";
+        if (preg_match('/backup_(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})\.zip/', $filename, $matches))
+        {
+            ++$maxBackupsCount;
+
+            if ($maxBackupsCount > $maxBackups)
+            {
+                unlink('..\backup\\' . $filename);
+                continue;
+            }
+
+            $datum       = "{$matches[3]}.{$matches[2]}.{$matches[1]}";
+            $uhrzeit     = "{$matches[4]}:{$matches[5]}:{$matches[6]}";
             $downloadUrl = $downloadBase . $filename;
 
             echo '<tr>';
@@ -256,13 +268,13 @@ function showBackups()
             echo '<td>' . $uhrzeit . '</td>';
             echo '<td>' . $filename . '</td>';
             echo '<td>';
-                echo'<a href="' . $downloadUrl . '">';
-                    echo'<img src="../image/download_blk.png" class="imageDownload" alt="download">';
-                echo'</a>';
-            echo'</td>';
+            echo '<a href="' . $downloadUrl . '">';
+            echo '<img src="../image/download_blk.png" class="imageDownload" alt="download">';
+            echo '</a>';
+            echo '</td>';
             echo '<td>';
-                echo '<img src="../image/delete_blk.png" data-delete ="' . $filename . '" class="imageDelete" alt="delete">';
-            echo'</td>';
+            echo '<img src="../image/delete_blk.png" data-delete ="' . $filename . '" class="imageDelete" alt="delete">';
+            echo '</td>';
             echo '</tr>';
         }
     }

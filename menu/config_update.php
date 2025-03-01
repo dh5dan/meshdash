@@ -81,7 +81,6 @@ if ($sendData === '1')
     {
         $uploadFile = $_FILES['updateFile']['tmp_name'];
 
-
         if ($debugFlag === true)
         {
             echo "<pre>";
@@ -89,7 +88,7 @@ if ($sendData === '1')
             echo "</pre>";
 
             $filesArray = implode(", ", $_FILES['updateFile']);
-            $errorText = date('Y-m-d H:i:s') . ' filesArray:' . $filesArray . "\n";
+            $errorText  = date('Y-m-d H:i:s') . ' filesArray:' . $filesArray . "\n";
             $errorText .= date('Y-m-d H:i:s') . ' uploadFile:' . $uploadFile . "\n";
             file_put_contents('../log/debug_update.log', $errorText, FILE_APPEND);
         }
@@ -98,10 +97,9 @@ if ($sendData === '1')
 
         if ($resCheckValidUpdatePackage)
         {
-
             if ($debugFlag === true)
             {
-                $tt        = " Führe backupApp aus\n";
+                $tt         = " Führe backupApp aus\n";
                 $tt        .= " rootDir:$rootDir\n";
                 $tt        .= " backupDir:$backupDir\n";
                 $errorText = date('Y-m-d H:i:s') . ' result:' . $tt . "\n";
@@ -122,7 +120,7 @@ if ($sendData === '1')
 
                 if ($debugFlag === true)
                 {   $tArray = implode(',',$_FILES);
-                    $tt        = "Fehler beim Erstellen des Backups!\n";
+                    $tt         = "Fehler beim Erstellen des Backups!\n";
                     $tt        .= "tArray: $tArray\n";
                     $errorText = date('Y-m-d H:i:s') . ' filesArray:' . $tt . "\n";
 
@@ -262,7 +260,6 @@ if ($sendData === '3')
 
     if (file_exists($deleteFileImageFullPath))
     {
-
         if(unlink($deleteFileImageFullPath))
         {
             echo '<br><span class="successHint">Backupfile ' . $deleteFileImage . ' erfolgreich gelöscht.</span>';
