@@ -4,7 +4,7 @@ function sendCommand($loraCmd, $loraIp): bool
 {
     $loraCmd = trim($loraCmd);
 
-    $actualHost  = (empty($_SERVER['HTTPS']) ? 'http' : 'https');
+    $actualHost  = 'http';
     $triggerLink = $actualHost . '://' . $loraIp . '/?command=' . urlencode($loraCmd);
     $debugFlag   = false;
 

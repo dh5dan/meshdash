@@ -3,7 +3,7 @@
 function getLoraInfo($loraIp)
 {
     // URL der Seite
-    $actualHost = (empty($_SERVER['HTTPS']) ? 'http' : 'https');
+    $actualHost = 'http';
     $url        = $actualHost . '://' . $loraIp . '/info';
 
     // HTML-Inhalt abrufen
