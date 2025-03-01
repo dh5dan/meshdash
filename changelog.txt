@@ -1,8 +1,16 @@
+Version 1.10.04beta SQL
+Feature Versionsbasierte Updatefunktion der DB.
+Feature FW-Version der Gegenstelle wird nun in DB mit aufgenommen wenn vorhanden.
+FEATURE Backups auf max. 5 begrenzt.
+FEATURE Chron-Log für Logs mit Einstellung Archive-ZIP/Delete.
+FEATURE Firmware-Angabe unter POS-Daten, wenn vorhanden.
+FEATURE Filter Own-Call Tab entweder auf Call mit SSID oder nur Call.
+FEATURE Pos-Meldungen lesbarer formatiert.
+#################################################################
 Version 1.10.02beta SQL
-
 Feature: Optimize SQLite 3 write operations with PRAGMA synchronous = NORMAL
 Feature: Benachrichtigung im Tab, bei neuen Nachrichten.
-Feature: Ergänzender Hinweis zu PopUp-Blocker bei OTA Update.
+Feature: Ergänzender Hinweis zu Pop-up-Blocker bei OTA Update.
 #################################################################
 Version 1.10.00beta SQL
 Feature: Reboot zu "Sende Befehle" hinzugefügt
@@ -43,7 +51,7 @@ Version 1.09.90beta SQL
 Optimization Ajax call to prevent memory leaks in DOM on some Browsers
 #################################################################
 Version 1.09.88beta SQL
-Codeanpassung Backup. Verhindert das exkludierte Verzeichnisnamen
+Codeanpassung Backup. Verhindert, dass exkludierte Verzeichnisnamen
 auch Dateinamen mit Bestandteil des namens nicht sichern.
 Backup sichert im execute Verzeichnis nur noch:
 'sh', 'py', 'cmd', 'bat', 'exe', 'com'
@@ -151,9 +159,9 @@ da ein neues PHP Module (ZIP) benötigt wird!
 #################################################################
 Version 1.09.52beta SQL
 Datum Uhrzeit oben rechts (Basis Systemzeit)
-Neuanordnung von Src Call und Via calls und Ziel zur besseren Lesbarkeit.
+Neuanordnung von Src Call und via Calls und Ziel zur besseren Lesbarkeit.
 Benachrichtigungston bei Src oder Zielcall einstellbar.
-Es sind 2 Beispiel Sounddateien dabei.
+Es sind 2 Beispiel-Sounddateien dabei.
 Bugfix in Message Sql select. Angezeigte Nachrichten wurden weniger,
 wenn POs und oder TimeSync-Filter drin sind.
 Ack Msg werden nun auch via SQL gefiltert.
@@ -257,7 +265,7 @@ Angabe der Lora Ip und setzten der Ip via WebApp
 Prüfen ob Meshdash.db als Datei existiert, wenn nein neu initiieren
 ##################################################################
 Version 1.09.10
-Erkenne wenn Zugriff SQLITE3 Datenbank gelockt ist.
+Erkenne, wenn Zugriff SQLITE3 Datenbank gelockt ist.
 Optimierung beim Schreiben in Db so das die Lockzeiten sehr kurz sind.
 ##################################################################
 Version 1.09.08

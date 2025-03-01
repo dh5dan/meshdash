@@ -10,7 +10,7 @@ function callWindowsBackgroundTask($taskFile, $execDir = ''): bool
         'execDir' => "$execDir",
     );
 
-    $debugFlag  = false;
+    $debugFlag = false;
 
     #Starte Trigger
     $ch = curl_init();
@@ -88,6 +88,7 @@ function initSQLiteDatabase($database): bool
                                   alertExecutedDst INTEGER DEFAULT 0,
                                   msgIsTimeSync INTEGER DEFAULT 0,
                                   msgIsAck INTEGER DEFAULT 0,
+                                  firmware TEXT,
                                   PRIMARY KEY('msg_id')
                                 )
                 ");
@@ -145,7 +146,11 @@ function initSQLiteDatabase($database): bool
                                        ('alertSoundCallDst','' , ''),
                                        ('doLogEnable',1 , ''),
                                        ('doNotBackupDb', 0, ''),
-                                       ('clickOnCall', 0, '')
+                                       ('clickOnCall', 0, ''),
+                                       ('chronLogEnable', 0, ''),
+                                       ('retentionDays', 7, ''),
+                                       ('chronMode', '', 'zip'),
+                                       ('strictCallEnable', 0, '')
            ");
 
         #Close and write Back WAL
@@ -263,6 +268,7 @@ function showMenu()
 
     echo '
     <li data-action="message">Message</li>
+     <li data-action="about">About</li>
   </ul>
 </div>
 ';
@@ -540,3 +546,4 @@ function startBgProcess($paramStartBgProcess)
 
     return $taskResult;
 }
+

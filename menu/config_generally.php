@@ -72,12 +72,25 @@ $maxScrollBackRows = getParamData('maxScrollBackRows');
 $doLogEnable       = getParamData('doLogEnable');
 $doNotBackupDb     = getParamData('doNotBackupDb');
 $clickOnCall       = getParamData('clickOnCall');
+$chronLogEnable    = getParamData('chronLogEnable');
+$retentionDays     = getParamData('retentionDays'); //Tage logs behalten
+$chronMode         = getParamData('chronMode'); // zip|delete
+$strictCallEnable  = getParamData('strictCallEnable'); // Strict Call Flag
 
 $noPosDataChecked         = $noPosData == 1 ? 'checked' : '';
 $noDmAlertGlobalChecked   = $noDmAlertGlobal == 1 ? 'checked' : '';
 $noTimeSyncMsgChecked     = $noTimeSyncMsg == 1 ? 'checked' : '';
 $doLogEnableChecked       = $doLogEnable == 1 ? 'checked' : '';
 $doNotBackupDbChecked     = $doNotBackupDb == 1 ? 'checked' : '';
+
+$chronLogEnableChecked    = $chronLogEnable == 1 ? 'checked' : '';
+$retentionDays            = $retentionDays == '' ? 7 : $retentionDays;
+$chronMode                = $chronMode == '' ? 'zip' : $chronMode;
+$strictCallEnableChecked  = $strictCallEnable == 1 ? 'checked' : '';
+
+
+$onClickChronModeCheckedZip    = $chronMode == 'zip' ? 'checked' : '';
+$onClickChronModeCheckedDelete = $chronMode == 'delete' ? 'checked' : '';
 
 $onClickOnCallChecked0 = $clickOnCall == 0 ? 'checked' : '';
 $onClickOnCallChecked1 = $clickOnCall == 1 ? 'checked' : '';
@@ -120,13 +133,51 @@ echo '<td><input type="checkbox" name="noTimeSyncMsg" ' . $noTimeSyncMsgChecked 
 echo '</tr>';
 
 echo '<tr>';
+echo '<td>DB vom Backup ausschließen:</td>';
+echo '<td><input type="checkbox" name="doNotBackupDb" ' . $doNotBackupDbChecked . ' id="doNotBackupDb" value="1" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td colspan="2"><hr></td>';
+echo '</tr>';
+
+echo '<tr>';
 echo '<td>Logfile-Erstellung:</td>';
 echo '<td><input type="checkbox" name="doLogEnable" ' . $doLogEnableChecked . ' id="doLogEnable" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>DB vom Backup ausschließen:</td>';
-echo '<td><input type="checkbox" name="doNotBackupDb" ' . $doNotBackupDbChecked . ' id="doNotBackupDb" value="1" /></td>';
+echo '<td>Chron-Log aktivieren:</td>';
+echo '<td><input type="checkbox" name="chronLogEnable" ' . $chronLogEnableChecked . ' id="chronLogEnable" value="1" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td>Aufbewahrungstage:</td>';
+echo '<td><input type="text" name="retentionDays" id="retentionDays" value="' . $retentionDays . '" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td>Chron-Mode:</td>';
+echo '<td>&nbsp;</td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td>&nbsp;- Logs in Zip-Archiv speichern:</td>';
+echo '<td><input type="radio" name="chronMode" ' . $onClickChronModeCheckedZip . ' id="chronModeZip" value="zip" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td>&nbsp;- Logs sofort löschen:</td>';
+echo '<td><input type="radio" name="chronMode" ' . $onClickChronModeCheckedDelete . ' id="chronModeDelete" value="delete" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td colspan="2"><hr></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td>Filter mit Strict-Call:</td>';
+echo '<td><input type="checkbox" name="strictCallEnable" ' . $strictCallEnableChecked . ' id="strictCallEnable" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
@@ -150,8 +201,12 @@ echo '<td><input type="radio" name="clickOnCall" ' . $onClickOnCallChecked2 . ' 
 echo '</tr>';
 
 echo '<tr>';
+echo '<td colspan="2"><hr></td>';
+echo '</tr>';
+
+echo '<tr>';
 echo '<td>Max. ScrollBack Reihen (30-200):</td>';
-echo '<td><input type="text" name="maxScrollBackRows" size="5" id="maxScrollBackRows" value="' . $maxScrollBackRows . '" /></td>';
+echo '<td><input type="text" name="maxScrollBackRows" id="maxScrollBackRows" value="' . $maxScrollBackRows . '" /></td>';
 echo '</tr>';
 
 echo '<tr>';
@@ -161,11 +216,11 @@ echo '</tr>';
 
 echo '<tr>';
 echo '<td>Rufzeichen:</td>';
-echo '<td xmlns="http://www.w3.org/1999/html"><input type="text" name="callSign"  id="callSign" value="' . $callSign . '" /></td>';
+echo '<td xmlns="https://www.w3.org/1999/html"><input type="text" name="callSign"  id="callSign" value="' . $callSign . '" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td xmlns="http://www.w3.org/1999/html" colspan="2"><span class="failureHint">Das Rufzeichen muss mit Angabe<br>im Lora übereinstimmen!</span></td>';
+echo '<td xmlns="https://www.w3.org/1999/html" colspan="2"><span class="failureHint">Das Rufzeichen muss mit Angabe<br>im Lora übereinstimmen!</span></td>';
 echo '</tr>';
 
 echo '<tr>';

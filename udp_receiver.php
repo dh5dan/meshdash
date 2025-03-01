@@ -157,8 +157,9 @@ while (true)
     $aprsSymbolGroup = $dbArraySqliteJson['aprs_symbol_group'] ?? ''; // /
     $hwId            = $dbArraySqliteJson['hw_id'] ?? ''; // 3
     $altitude        = $dbArraySqliteJson['alt'] ?? ''; // 344 (Höhe in m)
-    $batt            = $dbArraySqliteJson['batt'] ?? '';  // Batt Kapazität in %
+    $battery         = $dbArraySqliteJson['batt'] ?? '';  // Batt Kapazität in %
     $dst             = $dbArraySqliteJson['dst'] ?? ''; // 995 | call
+    $firmware        = $dbArraySqliteJson['firmware'] ?? ''; // Firmware 4.34
 
     #Open Database
     $db = new SQLite3('database/meshdash.db');
@@ -184,7 +185,8 @@ while (true)
                                           hw_id, 
                                           altitude,
                                           batt,
-                                          dst
+                                          dst,
+                                          firmware
                                        ) VALUES (
                                          '$msgId', 
                                          '$timestamp',
@@ -200,8 +202,9 @@ while (true)
                                          '$aprsSymbolGroup',
                                          '$hwId', 
                                          '$altitude',
-                                         '$batt',
-                                         '$dst'       
+                                         '$battery',
+                                         '$dst',
+                                         '$firmware'        
                                        )
            ");
 
