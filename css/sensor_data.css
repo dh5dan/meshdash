@@ -5,11 +5,14 @@ body {
 .table, th, td {
     border: 1px solid white;
     border-collapse: collapse;
+    padding: 5px;
+    text-align: center;
+    white-space: nowrap;
 }
 .table {
     background-color: #FCEDF0;
     width: max(25%, min(801px, 100%));
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 
 html {
@@ -25,6 +28,18 @@ html {
 
 .lineBreak {
     display: block;
+}
+
+.successHint {
+    background-color: darkgreen;
+    color: whitesmoke;
+    font-weight: bold;
+}
+
+.failureHint {
+    background-color: crimson;
+    color: whitesmoke;
+    font-weight: bold;
 }
 
 @media screen and (max-width: 768px) {

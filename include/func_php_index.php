@@ -179,6 +179,113 @@ function initSQLiteDatabase($database): bool
         $db->close();
         unset($db);
     }
+    elseif ($database == 'sensordata')
+    {
+        #Open Database
+        $db = new SQLite3('database/sensordata.db');
+        $db->exec('PRAGMA journal_mode = wal;');
+        $db->exec('PRAGMA synchronous = NORMAL;');
+
+        // Tabelle erstellen wenn nicht vorhanden
+        $db->exec("CREATE TABLE IF NOT EXISTS sensordata 
+                                (
+                                  sensorDataId INTEGER NOT NULL UNIQUE,              
+                                  timestamps INTEGER NOT NULL,
+                                  bme280 TEXT,
+                                  bme680 TEXT,
+                                  mcu811 TEXT,
+                                  lsp33 TEXT,
+                                  oneWire TEXT,
+                                  temp TEXT,
+                                  tout TEXT,
+                                  hum TEXT,
+                                  qfe TEXT,
+                                  qnh TEXT,
+                                  altAsl TEXT,
+                                  gas TEXT,
+                                  eCo2 TEXT,
+                                  ina226vBus TEXT,
+                                  ina226vShunt TEXT,
+                                  ina226vCurrent TEXT,
+                                  ina226vPower TEXT,
+                                  PRIMARY KEY('sensorDataId' AUTOINCREMENT)
+                                )
+                ");
+
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+    }
+    elseif ($database == 'sensor_th_temp')
+    {
+        #Open Database
+        $db = new SQLite3('database/sensor_th_temp.db');
+        $db->exec('PRAGMA journal_mode = wal;');
+        $db->exec('PRAGMA synchronous = NORMAL;');
+
+        // Tabelle erstellen wenn nicht vorhanden
+        $db->exec("CREATE TABLE IF NOT EXISTS sensorThTemp 
+                                (
+                                  sensorThTempId INTEGER NOT NULL UNIQUE,              
+                                  timestamps INTEGER NOT NULL,
+                                  sensorThTempEnabled INTEGER DEFAULT 0,
+                                  sensorThTempMinValue TEXT,
+                                  sensorThTempMaxValue TEXT,
+                                  sensorThTempAlertMsg TEXT,
+                                  sensorThTempDmGrpId INTEGER DEFAULT 999,
+                                  sensorThToutEnabled INTEGER DEFAULT 0,
+                                  sensorThToutMinValue TEXT,
+                                  sensorThToutMaxValue TEXT,
+                                  sensorThToutAlertMsg TEXT,
+                                  sensorThToutDmGrpId INTEGER DEFAULT 999,
+                                  PRIMARY KEY('sensorThTempId' AUTOINCREMENT)
+                                )
+                ");
+
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+    }
+    elseif ($database == 'sensor_th_ina226')
+    {
+        #Open Database
+        $db = new SQLite3('database/sensor_th_ina226.db');
+        $db->exec('PRAGMA journal_mode = wal;');
+        $db->exec('PRAGMA synchronous = NORMAL;');
+
+        // Tabelle erstellen wenn nicht vorhanden
+        $db->exec("CREATE TABLE IF NOT EXISTS sensorThIna226 
+                                (
+                                  sensorThIna226Id INTEGER NOT NULL UNIQUE,              
+                                  timestamps INTEGER NOT NULL,
+                                  sensorThIna226vBusEnabled INTEGER DEFAULT 0,
+                                  sensorThIna226vBusMinValue TEXT,
+                                  sensorThIna226vBusMaxValue TEXT,
+                                  sensorThIna226vBusAlertMsg TEXT,
+                                  sensorThIna226vBusDmGrpId INTEGER DEFAULT 999,
+                                  sensorThIna226vShuntEnabled INTEGER DEFAULT 0,
+                                  sensorThIna226vShuntMinValue TEXT,
+                                  sensorThIna226vShuntMaxValue TEXT,
+                                  sensorThIna226vShuntAlertMsg TEXT,
+                                  sensorThIna226vShuntDmGrpId INTEGER DEFAULT 999,
+                                  sensorThIna226vCurrentEnabled INTEGER DEFAULT 0,
+                                  sensorThIna226vCurrentMinValue TEXT,
+                                  sensorThIna226vCurrentMaxValue TEXT,
+                                  sensorThIna226vCurrentAlertMsg TEXT,
+                                  sensorThIna226vCurrentDmGrpId INTEGER DEFAULT 999,
+                                  sensorThIna226vPowerEnabled INTEGER DEFAULT 0,
+                                  sensorThIna226vPowerMinValue TEXT,
+                                  sensorThIna226vPowerMaxValue TEXT,
+                                  sensorThIna226vPowerAlertMsg TEXT,
+                                  sensorThIna226vPowerDmGrpId INTEGER DEFAULT 999,    
+                                  PRIMARY KEY('sensorThIna226Id' AUTOINCREMENT)
+                                )
+                ");
+
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+    }
     elseif ($database == 'mheard')
     {
         #Open Database
@@ -257,6 +364,12 @@ function showMenu()
     <li>Gruppen
       <ul class="submenu">
         <li data-action="grp_definition">Gruppen definieren</li>
+      </ul>
+    </li>
+     <li>Sensoren
+      <ul class="submenu">
+        <li data-action="sensor_data">Sensordaten</li>
+        <li data-action="sensor_threshold">Sensorschwellwerte</li>
       </ul>
     </li>
     <li data-action="mHeard">MHeard</li>';

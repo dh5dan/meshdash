@@ -302,6 +302,12 @@
                case 'send_command':
                    iframeSrc = 'menu/send_command.php';
                    break;
+               case 'sensor_data':
+                   iframeSrc = 'menu/sensor_data.php';
+                   break;
+               case 'sensor_threshold':
+                   iframeSrc = 'menu/sensor_threshold.php';
+                   break;
                case 'mHeard':
                    iframeSrc = 'mheard.php';
                    break;

@@ -1,4 +1,14 @@
 Version 1.10.04beta SQL
+Auswertung WX-Daten als Sensordaten.
+Auswertung INA226 Daten aus Info-Bereich und Anzeige in Sensordaten.
+BUGFIX: Mit MeshCom 4.34q (build: Mar 6 2025 / 15:17:43)
+gab es einen Fehler im <TR>-Tag der Infoseite, was die Auswertung von Call verhindert hat.
+Dieser wird nun durch ein Workaround korrigiert.
+FEATURE: Mit 4.34q (build: Mar 6 2025 / 15:17:43) gibt es ein neues Info-Feld Startzeit.
+FEATURE: Schwellwertangaben für Sensordaten implementiert mit Alert-Funktion.
+
+#################################################################
+Version 1.10.04beta SQL
 Feature Versionsbasierte Updatefunktion der DB.
 Feature FW-Version der Gegenstelle wird nun in DB mit aufgenommen wenn vorhanden.
 FEATURE Backups auf max. 5 begrenzt.
