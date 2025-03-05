@@ -91,6 +91,366 @@ function setParamData($key, $value, $mode = 'int'): bool
     return true;
 }
 
+function setThTempData($arrayParam): bool
+{
+    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    $basename       = pathinfo(getcwd())['basename'];
+    $dbFilenameSub  = '../database/sensor_th_temp.db';
+    $dbFilenameRoot = 'database/sensor_th_temp.db';
+    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+    $timeStamps     = date('Y-m-d H:i:s');
+
+    $db = new SQLite3($dbFilename);
+    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->exec('PRAGMA synchronous = NORMAL;');
+
+    $sensorThTempIntervallSec = $arrayParam['sensorThTempIntervallSec'];
+
+    $sensorThTempEnabled  = $arrayParam['sensorThTempEnabled'];
+    $sensorThTempMinValue = $arrayParam['sensorThTempMinValue'];
+    $sensorThTempMaxValue = $arrayParam['sensorThTempMaxValue'];
+    $sensorThTempAlertMsg = $arrayParam['sensorThTempAlertMsg'];
+    $sensorThTempDmGrpId  = $arrayParam['sensorThTempDmGrpId'];
+
+    $sensorThToutEnabled  = $arrayParam['sensorThToutEnabled'];
+    $sensorThToutMinValue = $arrayParam['sensorThToutMinValue'];
+    $sensorThToutMaxValue = $arrayParam['sensorThToutMaxValue'];
+    $sensorThToutAlertMsg = $arrayParam['sensorThToutAlertMsg'];
+    $sensorThToutDmGrpId  = $arrayParam['sensorThToutDmGrpId'];
+
+    #Escape Value
+    $sensorThTempIntervallSec= SQLite3::escapeString($sensorThTempIntervallSec);
+
+    $sensorThTempEnabled  = SQLite3::escapeString($sensorThTempEnabled);
+    $sensorThTempMinValue = SQLite3::escapeString($sensorThTempMinValue);
+    $sensorThTempMaxValue = SQLite3::escapeString($sensorThTempMaxValue);
+    $sensorThTempAlertMsg = SQLite3::escapeString($sensorThTempAlertMsg);
+    $sensorThTempDmGrpId  = SQLite3::escapeString($sensorThTempDmGrpId);
+
+    $sensorThToutEnabled  = SQLite3::escapeString($sensorThToutEnabled);
+    $sensorThToutMinValue = SQLite3::escapeString($sensorThToutMinValue);
+    $sensorThToutMaxValue = SQLite3::escapeString($sensorThToutMaxValue);
+    $sensorThToutAlertMsg = SQLite3::escapeString($sensorThToutAlertMsg);
+    $sensorThToutDmGrpId  = SQLite3::escapeString($sensorThToutDmGrpId);
+
+    $db->exec("
+                        REPLACE INTO sensorThTemp (
+                                                   timestamps, 
+                                                   sensorThTempIntervallSec,
+                                                   sensorThTempEnabled, 
+                                                   sensorThTempMinValue, 
+                                                   sensorThTempMaxValue, 
+                                                   sensorThTempAlertMsg, 
+                                                   sensorThTempDmGrpId, 
+                                                   sensorThToutEnabled, 
+                                                   sensorThToutMinValue, 
+                                                   sensorThToutMaxValue, 
+                                                   sensorThToutAlertMsg, 
+                                                   sensorThToutDmGrpId)
+                        VALUES (
+                                '$timeStamps',
+                                '$sensorThTempIntervallSec',
+                                '$sensorThTempEnabled',
+                                '$sensorThTempMinValue',
+                                '$sensorThTempMaxValue',
+                                '$sensorThTempAlertMsg',
+                                '$sensorThTempDmGrpId',
+                                '$sensorThToutEnabled',
+                                '$sensorThToutMinValue',
+                                '$sensorThToutMaxValue',
+                                '$sensorThToutAlertMsg',
+                                '$sensorThToutDmGrpId'
+                        );
+                    ");
+
+    if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+    {
+        echo "<br>setParamData";
+        echo "<br>ErrMsg:" . $db->lastErrorMsg();
+        echo "<br>ErrNum:" . $db->lastErrorCode();
+
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+
+        return false;
+    }
+
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
+    return true;
+}
+
+function setThIna226Data($arrayParam): bool
+{
+    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    $basename       = pathinfo(getcwd())['basename'];
+    $dbFilenameSub  = '../database/sensor_th_ina226.db';
+    $dbFilenameRoot = 'database/sensor_th_ina226.db';
+    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+    $timeStamps     = date('Y-m-d H:i:s');
+
+    $db = new SQLite3($dbFilename);
+    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->exec('PRAGMA synchronous = NORMAL;');
+
+    $sensorThIna226IntervallSec = $arrayParam['sensorThIna226IntervallSec'] ?? 60;
+
+    $sensorThIna226vBusEnabled  = $arrayParam['sensorThIna226vBusEnabled'] ?? 0;
+    $sensorThIna226vBusMinValue = $arrayParam['sensorThIna226vBusMinValue'] ?? '';
+    $sensorThIna226vBusMaxValue = $arrayParam['sensorThIna226vBusMaxValue'] ?? '';
+    $sensorThIna226vBusAlertMsg = $arrayParam['sensorThIna226vBusAlertMsg'] ?? '';
+    $sensorThIna226vBusDmGrpId  = $arrayParam['sensorThIna226vBusDmGrpId'] ?? '*';
+
+    $sensorThIna226vShuntEnabled  = $arrayParam['sensorThIna226vShuntEnabled'] ?? 0;
+    $sensorThIna226vShuntMinValue = $arrayParam['sensorThIna226vShuntMinValue'] ?? '';
+    $sensorThIna226vShuntMaxValue = $arrayParam['sensorThIna226vShuntMaxValue'] ?? '';
+    $sensorThIna226vShuntAlertMsg = $arrayParam['sensorThIna226vShuntAlertMsg'] ?? '';
+    $sensorThIna226vShuntDmGrpId  = $arrayParam['sensorThIna226vShuntDmGrpId'] ?? '999';
+
+    $sensorThIna226vCurrentEnabled  = $arrayParam['sensorThIna226vCurrentEnabled'] ?? 0;
+    $sensorThIna226vCurrentMinValue = $arrayParam['sensorThIna226vCurrentMinValue'] ?? '';
+    $sensorThIna226vCurrentMaxValue = $arrayParam['sensorThIna226vCurrentMaxValue'] ?? '';
+    $sensorThIna226vCurrentAlertMsg = $arrayParam['sensorThIna226vCurrentAlertMsg'] ?? '';
+    $sensorThIna226vCurrentDmGrpId  = $arrayParam['sensorThIna226vCurrentDmGrpId'] ?? '999';
+
+    $sensorThIna226vPowerEnabled  = $_REQUEST['sensorThIna226vPowerEnabled'] ?? 0;
+    $sensorThIna226vPowerMinValue = $_REQUEST['sensorThIna226vPowerMinValue'] ?? '';
+    $sensorThIna226vPowerMaxValue = $_REQUEST['sensorThIna226vPowerMaxValue'] ?? '';
+    $sensorThIna226vPowerAlertMsg = $_REQUEST['sensorThIna226vPowerAlertMsg'] ?? '';
+    $sensorThIna226vPowerDmGrpId  = $_REQUEST['sensorThIna226vPowerDmGrpId'] ?? '999';
+
+    #Escape Value
+    $sensorThIna226vBusEnabled  = SQLite3::escapeString($sensorThIna226vBusEnabled);
+    $sensorThIna226vBusMinValue = SQLite3::escapeString($sensorThIna226vBusMinValue);
+    $sensorThIna226vBusMaxValue = SQLite3::escapeString($sensorThIna226vBusMaxValue);
+    $sensorThIna226vBusAlertMsg = SQLite3::escapeString($sensorThIna226vBusAlertMsg);
+    $sensorThIna226vBusDmGrpId  = SQLite3::escapeString($sensorThIna226vBusDmGrpId);
+
+    $sensorThIna226vShuntEnabled  = SQLite3::escapeString($sensorThIna226vShuntEnabled);
+    $sensorThIna226vShuntMinValue = SQLite3::escapeString($sensorThIna226vShuntMinValue);
+    $sensorThIna226vShuntMaxValue = SQLite3::escapeString($sensorThIna226vShuntMaxValue);
+    $sensorThIna226vShuntAlertMsg = SQLite3::escapeString($sensorThIna226vShuntAlertMsg);
+    $sensorThIna226vShuntDmGrpId  = SQLite3::escapeString($sensorThIna226vShuntDmGrpId);
+
+    $sensorThIna226vCurrentEnabled  = SQLite3::escapeString($sensorThIna226vCurrentEnabled);
+    $sensorThIna226vCurrentMinValue = SQLite3::escapeString($sensorThIna226vCurrentMinValue);
+    $sensorThIna226vCurrentMaxValue = SQLite3::escapeString($sensorThIna226vCurrentMaxValue);
+    $sensorThIna226vCurrentAlertMsg = SQLite3::escapeString($sensorThIna226vCurrentAlertMsg);
+    $sensorThIna226vCurrentDmGrpId  = SQLite3::escapeString($sensorThIna226vCurrentDmGrpId);
+
+    $sensorThIna226vPowerEnabled  = SQLite3::escapeString($sensorThIna226vPowerEnabled);
+    $sensorThIna226vPowerMinValue = SQLite3::escapeString($sensorThIna226vPowerMinValue);
+    $sensorThIna226vPowerMaxValue = SQLite3::escapeString($sensorThIna226vPowerMaxValue);
+    $sensorThIna226vPowerAlertMsg = SQLite3::escapeString($sensorThIna226vPowerAlertMsg);
+    $sensorThIna226vPowerDmGrpId  = SQLite3::escapeString($sensorThIna226vPowerDmGrpId);
+
+    $db->exec("
+                        REPLACE INTO sensorThIna226 (
+                                                     timestamps, 
+                                                     sensorThIna226IntervallSec,
+                                                     sensorThIna226vBusEnabled, 
+                                                     sensorThIna226vBusMinValue, 
+                                                     sensorThIna226vBusMaxValue, 
+                                                     sensorThIna226vBusAlertMsg, 
+                                                     sensorThIna226vBusDmGrpId, 
+                                                     sensorThIna226vShuntEnabled, 
+                                                     sensorThIna226vShuntMinValue, 
+                                                     sensorThIna226vShuntMaxValue, 
+                                                     sensorThIna226vShuntAlertMsg, 
+                                                     sensorThIna226vShuntDmGrpId, 
+                                                     sensorThIna226vCurrentEnabled, 
+                                                     sensorThIna226vCurrentMinValue, 
+                                                     sensorThIna226vCurrentMaxValue, 
+                                                     sensorThIna226vCurrentAlertMsg, 
+                                                     sensorThIna226vCurrentDmGrpId, 
+                                                     sensorThIna226vPowerEnabled, 
+                                                     sensorThIna226vPowerMinValue, 
+                                                     sensorThIna226vPowerMaxValue, 
+                                                     sensorThIna226vPowerAlertMsg, 
+                                                     sensorThIna226vPowerDmGrpId)
+                        VALUES (
+                                     '$timeStamps',
+                                     '$sensorThIna226IntervallSec',
+                                     '$sensorThIna226vBusEnabled', 
+                                     '$sensorThIna226vBusMinValue', 
+                                     '$sensorThIna226vBusMaxValue', 
+                                     '$sensorThIna226vBusAlertMsg', 
+                                     '$sensorThIna226vBusDmGrpId', 
+                                     '$sensorThIna226vShuntEnabled', 
+                                     '$sensorThIna226vShuntMinValue', 
+                                     '$sensorThIna226vShuntMaxValue', 
+                                     '$sensorThIna226vShuntAlertMsg', 
+                                     '$sensorThIna226vShuntDmGrpId', 
+                                     '$sensorThIna226vCurrentEnabled', 
+                                     '$sensorThIna226vCurrentMinValue', 
+                                     '$sensorThIna226vCurrentMaxValue', 
+                                     '$sensorThIna226vCurrentAlertMsg', 
+                                     '$sensorThIna226vCurrentDmGrpId', 
+                                     '$sensorThIna226vPowerEnabled', 
+                                     '$sensorThIna226vPowerMinValue', 
+                                     '$sensorThIna226vPowerMaxValue', 
+                                     '$sensorThIna226vPowerAlertMsg', 
+                                     '$sensorThIna226vPowerDmGrpId'
+                               );
+                    ");
+
+    if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+    {
+        echo "<br>setParamData";
+        echo "<br>ErrMsg:" . $db->lastErrorMsg();
+        echo "<br>ErrNum:" . $db->lastErrorCode();
+
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+
+        return false;
+    }
+
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
+    return true;
+}
+
+function getThTempData()
+{
+    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    $basename       = pathinfo(getcwd())['basename'];
+    $dbFilenameSub  = '../database/sensor_th_temp.db';
+    $dbFilenameRoot = 'database/sensor_th_temp.db';
+    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+    $arrayReturn    = array();
+
+    $db = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
+    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->exec('PRAGMA synchronous = NORMAL;');
+
+    $result = $db->query("
+                        SELECT * FROM sensorThTemp 
+                                 ORDER BY timestamps DESC
+                             LIMIT 1;
+                    ");
+
+    if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+    {
+        echo "<br>setParamData";
+        echo "<br>ErrMsg:" . $db->lastErrorMsg();
+        echo "<br>ErrNum:" . $db->lastErrorCode();
+
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+
+        return false;
+    }
+
+    if ($db !== false)
+    {
+        while ($row = $result->fetchArray(SQLITE3_ASSOC))
+        {
+            ###############################################
+            #Common
+            $arrayReturn['sensorThTempIntervallSec']  = $row['sensorThTempIntervallSec'];
+
+            $arrayReturn['sensorThTempEnabled']  = $row['sensorThTempEnabled'];
+            $arrayReturn['sensorThTempMinValue'] = $row['sensorThTempMinValue'];
+            $arrayReturn['sensorThTempMaxValue'] = $row['sensorThTempMaxValue'];
+            $arrayReturn['sensorThTempAlertMsg'] = $row['sensorThTempAlertMsg'];
+            $arrayReturn['sensorThTempDmGrpId']  = $row['sensorThTempDmGrpId'];
+
+            $arrayReturn['sensorThToutEnabled']  = $row['sensorThToutEnabled'];
+            $arrayReturn['sensorThToutMinValue'] = $row['sensorThToutMinValue'];
+            $arrayReturn['sensorThToutMaxValue'] = $row['sensorThToutMaxValue'];
+            $arrayReturn['sensorThToutAlertMsg'] = $row['sensorThToutAlertMsg'];
+            $arrayReturn['sensorThToutDmGrpId']  = $row['sensorThToutDmGrpId'];
+        }
+    }
+
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
+    return $arrayReturn;
+}
+
+function getThIna226Data()
+{
+    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    $basename       = pathinfo(getcwd())['basename'];
+    $dbFilenameSub  = '../database/sensor_th_ina226.db';
+    $dbFilenameRoot = 'database/sensor_th_ina226.db';
+    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+    $arrayReturn    = array();
+
+    $db = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
+    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->exec('PRAGMA synchronous = NORMAL;');
+
+    $result = $db->query("
+                        SELECT * FROM sensorThIna226 
+                                 ORDER BY timestamps DESC
+                             LIMIT 1;
+                    ");
+
+    if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+    {
+        echo "<br>setParamData";
+        echo "<br>ErrMsg:" . $db->lastErrorMsg();
+        echo "<br>ErrNum:" . $db->lastErrorCode();
+
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+
+        return false;
+    }
+
+    if ($db !== false)
+    {
+        while ($row = $result->fetchArray(SQLITE3_ASSOC))
+        {
+            ###############################################
+            #Common
+            $arrayReturn['sensorThIna226IntervallSec']  = $row['sensorThIna226IntervallSec'];
+
+            $arrayReturn['sensorThIna226vBusEnabled']  = $row['sensorThIna226vBusEnabled'];
+            $arrayReturn['sensorThIna226vBusMinValue'] = $row['sensorThIna226vBusMinValue'];
+            $arrayReturn['sensorThIna226vBusMaxValue'] = $row['sensorThIna226vBusMaxValue'];
+            $arrayReturn['sensorThIna226vBusAlertMsg'] = $row['sensorThIna226vBusAlertMsg'];
+            $arrayReturn['sensorThIna226vBusDmGrpId']  = $row['sensorThIna226vBusDmGrpId'];
+
+            $arrayReturn['sensorThIna226vShuntEnabled']  = $row['sensorThIna226vShuntEnabled'];
+            $arrayReturn['sensorThIna226vShuntMinValue'] = $row['sensorThIna226vShuntMinValue'];
+            $arrayReturn['sensorThIna226vShuntMaxValue'] = $row['sensorThIna226vShuntMaxValue'];
+            $arrayReturn['sensorThIna226vShuntAlertMsg'] = $row['sensorThIna226vShuntAlertMsg'];
+            $arrayReturn['sensorThIna226vShuntDmGrpId']  = $row['sensorThIna226vShuntDmGrpId'];
+
+            $arrayReturn['sensorThIna226vCurrentEnabled']  = $row['sensorThIna226vCurrentEnabled'];
+            $arrayReturn['sensorThIna226vCurrentMinValue'] = $row['sensorThIna226vCurrentMinValue'];
+            $arrayReturn['sensorThIna226vCurrentMaxValue'] = $row['sensorThIna226vCurrentMaxValue'];
+            $arrayReturn['sensorThIna226vCurrentAlertMsg'] = $row['sensorThIna226vCurrentAlertMsg'];
+            $arrayReturn['sensorThIna226vCurrentDmGrpId']  = $row['sensorThIna226vCurrentDmGrpId'];
+
+            $arrayReturn['sensorThIna226vPowerEnabled']  = $row['sensorThIna226vPowerEnabled'];
+            $arrayReturn['sensorThIna226vPowerMinValue'] = $row['sensorThIna226vPowerMinValue'];
+            $arrayReturn['sensorThIna226vPowerMaxValue'] = $row['sensorThIna226vPowerMaxValue'];
+            $arrayReturn['sensorThIna226vPowerAlertMsg'] = $row['sensorThIna226vPowerAlertMsg'];
+            $arrayReturn['sensorThIna226vPowerDmGrpId']  = $row['sensorThIna226vPowerDmGrpId'];
+        }
+    }
+
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
+    return $arrayReturn;
+}
+
 function getKeywordsData($msgId)
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
@@ -259,6 +619,97 @@ function setMheardData($heardData): bool
     return true;
 }
 
+function setSensorData($sensorData): bool
+{
+    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    $basename       = pathinfo(getcwd())['basename'];
+    $dbFilenameSub  = '../database/sensordata.db';
+    $dbFilenameRoot = 'database/sensordata.db';
+    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+    $timeStamps     = date('Y-m-d H:i:s');
+
+    $db = new SQLite3($dbFilename);
+    $db->exec('PRAGMA synchronous = NORMAL;');
+
+    $bme280         = SQLite3::escapeString($sensorData['BME(P)280'] ?? '');
+    $bme680         = SQLite3::escapeString($sensorData['BME680'] ?? '');
+    $mcu811         = SQLite3::escapeString($sensorData['MCU811'] ?? '');
+    $lsp33          = SQLite3::escapeString($sensorData['LPS33'] ?? '');
+    $oneWire        = SQLite3::escapeString($sensorData['ONEWIRE'] ?? '');
+    $tout           = SQLite3::escapeString($sensorData['TOUT'] ?? '');
+    $temp           = SQLite3::escapeString($sensorData['TEMP'] ?? '');
+    $hum            = SQLite3::escapeString($sensorData['HUM'] ?? '');
+    $qfe            = SQLite3::escapeString($sensorData['QFE'] ?? '');
+    $qnh            = SQLite3::escapeString($sensorData['QNH'] ?? '');
+    $altAsl         = SQLite3::escapeString($sensorData['ALT asl'] ?? '');
+    $gas            = SQLite3::escapeString($sensorData['GAS'] ?? '');
+    $eCo2           = SQLite3::escapeString($sensorData['eCO2'] ?? '');
+    $ina226vBus     = SQLite3::escapeString($sensorData['vBUS'] ?? '');
+    $ina226vShunt   = SQLite3::escapeString($sensorData['vSHUNT'] ?? '');
+    $ina226vCurrent = SQLite3::escapeString($sensorData['vCURRENT'] ?? '');
+    $ina226vPower   = SQLite3::escapeString($sensorData['vPOWER'] ?? '');
+
+
+    $db->exec(
+        "
+                        REPLACE INTO sensordata (
+                                                 timestamps,
+                                                 bme280,
+                                                 bme680,
+                                                 mcu811,
+                                                 lsp33,
+                                                 oneWire,
+                                                 temp,
+                                                 tout,
+                                                 hum,
+                                                 qfe,
+                                                 qnh,
+                                                 altAsl,
+                                                 gas,
+                                                 eCo2,
+                                                 ina226vBus,
+                                                 ina226vShunt,
+                                                 ina226vCurrent,
+                                                 ina226vPower
+                                                 )
+                                VALUES (
+                                        '$timeStamps',
+                                        '$bme280',
+                                        '$bme680',
+                                        '$mcu811',
+                                        '$lsp33',
+                                        '$oneWire',
+                                        '$temp',
+                                        '$tout',
+                                        '$hum',
+                                        '$qfe',
+                                        '$qnh',
+                                        '$altAsl',
+                                        '$gas',
+                                        '$eCo2',
+                                        '$ina226vBus',
+                                        '$ina226vShunt',
+                                        '$ina226vCurrent',
+                                        '$ina226vPower'
+                                );
+                    "
+    );
+
+    if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+    {
+        echo "<br>setParamData";
+        echo "<br>ErrMsg:" . $db->lastErrorMsg();
+        echo "<br>ErrNum:" . $db->lastErrorCode();
+    }
+
+
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
+    return true;
+}
+
 function updateMeshDashData($msgId, $key, $value): bool
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
@@ -335,14 +786,11 @@ function checkDbUpgrade($database)
         }
 
         // SQLite3-Datenbank prüfen ob in Datenbank meshdash die Tabelle firmware existiert
-        $table  = 'meshdash';
-        $column = 'firmware';
-
-        if (!columnExists($database, $table, $column))
+        if (!columnExists($database, 'meshdash', 'firmware') && $database === 'meshdash')
         {
             if ($debugFlag === true)
             {
-                echo "<br>Die Spalte: $column in Tabelle: $table existiert nicht.";
+                echo "<br>Die Spalte: 'firmware' in Tabelle: 'meshdash' existiert nicht.";
             }
 
             #Check what oS is running
@@ -352,7 +800,35 @@ function checkDbUpgrade($database)
             $checkTaskCmd = getTaskCmd();
 
             // Spalte hinzufügen
-            addColumn($database, $table, $column);
+            addColumn($database, 'meshdash', 'firmware');
+
+            ## Prozess neu laden damit Feld befüllt wird
+
+            # Stop BG-Process
+            $paramBgProcess['checkTaskCmd'] = $checkTaskCmd;
+            $paramBgProcess['osIssWindows'] = $osIssWindows;
+            checkBgProcess($paramBgProcess);
+
+            ##start BG-Process
+            $paramStartBgProcess['taskResult']   = '';
+            $paramStartBgProcess['osIssWindows'] = $osIssWindows;
+            $paramStartBgProcess['checkTaskCmd'] = $checkTaskCmd;
+            startBgProcess($paramStartBgProcess);
+        }
+
+        if (!columnExists($database, 'sensordata', 'ina226vBus') && $database === 'sensordata')
+        {
+            #Check what oS is running
+            $osIssWindows = chkOsIssWindows();
+
+            #Hole Task Command abhängig vom OS
+            $checkTaskCmd = getTaskCmd();
+
+            // Spalte hinzufügen
+            addColumn($database, 'sensordata', 'ina226vBus');
+            addColumn($database, 'sensordata', 'ina226vShunt');
+            addColumn($database, 'sensordata', 'ina226vCurrent');
+            addColumn($database, 'sensordata', 'ina226vPower');
 
             ## Prozess neu laden damit Feld befüllt wird
 
