@@ -31,19 +31,9 @@ $doLogEnable = getParamData('doLogEnable');
 
 if ($msgText != '')
 {
-    $utf8    = utf8_encode('äöü#ÄÖÜß');
-    $addon   = '$%"°§'."'|"."´`";
-    $pattern = "/^[0-9a-zA-Z ,()-<>" . $utf8 . $addon . "&.-_\\s\?\!]+\$/";
     $loraIP  = getParamData('loraIp');
 
-    if (!preg_match($pattern, $msgText))
-    {
-        $errMsg = htmlspecialchars(utf8_encode("Ungültige Zeichen im Text gefunden. Abbruch!"));
-        header("Location: bottom.php?errMsg=" . $errMsg . "&msgText=" . $msgText . "&dm=" . $directMessage);
-        exit();
-    }
-
-    #Ist noch ein Bug in der aktuellen FW "MeshCom C 4.34m" mit 125 Zeichen
+    #Begrenze max. Zeichenlänge
     if (strlen($msgText) > 160)
     {
         $errMsg = htmlspecialchars(utf8_encode("Maximale Zeichen länge von 160 Zeichen überschritten. Abbruch!"));
@@ -52,7 +42,7 @@ if ($msgText != '')
     }
 
     #Workaround da Anführungszeichen derzeit via UDP nicht übertragen werden. Möglicher FW Bug
-    $msgText = str_replace('"','``', $msgText); // tausche mit Accent aigu
+    $msgText = str_replace('"','``', $msgText); // tausche mit Accent-Aigu
     $arraySend['type'] = 'msg';
     $arraySend['dst']  = $directMessage;
     $arraySend['msg']  = $msgText;

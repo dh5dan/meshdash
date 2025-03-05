@@ -2,14 +2,19 @@ body {
     font-family: Arial, Helvetica, sans-serif;
 }
 
+
+
 .table, th, td {
     border: 1px solid white;
     border-collapse: collapse;
+    padding: 5px;
+    text-align: center;
+    white-space: nowrap;
 }
 .table {
     background-color: #FCEDF0;
     width: max(25%, min(801px, 100%));
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 
 html {
@@ -27,7 +32,19 @@ html {
     display: block;
 }
 
-.btnGetMheard {
+.successHint {
+    background-color: darkgreen;
+    color: whitesmoke;
+    font-weight: bold;
+}
+
+.failureHint {
+    background-color: crimson;
+    color: whitesmoke;
+    font-weight: bold;
+}
+
+.btnGetSensorData {
     font-size: 14px;
     padding: 8px 15px;
     border: none;
@@ -35,11 +52,13 @@ html {
     color: white;
     cursor: pointer;
     border-radius: 5px;
-    width: 100%;
 }
 
-
 @media screen and (max-width: 768px) {
+
+    .tableBtn {
+        width: 100%;  /* Nutzt die komplette Breite */
+    }
 
     td {
         padding: 2px 1px 2px 1px;
@@ -53,7 +72,21 @@ html {
         width: max-content;
     }
 
+    .table {
+        width: 100%;  /* Nutzt die komplette Breite */
+        table-layout: auto;
+        max-width: 100%;  /* Verhindert, dass sie größer als der Bildschirm wird */
+    }
+
+    .table th, .table td {
+        white-space: normal;  /* Zeilenumbruch erlauben */
+        word-wrap: break-word;
+        text-align: center;
+    }
+
+
     input[type="button"] {
+        width: 100% !important;
         display: inline-block;
         background: #007bff;
         color: white;

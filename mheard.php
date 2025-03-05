@@ -36,7 +36,7 @@ echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
 echo '<table>';
 
 echo '<tr>';
-echo '<td colspan="2"><input type="button" id="btnGetMheard" value="Lokale Mheard-Liste abfragen"  /></td>';
+echo '<td colspan="2"><input type="button" class="btnGetMheard" id="btnGetMheard" value="Lokale Mheard-Liste abfragen"  /></td>';
 echo '</tr>';
 
 echo '</table>';

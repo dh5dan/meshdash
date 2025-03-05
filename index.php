@@ -101,6 +101,25 @@ if (!file_exists('database/keywords.db'))
     initSQLiteDatabase('keywords');
 }
 
+if (!file_exists('database/sensordata.db'))
+{
+    initSQLiteDatabase('sensordata');
+}
+else
+{
+    checkDbUpgrade('sensordata');
+}
+
+if (!file_exists('database/sensor_th_temp.db'))
+{
+    initSQLiteDatabase('sensor_th_temp');
+}
+
+if (!file_exists('database/sensor_th_ina226.db'))
+{
+    initSQLiteDatabase('sensor_th_ina226');
+}
+
 if (!file_exists('database/mheard.db'))
 {
     initSQLiteDatabase('mheard');

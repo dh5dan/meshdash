@@ -216,11 +216,11 @@ echo '</tr>';
 
 echo '<tr>';
 echo '<td>Rufzeichen:</td>';
-echo '<td xmlns="https://www.w3.org/1999/html"><input type="text" name="callSign"  id="callSign" value="' . $callSign . '" /></td>';
+echo '<td><input type="text" name="callSign"  id="callSign" value="' . $callSign . '" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td xmlns="https://www.w3.org/1999/html" colspan="2"><span class="failureHint">Das Rufzeichen muss mit Angabe<br>im Lora übereinstimmen!</span></td>';
+echo '<td colspan="2"><span class="failureHint">Das Rufzeichen muss mit der Angabe<br>im Lora übereinstimmen!</span></td>';
 echo '</tr>';
 
 echo '<tr>';
@@ -228,7 +228,7 @@ echo '<tr>';
 echo '</tr>';
 
 echo '<tr>';
-    echo '<td colspan="2"><input type="button" id="btnSaveConfigGenerally" value="Settings speichern"  /></td>';
+    echo '<td colspan="2"><input type="button" class="btnSaveConfigGenerally" id="btnSaveConfigGenerally" value="Settings speichern"  /></td>';
 echo '</tr>';
 
 echo '</table>';

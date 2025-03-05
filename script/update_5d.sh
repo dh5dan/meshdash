@@ -1,16 +1,16 @@
 #!/bin/bash
 clear
-echo MeshDash Update-Script V 1.00.42
+echo "MeshDash Update-Script V 1.00.44"
 echo
-echo UPDATE einer bestehenden MeshDash SQL Installation.
-echo Es wird nur das MeshDash installiert,
-echo kein PHP oder sonstige Tools.
-echo Zur installation der nötigen Tools wie PHP, Webbrowser bitte die install.sh ausführen.
+echo "UPDATE einer bestehenden MeshDash SQL Installation."
+echo "Es wird nur das MeshDash installiert,"
+echo "kein PHP oder sonstige Tools."
+echo "Zur installation der nötigen Tools wie PHP, Webbrowser bitte die install.sh ausführen."
 echo
 echo "Das NEUE Zip File muss bereits im /home Verzeichnis des aktuellen Users kopiert sein!"
 echo
 echo
-echo Wenn ja, geht es sofort weiter, wenn nein, wird das Update abgebrochen.
+echo "Wenn ja, geht es sofort weiter, wenn nein, wird das Update abgebrochen."
 echo
 ######################################
 read -r -p "Update jetzt ausführen ja, oder nein? " A
@@ -87,7 +87,7 @@ else
 fi
 ######################################
 echo
-echo Stoppe und Disable andere Services um Fehler zu vermeiden
+echo "Stoppe und Disable andere Services um Fehler zu vermeiden"
 ######## Stop other running services
 if systemctl is-active --quiet allmeshcom.service; then
     sudo systemctl stop allmeshcom.service
@@ -108,32 +108,33 @@ echo
 hostIp=$(hostname -I | awk '{print $1}')
 echo
 if systemctl is-active --quiet checkmh.service; then
-  echo Stoppe checkmh Service da neue Version ggf. kopiert wird
+  echo "Stoppe checkmh Service da neue Version ggf. kopiert wird"
   sudo systemctl stop checkmh.service
 fi
 echo
-echo Lösche meshdash Verzeichnis und erzeuge es neu
+echo "Lösche meshdash Verzeichnis und erzeuge es neu"
 sudo rm -rf meshdash
 sudo mkdir meshdash
 echo
-echo erzeuge Verzeichnis für Systemdienst checkmh.service
+echo "Erzeuge Verzeichnis für Systemdienst checkmh.service"
 sudo mkdir meshdash
 echo
-echo Kopiere Zipdateien in das meshdash Verzeichnis
+echo "Kopiere Zip-Dateien in das Meshdash-Verzeichnis"
 sudo cp meshdash*.zip meshdash
 echo
 cd meshdash || exit
 echo
-echo Entpacke nun das zip Paket
+echo "Entpacke nun das Zip-Paket"
 sudo unzip meshdash*.zip
-echo entferne das Zip Paket aus dem meshdash Verzeichnis
+echo
+echo "Entferne das Zip Paket aus dem meshdash Verzeichnis"
 sudo rm meshdash*.zip
 echo
-echo Erzeuge Verzeichnis 5d in /var/www/html
+echo "Erzeuge Verzeichnis 5d in /var/www/html"
 sudo mkdir -p /var/www/html/5d
 sudo chmod -R 755 /var/www/html/5d
 echo
-echo Kopiere nun die Daten in das Zielverzeichnis
+echo "Kopiere nun die Daten in das Zielverzeichnis"
 echo
 sudo cp -r ./* /var/www/html/5d/
 sudo cp -r ./.htaccess /var/www/html/5d/
@@ -152,16 +153,31 @@ sudo chmod -R 755 /var/www/html/5d/execute
 #Setzte Owner und Gruppe für Web-Server im gesamten Verzeichnis
 sudo chown -R www-data:www-data /var/www/html/5d
 echo
-echo Kopiere Dateien und setzte Rechte für Systemdienst checkmh.service
+echo "Kopiere Dateien und setzte Rechte für Systemdienst checkmh.service"
 sudo chmod -R 755 script/checkmh.sh
 sudo chmod -R 644 script/checkmh.service
 sudo cp script/checkmh.service /etc/systemd/system/
 sudo cp script/checkmh.sh ../meshdash/
 echo
-echo Aktiviere Systemdienst checkmh.service
+echo "Aktiviere Systemdienst checkmh.service"
 sudo systemctl daemon-reload
 sudo systemctl enable checkmh.service
 sudo systemctl start checkmh.service
+echo
+###############################################
+#Räume auf
+echo
+echo "Prüfe ob noch im /home/pi"
+# Überprüfen, ob wir im /home/pi Verzeichnis sind
+if [ "$(pwd)" != "/home/pi" ]; then
+    echo "Nicht im Verzeichnis /home/pi. Wechseln..."
+    cd /home/pi || exit  # Wechsel ins /home/pi Verzeichnis, falls nicht dort
+fi
+echo
+echo "Entferne das Zip-Paket aus dem \home\pi"
+sudo rm meshdash*.zip
+echo
+###############################################
 echo
 echo FERTIG!
 echo

@@ -1,5 +1,5 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .successHint {
@@ -66,6 +66,16 @@ table.backupTable th {
     font-size: 14px;
 }
 
+.btnConfigUpdateBackup, .btnConfigUpdate, .btnDwnLatestRelease {
+    font-size: 14px;
+    padding: 8px 15px;
+    border: none;
+    background-color: #0056b3;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
 /* Media Query für Smartphones */
 @media (max-width: 768px) {
 
@@ -105,6 +115,7 @@ table.backupTable th {
 
     input[type="file"]::before {
         content: "Datei auswählen";
+        font-size: 14px;
         display: inline-block;
         background: #007bff;
         color: white;
@@ -115,9 +126,9 @@ table.backupTable th {
 
     input[type="button"] {
         display: inline-block;
+        font-size: 11px;
         background: #007bff;
         color: white;
-        /*padding: 5px 10px;*/
         border-radius: 5px;
         cursor: pointer;
     }

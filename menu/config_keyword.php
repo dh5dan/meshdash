@@ -33,9 +33,9 @@ $osName       = $osIssWindows === true ? 'Windows' : 'Linux';
 
 if ($sendData === '1')
 {
-    $resSaveGenerallySetting = saveKeywordSettings();
+    $resSaveKeywordSetting = saveKeywordSettings();
 
-    if ($resSaveGenerallySetting)
+    if ($resSaveKeywordSetting)
     {
         echo '<span class="successHint">'.date('H:i:s').'-Settings erfolgreich abgespeichert!</span>';
     }
@@ -79,8 +79,8 @@ $keyword2EnabledChecked = $keyword2Enabled == 1 ? 'checked' : '';
 $keyword1DmGrpId = $keyword1DmGrpId == '' ? '*' : $keyword1DmGrpId;
 $keyword2DmGrpId = $keyword2DmGrpId == '' ? '*' : $keyword2DmGrpId;
 
-echo '<h2>Keyword-Definition zur Ausführung<span class="lineBreak">von Kommandos</span>';
-echo '<span class="hintText"><br>(Dateien müssen im Execute-Verzeichnis<span class="lineBreak">vorhanden und ausführbar sein)</span></span>';
+echo '<h2>Keyword-Definition zur Ausführung <span class="lineBreak">von Kommandos</span>';
+echo '<span class="hintText"><br>(Dateien müssen im Execute-Verzeichnis <span class="lineBreak">vorhanden und ausführbar sein)</span></span>';
 echo '</h2>';
 
 echo '<form id="frmConfigKeyword" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
@@ -151,7 +151,7 @@ echo '<td colspan="2"><hr></td>';
 echo '</tr>';
 
 echo '<tr>';
-    echo '<td colspan="3"><input type="button" id="btnSaveConfigKeyword" value="Settings speichern"  /></td>';
+    echo '<td colspan="3"><input type="button" class="btnSaveConfigKeyword" id="btnSaveConfigKeyword" value="Settings speichern"  /></td>';
 echo '</tr>';
 
 echo '</table>';

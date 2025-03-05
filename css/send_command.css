@@ -1,5 +1,5 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     padding: 0;
 }
 
@@ -41,6 +41,16 @@ input[type="checkbox"] {
 .indented  {
     padding-left: 13px;
     display: block; /* Wichtig für den Umbruch */
+}
+
+.btnSendCommand {
+    font-size: 14px;
+    padding: 8px 15px;
+    border: none;
+    background-color: #0056b3;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
 }
 
 @media (max-width: 600px) {

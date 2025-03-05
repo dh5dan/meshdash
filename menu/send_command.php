@@ -66,7 +66,7 @@ echo '<tr>';
 echo '<td>&nbsp;</td>';
 echo '<td>';
 echo '<img src="../image/info_blau.png" class="infoImagePoint" id="infoImagePoint" alt="info" />';
-echo '<input type="button" id="btnSendCommand" value="Sende Befehl" />';
+echo '<input type="button" class="btnSendCommand" id="btnSendCommand" value="Sende Befehl" />';
 echo'</td>';
 echo '</tr>';
 

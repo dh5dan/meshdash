@@ -296,7 +296,7 @@ if ($sendData != 1)
 
     echo '<tr>';
     echo '<td ><label for="updateFile">Lade letztes Release von GitHub herunter:&nbsp;</label></td>';
-    echo '<td><input type="button" id="btnDwnLatestRelease" value="Hole letzte Release-Version"></td>';
+    echo '<td><input type="button" class="btnDwnLatestRelease" id="btnDwnLatestRelease" value="Hole letzte Release-Version"></td>';
     echo '</tr>';
 
     echo '<tr>';
@@ -304,8 +304,8 @@ if ($sendData != 1)
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td><input type="button" id="btnConfigUpdateBackup" value="Nur Backup anlegen"/></td>';
-    echo '<td><input type="button" id="btnConfigUpdate" value="Update Hochladen"/></td>';
+    echo '<td><input type="button" class="btnConfigUpdateBackup" id="btnConfigUpdateBackup" value="Nur Backup anlegen"/></td>';
+    echo '<td><input type="button" class="btnConfigUpdate" id="btnConfigUpdate" value="Update Hochladen"/></td>';
 }
 else
 {

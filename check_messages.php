@@ -68,12 +68,22 @@ if ($debugFlag)
 }
 
 $mergedData = [];
-while ($row = $result2->fetchArray(SQLITE3_ASSOC))
+
+# Wenn DB leer, wird False zurückgeben.
+# Verhindert Server Error 500
+if ($result2 !== false)
 {
-    $groupId      = $row['dst'];
-    $groupId      = $groupId == '*' ? -1 : $groupId;
-    $groupId      = $groupId == $callSign ? -2 : $groupId;
-    $mergedData[] = (int) $groupId;
+    while ($row = $result2->fetchArray(SQLITE3_ASSOC))
+    {
+        $groupId      = $row['dst'];
+        $groupId      = $groupId == '*' ? -1 : $groupId;
+        $groupId      = $groupId == $callSign ? -2 : $groupId;
+        $mergedData[] = (int) $groupId;
+    }
+}
+else
+{
+    exit();
 }
 
 if ($debugFlag)

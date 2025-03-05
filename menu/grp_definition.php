@@ -128,7 +128,7 @@ if ($sendData === '1')
 }
 else
 {
-    echo '<input type="button" id="btnSaveGrpDefinition" value="Settings speichern" />';
+    echo '<input type="button" class="btnSaveGrpDefinition" id="btnSaveGrpDefinition" value="Settings speichern" />';
 }
 echo '</td>';
 echo '</tr>';
