@@ -1,7 +1,7 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     display: flex;
     overscroll-behavior-y: contain;
     flex-direction: column;
@@ -201,6 +201,13 @@ iframe {
     transform: translate(50%, -50%); /* Sorgt dafür, dass der Punkt schön positioniert wird */
 }
 
+@media (max-width: 440px) {
+
+    #message-frame {
+        max-height: calc(100vh - 310px) !important;
+    }
+}
+
 /* Media Query für Smartphones */
 @media (max-width: 768px) {
 
@@ -235,7 +242,7 @@ iframe {
     #message-frame {
         flex: 1; /* Nimmt den verfügbaren Platz ein */
         min-height: 50vh; /* Mindestens die Hälfte des Screens */
-        max-height: calc(100vh - 310px); /* Verhindert Überlappung */
+        max-height: calc(270vh - 310px);
     }
 
     #bottom-frame {

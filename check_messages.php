@@ -10,7 +10,13 @@ if ($debugFlag === true)
     $_GET['lastChecked'] = 1740291656; // '2025-02-23 07:20:56'
     echo "<br>lastChecked nach:" . $_GET['lastChecked'];
 }
-#$_GET['lastChecked'] = 1740291656; // '2025-02-23 07:20:56'
+
+#Wenn Datei nicht existiert, dann exit.
+#Verhindert das ein offener Browser eine 0 byte Datei erzeugt
+if (!file_exists('database/parameter.db'))
+{
+    exit();
+}
 
 #Trigger Chron-Log
 chronLog();
@@ -68,12 +74,22 @@ if ($debugFlag)
 }
 
 $mergedData = [];
-while ($row = $result2->fetchArray(SQLITE3_ASSOC))
+
+# Wenn DB leer, wird False zurückgeben.
+# Verhindert Server Error 500
+if ($result2 !== false)
 {
-    $groupId      = $row['dst'];
-    $groupId      = $groupId == '*' ? -1 : $groupId;
-    $groupId      = $groupId == $callSign ? -2 : $groupId;
-    $mergedData[] = (int) $groupId;
+    while ($row = $result2->fetchArray(SQLITE3_ASSOC))
+    {
+        $groupId      = $row['dst'];
+        $groupId      = $groupId == '*' ? -1 : $groupId;
+        $groupId      = $groupId == $callSign ? -2 : $groupId;
+        $mergedData[] = (int) $groupId;
+    }
+}
+else
+{
+    exit();
 }
 
 if ($debugFlag)

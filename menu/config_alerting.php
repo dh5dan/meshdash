@@ -59,7 +59,7 @@ $alertEnabledSrcChecked = $alertEnabledSrc == 1 ? 'checked' : '';
 $alertEnabledDstChecked = $alertEnabledDst == 1 ? 'checked' : '';
 
 echo '<h2>Benachrichtigungen Einstellen';
-echo '<span class="hintText"><br>(Dateien müssen im Sound-Verzeichnis<span class="lineBreak">vorhanden und ausführbar sein)</span></span>';
+echo '<span class="hintText"><br>(Dateien müssen im Sound-Verzeichnis <span class="lineBreak">vorhanden und ausführbar sein)</span></span>';
 echo '</h2>';
 
 echo '<form id="frmConfigAlerting" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
@@ -101,7 +101,7 @@ echo '<td colspan="3"><hr></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td colspan="3"><input type="button" id="btnSaveConfigAlerting" value="Settings speichern"  /></td>';
+echo '<td colspan="3"><input type="button" class="btnSaveConfigAlerting" id="btnSaveConfigAlerting" value="Settings speichern"  /></td>';
 echo '</tr>';
 
 echo '</table>';

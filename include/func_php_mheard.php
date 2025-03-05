@@ -40,13 +40,14 @@ function getMheard($loraIp)
             $callSign = $cols->item(0) ? trim($cols->item(0)->nodeValue) : '';
             $date     = $cols->item(1) ? trim($cols->item(1)->nodeValue) : '';
             $time     = $cols->item(2) ? trim($cols->item(2)->nodeValue) : '';
-            $hardware = $cols->item(3) ? trim($cols->item(3)->nodeValue) : '';
-            $mod      = $cols->item(4) ? trim($cols->item(4)->nodeValue) : '';
-            $rssi     = $cols->item(5) ? trim($cols->item(5)->nodeValue) : '';
-            $snr      = $cols->item(6) ? trim($cols->item(6)->nodeValue) : '';
-            $dist     = $cols->item(7) ? trim($cols->item(7)->nodeValue) : '';
-            $pl       = $cols->item(8) ? trim($cols->item(8)->nodeValue) : '';
-            $m        = $cols->item(9) ? trim($cols->item(9)->nodeValue) : '';
+            $mhType   = $cols->item(3) ? trim($cols->item(3)->nodeValue) : '';
+            $hardware = $cols->item(4) ? trim($cols->item(4)->nodeValue) : '';
+            $mod      = $cols->item(5) ? trim($cols->item(5)->nodeValue) : '';
+            $rssi     = $cols->item(6) ? trim($cols->item(6)->nodeValue) : '';
+            $snr      = $cols->item(7) ? trim($cols->item(7)->nodeValue) : '';
+            $dist     = $cols->item(8) ? trim($cols->item(8)->nodeValue) : '';
+            $pl       = $cols->item(9) ? trim($cols->item(9)->nodeValue) : '';
+            $m        = $cols->item(10) ? trim($cols->item(10)->nodeValue) : '';
 
             // Falls die Zelle einen Button oder Link enthält, überspringen wir sie
             if (empty($callSign) || preg_match('/<button.*?>.*?<\/button>/', $cols->item(0)->C14N()))
@@ -59,6 +60,7 @@ function getMheard($loraIp)
                 'callSign' => $callSign,
                 'date'     => $date,
                 'time'     => $time,
+                'mhType'   => $mhType,
                 'hardware' => $hardware,
                 'mod'      => $mod,
                 'rssi'     => $rssi,
@@ -143,6 +145,7 @@ function showMheard($localCallSign)
             echo '<th>LHeard call</th>';
             echo '<th>Date</th>';
             echo '<th>Time</th>';
+            echo '<th>Type</th>';
             echo '<th>LHeard hardware</th>';
             echo '<th>Mod</th>';
             echo '<th>RSSI</th>';
@@ -159,6 +162,7 @@ function showMheard($localCallSign)
                 $callSign = $row['mhCallSign'];
                 $date     = $row['mhDate'];
                 $time     = $row['mhTime'];
+                $type     = $row['mhType'];
                 $hardware = $row['mhHardware'];
                 $mod      = $row['mhMod'];
                 $rssi     = $row['mhRssi'];
@@ -171,6 +175,7 @@ function showMheard($localCallSign)
                 echo '<td>'.$callSign.'</td>';
                 echo '<td>'.$date.'</td>';
                 echo '<td>'.$time.'</td>';
+                echo '<td>'.$type.'</td>';
                 echo '<td>'.$hardware.'</td>';
                 echo '<td>'.$mod.'</td>';
                 echo '<td>'.$rssi.'</td>';

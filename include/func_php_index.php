@@ -66,7 +66,7 @@ function initSQLiteDatabase($database): bool
         $db->exec("CREATE TABLE IF NOT EXISTS meshdash 
                                 (
                                   msg_id TEXT NOT NULL UNIQUE,              
-                                  timestamps INTEGER NOT NULL,
+                                  timestamps TEXT NOT NULL,
                                   msg TEXT,
                                   src_type TEXT,
                                   type TEXT,
@@ -89,7 +89,7 @@ function initSQLiteDatabase($database): bool
                                   msgIsTimeSync INTEGER DEFAULT 0,
                                   msgIsAck INTEGER DEFAULT 0,
                                   firmware TEXT,
-                                  PRIMARY KEY('msg_id')
+                                  PRIMARY KEY(msg_id)
                                 )
                 ");
 
@@ -110,7 +110,7 @@ function initSQLiteDatabase($database): bool
                                   param_key TEXT NOT NULL UNIQUE,              
                                   param_value INTEGER,
                                   param_text TEXT,
-                                  PRIMARY KEY('param_key')
+                                  PRIMARY KEY(param_key)
                                 )
                 "
         );
@@ -171,7 +171,129 @@ function initSQLiteDatabase($database): bool
                                   executed INTEGER,
                                   errCode INTEGER,
                                   errText TEXT,
-                                  PRIMARY KEY('msg_id')
+                                  PRIMARY KEY(msg_id)
+                                )
+                ");
+
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+    }
+    elseif ($database == 'sensordata')
+    {
+        #Open Database
+        $db = new SQLite3('database/sensordata.db');
+        $db->exec('PRAGMA journal_mode = wal;');
+        $db->exec('PRAGMA synchronous = NORMAL;');
+
+        // Tabelle erstellen wenn nicht vorhanden
+        $db->exec("CREATE TABLE IF NOT EXISTS sensordata 
+                                (
+                                  sensorDataId INTEGER PRIMARY KEY AUTOINCREMENT,              
+                                  timestamps TEXT NOT NULL,
+                                  bme280 TEXT,
+                                  bme680 TEXT,
+                                  mcu811 TEXT,
+                                  lsp33 TEXT,
+                                  oneWire TEXT,
+                                  temp TEXT,
+                                  tout TEXT,
+                                  hum TEXT,
+                                  qfe TEXT,
+                                  qnh TEXT,
+                                  altAsl TEXT,
+                                  gas TEXT,
+                                  eCo2 TEXT,
+                                  ina226vBus TEXT,
+                                  ina226vShunt TEXT,
+                                  ina226vCurrent TEXT,
+                                  ina226vPower TEXT
+                                )
+                ");
+
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+    }
+    elseif ($database == 'sensor_th_temp')
+    {
+        #Open Database
+        $db = new SQLite3('database/sensor_th_temp.db');
+        $db->exec('PRAGMA journal_mode = wal;');
+        $db->exec('PRAGMA synchronous = NORMAL;');
+
+        // Tabelle erstellen wenn nicht vorhanden
+        $db->exec("CREATE TABLE IF NOT EXISTS sensorThTemp 
+                                (
+                                  sensorThTempId INTEGER PRIMARY KEY AUTOINCREMENT,             
+                                  timestamps TEXT NOT NULL,
+                                  sensorThTempIntervallMin INTEGER DEFAULT 1,
+                                  sensorThTempEnabled INTEGER DEFAULT 0,
+                                  sensorThTempMinValue TEXT,
+                                  sensorThTempMaxValue TEXT,
+                                  sensorThTempAlertMsg TEXT,
+                                  sensorThTempAlertCount INTEGER DEFAULT 0,
+                                  sensorThTempAlertTimestamp TEXT,
+                                  sensorThTempDmGrpId INTEGER DEFAULT 999,
+                                  
+                                  sensorThToutEnabled INTEGER DEFAULT 0,
+                                  sensorThToutMinValue TEXT,
+                                  sensorThToutMaxValue TEXT,
+                                  sensorThToutAlertMsg TEXT,
+                                  sensorThToutAlertCount INTEGER DEFAULT 0,
+                                  sensorThToutAlertTimestamp TEXT,
+                                  sensorThToutDmGrpId INTEGER DEFAULT 999
+                                )
+                ");
+
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+    }
+    elseif ($database == 'sensor_th_ina226')
+    {
+        #Open Database
+        $db = new SQLite3('database/sensor_th_ina226.db');
+        $db->exec('PRAGMA journal_mode = wal;');
+        $db->exec('PRAGMA synchronous = NORMAL;');
+
+        // Tabelle erstellen wenn nicht vorhanden
+        $db->exec("CREATE TABLE IF NOT EXISTS sensorThIna226 
+                                (
+                                  sensorThIna226Id INTEGER PRIMARY KEY AUTOINCREMENT,             
+                                  timestamps TEXT NOT NULL,
+                                  sensorThIna226IntervallMin INTEGER DEFAULT 1,
+                                  sensorThIna226vBusEnabled INTEGER DEFAULT 0,
+                                  sensorThIna226vBusMinValue TEXT,
+                                  sensorThIna226vBusMaxValue TEXT,
+                                  sensorThIna226vBusAlertMsg TEXT,
+                                  sensorThIna226vBusAlertCount INTEGER DEFAULT 0,
+                                  sensorThIna226vBusAlertTimestamp TEXT,
+                                  sensorThIna226vBusDmGrpId INTEGER DEFAULT 999,
+                                  
+                                  sensorThIna226vShuntEnabled INTEGER DEFAULT 0,
+                                  sensorThIna226vShuntMinValue TEXT,
+                                  sensorThIna226vShuntMaxValue TEXT,
+                                  sensorThIna226vShuntAlertMsg TEXT,
+                                  sensorThIna226vShuntAlertCount INTEGER DEFAULT 0,
+                                  sensorThIna226vShuntAlertTimestamp TEXT,
+                                  sensorThIna226vShuntDmGrpId INTEGER DEFAULT 999,
+                                  
+                                  sensorThIna226vCurrentEnabled INTEGER DEFAULT 0,
+                                  sensorThIna226vCurrentMinValue TEXT,
+                                  sensorThIna226vCurrentMaxValue TEXT,
+                                  sensorThIna226vCurrentAlertMsg TEXT,
+                                  sensorThIna226vCurrentAlertCount INTEGER DEFAULT 0,
+                                  sensorThIna226vCurrentAlertTimestamp TEXT,
+                                  sensorThIna226vCurrentDmGrpId INTEGER DEFAULT 999,
+                                  
+                                  sensorThIna226vPowerEnabled INTEGER DEFAULT 0,
+                                  sensorThIna226vPowerMinValue TEXT,
+                                  sensorThIna226vPowerMaxValue TEXT,
+                                  sensorThIna226vPowerAlertMsg TEXT,
+                                  sensorThIna226vPowerAlertCount INTEGER DEFAULT 0,
+                                  sensorThIna226vPowerAlertTimestamp TEXT,
+                                  sensorThIna226vPowerDmGrpId INTEGER DEFAULT 999
                                 )
                 ");
 
@@ -189,19 +311,19 @@ function initSQLiteDatabase($database): bool
         // Tabelle erstellen wenn nicht vorhanden
         $db->exec("CREATE TABLE IF NOT EXISTS mheard 
                                 (
-                                  mheardId INTEGER NOT NULL UNIQUE,              
-                                  timestamps INTEGER NOT NULL,
+                                  mheardId INTEGER PRIMARY KEY AUTOINCREMENT,              
+                                  timestamps TEXT NOT NULL,
                                   mhCallSign TEXT,
                                   mhDate TEXT,
                                   mhTime TEXT,
+                                  mhType TEXT,
                                   mhHardware TEXT,
                                   mhMod INTEGER,
                                   mhRssi INTEGER,
                                   mhSnr INTEGER,
                                   mhDist INTEGER,
                                   mhPl INTEGER,
-                                  mhM INTEGER,
-                                  PRIMARY KEY('mheardId' AUTOINCREMENT)
+                                  mhM INTEGER
                                 )
                 ");
 
@@ -223,10 +345,38 @@ function initSQLiteDatabase($database): bool
         // Tabelle erstellen wenn nicht vorhanden
         $db->exec("CREATE TABLE IF NOT EXISTS groups 
                                 (
-                                  groupId INTEGER NOT NULL UNIQUE,              
+                                  groupId INTEGER PRIMARY KEY,              
                                   groupNumber INTEGER NOT NULL,
-                                  groupEnabled INTEGER NOT NULL,
-                                  PRIMARY KEY('groupId')
+                                  groupEnabled INTEGER NOT NULL
+                                )
+                ");
+
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+    }
+    elseif ($database == 'tx_queue')
+    {
+        #0: OFF – SQLite führt keine Synchronisierung durch (geringe Sicherheit, aber schnellere Schreiboperationen).
+        #1: NORMAL – Standardmodus, SQLite führt eine Synchronisierung durch, aber nicht für alle Schreibvorgänge (bessere Sicherheit, aber etwas langsamer).
+        #2: FULL – Höchste Sicherheit, bei dem alle Schreibvorgänge synchronisiert werden (höchste Sicherheit, aber auch langsamer).
+
+        #Open Database
+        $db = new SQLite3('database/tx_queue.db');
+        $db->exec('PRAGMA journal_mode = wal;');
+        $db->exec('PRAGMA synchronous = NORMAL;');
+
+        // Tabelle erstellen wenn nicht vorhanden
+        $db->exec("CREATE TABLE IF NOT EXISTS txQueue 
+                                (
+                                  txQueueId INTEGER NOT NULL UNIQUE,
+                                  insertTimestamp TEXT NOT NULL,              
+                                  txTimestamp INTEGER NOT NULL,
+                                  txType TEXT DEFAULT 'msg',
+                                  txDst TEXT,
+                                  txMsg TEXT,
+                                  txFlag INTEGER DEFAULT 0,
+                                  PRIMARY KEY('txQueueId')
                                 )
                 ");
 
@@ -257,6 +407,12 @@ function showMenu()
     <li>Gruppen
       <ul class="submenu">
         <li data-action="grp_definition">Gruppen definieren</li>
+      </ul>
+    </li>
+     <li>Sensoren
+      <ul class="submenu">
+        <li data-action="sensor_data">Sensordaten</li>
+        <li data-action="sensor_threshold">Sensorschwellwerte</li>
       </ul>
     </li>
     <li data-action="mHeard">MHeard</li>';

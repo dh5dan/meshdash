@@ -64,9 +64,18 @@ function backupApp($sourceDir, $backupDir)
             $zip->addFile($file->getPathname(), $relativePath);
         }
 
-        $zip->close();
+        @$zip->close();
+
+        if (!file_exists($backupFullPath))
+        {
+            echo "<br> Fehler beim Anlegen des Backups $backupFile aufgetreten!";
+            return false;
+        }
+
         return $backupFile;
-    } else {
+    }
+    else
+    {
         return false;
     }
 }
@@ -255,7 +264,7 @@ function showBackups()
 
             if ($maxBackupsCount > $maxBackups)
             {
-                unlink('..\backup\\' . $filename);
+                unlink('../backup/' . $filename);
                 continue;
             }
 
