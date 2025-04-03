@@ -1,6 +1,122 @@
 <script>
    $(function ($)
    {
+       /////////////////////////////////////////Hole Sensor Intervallabrufe und setzte ggf. neu /////////////////////////////////////
+       // let currentTempInterval = null;  // Speichert das aktuelle Temp-Intervall
+       // let currentIna226Interval = null;  // Speichert das aktuelle INA226-Intervall
+       // let tempIntervalId = null;  // ID des Temp setInterval
+       // let ina226IntervalId = null;  // ID des INA226 setInterval
+       //
+       // // Funktion zum Abrufen der Intervallwerte
+       // function getIntervalAndStart()
+       // {
+       //     $.ajax({
+       //         url: 'get_intervall.php',  // PHP-Datei, die die Intervallwerte zurückgibt
+       //         type: 'GET',
+       //         dataType: 'json',
+       //         success: function (data) {
+       //             // Überprüfen, ob der Temp-Intervallwert gültig ist und den Intervall starten
+       //             if (data.temp !== undefined)
+       //             {
+       //                 if (data.temp === 0)
+       //                 {
+       //                     if (tempIntervalId !== null)
+       //                     {
+       //                         clearInterval(tempIntervalId); // Stoppt den laufenden Temp-Intervall
+       //                         tempIntervalId = null;
+       //                         console.log("Temp Intervall gestoppt (Intervallwert 0)");
+       //                     }
+       //                 }
+       //                 else
+       //                 {
+       //                     if (currentTempInterval !== data.temp)
+       //                     {
+       //                         currentTempInterval = data.temp;
+       //
+       //                         // Stoppen des alten Temp-Intervalls
+       //                         if (tempIntervalId !== null)
+       //                         {
+       //                             clearInterval(tempIntervalId);
+       //                             console.log("Alter Temp-Timer wurde gestoppt");
+       //                         }
+       //
+       //                         // Setzen des neuen Temp-Intervalls
+       //                         tempIntervalId = setInterval(function () {
+       //                             // Deine PHP-Logik für Temp ausführen
+       //                             $.ajax({
+       //                                 url: 'get_sensor_data.php?sensor=temp',  // Hier wird deine Logik ausgeführt
+       //                                 type: 'GET',
+       //                                 success: function (response) {
+       //                                     console.log("Temp PHP-Funktion ausgeführt: " + response);
+       //                                 },
+       //                                 error: function () {
+       //                                     console.log("Fehler beim Ausführen der Temp PHP-Funktion");
+       //                                 }
+       //                             });
+       //                         }, data.temp * 1000);  // Intervall in Sekunden
+       //                         console.log("Neuer Temp Intervall-Timer gestartet: " + data.temp + " Sekunden");
+       //                     }
+       //                 }
+       //             }
+       //
+       //             // Überprüfen, ob der INA226-Intervallwert gültig ist und den Intervall starten
+       //             if (data.ina226 !== undefined)
+       //             {
+       //                 if (data.ina226 === 0)
+       //                 {
+       //                     if (ina226IntervalId !== null)
+       //                     {
+       //                         clearInterval(ina226IntervalId); // Stoppt den laufenden INA226-Intervall
+       //                         ina226IntervalId = null;
+       //                         console.log("INA226 Intervall gestoppt (Intervallwert 0)");
+       //                     }
+       //                 }
+       //                 else
+       //                 {
+       //                     if (currentIna226Interval !== data.ina226)
+       //                     {
+       //                         currentIna226Interval = data.ina226;
+       //
+       //                         // Stoppen des alten INA226-Intervalls
+       //                         if (ina226IntervalId !== null)
+       //                         {
+       //                             clearInterval(ina226IntervalId);
+       //                             console.log("Alter INA226-Timer wurde gestoppt");
+       //                         }
+       //
+       //                         // Setzen des neuen INA226-Intervalls
+       //                         ina226IntervalId = setInterval(function () {
+       //                             // Deine PHP-Logik für INA226 ausführen
+       //                             $.ajax({
+       //                                 url: 'get_sensor_data.php?sensor=ina226',  // Hier wird deine Logik ausgeführt
+       //                                 type: 'GET',
+       //                                 success: function (response) {
+       //                                     console.log("INA226 PHP-Funktion ausgeführt: " + response);
+       //                                 },
+       //                                 error: function () {
+       //                                     console.log("Fehler beim Ausführen der INA226 PHP-Funktion");
+       //                                 }
+       //                             });
+       //                         }, data.ina226 * 1000);  // Intervall in Sekunden
+       //                         console.log("Neuer INA226 Intervall-Timer gestartet: " + data.ina226 + " Sekunden");
+       //                     }
+       //                 }
+       //             }
+       //
+       //         },
+       //         error: function () {
+       //             console.log('Fehler beim Abrufen des Intervallwertes');
+       //         }
+       //     });
+       // }
+       //
+       // // Funktion starten
+       // getIntervalAndStart();
+       //
+       // // Alle x Sekunden die Intervallwerte erneut abfragen
+       // setInterval(getIntervalAndStart, 5000); // Alle 5 Sekunden den Intervallwert neu abfragen
+
+
       /////////////////////////////////////////Tab Indikator /////////////////////////////////////
 
        // Objekt für jede Gruppe, um den letzten Fokusverlust zu speichern
@@ -301,6 +417,12 @@
                    break;
                case 'send_command':
                    iframeSrc = 'menu/send_command.php';
+                   break;
+               case 'sensor_data':
+                   iframeSrc = 'menu/sensor_data.php';
+                   break;
+               case 'sensor_threshold':
+                   iframeSrc = 'menu/sensor_threshold.php';
                    break;
                case 'mHeard':
                    iframeSrc = 'mheard.php';

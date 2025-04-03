@@ -3,17 +3,28 @@
 function getLoraInfo($loraIp)
 {
     // URL der Seite
-    $actualHost = 'http';
-    $url        = $actualHost . '://' . $loraIp . '/info';
+    $actualHost  = 'http';
+    $url         = $actualHost . '://' . $loraIp . '/info';
+    $ina226Count = -1;
+    $debugFlag   = false;
+
+    if ($debugFlag === true)
+    {
+        $url = $actualHost . '://192.168.1.111/meshdash/test/info_new/info.html';
+    }
 
     // HTML-Inhalt abrufen
     $htmlContent = @file_get_contents($url);
 
     if ($htmlContent === false)
     {
-        echo "Fehler beim Abrufen der Seite.";
+        echo "Fehler beim Abrufen der Info-Seite.";
         exit;
     }
+
+    #Workaround in MeshCom 4.34q (build: Mar 6 2025 / 15:17:43)
+    #Falscher Tr Tag auf info Seite, dadurch wird Call nicht mehr erkannt und Hardware
+    $htmlContent = preg_replace('/<tr><tr><\/tr>/', '</tr><tr>', $htmlContent);
 
     $info = [];  // Das Array, in dem alle Daten abgelegt werden
 
@@ -32,6 +43,31 @@ function getLoraInfo($loraIp)
     $isSettingsKey     = false;
     $isMeshSettingsKey = false;
 
+    $arrayKey = array(
+        'Firmware',
+        'Start-Date',
+        'UTC-OFF',
+        'BATT',
+        'COUNTRY',
+        'FREQ',
+        'BW',
+        'SF',
+        'CR',
+        'TXPWR',
+        'SSID',
+        'WIFI-AP',
+        'hasIpAddress',
+        'IP address',
+        'GW address',
+        'DNS address',
+        'SUB-MASK',
+        'INA226',
+        'vBUS',
+        'vSHUNT',
+        'vCURRENT',
+        'vPOWER',
+    );
+
     foreach ($rows as $row)
     {
         $cells = $row->getElementsByTagName('td');
@@ -41,28 +77,13 @@ function getLoraInfo($loraIp)
             $key   = trim($cells->item(0)->nodeValue);
             $value = trim($cells->item(1)->nodeValue);
 
-            // Wenn "Firmware" gefunden wird
-            if ($key == 'Firmware')
-            {
-                $info['Firmware'] = $value;
-            }
             // Wenn "Call" gefunden wird
-            elseif ($key == 'Call')
+            if ($key == 'Call')
             {
                 $info['Call'] = explode(' ', $value)[0];
 
                 // Die Hardware-Version extrahieren und als "hardware" speichern
                 $info['Hardware'] = explode('...', $value)[1];
-            }
-            // Wenn "UTC-OFF" gefunden wird
-            elseif ($key == 'UTC-OFF')
-            {
-                $info['UTC-OFF'] = $value;
-            }
-            // Wenn "BATT" gefunden wird
-            elseif ($key == 'BATT')
-            {
-                $info['BATT'] = $value;
             }
             // Wenn "Setting" gefunden wird
             elseif (($key == 'Setting' && $isSettingsKey === false) || (empty($key) && $isSettingsKey === false))
@@ -116,60 +137,49 @@ function getLoraInfo($loraIp)
                 }
             }
             // Weitere Standardwerte
-            elseif ($key == 'COUNTRY')
+            if (in_array($key, $arrayKey))
             {
-                $isMeshSettingsKey = true;
-                $info['COUNTRY']   = $value;
+                #Sonderlocke für INA226
+                #Prüfe ob INA226 Header erkannt wurde.
+                #Wenn ja, speicher INA226 Werte in Array 2. Dimension
+                if ($ina226Count >= 0)
+                {
+                    $info['INA226'][$key] = $value;
+                    ++$ina226Count;
+                }
+
+                #Prüfe oB ina226 Header vorhanden ist und erhöhe CounterFlag
+                if ($key == 'INA226')
+                {
+                    ++$ina226Count;
+                }
+
+                #Schreibe normale Werte in Form Key = Value
+                if ($ina226Count == -1)
+                {
+                    $info[$key] = $value;
+                }
+
+                #Wenn Max Werte von INA226 eingelesen, dann auf Normal-Mode zurückschalten
+                if ($ina226Count == 4)
+                {
+                    $ina226Count = -1;
+                }
             }
-            elseif ($key == 'FREQ')
+
+            if ($debugFlag === true)
             {
-                $info['FREQ'] = $value;
-            }
-            elseif ($key == 'BW')
-            {
-                $info['BW'] = $value;
-            }
-            elseif ($key == 'SF')
-            {
-                $info['SF'] = $value;
-            }
-            elseif ($key == 'CR')
-            {
-                $info['CR'] = $value;
-            }
-            elseif ($key == 'TXPWR')
-            {
-                $info['TXPWR'] = $value;
-            }
-            elseif ($key == 'SSID')
-            {
-                $info['SSID'] = $value;
-            }
-            elseif ($key == 'WIFI-AP')
-            {
-                $info['WIFI-AP'] = $value;
-            }
-            elseif ($key == 'hasIpAddress')
-            {
-                $info['hasIpAddress'] = $value;
-            }
-            elseif ($key == 'IP address')
-            {
-                $info['IP address'] = $value;
-            }
-            elseif ($key == 'GW address')
-            {
-                $info['GW address'] = $value;
-            }
-            elseif ($key == 'DNS address')
-            {
-                $info['DNS address'] = $value;
-            }
-            elseif ($key == 'SUB-MASK')
-            {
-                $info['SUB-MASK'] = $value;
+                echo "<br>key: $key";
+                echo "<br>ina226Count:$ina226Count";
             }
         }
+    }
+
+    if ($debugFlag === true)
+    {
+        echo "<pre>";
+        print_r($info);
+        echo "</pre>";
     }
 
     return $info;
@@ -181,7 +191,7 @@ function showLoraInfo($localInfoArray)
 
     echo '<tr>';
     echo '<th class="thCenter">Lora-Infoseite</th>';
-    echo '<th colspan="2"><input type="button" id="btnLoadLoraInfo" value="Info-Seite neu laden" /></th>';
+    echo '<th colspan="2"><input type="button" class="btnLoadLoraInfo" id="btnLoadLoraInfo" value="Info-Seite neu laden" /></th>';
     echo '</tr>';
 
     echo '<tr>';
@@ -191,6 +201,11 @@ function showLoraInfo($localInfoArray)
     echo '<tr>';
     echo '<td>Firmware:</td>';
     echo '<td colspan="2">' . $localInfoArray['Firmware'] . '</td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td>Startzeit:</td>';
+    echo '<td colspan="2">' . ($localInfoArray['Start-Date'] ?? '') . '</td>';
     echo '</tr>';
 
     echo '<tr>';

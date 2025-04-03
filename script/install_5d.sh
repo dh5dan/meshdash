@@ -1,16 +1,19 @@
 #!/bin/bash
 clear
-echo MeshDash Install-Script V 1.00.42
+echo "MeshDash Install-Script V 1.00.80"
 echo
-echo Installation Von MeshDash SQL
+echo "Installation Von MeshDash-SQL"
 echo 
 echo "Das Zip File muss bereits im /home Verzeichnis des Aktuellen Users kopiert sein!"
 echo
-echo Der Raspberry muss Programme installieren und muss daher eine Internetverbindung haben!
+echo "Der Raspberry muss Programme installieren und muss daher eine Internetverbindung haben!"
 echo
 echo
-echo Wenn ja, geht es sofort weiter, wenn nein, wird die Installation abgebrochen.
+echo "Wenn ja, geht es sofort weiter, wenn nein, wird die Installation abgebrochen."
 echo
+######################################
+# Mit Instanzprüfung ob Chromium schon rennt.
+# Logging eingebaut
 ######################################
 read -r -p "Installation jetzt ausführen ja, oder nein? " A
 if [ "$A" == "ja" ];then
@@ -22,9 +25,18 @@ else
 		echo "Keine Installation. ENDE."
   	exit
 fi
-echo "OK, es geht weiter mit der Installation..."
-sleep 2
-
+##################################################
+# Suche nach einer Datei mit dem Muster "meshdash-sql_*.zip"
+if ls meshdash-sql_*.zip 1> /dev/null 2>&1; then
+    echo
+    echo "OK, es geht weiter mit der Installation..."
+    sleep 2
+else
+    echo
+    echo "Die Updatedatei wurde nicht gefunden!"
+    echo "Bitte die Zip-Datei in das selbe Verzeichnis legen und install_5d.sh neu starten."
+    exit
+fi
 ##################################################
 # Funktion, um das Verzeichnis /home/pi zu überprüfen
 check_home_pi() {
@@ -84,32 +96,37 @@ check_home_pi
 if [ $? -eq 0 ]; then
     echo "Installationsvorgang kann fortgesetzt werden."
       echo "Wechseln ins Verzeichnis /home/pi..."
-        cd /home/pi
+        cd /home/pi || exit
 else
     copy_files
     echo "Haupt-Installation wird nun ausgeführt."
       echo "Wechseln ins Verzeichnis /home/pi..."
-         cd /home/pi
+         cd /home/pi || exit
 fi
-#############Apt Install php, php-sqlite3, lighttpd
+############# Apt Install php, php-sqlite3, lighttpd
+######## Stop other running services
 echo
-echo Installiere jetzt weitere notwendige Software
+echo "Stoppe lighttpd wenn aktiv."
+if systemctl is-active --quiet lighttpd.service; then
+    sudo systemctl stop lighttpd.service
+fi
+sleep 3
 echo
-echo Installiere lighthttpd und PHP
+echo "Installiere jetzt weitere notwendige Software"
+echo
+echo "Installiere lighthttpd und PHP"
 echo
 echo
 sudo apt-get install lighttpd -f -y
 clear
-echo Als Dienst installieren, automatischer Start nach Reboot
+echo "Als Dienst installieren, automatischer Start nach Reboot"
 echo
 echo
-sudo systemctl start lighttpd
 sudo systemctl enable lighttpd
 echo
-echo Dienst für lighttpd wurde aktiviert wurde gestartet
-sleep 3
+echo "Dienst für lighttpd wurde aktiviert"
 clear
-echo Installiere und konfiguriere PHP.
+echo "Installiere und konfiguriere PHP."
 echo
 echo
 sudo apt-get install php-cgi php-fpm -y -f
@@ -124,25 +141,19 @@ echo
 echo
 sudo lighty-enable-mod fastcgi
 sudo lighty-enable-mod fastcgi-php
-sudo systemctl restart lighttpd
 sudo chown -R www-data:www-data /var/www/html/
 sudo chmod -R 755 /var/www/html
-sudo systemctl restart lighttpd
 echo
-echo PHP und LIGHTTPD sind nun Installiert!
+echo "PHP und LIGHTTPD sind nun Installiert!"
 echo
-echo
-echo
-echo Füge GPIO zur Gruppe www-data hinzu
-echo
+echo "Füge GPIO zur Gruppe www-data hinzu"
 echo
 if getent group gpio >/dev/null; then
     sudo adduser www-data gpio
 fi
-echo
 #######################################
 echo
-echo Stoppe und Disable andere Services um Fehler zu vermeiden
+echo "Stoppe und Disable andere Services um Fehler zu vermeiden"
 ######## Stop other running services
 if systemctl is-active --quiet allmeshcom.service; then
     sudo systemctl stop allmeshcom.service
@@ -163,30 +174,37 @@ echo
 hostIp=$(hostname -I | awk '{print $1}')
 echo
 if systemctl is-active --quiet checkmh.service; then
-  echo Stoppe checkmh Service da neue Version ggf. kopiert wird
+  echo "Stoppe checkmh Service da neue Version ggf. kopiert wird"
   sudo systemctl stop checkmh.service
 fi
 echo
-echo Lösche meshdash Verzeichnis und erzeuge es neu
+echo "Prüfe ob im /home/pi"
+# Überprüfen, ob wir im /home/pi Verzeichnis sind
+if [ "$(pwd)" != "/home/pi" ]; then
+    echo "Nicht im Verzeichnis /home/pi. Wechseln..."
+    cd /home/pi || exit  # Wechsel ins /home/pi Verzeichnis, falls nicht dort
+fi
+echo
+echo "Lösche Meshdash-Verzeichnis und erzeuge es neu"
 sudo rm -rf meshdash
 sudo mkdir meshdash
 echo
-echo Kopiere Zipdateien in das meshdash Verzeichnis
+echo "Kopiere Zip-Dateien in das Meshdash-Verzeichnis"
 sudo cp meshdash*.zip meshdash
 echo
 cd meshdash || exit
 echo
-echo Entpacke nun das zip Paket
+echo "Entpacke nun das zip Paket"
 sudo unzip meshdash*.zip
-echo entferne das Zip Paket aus dem meshdash Verzeichnis
+echo
+echo "Entferne das Zip-Paket aus dem Meshdash-Verzeichnis"
 sudo rm meshdash*.zip
 echo
-echo Erzeuge Verzeichnis 5d in /var/www/html
+echo "Erzeuge Verzeichnis 5d in /var/www/html"
 sudo mkdir -p /var/www/html/5d
 sudo chmod -R 755 /var/www/html/5d
 echo
-echo Kopiere nun die Daten in das Zielverzeichnis
-echo
+echo "Kopiere nun die Daten in das HTML-Zielverzeichnis"
 sudo cp -r ./* /var/www/html/5d/
 sudo cp -r ./.htaccess /var/www/html/5d/
 sudo cp -r ./.user.ini /var/www/html/5d/
@@ -203,18 +221,48 @@ sudo chmod -R 644 /var/www/html/5d/udp.pid
 sudo chmod -R 755 /var/www/html/5d/execute
 #Setzte Owner und Gruppe für Web-Server im gesamten Verzeichnis
 sudo chown -R www-data:www-data /var/www/html/5d
-echo
-echo Kopiere Dateien und setzte Rechte für Systemdienst checkmh.service
+echo "Kopiere Systemdienst-Dateien und setzte Rechte für checkmh.service"
 sudo chmod -R 755 script/checkmh.sh
 sudo chmod -R 644 script/checkmh.service
 sudo cp script/checkmh.service /etc/systemd/system/
 sudo cp script/checkmh.sh ../meshdash/
 echo
-echo Aktiviere Systemdienst checkmh.service
+echo "Aktiviere Systemdienst checkmh.service"
 sudo systemctl daemon-reload
 sudo systemctl enable checkmh.service
 sudo systemctl start checkmh.service
+###############################################
+#Räume auf
+echo "Prüfe ob noch im /home/pi"
+# Überprüfen, ob wir im /home/pi Verzeichnis sind
+if [ "$(pwd)" != "/home/pi" ]; then
+    echo "Nicht im Verzeichnis /home/pi. Wechseln..."
+    cd /home/pi || exit  # Wechsel ins /home/pi Verzeichnis, falls nicht dort
+fi
 echo
+echo "Entferne das Zip-Paket aus dem \home\pi"
+sudo rm meshdash*.zip
+echo
+###############################################
+### Starte jetzt lighthttpd
+echo "Starte Webserver und warte 3 Sekunden"
+sudo systemctl start lighttpd
+sleep 3
+echo
+######################################
+# Alle Cronjobs für den Benutzer www-data löschen
+sudo crontab -u www-data -r
+echo "Alle Cronjobs von www-data wurden gelöscht."
+######################################
+# Cronjob für den Cron-Loop definieren
+CRON_JOB="* * * * * /usr/bin/wget -q -O /dev/null http://localhost/5d/cron_loop.php"
+echo "Lege Cron-Job für cron_loop Task an unter www-data"
+echo "Trage Task-Start in Cron ein mit 1min Prüfintervall"
+(suso -u www-data crontab -l 2>/dev/null | grep -F "$CRON_JOB") || (echo "$CRON_JOB" | sudo -u www-data crontab -)
+echo
+#########################################
+# Ready fpr Take-Off
 echo FERTIG!
 echo
 echo "Starte nun Deinen Webbrowser und gib http://$hostIp/5d ein."
+echo

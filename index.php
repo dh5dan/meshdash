@@ -101,14 +101,42 @@ if (!file_exists('database/keywords.db'))
     initSQLiteDatabase('keywords');
 }
 
+if (!file_exists('database/sensordata.db'))
+{
+    initSQLiteDatabase('sensordata');
+}
+else
+{
+    checkDbUpgrade('sensordata');
+}
+
+if (!file_exists('database/sensor_th_temp.db'))
+{
+    initSQLiteDatabase('sensor_th_temp');
+}
+
+if (!file_exists('database/sensor_th_ina226.db'))
+{
+    initSQLiteDatabase('sensor_th_ina226');
+}
+
 if (!file_exists('database/mheard.db'))
 {
     initSQLiteDatabase('mheard');
+}
+else
+{
+    checkDbUpgrade('mheard');
 }
 
 if (!file_exists('database/groups.db'))
 {
     initSQLiteDatabase('groups');
+}
+
+if (!file_exists('database/tx_queue.db'))
+{
+    initSQLiteDatabase('tx_queue');
 }
 
 #Setzte Leere LoraIp neu in param.php
@@ -121,7 +149,6 @@ if ($sendData === '11')
 if ($doCheckLoraIp === true)
 {
     echo '<span class="unsetDisplayFlex">';
-    echo "<br>";
 
     $param['debugFlag'] = $debugFlag;
     $doCheckLoraIp      = checkLoraIPDb($param);
@@ -218,6 +245,12 @@ if ($sendData == 1)
     $paramBgProcess['checkTaskCmd'] = $checkTaskCmd;
     $paramBgProcess['osIssWindows'] = $osIssWindows;
     checkBgProcess($paramBgProcess);
+}
+
+#Prüfe ob CronJob für SendQueue gesetzt ist unter Linux
+if ($osIssWindows === false)
+{
+    checkCronLoop();
 }
 
 ######################################################################################

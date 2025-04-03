@@ -20,6 +20,11 @@ td {
     vertical-align: middle;
 }
 
+td[colspan] input {
+    width: 100%;
+    box-sizing: border-box; /* Verhindert Überlauf durch Padding */
+}
+
 input[type="checkbox"] {
     transform: scale(1.2);
 }
@@ -34,7 +39,12 @@ input[type="checkbox"] {
     font-size: 14px;
 }
 
-.btnSaveConfigKeyword {
+td input[type="text"][name*="sensorThTempIntervallSec"],
+td input[type="text"][name*="sensorThIna226IntervallSec"] {
+    width: 50px; /* Kleinere Breite nur für min/max Input-Felder */
+}
+
+.btnSaveSensorThreshold {
     font-size: 14px;
     padding: 8px 15px;
     border: none;
@@ -42,10 +52,13 @@ input[type="checkbox"] {
     color: white;
     cursor: pointer;
     border-radius: 5px;
-    width: 100%;
 }
 
 @media (max-width: 600px) {
+
+    .lineBreak {
+        display: block;
+    }
 
     .hintText {
         font-size: 12px;
@@ -70,24 +83,33 @@ input[type="checkbox"] {
         font-size: 14px;
     }
 
-    td:first-child {
-        width: 50%; /* Lässt genug Platz für den Text */
+    td[colspan] input {
+        width: auto;
     }
 
-    td:nth-child(2) {
-        width: 40%; /* Fixe Breite für Eingabefelder */
-    }
+    /*td input[type="text"][name*="sensorThTempMinValue"],*/
+    /*td input[type="text"][name*="sensorThTempMaxValue"] {*/
+    /*    width: 50px; !* Kleinere Breite nur für min/max Input-Felder *!*/
+    /*}*/
 
-    td:nth-child(3) {
-        width: 10%; /* Checkbox bleibt sichtbar */
-    }
+    /*td:first-child {*/
+    /*    width: 50%; !* Lässt genug Platz für den Text *!*/
+    /*}*/
 
-    input[type="text"] {
-        max-width: 150px; /* Oder andere passende Breite */
-    }
+    /*td:nth-child(2) {*/
+    /*    width: 40%; !* Fixe Breite für Eingabefelder *!*/
+    /*}*/
+
+    /*td:nth-child(3) {*/
+    /*    width: 10%; !* Checkbox bleibt sichtbar *!*/
+    /*}*/
+
+    /*input[type="text"] {*/
+    /*    max-width: 220px; !* Oder andere passende Breite *!*/
+    /*}*/
 
     input[type="button"] {
-        width: 100%;
+        width: 100% !important;
         padding: 10px;
         font-size: 16px;
         display: inline-block;

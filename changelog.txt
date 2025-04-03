@@ -1,6 +1,25 @@
+Version 1.10.06 SQL
+Auswertung WX-Daten als Sensordaten.
+Auswertung INA226 Daten aus Info-Bereich und Anzeige in Sensordaten.
+BUGFIX: Mit MeshCom 4.34q (build: Mar 6 2025 / 15:17:43)
+        gab es einen Fehler im <TR>-Tag der Infoseite, was die Auswertung von Call verhindert hat.
+        Dies wird nun durch einen Workaround korrigiert. Ist in Version R aber behoben.
+FEATURE: Mit 4.34q (build: Mar 6 2025 / 15:17:43) gibt es ein neues Info-Feld Startzeit.
+FEATURE: Schwellwertangaben für Sensordaten implementiert mit Alert-Funktion.
+FEATURE: RegEx entfernt bei Msg Eingabe. Alle Zeichen erlaubt.
+BUGFIX check_message.php verursacht einen Server 500 Error, wenn Meshdash-DB noch leer ist.
+FEATURE: Entferne Zip Datei nach erfolgreicher Installation
+Bugfix: Type-Value in Mheard mit aufgenommen
+BugFix: Löschen alter Backups, wenn max. Anzahl erreicht.
+FEATURE: Send_queue.db damit Nachrichten im 30sek. Intervall gesendet werden
+Aktuell nur für Sensor-Meldungen eingestellt. Später für alle Nachrichten.
+INFO: Beta-Status entfernt.
+FEATURE: Abfrageintervalle Sensordaten/Send-Queue sind Cron-Basiert
+FEATURE: Anpassungen im CSS für Responsive vorgenommen. Danke an Martin DK5EN.
+#################################################################
 Version 1.10.04beta SQL
 Feature Versionsbasierte Updatefunktion der DB.
-Feature FW-Version der Gegenstelle wird nun in DB mit aufgenommen wenn vorhanden.
+Feature FW-Version der Gegenstelle wird jetzt in DB mit aufgenommen, wenn vorhanden.
 FEATURE Backups auf max. 5 begrenzt.
 FEATURE Chron-Log für Logs mit Einstellung Archive-ZIP/Delete.
 FEATURE Firmware-Angabe unter POS-Daten, wenn vorhanden.
