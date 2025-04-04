@@ -1,3 +1,6 @@
+Version 1.10.08 SQL
+
+#################################################################
 Version 1.10.06 SQL
 Auswertung WX-Daten als Sensordaten.
 Auswertung INA226 Daten aus Info-Bereich und Anzeige in Sensordaten.
