@@ -18,66 +18,30 @@ require_once 'include/func_php_core.php';
 $txMsg         = $_POST['msgText'] ?? '';
 $directMessage = $_POST['dm'] ?? '*';
 $group         = $_POST['group'] ?? '';
-
-$file          = 'log/user_data_' . date('Ymd') . '.log';
-$fileLogJson   = 'log/user_json_data_' . date('Ymd') . '.log';
 $directMessage = $directMessage == '' ? '*' : $directMessage;
-
-#Prüfe ob Logging aktiv ist
-$doLogEnable = getParamData('doLogEnable');
 
 if ($txMsg != '')
 {
-    $loraIP  = getParamData('loraIp');
+    $loraIP = getParamData('loraIp');
 
     #Begrenze max. Zeichenlänge
-    if (strlen($txMsg) > 160)
+    if (strlen($txMsg) > 150)
     {
-        $errMsg = htmlspecialchars(utf8_encode("Maximale Zeichen länge von 160 Zeichen überschritten. Abbruch!"));
+        $errMsg = htmlspecialchars(utf8_encode("Maximale Zeichen länge von 150 Zeichen überschritten. Abbruch!"));
         header("Location: bottom.php?errMsg=" . $errMsg . "&msgText=" . $txMsg . "&dm=" . $directMessage);
         exit();
     }
 
-    #Workaround da Anführungszeichen derzeit via UDP nicht übertragen werden. Möglicher FW Bug
-    $txMsg             = str_replace('"','``', $txMsg); // tausche mit Accent-Aigu
-    $arraySend['type'] = 'msg';
-    $arraySend['dst']  = $directMessage;
-    $arraySend['msg']  = $txMsg;
+    $arraySend['txType'] = 'msg';
+    $arraySend['txDst']  = $directMessage;
+    $arraySend['txMsg']  = $txMsg;
+    $resSetTxQueue       = setTxQueue($arraySend);
 
-    $message = json_encode($arraySend, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-
-    if ($socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP))
+    if ($resSetTxQueue === false)
     {
-        socket_sendto($socket, $message, strlen($message), 0, $loraIP, 1799);
-        socket_close($socket);
-
-        if ($doLogEnable == 1)
-        {
-            // Daten formatieren
-            $dataLogJson = "$message\n";
-
-            // Json-Daten in Datei speichern
-            file_put_contents($fileLogJson, $dataLogJson, FILE_APPEND);
-        }
-    }
-    else
-    {
-        $errMsg = "Kann Socket nicht erstellen. Abbruch!";
+        $errMsg = "Fehler beim Speichern in Send-Queue. Abbruch!";
         header("Location: bottom.php?errMsg=" . $errMsg . "&msgText=" . $txMsg . "&dm=" . $directMessage . "&group=" . $group);
         exit();
-    }
-}
-
-if ($doLogEnable == 1)
-{
-    // Daten formatieren
-    $data = "$directMessage $txMsg\n";
-
-    // Daten in Datei speichern
-    if (!file_put_contents($file, $data, FILE_APPEND))
-    {
-        $errMsg = "Fehler beim Speichern der Log-Daten.";
-        header("Location: bottom.php?errMsg=" . $errMsg . "&msgText=" . $txMsg . "&dm=" . $directMessage . "&group=" . $group);
     }
 }
 

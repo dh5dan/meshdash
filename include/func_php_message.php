@@ -137,11 +137,15 @@ function checkMheard($msgId, $msg, $src, $callSign, $loraIp)
         {
             if ($debugFlag === true)
             {
-                echo "<br>Übereinstimmung! Funktion wird ausgeführt...";
+                echo "<br>Übereinstimmung! Funktion wird ausgeführt ...";
             }
 
             $resGetMheard = getMheard($loraIp); //Hole aktuelle Mh-Liste
-            sendMheard($msgId, $src, $loraIp);
+
+            if ($resGetMheard === true)
+            {
+                sendMheard($msgId, $src);
+            }
         }
         else
         {
@@ -160,17 +164,20 @@ function checkMheard($msgId, $msg, $src, $callSign, $loraIp)
     }
 }
 
-function sendMheard($msgId, $src, $loraIp)
+function sendMheard($msgId, $src)
 {
+    #Prüfe ob Logging aktiv ist
+    $doLogEnable = getParamData('doLogEnable');
+
     $db = new SQLite3('database/mheard.db', SQLITE3_OPEN_READONLY);
     $db->busyTimeout(5000); // warte wenn busy in millisekunden
 
     // Hole mir die letzten 30 Nachrichten aus der Datenbank
-    $result = $db->query("SELECT timestamps from mheard
-                
-                                        GROUP BY timestamps
-                                        ORDER BY timestamps DESC
-                                        LIMIT 1;
+    $result = $db->query("SELECT timestamps 
+                                   FROM mheard
+                               GROUP BY timestamps
+                               ORDER BY timestamps DESC
+                                  LIMIT 1;
                         ");
 
     $dsData = $result->fetchArray(SQLITE3_ASSOC);
@@ -190,22 +197,21 @@ function sendMheard($msgId, $src, $loraIp)
         if ($resultMh !== false)
         {
             $sendMheardList = '';
-            $mHeardHasSend  = false;
 
             while ($row = $resultMh->fetchArray(SQLITE3_ASSOC))
             {
                 ###############################################
                 #Common
                 $callSign = $row['mhCallSign'];
-                $date     = $row['mhDate'];
-                $time     = $row['mhTime'];
-                $hardware = $row['mhHardware'];
-                $mod      = $row['mhMod'];
+                #$date     = $row['mhDate'];
+                #$time     = $row['mhTime'];
+                #$hardware = $row['mhHardware'];
+                #$mod      = $row['mhMod'];
                 $rssi     = $row['mhRssi'];
-                $snr      = $row['mhSnr'];
-                $dist     = $row['mhDist'];
-                $pl       = $row['mhPl'];
-                $m        = $row['mhM'];
+                #$snr      = $row['mhSnr'];
+                #$dist     = $row['mhDist'];
+                #$pl       = $row['mhPl'];
+                #$m        = $row['mhM'];
 
                 $sendMheardList .= $callSign . ' ' . $rssi . '|';
             }
@@ -215,20 +221,20 @@ function sendMheard($msgId, $src, $loraIp)
 
             $sendMheardList = $sendMheardList == '' ? 'Keine MH-Liste vorhanden.' : $sendMheardList;
 
-            $arraySend['type'] = 'msg';
-            $arraySend['dst']  = $src;
-            $arraySend['msg']  = $sendMheardList;
+            $arraySend['txType'] = 'msg';
+            $arraySend['txDst']  = $src;
+            $arraySend['txMsg']  = $sendMheardList;
+            $resSetTxQueue       = setTxQueue($arraySend);
 
-            $message = json_encode($arraySend);
-
-            if ($socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP))
+            if ($resSetTxQueue === true)
             {
-                socket_sendto($socket, $message, strlen($message), 0, $loraIp, 1799);
-                socket_close($socket);
                 updateMeshDashData($msgId, 'mhSend', 1);
 
-                $errorText = date('Y-m-d H:i:s') . " MHeard gesendet: Ziel: $src MHListe: $sendMheardList\n";
-                file_put_contents('log/send_mheard.log', $errorText, FILE_APPEND);
+                if ($doLogEnable === 1)
+                {
+                    $logText = date('Y-m-d H:i:s') . " MHeard in Send-Queue gespeichert: Ziel: $src MHListe: $sendMheardList\n";
+                    file_put_contents('log/send_queue_mheard.log', $logText, FILE_APPEND);
+                }
             }
         }
     }

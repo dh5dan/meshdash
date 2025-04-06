@@ -13,11 +13,11 @@ function getParamData($key)
         return false;
     }
 
-    $db  = new SQLite3($dbFilename);
+    $db  = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
     $db->busyTimeout(5000); // warte wenn busy in millisekunden
-    $res = $db->query("
-                        SELECT * FROM parameter AS pa 
-                         WHERE pa.param_key = '$key';
+    $res = $db->query("SELECT * 
+                               FROM parameter AS pa 
+                              WHERE pa.param_key = '$key';
                     ");
 
     if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
@@ -533,7 +533,7 @@ function getKeywordsData($msgId)
         return false;
     }
 
-    $db  = new SQLite3($dbFilename);
+    $db  = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
     $db->busyTimeout(5000); // warte wenn busy in millisekunden
     $res = $db->query("
                         SELECT * FROM keywords AS kw 
@@ -1255,6 +1255,14 @@ function setTxQueue($txQueueData): bool
     $dbFilename      = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
     $insertTimestamp = date('Y-m-d H:i:s');
 
+    if ($txQueueData['txType'] == '' || $txQueueData['txDst'] == '' || $txQueueData['txMsg'] == '')
+    {
+        return false;
+    }
+
+    #Workaround da Anführungszeichen derzeit via UDP nicht übertragen werden. Möglicher FW Bug
+    $txQueueData['txMsg'] = str_replace('"', '``', $txQueueData['txMsg']); // tausche mit Accent-Aigu
+
     $db = new SQLite3($dbFilename);
     $db->exec('PRAGMA synchronous = NORMAL;');
 
@@ -1308,6 +1316,12 @@ function getTxQueue()
     $dbFilename        = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
     $returnValue       = array();
     $minSecondsLastMsg = 600; //Suche rückwirkend max. 600 Sekunden (10min)
+
+    // Prüfen, ob bereits eine Instanz läuft
+    if (!file_exists($dbFilename))
+    {
+        return false;
+    }
 
     $db = new SQLite3($dbFilename);
     $db->busyTimeout(5000); // warte wenn busy in millisekunden
@@ -1620,3 +1634,29 @@ function resetSensorAlertCounter($sensor, $sensorType): bool
     return true;
 }
 
+function triggerCronLoop()
+{
+    $actualHost  = (empty($_SERVER['HTTPS']) ? 'http' : 'https');
+    $triggerLink = $actualHost . '://' . $_SERVER['SERVER_NAME'] . dirname($_SERVER["REQUEST_URI"] . '?') . '/' . 'cron_loop.php';
+
+    // --- HIER Trigger-CODE Windows ---
+    $ch = curl_init();
+
+    # Set Curl Options
+    curl_setopt($ch, CURLOPT_URL, $triggerLink);
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    curl_setopt($ch, CURLOPT_NOBODY, 1);
+    curl_setopt($ch, CURLOPT_TIMEOUT_MS, 100);      // max. 100ms warten
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT_MS, 50); // max. 50ms Verbindungsaufbau
+    curl_setopt($ch, CURLOPT_NOSIGNAL, 1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+
+    #Ignoriere Timeout Meldung da so gewollt
+    if (curl_exec($ch) === false && curl_errno($ch) != 28)
+    {
+        echo 'Curl error: ' . curl_error($ch);
+        echo 'Curl error: ' . curl_errno($ch);
+    }
+
+    curl_close($ch);
+}

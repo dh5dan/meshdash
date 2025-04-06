@@ -93,6 +93,9 @@ function initSQLiteDatabase($database): bool
                                 )
                 ");
 
+        #Set Index
+        $db->exec("CREATE INDEX IF NOT EXISTS idx_timestamps ON meshdash(timestamps);");
+
         #Close and write Back WAL
         $db->close();
         unset($db);
@@ -211,6 +214,9 @@ function initSQLiteDatabase($database): bool
                                 )
                 ");
 
+        #Set Index
+        $db->exec("CREATE INDEX IF NOT EXISTS idx_timestamps ON sensordata(timestamps);");
+
         #Close and write Back WAL
         $db->close();
         unset($db);
@@ -327,6 +333,9 @@ function initSQLiteDatabase($database): bool
                                 )
                 ");
 
+        #Set Index
+        $db->exec("CREATE INDEX IF NOT EXISTS idx_timestamps ON mheard(timestamps);");
+
         #Close and write Back WAL
         $db->close();
         unset($db);
@@ -369,16 +378,18 @@ function initSQLiteDatabase($database): bool
         // Tabelle erstellen wenn nicht vorhanden
         $db->exec("CREATE TABLE IF NOT EXISTS txQueue 
                                 (
-                                  txQueueId INTEGER NOT NULL UNIQUE,
+                                  txQueueId  INTEGER PRIMARY KEY AUTOINCREMENT, 
                                   insertTimestamp TEXT NOT NULL,              
                                   txTimestamp INTEGER NOT NULL,
                                   txType TEXT DEFAULT 'msg',
                                   txDst TEXT,
                                   txMsg TEXT,
-                                  txFlag INTEGER DEFAULT 0,
-                                  PRIMARY KEY('txQueueId')
+                                  txFlag INTEGER DEFAULT 0
                                 )
                 ");
+
+        #Set Index
+        $db->exec("CREATE INDEX IF NOT EXISTS idx_txInsertTimestamp ON txQueue(insertTimestamp);");
 
         #Close and write Back WAL
         $db->close();

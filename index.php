@@ -252,6 +252,11 @@ if ($osIssWindows === false)
 {
     checkCronLoop();
 }
+else
+{
+    #Trigger CronLoop Once for Windows via curl
+    triggerCronLoop();
+}
 
 ######################################################################################
 ##########  Top bereich
@@ -261,7 +266,6 @@ if ($osIssWindows === false)
 $tabsJson = getGroupTabsJson();
 
 echo '<input type="hidden" id="tabConfig" value=\'' . $tabsJson . '\' />';
-
 
 #Check TaskStatus
 $taskResult = shell_exec($checkTaskCmd);

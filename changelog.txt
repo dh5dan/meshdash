@@ -1,3 +1,9 @@
+Version 1.10.08 SQL
+FEATURE: Umstellung aller versendeten Nachrichten auf Send-QUEUE
+         Default 30 Sekunden.
+INFO: Beschränkung max. Msg. auf 150 Zeichen laut UDP-API
+
+#################################################################
 Version 1.10.06 SQL
 Auswertung WX-Daten als Sensordaten.
 Auswertung INA226 Daten aus Info-Bereich und Anzeige in Sensordaten.
