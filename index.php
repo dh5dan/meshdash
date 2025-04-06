@@ -316,7 +316,12 @@ echo '<input type="hidden" name="taskStatusFlag" id="taskStatusFlag" value="'.$t
 echo '</form>';
 
 #Lade Iframes
-echo '<iframe id="message-frame" src="message.php"></iframe>';
+#echo '<iframe id="message-frame" src="message.php"></iframe>';
+####################### Getrennte Logik Frontend/Backend
+echo '<iframe id="message-frame" src="message_view.php"></iframe>';
+
+###############################
+
 echo '<iframe id="bottom-frame" src="bottom.php"></iframe>';
 
 echo '</body>';

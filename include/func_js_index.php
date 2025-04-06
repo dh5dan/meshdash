@@ -215,7 +215,7 @@
 
        let isTabClick = false; // Globale Variable die prüft, ob Tab geklickt wurde
 
-       // Refresh via Ajax für message.php
+       // Refresh via Ajax für message_view.php
        function loadNewMessages()
        {
            if (isTabClick) return; // Falls gerade ein Tab-Klick aktiv ist, beende die Funktion
@@ -223,7 +223,7 @@
            let messageFrame = $("#message-frame"); // ID des Iframes
            let currentSrc   = messageFrame.attr("src");
 
-           if (currentSrc && currentSrc.includes("message.php"))
+           if (currentSrc && currentSrc.includes("message_view.php"))
            {
                let doc            = messageFrame.contents();
                let groupValue     = doc.find("#group").val();
@@ -232,8 +232,8 @@
                // Prüfen, ob der Benutzer ganz oben ist (Scroll-Position = 0)
                let isAtTop = (scrollPosition === 0);
 
-               // `message.php` ruft die neuen Nachrichten ab
-               $.get("message.php", {group: groupValue}, function (data)
+               // `message_view.php` ruft die neuen Nachrichten ab
+               $.get("message_view.php", {group: groupValue}, function (data)
                {
                    if (isAtTop)
                    {
@@ -251,7 +251,7 @@
            }
        }
 
-       setInterval(loadNewMessages, 5000); // Alle 5 Sekunden aktualisieren
+      // setInterval(loadNewMessages, 5000); // Alle 5 Sekunden aktualisieren
 
        /////////////////////////////
        // Bg Task Start/Stop
@@ -413,7 +413,7 @@
                    iframeSrc = 'menu/grp_definition.php';
                    break;
                case 'message':
-                   iframeSrc = 'message.php';
+                   iframeSrc = 'message_view.php';
                    break;
                case 'send_command':
                    iframeSrc = 'menu/send_command.php';
@@ -458,7 +458,7 @@
                iframe.src = iframeSrc; // Setze den neuen src-Wert
 
                //Muss einmal komplett geladen werden, damit Top aktualisiert wird
-               if (iframeSrc === 'message.php')
+               if (iframeSrc === 'message_view.php')
                {
                    isTabClick = true;
                    window.location.href = '';
@@ -522,8 +522,8 @@
            $(this).addClass('active');
 
            // Update die Message-iframe-URL mit dem Filter
-           // Annahme: message.php akzeptiert einen GET-Parameter "group"
-           $('#message-frame').attr('src', 'message.php?group=' + groupId);
+           // Annahme: message_view.php akzeptiert einen GET-Parameter "group"
+           $('#message-frame').attr('src', 'message_view.php?group=' + groupId);
 
            //Schreibe Werte um für KeinFilter und *
            let groupBottom = groupId; // Unveränderter wert für Bottom own Call Filter
