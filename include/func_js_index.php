@@ -1,121 +1,6 @@
 <script>
    $(function ($)
    {
-       /////////////////////////////////////////Hole Sensor Intervallabrufe und setzte ggf. neu /////////////////////////////////////
-       // let currentTempInterval = null;  // Speichert das aktuelle Temp-Intervall
-       // let currentIna226Interval = null;  // Speichert das aktuelle INA226-Intervall
-       // let tempIntervalId = null;  // ID des Temp setInterval
-       // let ina226IntervalId = null;  // ID des INA226 setInterval
-       //
-       // // Funktion zum Abrufen der Intervallwerte
-       // function getIntervalAndStart()
-       // {
-       //     $.ajax({
-       //         url: 'get_intervall.php',  // PHP-Datei, die die Intervallwerte zurückgibt
-       //         type: 'GET',
-       //         dataType: 'json',
-       //         success: function (data) {
-       //             // Überprüfen, ob der Temp-Intervallwert gültig ist und den Intervall starten
-       //             if (data.temp !== undefined)
-       //             {
-       //                 if (data.temp === 0)
-       //                 {
-       //                     if (tempIntervalId !== null)
-       //                     {
-       //                         clearInterval(tempIntervalId); // Stoppt den laufenden Temp-Intervall
-       //                         tempIntervalId = null;
-       //                         console.log("Temp Intervall gestoppt (Intervallwert 0)");
-       //                     }
-       //                 }
-       //                 else
-       //                 {
-       //                     if (currentTempInterval !== data.temp)
-       //                     {
-       //                         currentTempInterval = data.temp;
-       //
-       //                         // Stoppen des alten Temp-Intervalls
-       //                         if (tempIntervalId !== null)
-       //                         {
-       //                             clearInterval(tempIntervalId);
-       //                             console.log("Alter Temp-Timer wurde gestoppt");
-       //                         }
-       //
-       //                         // Setzen des neuen Temp-Intervalls
-       //                         tempIntervalId = setInterval(function () {
-       //                             // Deine PHP-Logik für Temp ausführen
-       //                             $.ajax({
-       //                                 url: 'get_sensor_data.php?sensor=temp',  // Hier wird deine Logik ausgeführt
-       //                                 type: 'GET',
-       //                                 success: function (response) {
-       //                                     console.log("Temp PHP-Funktion ausgeführt: " + response);
-       //                                 },
-       //                                 error: function () {
-       //                                     console.log("Fehler beim Ausführen der Temp PHP-Funktion");
-       //                                 }
-       //                             });
-       //                         }, data.temp * 1000);  // Intervall in Sekunden
-       //                         console.log("Neuer Temp Intervall-Timer gestartet: " + data.temp + " Sekunden");
-       //                     }
-       //                 }
-       //             }
-       //
-       //             // Überprüfen, ob der INA226-Intervallwert gültig ist und den Intervall starten
-       //             if (data.ina226 !== undefined)
-       //             {
-       //                 if (data.ina226 === 0)
-       //                 {
-       //                     if (ina226IntervalId !== null)
-       //                     {
-       //                         clearInterval(ina226IntervalId); // Stoppt den laufenden INA226-Intervall
-       //                         ina226IntervalId = null;
-       //                         console.log("INA226 Intervall gestoppt (Intervallwert 0)");
-       //                     }
-       //                 }
-       //                 else
-       //                 {
-       //                     if (currentIna226Interval !== data.ina226)
-       //                     {
-       //                         currentIna226Interval = data.ina226;
-       //
-       //                         // Stoppen des alten INA226-Intervalls
-       //                         if (ina226IntervalId !== null)
-       //                         {
-       //                             clearInterval(ina226IntervalId);
-       //                             console.log("Alter INA226-Timer wurde gestoppt");
-       //                         }
-       //
-       //                         // Setzen des neuen INA226-Intervalls
-       //                         ina226IntervalId = setInterval(function () {
-       //                             // Deine PHP-Logik für INA226 ausführen
-       //                             $.ajax({
-       //                                 url: 'get_sensor_data.php?sensor=ina226',  // Hier wird deine Logik ausgeführt
-       //                                 type: 'GET',
-       //                                 success: function (response) {
-       //                                     console.log("INA226 PHP-Funktion ausgeführt: " + response);
-       //                                 },
-       //                                 error: function () {
-       //                                     console.log("Fehler beim Ausführen der INA226 PHP-Funktion");
-       //                                 }
-       //                             });
-       //                         }, data.ina226 * 1000);  // Intervall in Sekunden
-       //                         console.log("Neuer INA226 Intervall-Timer gestartet: " + data.ina226 + " Sekunden");
-       //                     }
-       //                 }
-       //             }
-       //
-       //         },
-       //         error: function () {
-       //             console.log('Fehler beim Abrufen des Intervallwertes');
-       //         }
-       //     });
-       // }
-       //
-       // // Funktion starten
-       // getIntervalAndStart();
-       //
-       // // Alle x Sekunden die Intervallwerte erneut abfragen
-       // setInterval(getIntervalAndStart, 5000); // Alle 5 Sekunden den Intervallwert neu abfragen
-
 
       /////////////////////////////////////////Tab Indikator /////////////////////////////////////
 
@@ -152,18 +37,8 @@
         // Funktion zur Nachrichtenprüfung
        function checkNewMessages(groupId, lastChecked)
        {
-           //console.log("ajax checkmsg groupId: "+groupId + " lastChecked: " + new Date(lastChecked * 1000).toLocaleString()+ " lastChecked: "+lastChecked+ " activeGroupId:"+activeGroupId);
-
-           // $(`.tab[data-group="999"]`).addClass("new-message-indicator"); // Markierung setzen
-           // $(`.tab[data-group="995"]`).addClass("new-message-indicator"); // Markierung setzen
-           // $(`.tab[data-group="-1"]`).addClass("new-message-indicator"); // Markierung setzen
-           // $(`.tab[data-group="-2"]`).addClass("new-message-indicator"); // Markierung setzen
-
            $.getJSON(`check_messages.php?lastChecked=${lastChecked}`, function (data)
            {
-               // console.log("ajax checkmsg groupId: "+groupId + " activeGroupId:"+activeGroupId);
-               // console.log(data);
-
                if (data.newMessages.includes(groupId))
                {
                    if (groupId !== activeGroupId)
@@ -280,14 +155,15 @@
        //Bei Neuinstallation loraIp/Call setzen
        $("#btnSetParamLoraIp").on("click", function ()
        {
-           let loraIp          = $("#paramSetLoraIp").val();
-           let callSign        = $("#inputParamCallSign").val();
+           let loraIp          = $("#paramSetLoraIp").val().trim();
+           let callSign        = $("#inputParamCallSign").val().trim();
            let titleMsg        = 'Hinweis';
            let outputMsg       = 'Parameter jetzt speichern?';
            let width           = 400;
            let sendData        = 11;
            let ipv4Pattern     = /^(\d{1,3}\.){3}\d{1,3}$/;
-           let callSignPattern = /^[a-zA-Z]{2}[0-9]{1}[a-zA-Z]{1,3}-([1-9][0-9]?)$/
+           let callSignPattern = /^[A-Z0-9]{1,2}[0-9][A-Z0-9]{1,4}-(?:[1-9][0-9]?)$/i
+           let mDnsPatter      = /^[a-zA-Z0-9\-]+\.local$/;
 
            if (loraIp === '')
            {
@@ -296,8 +172,8 @@
                dialog(outputMsg, titleMsg, width);
                return false;
            }
-           else if (ipv4Pattern.test(loraIp) === false) {
-               outputMsg = 'Die Ip hat nicht das gültige Format oder enthält ungültige Zeichen.';
+           else if (!ipv4Pattern.test(loraIp) && !mDnsPatter.test(loraIp)) {
+               outputMsg = 'Ip/mDNS hat nicht das gültige Format oder enthält ungültige Zeichen.';
                outputMsg += '<br><br>Bitte Prüfen.';
                dialog(outputMsg, titleMsg, width);
                return false;
@@ -391,6 +267,9 @@
                case 'config_generally':
                    iframeSrc = 'menu/config_generally.php';
                    break;
+               case 'config_send_queue':
+                   iframeSrc = 'menu/config_send_queue.php';
+                   break;
                case 'config_alerting':
                    iframeSrc = 'menu/config_alerting.php';
                    break;
@@ -462,19 +341,6 @@
                {
                    isTabClick = true;
                    window.location.href = '';
-                   //
-                   // //Rufe die Basis URL neu auf und verhinder, dass diese synchron ausgeführt wird.
-                   // // das verhindert ein NS_BINDING_ABORTED
-                   // setTimeout(function() {
-                   //     // Dynamische Base-URL ermitteln
-                   //     let baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]+\/[^\/]+\/?$/, '');
-                   //
-                   //     // URL ohne Neuladen der Seite ändern
-                   //     history.pushState(null, null, baseUrl);
-                   //
-                   //     // Dann das vollständige Neuladen durchführen
-                   //     location.reload();
-                   // }, 100);
                }
            }
        });

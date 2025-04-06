@@ -76,7 +76,9 @@ $chronLogEnable    = getParamData('chronLogEnable');
 $retentionDays     = getParamData('retentionDays'); //Tage logs behalten
 $chronMode         = getParamData('chronMode'); // zip|delete
 $strictCallEnable  = getParamData('strictCallEnable'); // Strict Call Flag
+$selTzName         = getParamData('timeZone') ?? 'Europe/Berlin'; // ZeitZone
 
+$selTzName                = $selTzName == '' ? 'Europe/Berlin' : $selTzName;
 $noPosDataChecked         = $noPosData == 1 ? 'checked' : '';
 $noDmAlertGlobalChecked   = $noDmAlertGlobal == 1 ? 'checked' : '';
 $noTimeSyncMsgChecked     = $noTimeSyncMsg == 1 ? 'checked' : '';
@@ -135,6 +137,16 @@ echo '</tr>';
 echo '<tr>';
 echo '<td>DB vom Backup ausschließen:</td>';
 echo '<td><input type="checkbox" name="doNotBackupDb" ' . $doNotBackupDbChecked . ' id="doNotBackupDb" value="1" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td>Zeitzone (DST):</td>';
+
+echo '<td>';
+echo '<select name="selTzName" id="selTzName">';
+selectTimezone($selTzName);
+echo '</select>';
+echo '</td>';
 echo '</tr>';
 
 echo '<tr>';
@@ -210,7 +222,7 @@ echo '<td><input type="text" name="maxScrollBackRows" id="maxScrollBackRows" val
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>LoraIP:</td>';
+echo '<td>LoraIP/mDNS:</td>';
 echo '<td><input type="text" name="loraIp"  id="loraIp" value="' . $loraIp . '" /></td>';
 echo '</tr>';
 

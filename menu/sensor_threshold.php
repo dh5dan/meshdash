@@ -107,8 +107,8 @@ echo '<td colspan="2"><input type="text" name="sensorThTempAlertMsg" id="sensorT
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>DM-Gruppe:</td>';
-echo '<td><input type="text" name="sensorThTempDmGrpId" id="sensorThTempDmGrpId" value="' . $sensorThTempDmGrpId . '" placeholder="Temp DM-Gruppe" /></td>';
+echo '<td>DM-Gruppe/Call:</td>';
+echo '<td><input type="text" name="sensorThTempDmGrpId" id="sensorThTempDmGrpId" value="' . $sensorThTempDmGrpId . '" placeholder="Temp DM-Gruppe/Call" /></td>';
 echo '</tr>';
 
 echo '<tr>';
@@ -143,8 +143,8 @@ echo '<td colspan="2"><input type="text" name="sensorThToutAlertMsg" id="sensorT
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>DM-Gruppe:</td>';
-echo '<td><input type="text" name="sensorThToutDmGrpId" id="sensorThToutDmGrpId" value="' . $sensorThToutDmGrpId . '" placeholder="Tout DM-Gruppe" /></td>';
+echo '<td>DM-Gruppe/Call:</td>';
+echo '<td><input type="text" name="sensorThToutDmGrpId" id="sensorThToutDmGrpId" value="' . $sensorThToutDmGrpId . '" placeholder="Tout DM-Gruppe/Call" /></td>';
 echo '</tr>';
 
 echo '<tr>';
@@ -191,8 +191,8 @@ if ($hasIna226Sensor === true)
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td>DM-Gruppe:</td>';
-    echo '<td><input type="text" name="sensorThIna226vBusDmGrpId" id="sensorThIna226vBusDmGrpId" value="' . $sensorThIna226vBusDmGrpId . '" placeholder="Ina226vBus DM-Gruppe" /></td>';
+    echo '<td>DM-Gruppe/Call:</td>';
+    echo '<td><input type="text" name="sensorThIna226vBusDmGrpId" id="sensorThIna226vBusDmGrpId" value="' . $sensorThIna226vBusDmGrpId . '" placeholder="Ina226vBus DM-Gruppe/Call" /></td>';
     echo '</tr>';
 
     echo '<tr>';
@@ -227,8 +227,8 @@ if ($hasIna226Sensor === true)
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td>DM-Gruppe:</td>';
-    echo '<td><input type="text" name="sensorThIna226vShuntDmGrpId" id="sensorThIna226vShuntDmGrpId" value="' . $sensorThIna226vShuntDmGrpId . '" placeholder="Ina226vShunt DM-Gruppe" /></td>';
+    echo '<td>DM-Gruppe/Call:</td>';
+    echo '<td><input type="text" name="sensorThIna226vShuntDmGrpId" id="sensorThIna226vShuntDmGrpId" value="' . $sensorThIna226vShuntDmGrpId . '" placeholder="Ina226vShunt DM-Gruppe/Call" /></td>';
     echo '</tr>';
 
     echo '<tr>';
@@ -263,8 +263,8 @@ if ($hasIna226Sensor === true)
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td>DM-Gruppe:</td>';
-    echo '<td><input type="text" name="sensorThIna226vCurrentDmGrpId" id="sensorThIna226vCurrentDmGrpId" value="' . $sensorThIna226vCurrentDmGrpId . '" placeholder="Ina226vCurrent DM-Gruppe" /></td>';
+    echo '<td>DM-Gruppe/Call:</td>';
+    echo '<td><input type="text" name="sensorThIna226vCurrentDmGrpId" id="sensorThIna226vCurrentDmGrpId" value="' . $sensorThIna226vCurrentDmGrpId . '" placeholder="Ina226vCurrent DM-Gruppe/Call" /></td>';
     echo '</tr>';
 
     echo '<tr>';
@@ -299,8 +299,8 @@ if ($hasIna226Sensor === true)
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td>DM-Gruppe:</td>';
-    echo '<td><input type="text" name="sensorThIna226vPowerDmGrpId" id="sensorThIna226vPowerDmGrpId" value="' . $sensorThIna226vPowerDmGrpId . '" placeholder="Ina226vPower DM-Gruppe" /></td>';
+    echo '<td>DM-Gruppe/Call:</td>';
+    echo '<td><input type="text" name="sensorThIna226vPowerDmGrpId" id="sensorThIna226vPowerDmGrpId" value="' . $sensorThIna226vPowerDmGrpId . '" placeholder="Ina226vPower DM-Gruppe/Call" /></td>';
     echo '</tr>';
 
     echo '<tr>';

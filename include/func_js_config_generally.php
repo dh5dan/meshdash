@@ -13,40 +13,38 @@
             let retentionDays     = $("#retentionDays").val();
 
             let ipv4Pattern     = /^(\d{1,3}\.){3}\d{1,3}$/;
-            let callSignPattern = /^[a-zA-Z]{2}[0-9]{1}[a-zA-Z]{1,3}-([1-9][0-9]?)$/;
+            let callSignPattern = /^[A-Z0-9]{1,2}[0-9][A-Z0-9]{1,4}-(?:[1-9][0-9]?)$/i
             let numberPattern   = /^\d+$/;
+            let mDnsPatter      = /^[a-zA-Z0-9\-]+\.local$/;
 
             if (loraIp === '')
             {
-                outputMsg = 'Bitte die Ip im IPv4 Format angeben.';
-                outputMsg += '<br><br>Beispiel: 192.168.0.123';
+                outputMsg = 'Bitte die Ip im IPv4/mDNS Format angeben.';
+                outputMsg += '<br><br>Beispiel: 192.168.0.123 oder dl1abs-13.local';
                 dialog(outputMsg, titleMsg, width);
                 return false;
             }
-            else if (ipv4Pattern.test(loraIp) === false) {
-                outputMsg = 'Die Ip hat nicht das gültige Format oder enthält ungültige Zeichen.';
+            else if (!ipv4Pattern.test(loraIp) && !mDnsPatter.test(loraIp)) {
+                outputMsg = 'Ip/mDNS hat nicht das gültige Format oder enthält ungültige Zeichen.';
                 outputMsg += '<br><br>Bitte Prüfen.';
                 dialog(outputMsg, titleMsg, width);
                 return false;
             }
 
-            if ($('#inputParamCallSign').length)
+            if (callSign === '')
             {
-                if (callSign === '')
-                {
-                    outputMsg = 'Bitte das CallSign inkl. SSID angeben.';
-                    outputMsg += '<br><br>Beispiel:<br>DB0ABC-99 wobei die SSID 1-99 sein darf.';
-                    dialog(outputMsg, titleMsg, width);
-                    return false;
-                }
-                else if (callSignPattern.test(callSign) === false) {
-                    width     = 600;
-                    outputMsg = 'Das CallSign inkl. SSID hat nicht das gültige Format';
-                    outputMsg += '<br> oder die SSID ist > 99 oder ist 0.';
-                    outputMsg += '<br><br>Bitte Prüfen.';
-                    dialog(outputMsg, titleMsg, width);
-                    return false;
-                }
+                outputMsg = 'Bitte das CallSign inkl. SSID angeben.';
+                outputMsg += '<br><br>Beispiel:<br>DB0ABC-99 wobei die SSID 1-99 sein darf.';
+                dialog(outputMsg, titleMsg, width);
+                return false;
+            }
+            else if (callSignPattern.test(callSign) === false) {
+                width     = 600;
+                outputMsg = 'Das CallSign inkl. SSID hat nicht das gültige Format';
+                outputMsg += '<br> oder die SSID ist > 99 oder ist 0.';
+                outputMsg += '<br><br>Bitte Prüfen.';
+                dialog(outputMsg, titleMsg, width);
+                return false;
             }
 
             if (maxScrollBackRows === '')

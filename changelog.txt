@@ -1,3 +1,14 @@
+Version 1.10.08 SQL
+FEATURE: Umstellung aller versendeten Nachrichten auf Send-QUEUE Default 30 Sekunden.
+         Neuer Menüpunkt zum Einstellen des Sende-Intervalls
+INFO: Beschränkung max. Msg. auf 150 Zeichen laut UDP-API
+BUGFIX: Calls mit Zahlen im Präfix wurden als ungültig erkannt
+FEATURE: Einstellung der Zeitzonen nun möglich
+FEATURE: Ziel bei Sensorbenachrichtigungen darf nun auch ein Call sein
+FEATURE: Berücksichtige nun fw_sub bei Pos-Data
+FEATURE: Man kann nun auch mDNS anstatt einer IP für Lora verwenden
+FEATURE: Benachrichtigungspunkt auf 2.2em im css vergrößert
+#################################################################
 Version 1.10.06 SQL
 Auswertung WX-Daten als Sensordaten.
 Auswertung INA226 Daten aus Info-Bereich und Anzeige in Sensordaten.

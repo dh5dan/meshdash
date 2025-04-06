@@ -89,9 +89,13 @@ function initSQLiteDatabase($database): bool
                                   msgIsTimeSync INTEGER DEFAULT 0,
                                   msgIsAck INTEGER DEFAULT 0,
                                   firmware TEXT,
+                                  fw_sub TEXT,
                                   PRIMARY KEY(msg_id)
                                 )
                 ");
+
+        #Set Index
+        $db->exec("CREATE INDEX IF NOT EXISTS idx_timestamps ON meshdash(timestamps);");
 
         #Close and write Back WAL
         $db->close();
@@ -150,7 +154,9 @@ function initSQLiteDatabase($database): bool
                                        ('chronLogEnable', 0, ''),
                                        ('retentionDays', 7, ''),
                                        ('chronMode', '', 'zip'),
-                                       ('strictCallEnable', 0, '')
+                                       ('strictCallEnable', 0, ''),
+                                       ('timeZone', '', 'Europe/Berlin'),
+                                       ('sendQueueInterval', '30', '')
            ");
 
         #Close and write Back WAL
@@ -210,6 +216,9 @@ function initSQLiteDatabase($database): bool
                                   ina226vPower TEXT
                                 )
                 ");
+
+        #Set Index
+        $db->exec("CREATE INDEX IF NOT EXISTS idx_timestamps ON sensordata(timestamps);");
 
         #Close and write Back WAL
         $db->close();
@@ -327,6 +336,9 @@ function initSQLiteDatabase($database): bool
                                 )
                 ");
 
+        #Set Index
+        $db->exec("CREATE INDEX IF NOT EXISTS idx_timestamps ON mheard(timestamps);");
+
         #Close and write Back WAL
         $db->close();
         unset($db);
@@ -369,16 +381,18 @@ function initSQLiteDatabase($database): bool
         // Tabelle erstellen wenn nicht vorhanden
         $db->exec("CREATE TABLE IF NOT EXISTS txQueue 
                                 (
-                                  txQueueId INTEGER NOT NULL UNIQUE,
+                                  txQueueId  INTEGER PRIMARY KEY AUTOINCREMENT, 
                                   insertTimestamp TEXT NOT NULL,              
                                   txTimestamp INTEGER NOT NULL,
                                   txType TEXT DEFAULT 'msg',
                                   txDst TEXT,
                                   txMsg TEXT,
-                                  txFlag INTEGER DEFAULT 0,
-                                  PRIMARY KEY('txQueueId')
+                                  txFlag INTEGER DEFAULT 0
                                 )
                 ");
+
+        #Set Index
+        $db->exec("CREATE INDEX IF NOT EXISTS idx_txInsertTimestamp ON txQueue(insertTimestamp);");
 
         #Close and write Back WAL
         $db->close();
@@ -396,6 +410,7 @@ function showMenu()
     <li>Einstellung
       <ul class="submenu">
         <li data-action="config_generally">Allgemein</li>
+        <li data-action="config_send_queue">Sende-Intervall</li>
         <li data-action="config_alerting">Benachrichtigung</li>
         <li data-action="config_keyword">Keyword</li>
         <li data-action="config_update">Update</li>
@@ -470,8 +485,8 @@ function checkLoraIPDb($param)
 
         if (trim($loraIP == '0.0.0.0'))
         {
-            echo '<br><br><u><b>Die Lora-Ip wurde noch nicht gesetzt.</b></u>';
-            echo '<br><br>Bitte jetzt die IP angeben:</b>';
+            echo '<br><br><u><b>Die Lora-Ip/mDNS wurde noch nicht gesetzt.</b></u>';
+            echo '<br><br>Bitte jetzt die IP oder mDNS angeben:</b>';
             echo '&nbsp;&nbsp;&nbsp;<input type="text" class="inputParamLoraIp" name="paramSetLoraIp" id="paramSetLoraIp" value="" required placeholder="Ip im IPv4 Format" />';
         }
 
