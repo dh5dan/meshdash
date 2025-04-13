@@ -14,7 +14,7 @@ auf eine webbasierte Plattform bringen soll.
 ![RELEASE](/docs/front_menu.jpg)
 
 Vornehmlich ist die Applikation für Linux ausgelegt, sie ist aber auch  
-unter Windows lauffähig. Hier muss allerdings schon ein funktionierende Webserver  
+unter Windows lauffähig. Hier muss allerdings schon ein funktionierender Webserver  
 mit aktiven PHP-Modulen die nötigt sind vorhanden sein.  
 Hier läuft die App unter Win10 mit einem Apache und PHP >= 7.4.23.
 
@@ -26,8 +26,9 @@ Einige Funktionen von MeshDash:
 - Soundbenachrichtigungen für eigene Nachrichten
 - Update über die Weboberfläche
 - Senden von Befehlen an den Lora
+- Sensorabfragen mit Schwellwertbenachrichtigung
 
-Das Projekt befindet sich derzeit in der **Beta-Phase**, daher können noch Fehler auftreten.  
+Das Projekt ist mittlerweile aus der **Beta-Phase**, doch es können imer mal noch Fehler auftreten.  
 Falls Probleme auftreten, bitte im Issue-Bereich von GitHub melden,  
 sofern sie nicht schon dort vorhanden sind.
 
@@ -46,12 +47,13 @@ Die Dateien befinden sich unter **Assets** – bitte darauf klicken, um die List
 ![ASSETS](/docs/assets.jpg)
 
 ### In MeshDash ist nun ein Abruf der aktuellen Release-Version möglich.
+![FILES](/docs/update_menu.jpg)
 ![FILES](/docs/50_md_release_version.jpg)
 
 **Für die Installation sind nur folgende Dateien relevant:**  
 Hier mal ein Beispiel:
-- meshdash-sql_V1.09.76.Beta.zip (Das Hauptprogramm)
-- install.sh (Installation-Skript)
+- meshdash-sql_V1.10.10.zip (Das Hauptprogramm)
+- install.sh (Installation-Skript bei Neuinstallation)
 - update.sh (Das Update-Skript ist optional, da Webupdate vorhanden)
 
 ![FILES](/docs/files.jpg)
@@ -65,25 +67,30 @@ Die **Kurzanleitung.pdf** enthält:
 
 - Ein **kurzes User-Manual** mit Screenshots der Weboberfläche und Erklärungen zu den Menüpunkten.
 
-Diese Datei hilft dir, MeshDash schnell zu installieren und zu nutzen.
+Diese Datei hilft dir, MeshDash schnell zu installieren und zu nutzen.  
+Sie wird in regelmässigen Abständen aktualisiert.
 
 ## Hier noch ein paar Bilder aus den Menüpunkten:
 
 ![FILES](/docs/01_config.jpg)
+![FILES](/docs/01_1_send_queue.jpg)
 ![FILES](/docs/02_alert.jpg)
 ![FILES](/docs/03_keyword.jpg)
 ![FILES](/docs/04_update.jpg)
 ![FILES](/docs/10_groups.jpg)
 ![FILES](/docs/20_mheard.jpg)
 ![FILES](/docs/30_send_command.jpg)
+![FILES](/docs/31_send_command.jpg)
 
 
 ### Nun auch mit Tab-Benachrichtigungen bei neuen Nachrichten.
 ![FILES](/docs/60_desktop_tab_alert.jpg)
 ![FILES](/docs/61_handy_Tab_alert.jpg)
 
-## Noch offene Punkte die auf der To-do-Liste stehen:
+## Noch offene Punkte die u.a. auf der To-do-Liste stehen:
 - MHeard konfigurierbar machen für Request-/Acknowledged Ziele.
+
+### Weitere Featureanfragen stehen unter den ISSUES mit dem TAG Erweiterungen
 
 
   
