@@ -7,28 +7,28 @@
             let outputMsg         = 'Jetzt alle Settings speichern?';
             let width             = 300;
             let sendData          = 1;
-            let sendQueueInterval = $("#sendQueueInterval").val();
+            let sendQueueInterval = $("#sendQueueInterval").val().trim();
             let numberPattern   = /^\d+$/;
 
             if (sendQueueInterval === '')
             {
-                width = 600;
-                outputMsg = 'Bitte einen Wert im Bereich >= 20-Sekunden für den Sendeintervall angeben.';
+                width = 750;
+                outputMsg = 'Bitte einen Wert im Bereich >= 5-Sekunden für den Sendeintervall angeben.';
                 dialog(outputMsg, titleMsg, width);
                 return false;
             }
             else if (!numberPattern.test(sendQueueInterval))
             {
-                width = 600;
+                width = 750;
                 outputMsg = 'Der eingegebene Wert für den Sendeintervall ist keine Zahl.';
                 dialog(outputMsg, titleMsg, width);
                 return false;
             }
-            else if (sendQueueInterval < 20)
+            else if (sendQueueInterval < 5)
             {
-                width     = 600;
+                width     = 750;
                 outputMsg = 'Der eingegebene Wert für Sendeintervall ist ausserhalb des Wertebereichs.';
-                outputMsg += '<br>Erlaubt ist >=20 Sekunden.';
+                outputMsg += '<br>Erlaubt sind >= 5 Sekunden.';
                 dialog(outputMsg, titleMsg, width);
                 return false;
             }

@@ -118,6 +118,7 @@ function updateFiles($updateDir, $targetDir, $protectedDirs): bool
 
             // Den relativen Pfad von $file in Bezug auf $updateDir erhalten
             $relativePath  = str_replace($updateDir . $dirSeparator, '', $file);
+            $relativePath  = preg_replace('#[/\\\\]\.+$#', '', $relativePath);
             $targetDirPath = $targetDir . $dirSeparator . $relativePath;
 
             // Verzeichnis erstellen, falls es noch nicht existiert

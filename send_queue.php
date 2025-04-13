@@ -19,7 +19,7 @@ $errorLogfile = 'log/error_tx_queue_data_' . date('Ymd') . '.log';
 $fileLogJson  = 'log/tx_queue_json_data_' . date('Ymd') . '.log';
 $debugFlag    = true;
 
-#file_put_contents("$basePath/$execDir/send_queue_log.txt", date('Y-m-d H:i:s') . " - SendQueue-Job ausgeführt\n", FILE_APPEND);
+#file_put_contents("log/send_queue_log.log", date('Y-m-d H:i:s') . " - SendQueue-Job ausgeführt\n", FILE_APPEND);
 echo "<br>Starte Abarbeitung von TX-Send-Queue";
 #Hole nächsten Datensatz aus der TX-Queue
 $resGetTxQueue = getTxQueue();
@@ -39,9 +39,9 @@ if ($resGetTxQueue !== false)
         $loraIP = getParamData('loraIp');
 
         #Begrenze max. Zeichenlänge
-        if (strlen($txMsg) > 160)
+        if (strlen($txMsg) > 150)
         {
-            $data = date('Y-m-d H:i:s') . ': ' . "Maximale Zeichen länge von 160 Zeichen überschritten. Abbruch!";
+            $data = date('Y-m-d H:i:s') . ': ' . "Maximale Zeichen länge von 150 Zeichen überschritten. Abbruch!";
             file_put_contents($errorLogfile, $data, FILE_APPEND);
 
             if ($debugFlag === true)
@@ -54,9 +54,9 @@ if ($resGetTxQueue !== false)
 
         #Workaround da Anführungszeichen derzeit via UDP nicht übertragen werden. Möglicher FW Bug
         $msgText              = str_replace('"', '``', $txMsg); // tausche mit Accent-Aigu
-        $arraySendUdp['type'] = $txType;
-        $arraySendUdp['dst']  = $txDst;
-        $arraySendUdp['msg']  = $msgText;
+        $arraySendUdp['type'] = trim($txType);
+        $arraySendUdp['dst']  = trim($txDst);
+        $arraySendUdp['msg']  = trim($msgText);
 
         $message = json_encode($arraySendUdp, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 

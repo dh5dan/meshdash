@@ -87,27 +87,6 @@ td input[type="text"][name*="sensorThIna226IntervallSec"] {
         width: auto;
     }
 
-    /*td input[type="text"][name*="sensorThTempMinValue"],*/
-    /*td input[type="text"][name*="sensorThTempMaxValue"] {*/
-    /*    width: 50px; !* Kleinere Breite nur für min/max Input-Felder *!*/
-    /*}*/
-
-    /*td:first-child {*/
-    /*    width: 50%; !* Lässt genug Platz für den Text *!*/
-    /*}*/
-
-    /*td:nth-child(2) {*/
-    /*    width: 40%; !* Fixe Breite für Eingabefelder *!*/
-    /*}*/
-
-    /*td:nth-child(3) {*/
-    /*    width: 10%; !* Checkbox bleibt sichtbar *!*/
-    /*}*/
-
-    /*input[type="text"] {*/
-    /*    max-width: 220px; !* Oder andere passende Breite *!*/
-    /*}*/
-
     input[type="button"] {
         width: 100% !important;
         padding: 10px;
@@ -118,5 +97,17 @@ td input[type="text"][name*="sensorThIna226IntervallSec"] {
         /*padding: 5px 10px;*/
         border-radius: 5px;
         cursor: pointer;
+    }
+
+    .ui-dialog {
+        width: 90% !important;
+        left: 5% !important;
+        right: 5% !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    .ui-dialog .ui-dialog-content {
+        overflow-x: auto;
     }
 }
