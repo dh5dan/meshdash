@@ -160,6 +160,7 @@ while (true)
     $battery         = $dbArraySqliteJson['batt'] ?? '';  // Batt Kapazität in %
     $dst             = $dbArraySqliteJson['dst'] ?? ''; // 995 | call
     $firmware        = $dbArraySqliteJson['firmware'] ?? ''; // Firmware 4.34
+    $fwSubVersion    = $dbArraySqliteJson['fw_sub'] ?? ''; // FirmwareSUb Version: v
 
     #Open Database
     $db = new SQLite3('database/meshdash.db');
@@ -186,7 +187,8 @@ while (true)
                                           altitude,
                                           batt,
                                           dst,
-                                          firmware
+                                          firmware,
+                                          fw_sub  
                                        ) VALUES (
                                          '$msgId', 
                                          '$timestamp',
@@ -204,7 +206,8 @@ while (true)
                                          '$altitude',
                                          '$battery',
                                          '$dst',
-                                         '$firmware'        
+                                         '$firmware',
+                                         '$fwSubVersion'        
                                        )
            ");
 

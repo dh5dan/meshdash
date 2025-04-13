@@ -8,6 +8,7 @@
             let width                    = 700;
             let sendData                 = 1;
             let regex                    = /^-?\d+(\.\d+)?$/; // Erlaubt ein Integer und Float mit Punkt
+            let callSignPattern          = /^[A-Z0-9]{1,2}[0-9][A-Z0-9]{1,4}-(?:[1-9][0-9]?)$/i
             let sensorThTempIntervallMin = $("#sensorThTempIntervallMin").val();
 
             let sensorThTempEnabled  = $("#sensorThTempEnabled").is(":checked");
@@ -44,10 +45,11 @@
                 return false;
             }
 
-            if (!$.isNumeric(sensorThTempDmGrpId) || sensorThTempDmGrpId <= 0) {
-
+            if ((!$.isNumeric(sensorThTempDmGrpId) || sensorThTempDmGrpId <= 0) && !callSignPattern.test(sensorThTempDmGrpId))
+            {
                 width       = 500;
-                outputMsg = 'DM-Temp Gruppe muss eine Zahl sein und > 0.';
+                outputMsg = 'DM-Temp Gruppe muss eine Zahl sein und > 0';
+                outputMsg += '<br>oder ein gültiges Call mit SID 1-99.';
                 outputMsg += '<br><br>Bitte prüfen.';
 
                 dialog(outputMsg, titleMsg, width);
@@ -99,10 +101,11 @@
                 return false;
             }
 
-            if (!$.isNumeric(sensorThToutDmGrpId) || sensorThToutDmGrpId <= 0) {
-
+            if ((!$.isNumeric(sensorThToutDmGrpId) || sensorThToutDmGrpId <= 0) && !callSignPattern.test(sensorThToutDmGrpId))
+            {
                 width       = 500;
-                outputMsg = 'DM-Tout Gruppe muss eine Zahl sein und > 0.';
+                outputMsg = 'DM-Tout Gruppe muss eine Zahl sein und > 0';
+                outputMsg += '<br>oder ein gültiges Call mit SID 1-99.';
                 outputMsg += '<br><br>Bitte prüfen.';
 
                 dialog(outputMsg, titleMsg, width);
@@ -160,11 +163,11 @@
                     return false;
                 }
 
-                if (!$.isNumeric(sensorThIna226vBusDmGrpId) || sensorThIna226vBusDmGrpId <= 0)
+                if ((!$.isNumeric(sensorThIna226vBusDmGrpId) || sensorThIna226vBusDmGrpId <= 0) && !callSignPattern.test(sensorThIna226vBusDmGrpId))
                 {
-
                     width     = 500;
                     outputMsg = 'DM-Ina226vBus Gruppe muss eine Zahl sein und > 0.';
+                    outputMsg += '<br>oder ein gültiges Call mit SID 1-99.';
                     outputMsg += '<br><br>Bitte prüfen.';
 
                     dialog(outputMsg, titleMsg, width);
@@ -219,11 +222,11 @@
                     return false;
                 }
 
-                if (!$.isNumeric(sensorThIna226vShuntDmGrpId) || sensorThIna226vShuntDmGrpId <= 0)
+                if ((!$.isNumeric(sensorThIna226vShuntDmGrpId) || sensorThIna226vShuntDmGrpId <= 0) && !callSignPattern.test(sensorThIna226vShuntDmGrpId))
                 {
-
                     width     = 500;
                     outputMsg = 'DM-Ina226vShunt Gruppe muss eine Zahl sein und > 0.';
+                    outputMsg += '<br>oder ein gültiges Call mit SID 1-99.';
                     outputMsg += '<br><br>Bitte prüfen.';
 
                     dialog(outputMsg, titleMsg, width);
@@ -278,11 +281,11 @@
                     return false;
                 }
 
-                if (!$.isNumeric(sensorThIna226vCurrentDmGrpId) || sensorThIna226vCurrentDmGrpId <= 0)
+                if ((!$.isNumeric(sensorThIna226vCurrentDmGrpId) || sensorThIna226vCurrentDmGrpId <= 0)  && !callSignPattern.test(sensorThTempDmGrpId))
                 {
-
                     width     = 500;
                     outputMsg = 'DM-Ina226vCurrent Gruppe muss eine Zahl sein und > 0.';
+                    outputMsg += '<br>oder ein gültiges Call mit SID 1-99.';
                     outputMsg += '<br><br>Bitte prüfen.';
 
                     dialog(outputMsg, titleMsg, width);
@@ -337,11 +340,11 @@
                     return false;
                 }
 
-                if (!$.isNumeric(sensorThIna226vPowerDmGrpId) || sensorThIna226vPowerDmGrpId <= 0)
+                if ((!$.isNumeric(sensorThIna226vPowerDmGrpId) || sensorThIna226vPowerDmGrpId <= 0) && !callSignPattern.test(sensorThTempDmGrpId))
                 {
-
                     width     = 500;
                     outputMsg = 'DM-Ina226vPower Gruppe muss eine Zahl sein und > 0.';
+                    outputMsg += '<br>oder ein gültiges Call mit SID 1-99.';
                     outputMsg += '<br><br>Bitte prüfen.';
 
                     dialog(outputMsg, titleMsg, width);

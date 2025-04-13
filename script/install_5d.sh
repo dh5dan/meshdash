@@ -137,6 +137,7 @@ sudo apt-get install php-zip -f -y
 sudo apt-get install unzip -f -y
 sudo apt-get install lynx -f -y
 sudo apt-get install php-curl -f -y
+sudo apt-get install wget -f -y
 echo
 echo
 sudo lighty-enable-mod fastcgi

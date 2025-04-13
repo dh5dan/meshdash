@@ -53,12 +53,12 @@ if ($resGetTxQueue !== false)
         }
 
         #Workaround da Anführungszeichen derzeit via UDP nicht übertragen werden. Möglicher FW Bug
-        $msgText           = str_replace('"', '``', $txMsg); // tausche mit Accent-Aigu
-        $arraySend['type'] = $txType;
-        $arraySend['dst']  = $txDst;
-        $arraySend['msg']  = $msgText;
+        $msgText              = str_replace('"', '``', $txMsg); // tausche mit Accent-Aigu
+        $arraySendUdp['type'] = $txType;
+        $arraySendUdp['dst']  = $txDst;
+        $arraySendUdp['msg']  = $msgText;
 
-        $message = json_encode($arraySend, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        $message = json_encode($arraySendUdp, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
         if ($socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP))
         {

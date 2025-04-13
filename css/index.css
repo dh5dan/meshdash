@@ -194,7 +194,7 @@ iframe {
 .new-message-indicator::after {
     content: "•";
     color: red;
-    font-size: 1.2em;  /* Verwenden von relativer Schriftgröße */
+    font-size: 2.2em;  /* Verwenden von relativer Schriftgröße */
     position: absolute;
     top: 2px;  /* Etwas anpassen, um den Punkt korrekt im Tab zu platzieren */
     right: 5px; /* Rechts oben platzieren */

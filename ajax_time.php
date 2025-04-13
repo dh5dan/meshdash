@@ -1,4 +1,8 @@
 <?php
+require_once 'include/func_php_core.php';
 
-date_default_timezone_set('Europe/Berlin');
+$selTzName = getParamData('timeZone') ?? 'Europe/Berlin'; // ZeitZone
+date_default_timezone_set($selTzName);
+
+#date_default_timezone_set('Europe/Berlin');
 echo json_encode(['time' => date("Y-m-d H:i:s")]);

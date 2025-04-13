@@ -123,8 +123,8 @@ $db->busyTimeout(5000); // warte wenn busy in millisekunden
 // Hole mir die letzten 30 Nachrichten aus der Datenbank
 $result = $db->query("SELECT * 
                               FROM meshdash
-                              WHERE msgIsAck = 0
-                              $sqlAddon
+                             WHERE msgIsAck = 0
+                                   $sqlAddon
                           ORDER BY timestamps DESC
                              LIMIT $maxScrollBackRows");
 # Maybe False when Database is locked
@@ -279,24 +279,10 @@ if ($result !== false)
                 #Sende nur, wenn kein Fehler aufgetreten ist
                 if ($keyword1ReturnMsg != '' && $keyword1ErrorCode == 0)
                 {
-                    $arraySend['type'] = 'msg';
-                    $arraySend['dst']  = $keyword1DmGrpId;
-                    $arraySend['msg']  = $keyword1ReturnMsg;
-
-                    $message = json_encode($arraySend, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-
-                    if ($socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP))
-                    {
-                        if ($doLogEnable == 1)
-                        {
-                            $errorText = date('Y-m-d H:i:s') . ' Keyword1-ReturnMsg:' . $keyword1ReturnMsg . "\n";
-                            $errorText .= date('Y-m-d H:i:s') . ' Keyword1-ReturnMsg JSON:' . $message . "\n";
-                            file_put_contents('log/keyword_return_data_' . date('Ymd') . '.log', $errorText, FILE_APPEND);
-                        }
-
-                        socket_sendto($socket, $message, strlen($message), 0, $loraIp, 1799);
-                        socket_close($socket);
-                    }
+                    $arraySend['txType'] = 'msg';
+                    $arraySend['txDst']  = $keyword1DmGrpId;
+                    $arraySend['txMsg']  = $keyword1ReturnMsg;
+                    $resSetTxQueue       = setTxQueue($arraySend);
                 }
             }
         }
@@ -315,24 +301,10 @@ if ($result !== false)
 
                 if ($keyword2ReturnMsg != '' && $keyword2ErrorCode == 0)
                 {
-                    $arraySend['type'] = 'msg';
-                    $arraySend['dst']  = $keyword2DmGrpId;
-                    $arraySend['msg']  = $keyword2ReturnMsg;
-
-                    $message = json_encode($arraySend, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-
-                    if ($socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP))
-                    {
-                        if ($doLogEnable == 1)
-                        {
-                            $errorText = date('Y-m-d H:i:s') . ' Keyword2-ReturnMsg:' . $keyword2ReturnMsg . "\n";
-                            $errorText .= date('Y-m-d H:i:s') . ' Keyword2-ReturnMsg JSON:' . $message . "\n";
-                            file_put_contents('log/keyword_return_data_' . date('Ymd') . '.log', $errorText, FILE_APPEND);
-                        }
-
-                        socket_sendto($socket, $message, strlen($message), 0, $loraIp, 1799);
-                        socket_close($socket);
-                    }
+                    $arraySend['txType'] = 'msg';
+                    $arraySend['txDst']  = $keyword2DmGrpId;
+                    $arraySend['txMsg']  = $keyword2ReturnMsg;
+                    $resSetTxQueue       = setTxQueue($arraySend);
                 }
             }
         }
@@ -349,7 +321,8 @@ if ($result !== false)
             $hwId            = $row['hw_id']; // 3
             $altitude        = $row['altitude']; // 344 (Höhe in Fuss)
             $batteryCapacity = $row['batt'];  // Batt Kapazität in %
-            $firmware        = $row['firmware'] ?? '';  // Batt Kapazität in %
+            $firmware        = $row['firmware'] ?? '';  // Firmware
+            $fwSubVersion    = $row['fw_sub'] ?? '';  // FirmwareSub Version
             $altitude        = number_format($altitude * 0.3048); // Umrechnung Fuss -> Meter
 
             echo '<h3 class="setFontMsgHeader">';
@@ -364,6 +337,10 @@ if ($result !== false)
                 if ($firmware != '')
                 {
                     echo '<div class="info-row"><span class="info-label">Firmware: </span><span class="info-value">' . $firmware .'</span></div>';
+                }
+                if ($fwSubVersion != '')
+                {
+                    echo '<div class="info-row"><span class="info-label">FW-Subversion: </span><span class="info-value">' . $fwSubVersion .'</span></div>';
                 }
             echo '</div>';
 
