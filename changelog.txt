@@ -1,5 +1,5 @@
 Version 1.10.10 SQL
-FEATURE: Umstellung aller versendeten Nachrichten auf Send-QUEUE Default 30 Sekunden.
+FEATURE: Umstellung aller versendeten Nachrichten auf Send-QUEUE Default 20 Sekunden.
          Neuer Menüpunkt zum Einstellen des Sende-Intervalls
 INFO: Beschränkung max. Msg. auf 150 Zeichen laut UDP-API
 BUGFIX: Calls mit Zahlen im Präfix wurden als ungültig erkannt
