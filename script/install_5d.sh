@@ -1,6 +1,6 @@
 #!/bin/bash
 clear
-echo "MeshDash Install-Script V 1.00.80"
+echo "MeshDash Install-Script V 1.00.82"
 echo
 echo "Installation Von MeshDash-SQL"
 echo 
@@ -259,7 +259,7 @@ echo "Alle Cronjobs von www-data wurden gelöscht."
 CRON_JOB="* * * * * /usr/bin/wget -q -O /dev/null http://localhost/5d/cron_loop.php"
 echo "Lege Cron-Job für cron_loop Task an unter www-data"
 echo "Trage Task-Start in Cron ein mit 1min Prüfintervall"
-(suso -u www-data crontab -l 2>/dev/null | grep -F "$CRON_JOB") || (echo "$CRON_JOB" | sudo -u www-data crontab -)
+(sudo -u www-data crontab -l 2>/dev/null | grep -F "$CRON_JOB") || (echo "$CRON_JOB" | sudo -u www-data crontab -)
 echo
 #########################################
 # Ready fpr Take-Off

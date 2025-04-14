@@ -1691,3 +1691,78 @@ function triggerCronLoop()
 
     curl_close($ch);
 }
+
+function getSystemUptimeSeconds()
+{
+    if (strncasecmp(PHP_OS, 'WIN', 3) === 0)
+    {
+        // Windows: PowerShell-Abfrage nutzen
+        $cmd    = 'powershell -Command "(get-date) - (gcim Win32_OperatingSystem).LastBootUpTime | % { $_.TotalSeconds }"';
+        $uptime = trim(shell_exec($cmd));
+        $uptime = str_replace(',', '.', $uptime);
+
+        return is_numeric($uptime) ? (int) $uptime : false;
+    }
+    else
+    {
+        // Linux: aus /proc/uptime lesen
+        $uptimeContent = @file_get_contents('/proc/uptime');
+        if ($uptimeContent === false)
+        {
+            return false;
+        }
+        $parts = explode(' ', $uptimeContent);
+
+        return isset($parts[0]) ? (int) floatval($parts[0]) : false;
+    }
+}
+function getSystemRebootTimestamp()
+{
+    if (strncasecmp(PHP_OS, 'WIN', 3) === 0)
+    {
+        // Windows: PowerShell-Abfrage für LastBootUpTime im ISO-Format
+        $cmd        = 'powershell -Command "(gcim Win32_OperatingSystem).LastBootUpTime.ToString(\'yyyy-MM-dd HH:mm:ss\')"';
+        $lastReboot = trim(shell_exec($cmd));
+
+        if ($lastReboot)
+        {
+            $lastRebootDate = new DateTime($lastReboot);
+
+            return $lastRebootDate->format('Y-m-d H:i:s');
+        }
+    }
+    else
+    {
+        // Linux: Aus /proc/uptime lesen
+        $uptimeContent = @file_get_contents('/proc/uptime');
+        if ($uptimeContent === false)
+        {
+            return false;
+        }
+
+        $uptimeParts = explode(' ', $uptimeContent);
+        if (isset($uptimeParts[0]) && is_numeric($uptimeParts[0]))
+        {
+            $uptimeSeconds = (int) floatval($uptimeParts[0]); // hier: auf int casten
+        }
+        else
+        {
+            return false;
+        }
+
+        $currentDate = new DateTime();
+
+        try
+        {
+            $currentDate->sub(new DateInterval("PT{$uptimeSeconds}S"));
+
+            return $currentDate->format('Y-m-d H:i:s');
+        }
+        catch (Exception $e)
+        {
+            return false;
+        }
+    }
+
+    return false;
+}

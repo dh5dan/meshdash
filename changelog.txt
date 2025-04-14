@@ -1,8 +1,9 @@
-Version 1.10.08 SQL
+Version 1.10.10 SQL
 FEATURE: Umstellung aller versendeten Nachrichten auf Send-QUEUE Default 30 Sekunden.
          Neuer Menüpunkt zum Einstellen des Sende-Intervalls
 INFO: Beschränkung max. Msg. auf 150 Zeichen laut UDP-API
 BUGFIX: Calls mit Zahlen im Präfix wurden als ungültig erkannt
+BUGFIX: Update konnte keine neuen Verzeichnisse erzeugen
 FEATURE: Einstellung der Zeitzonen nun möglich
 FEATURE: Ziel bei Sensorbenachrichtigungen darf nun auch ein Call sein
 FEATURE: Berücksichtige nun fw_sub bei Pos-Data
@@ -14,7 +15,7 @@ Auswertung WX-Daten als Sensordaten.
 Auswertung INA226 Daten aus Info-Bereich und Anzeige in Sensordaten.
 BUGFIX: Mit MeshCom 4.34q (build: Mar 6 2025 / 15:17:43)
         gab es einen Fehler im <TR>-Tag der Infoseite, was die Auswertung von Call verhindert hat.
-        Dies wird nun durch einen Workaround korrigiert. Ist in Version R aber behoben.
+        Dieses wird nun durch einen Workaround korrigiert. Ist in Version R aber behoben.
 FEATURE: Mit 4.34q (build: Mar 6 2025 / 15:17:43) gibt es ein neues Info-Feld Startzeit.
 FEATURE: Schwellwertangaben für Sensordaten implementiert mit Alert-Funktion.
 FEATURE: RegEx entfernt bei Msg Eingabe. Alle Zeichen erlaubt.

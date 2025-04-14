@@ -30,9 +30,10 @@ $sendData = $_REQUEST['sendData'] ?? 0;
 $osIssWindows = chkOsIssWindows();
 $osName       = $osIssWindows === true ? 'Windows' : 'Linux';
 
+$execDir          = 'log';
 $basename         = pathinfo(getcwd())['basename'];
-$lockFilenameSub  = '../log/cron_loop.lock';
-$lockFilenameRoot = 'log/cron_loop.lock';
+$lockFilenameSub  = '../' . $execDir . '/cron_loop.lock';
+$lockFilenameRoot = $execDir . '/cron_loop.lock';
 $lockFilename     = $basename == 'menu' ? $lockFilenameSub : $lockFilenameRoot;
 
 if ($sendData === '1')
@@ -52,7 +53,7 @@ if ($sendData === '1')
 }
 
 $sendQueueInterval = getParamData('sendQueueInterval');
-$sendQueueInterval = $sendQueueInterval == '' ? 30 : $sendQueueInterval;
+$sendQueueInterval = $sendQueueInterval == '' ? 20 : $sendQueueInterval;
 
 echo "<h2>Send-Queue Einstellungen von MeshDash-SQL</h2>";
 
@@ -61,7 +62,7 @@ echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
 echo '<table>';
 
 echo '<tr>';
-echo '<td>Sendeintervall in Sek.>= 20:</td>';
+echo '<td>Sendeintervall in Sek. >= 5:</td>';
 echo '<td><input type="text" name="sendQueueInterval" id="sendQueueInterval" value="' . $sendQueueInterval . '" /></td>';
 echo '</tr>';
 

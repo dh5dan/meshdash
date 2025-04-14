@@ -33,8 +33,8 @@ if ($txMsg != '')
     }
 
     $arraySend['txType'] = 'msg';
-    $arraySend['txDst']  = $directMessage;
-    $arraySend['txMsg']  = $txMsg;
+    $arraySend['txDst']  = trim($directMessage);
+    $arraySend['txMsg']  = trim($txMsg);
     $resSetTxQueue       = setTxQueue($arraySend);
 
     if ($resSetTxQueue === false)

@@ -54,7 +54,21 @@ input[type="checkbox"] {
     width: 100%;
 }
 
+select {
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+}
+
 @media (max-width: 600px) {
+
+    select {
+        font-size: 1em;
+    }
+
+    table {
+        width: 98%;
+    }
 
     .successHint, .failureHint {
         display: block;
@@ -81,6 +95,18 @@ input[type="checkbox"] {
         padding: 10px;
         font-size: 16px;
     }
+
+    .ui-dialog {
+        width: 90% !important;
+        left: 5% !important;
+        right: 5% !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    .ui-dialog .ui-dialog-content {
+        overflow-x: auto;
+    }
 }
 
 /* Media Query für Smartphones */
@@ -97,5 +123,17 @@ input[type="checkbox"] {
         /*padding: 5px 10px;*/
         border-radius: 5px;
         cursor: pointer;
+    }
+
+    .ui-dialog {
+        width: 90% !important;
+        left: 5% !important;
+        right: 5% !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    .ui-dialog .ui-dialog-content {
+        overflow-x: auto;
     }
 }
