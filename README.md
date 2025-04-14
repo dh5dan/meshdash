@@ -28,7 +28,7 @@ Einige Funktionen von MeshDash:
 - Senden von Befehlen an den Lora
 - Sensorabfragen mit Schwellwertbenachrichtigung
 
-Das Projekt ist mittlerweile aus der **Beta-Phase**, doch es können imer mal noch Fehler auftreten.  
+Das Projekt ist mittlerweile aus der **Beta-Phase**, doch es können immer mal noch Fehler auftreten.  
 Falls Probleme auftreten, bitte im Issue-Bereich von GitHub melden,  
 sofern sie nicht schon dort vorhanden sind.
 
