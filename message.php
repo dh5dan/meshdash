@@ -59,7 +59,7 @@ $clickOnCall       = getParamData('clickOnCall');
 $doLogEnable = getParamData('doLogEnable');
 
 #Prüfe, ob das reine Rufzeichen nur genommen werden soll ohne SSID
-$strictCallEnable = getParamData('strictCallEnable') ?? 0;
+$strictCallEnable = getParamData('strictCallEnable');
 
 $sqlAddon = '';
 $group    = $_REQUEST['group'] ?? -1;
@@ -84,8 +84,8 @@ else if ($group == 0)
 else if ($group == -2)
 {
     $sqlAddon .= ' AND (dst like "' . $callSignSql . '%" OR src like "' . $callSignSql . '%") ';
-    $sqlAddon .= " AND src GLOB '[A-Za-z]*' "; // src muss ein Rufzeichen sein
-    $sqlAddon .= " AND dst GLOB '[A-Za-z]*' "; // dst muss ein Rufzeichen sein
+    $sqlAddon .= " AND src GLOB '[A-Za-z0-9]*' "; // src muss ein Rufzeichen sein
+    $sqlAddon .= " AND dst GLOB '[A-Za-z0-9]*' "; // dst muss ein Rufzeichen sein
     $sqlAddon .= " AND type = 'msg' ";
 }
 
