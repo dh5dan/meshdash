@@ -1,3 +1,7 @@
+Version 1.10.12 SQL
+
+BUGFIX: Calls mit Zahlen im Präfix wurden nicht im Own-Call Filter angezeigt.
+##########################################
 Version 1.10.10 SQL
 FEATURE: Umstellung aller versendeten Nachrichten auf Send-QUEUE Default 20 Sekunden.
          Neuer Menüpunkt zum Einstellen des Sende-Intervalls

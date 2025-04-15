@@ -30,8 +30,7 @@ function getParamData($key)
 
     $paramValue = $dsData['param_value'] ?? '';
     $paramText  = $dsData['param_text'] ?? '';
-
-    $paramValue = $paramValue != '' ? $paramValue : $paramText;
+    $paramValue = ($paramValue !== '' && $paramValue !== null) ? $paramValue : $paramText;
 
     #Close and write Back WAL
     $db->close();
