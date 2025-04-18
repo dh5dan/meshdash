@@ -306,6 +306,9 @@
                case 'mHeard':
                    iframeSrc = 'mheard.php';
                    break;
+               case 'debug_info':
+                   iframeSrc = 'menu/debug_info.php';
+                   break;
                case 'about':
                    let titleMsg  = 'Info'
                    let outputMsg = '';

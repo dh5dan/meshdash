@@ -75,7 +75,7 @@ echo '<td colspan="2"><hr></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td xmlns="https://www.w3.org/1999/html" colspan="2">';
+echo '<td colspan="2">';
 echo '<span class="failureHint">Bei der erstmaligen UDP-Aktivierung,<br>muss einmalig ein Reboot ausgeführt werden!</span></td>';
 echo '</tr>';
 

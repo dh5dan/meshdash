@@ -5,7 +5,7 @@ $execDir  = trim($_REQUEST['execDir']);
 
 $debugFlag = false;
 
-#Muss hier stehen da chdri sonst das BaseDir verschiebt
+#Muss hier stehen da chdir sonst das BaseDir verschiebt
 if ($debugFlag === true)
 {
     echo "<br>taskFile:$taskFile";

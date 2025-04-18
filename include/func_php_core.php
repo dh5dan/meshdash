@@ -1,4 +1,5 @@
 <?php
+/** @noinspection SqlWithoutWhere */
 function getParamData($key)
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
@@ -38,6 +39,7 @@ function getParamData($key)
 
     return $paramValue;
 }
+
 function setParamData($key, $value, $mode = 'int'): bool
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
@@ -831,7 +833,6 @@ function columnExists($database, $tabelle, $spalte): bool
     $db->close();
     return false; // Spalte existiert nicht
 }
-
 function checkVersion($currentVersion, $targetVersion, $operator)
 {
     $currentVersion = preg_replace('/[^0-9.]/', '', $currentVersion);
@@ -839,7 +840,6 @@ function checkVersion($currentVersion, $targetVersion, $operator)
 
     return version_compare($targetVersion, $currentVersion, $operator);
 }
-
 function checkDbUpgrade($database)
 {
     $debugFlag = false;
@@ -860,26 +860,16 @@ function checkDbUpgrade($database)
                 echo "<br>Die Spalte: 'firmware' in Tabelle: 'meshdash' existiert nicht.";
             }
 
-            #Check what oS is running
-            $osIssWindows = chkOsIssWindows();
-
-            #Hole Task Command abhängig vom OS
-            $checkTaskCmd = getTaskCmd();
-
             // Spalte hinzufügen
             addColumn($database, 'meshdash', 'firmware');
 
             ## Prozess neu laden damit Feld befüllt wird
-
             # Stop BG-Process
-            $paramBgProcess['checkTaskCmd'] = $checkTaskCmd;
-            $paramBgProcess['osIssWindows'] = $osIssWindows;
-            checkBgProcess($paramBgProcess);
+            $paramBgProcess['task'] = 'udp';
+            stopBgProcess($paramBgProcess);
 
             ##start BG-Process
-            $paramStartBgProcess['taskResult']   = '';
-            $paramStartBgProcess['osIssWindows'] = $osIssWindows;
-            $paramStartBgProcess['checkTaskCmd'] = $checkTaskCmd;
+            $paramStartBgProcess['task'] = 'udp';
             startBgProcess($paramStartBgProcess);
         }
 
@@ -890,37 +880,21 @@ function checkDbUpgrade($database)
                 echo "<br>Die Spalte: 'fw_sub' in Tabelle: 'meshdash' existiert nicht.";
             }
 
-            #Check what oS is running
-            $osIssWindows = chkOsIssWindows();
-
-            #Hole Task Command abhängig vom OS
-            $checkTaskCmd = getTaskCmd();
-
             // Spalte hinzufügen
             addColumn($database, 'meshdash', 'fw_sub');
 
             ## Prozess neu laden damit Feld befüllt wird
-
             # Stop BG-Process
-            $paramBgProcess['checkTaskCmd'] = $checkTaskCmd;
-            $paramBgProcess['osIssWindows'] = $osIssWindows;
-            checkBgProcess($paramBgProcess);
+            $paramBgProcess['task'] = 'udp';
+            stopBgProcess($paramBgProcess);
 
             ##start BG-Process
-            $paramStartBgProcess['taskResult']   = '';
-            $paramStartBgProcess['osIssWindows'] = $osIssWindows;
-            $paramStartBgProcess['checkTaskCmd'] = $checkTaskCmd;
+            $paramStartBgProcess['task'] = 'udp';
             startBgProcess($paramStartBgProcess);
         }
 
         if (!columnExists($database, 'sensordata', 'ina226vBus') && $database === 'sensordata')
         {
-            #Check what oS is running
-            $osIssWindows = chkOsIssWindows();
-
-            #Hole Task Command abhängig vom OS
-            $checkTaskCmd = getTaskCmd();
-
             // Spalte hinzufügen
             addColumn($database, 'sensordata', 'ina226vBus');
             addColumn($database, 'sensordata', 'ina226vShunt');
@@ -928,41 +902,27 @@ function checkDbUpgrade($database)
             addColumn($database, 'sensordata', 'ina226vPower');
 
             ## Prozess neu laden damit Feld befüllt wird
+            # Stop UDP BG-Process
+            $paramBgProcess['task'] = 'udp';
+            stopBgProcess($paramBgProcess);
 
-            # Stop BG-Process
-            $paramBgProcess['checkTaskCmd'] = $checkTaskCmd;
-            $paramBgProcess['osIssWindows'] = $osIssWindows;
-            checkBgProcess($paramBgProcess);
-
-            ##start BG-Process
-            $paramStartBgProcess['taskResult']   = '';
-            $paramStartBgProcess['osIssWindows'] = $osIssWindows;
-            $paramStartBgProcess['checkTaskCmd'] = $checkTaskCmd;
+            ##start UDP BG-Process
+            $paramStartBgProcess['task'] = 'udp';
             startBgProcess($paramStartBgProcess);
         }
 
         if (!columnExists($database, 'mheard', 'mhType') && $database === 'mheard')
         {
-            #Check what oS is running
-            $osIssWindows = chkOsIssWindows();
-
-            #Hole Task Command abhängig vom OS
-            $checkTaskCmd = getTaskCmd();
-
             // Spalte hinzufügen
             addColumn($database, 'mheard', 'mhType');
 
             ## Prozess neu laden damit Feld befüllt wird
+            # Stop UDP BG-Process
+            $paramBgProcess['task'] = 'udp';
+            stopBgProcess($paramBgProcess);
 
-            # Stop BG-Process
-            $paramBgProcess['checkTaskCmd'] = $checkTaskCmd;
-            $paramBgProcess['osIssWindows'] = $osIssWindows;
-            checkBgProcess($paramBgProcess);
-
-            ##start BG-Process
-            $paramStartBgProcess['taskResult']   = '';
-            $paramStartBgProcess['osIssWindows'] = $osIssWindows;
-            $paramStartBgProcess['checkTaskCmd'] = $checkTaskCmd;
+            ##start UDP BG-Process
+            $paramStartBgProcess['task']       = 'udp';
             startBgProcess($paramStartBgProcess);
         }
     }
@@ -997,13 +957,86 @@ function addColumn($database, $tabelle, $spalte, $typ = 'TEXT', $default = null)
     $db->close();
 }
 
-function getTaskCmd(): string
+function getTaskCmd($mode = 'udp')
 {
     #Check what oS is running
-    $osIssWindows = chkOsIssWindows();
+    $osIssWindows    = chkOsIssWindows();
+    $udpReceiverPid  = getParamData('udpReceiverPid');
+    $cronLoopPid     = getParamData('cronLoopPid');
+    $cronLoopPidFile = 'log/' . CRON_PID_FILE;
 
-    #Hinweis Pgrep -x funktioniert nicht, wenn man die PHP Datei ermitteln muss
-    return  $osIssWindows === true ? 'tasklist | find "php.exe"' : "pgrep -a -f udp_receiver.php | grep -v pgrep | awk '{print $1}'";
+    if ($mode == 'udp')
+    {
+        #Hinweis Pgrep -x funktioniert nicht, wenn man die PHP Datei ermitteln muss
+        if ($udpReceiverPid == '')
+        {
+            return $osIssWindows === true ? 'tasklist | find "php.exe"' : "pgrep -a -f udp_receiver.php | grep -v pgrep | awk '{print $1}'";
+        }
+        else
+        {
+            return $osIssWindows === true ? 'tasklist /FI "PID eq ' . $udpReceiverPid . '" | findstr /I "php.exe"' : "pgrep -a -f udp_receiver.php | grep -v pgrep | awk '{print $1}'";
+        }
+    }
+
+    if ($mode == 'cron')
+    {
+        #Hinweis Pgrep -x funktioniert nicht, wenn man die PHP Datei ermitteln muss
+        if ($cronLoopPid == '')
+        {
+            # Wenn keine Pid, dann über Pid-File Status ermitteln.
+            # Wenn Pid-File fehlt, dann unter Windows über Dummy einen leeren Eintrag zurückgeben lassen mittels Dummy
+            if (!file_exists($cronLoopPidFile))
+            {
+                return $osIssWindows === true ? 'tasklist | find "dummyFile.exe"' : "pgrep -a -f cron_loop.php | grep -v pgrep | awk '{print $1}'";
+            }
+
+            return $osIssWindows === true ? 'tasklist | find "php.exe"' : "pgrep -a -f cron_loop.php | grep -v pgrep | awk '{print $1}'";
+        }
+        else
+        {
+            return $osIssWindows === true ? 'tasklist /FI "PID eq ' . $cronLoopPid . '" | findstr /I "php.exe"' : "pgrep -a -f cron_loop.php | grep -v pgrep | awk '{print $1}'";
+        }
+    }
+
+    return false;
+}
+
+function getTaskKillCmd($mode = 'udp')
+{
+    #Check what oS is running
+    $osIssWindows    = chkOsIssWindows();
+    $udpReceiverPid  = getParamData('udpReceiverPid');
+    $cronLoopPid     = getParamData('cronLoopPid');
+
+    if ($mode == 'udp')
+    {
+        #Hinweis Pgrep -x funktioniert nicht, wenn man die PHP Datei ermitteln muss
+        if ($udpReceiverPid == '')
+        {
+            return $osIssWindows === true ? 'taskkill /f /fi "imagename eq php.exe"' : 'pkill -9 -f "udp_receiver.php"';
+        }
+        else
+        {
+            return $osIssWindows === true ? 'taskkill /F /PID ' . $udpReceiverPid : 'pkill -9 -f "udp_receiver.php"';
+        }
+    }
+
+    if ($mode == 'cron')
+    {
+        #Hinweis Pgrep -x funktioniert nicht, wenn man die PHP Datei ermitteln muss
+        if ($cronLoopPid == '')
+        {
+            # Wenn keine Pid, dann All-Kill für Windows.
+            return $osIssWindows === true ? 'taskkill /f /fi "imagename eq php.exe"' : 'pkill -9 -f "cron_loop.php"';
+
+        }
+        else
+        {
+            return $osIssWindows === true ? 'taskkill /F /PID ' . $cronLoopPid : 'pkill -9 -f "cron_loop.php"';
+        }
+    }
+
+    return false;
 }
 
 function chronLog()
@@ -1212,62 +1245,43 @@ function setCronSensorInterval($intervallInMinuten, $deleteFlag): bool
     return true;
 }
 
-function checkCronLoop(int $deleteFlag = 0): bool
+function checkCronLoopBgTask()
 {
-    $delete    = $deleteFlag == 1;
-    $basePath  = __DIR__;
-    $execDir   = "log";
-    $stopFile  = "$basePath/$execDir/cron_stop";
-    $debugFlag = false;
+    $taskCmdCron = getTaskCmd('cron');
 
-    // Eingabewerte
-    $skriptPfad    = '/usr/bin/wget -q -O /dev/null http://localhost/5d/cron_loop.php';
-    $cronIntervall = "* * * * *";
+    return shell_exec($taskCmdCron);
+}
 
-    // Cronjob suchen und prüfen
-    $cronJob = "$cronIntervall $skriptPfad";
+function deleteOldCron(): bool
+{
+    $osIssWindows  = chkOsIssWindows();
 
-    // Die Crontab auslesen
-    exec('crontab -l 2>/dev/null', $cronJobs);
-
-    // Prüfen, ob der Cronjob bereits existiert
-    $found = false;
-    foreach ($cronJobs as $index => $existingJob)
+    #Prüfe ob Alter Cron noch existiert und lösche ihn
+    if ($osIssWindows === false)
     {
-        if (strpos($existingJob, $skriptPfad) !== false)
-        {
-            $found = true;
+        // Eingabewerte
+        $skriptPfad = '/usr/bin/wget -q -O /dev/null http://localhost/5d/cron_loop.php';
 
-            // Wenn das Delete-Flag gesetzt ist, den Cronjob löschen
-            if ($delete)
+        // Die Crontab auslesen
+        exec('crontab -l 2>/dev/null', $cronJobs);
+
+        // Prüfen, ob der alte Cronjob noch existiert und lösche ihn
+        foreach ($cronJobs as $index => $existingJob)
+        {
+            if (strpos($existingJob, $skriptPfad) !== false)
             {
                 unset($cronJobs[$index]);
+
                 // Crontab aktualisieren
                 file_put_contents('/tmp/crontab_loop.txt', implode("\n", $cronJobs) . "\n");
                 exec('crontab /tmp/crontab_loop.txt');
-                touch($stopFile); //Setzte Stop-File damit Prozess sauber beendet wird
-
-                if ($debugFlag === true)
-                {
-                    echo "Cronjob-Loop wurde gelöscht.\n";
-                }
-
-                return true;
             }
         }
     }
 
-    // Wenn der Cronjob noch nicht existiert, hinzufügen
-    if (!$found) {
-        // Cronjob zur Liste hinzufügen
-        $cronJobs[] = $cronJob;
-        // Crontab aktualisieren
-        file_put_contents('/tmp/crontab_loop.txt', implode("\n", $cronJobs) . "\n");
-        exec('crontab /tmp/crontab_loop.txt');
-        if ($debugFlag === true)
-        {
-            echo "Cronjob wurde hinzugefügt.\n";
-        }
+    if (file_exists('log/cron_loop.lock'))
+    {
+        @unlink('log/cron_loop.lock');
     }
 
     return true;
@@ -1286,7 +1300,7 @@ function setTxQueue($txQueueData): bool
 
     if ($doLogEnable === true)
     {
-        echo "<br></br>sendQueueMode:$sendQueueMode";
+        echo "<br>sendQueueMode:$sendQueueMode";
         echo "<br>doLogEnable:$doLogEnable";
     }
 
@@ -1627,6 +1641,10 @@ function setSensorAlertCounter($sensor, $sensorType): bool
     return true;
 }
 
+/** @noinspection SqlWithoutWhere
+ * @noinspection SqlWithoutWhere
+ * @noinspection SqlWithoutWhere
+ */
 function resetSensorAlertCounter($sensor, $sensorType): bool
 {
     if ($sensor == 'temp')
@@ -1734,25 +1752,269 @@ function resetSensorAlertCounter($sensor, $sensorType): bool
     return true;
 }
 
-function triggerCronLoop()
+function getStatusIcon(string $status, bool $withLabel = false): string
 {
-    $actualHost  = (empty($_SERVER['HTTPS']) ? 'http' : 'https');
-    $host        = $_SERVER['SERVER_NAME'];
-    $scriptName  = $_SERVER['SCRIPT_NAME']; // z. B. /meshdash/menu/xyz.php
-    $basePath    = explode('/', trim($scriptName, '/'))[0]; // meshdash
-    $triggerLink = $actualHost . '://' . $host . '/' . $basePath . '/cron_loop.php';
+    # HTML-Entity-Format
+    $icons = [
+        'inactive'   => ['symbol' => '&#x1F534;', 'label' => 'Inaktiv'],        // 🔴
+        'active'     => ['symbol' => '&#x1F7E2;', 'label' => 'Aktiv'],          // 🟢
+        'wait'       => ['symbol' => '&#x1F7E1;', 'label' => 'Warten'],         // 🟡
+        'ok'         => ['symbol' => '&#x2705;', 'label' => 'Aktiv'],           // ✅
+        'checked'    => ['symbol' => '&#10062;', 'label' => 'Checked'],         // ❎
+        'error'      => ['symbol' => '&#x274C;', 'label' => 'Fehler'],          // ❌
+        'warning'    => ['symbol' => '&#9888;&#65039;', 'label' => 'Warnung'],  // ⚠️
+        'blocked'    => ['symbol' => '&#x26D4;', 'label' => 'Blockiert'],       // ⛔
+        'on'         => ['symbol' => '&#x1F51B;', 'label' => 'Eingeschaltet'],  // 🔛
+        'off'        => ['symbol' => '&#x1F4F4;', 'label' => 'Ausgeschaltet'],  // 📴
+        'attention'  => ['symbol' => '&#10071;', 'label' => 'Achtung'],         // ❗
 
-    // --- HIER Trigger-CODE Windows ---
+        'loop'       => ['symbol' => '&#128257;', 'label' => 'Loop'],           // 🔁
+        'locked'     => ['symbol' => '&#128274;', 'label' => 'Gesperrt'],       // 🔒
+        'unlocked'   => ['symbol' => '&#128275;', 'label' => 'Entsperrt'],      // 🔓
+        'clock'      => ['symbol' => '&#128338;', 'label' => 'Uhr'],            // 🕒
+        'battery'    => ['symbol' => '&#128267;', 'label' => 'Einstellung'],    // 🔋
+        'watch'      => ['symbol' => '&#8986;', 'label' => 'Uhr'],              // ⌚
+        'hourglass'  => ['symbol' => '&#8987;', 'label' => 'Uhrenglas'],        // ⌛
+        'star'       => ['symbol' => '&#11088;', 'label' => 'Stern'],           // ⭐
+        'trash   '   => ['symbol' => '&#128465;&#65039;', 'label' => 'Papierkorb'],  // 🗑️
+        'unknown'    => ['symbol' => '&#x2753;', 'label' => 'Unbekannt'],            // ❓
+
+        'right_triangle3' => ['symbol' => '&#9654;', 'label' => ''], // ⏵
+        'right_triangle' => ['symbol' => '&#9656;', 'label' => ''], // ⏵
+        'toolbox' => ['symbol' => '&#129520;', 'label' => ''], // 🧰
+
+
+        'configuration' => ['symbol' => '&#128736;&#65039;', 'label' => 'Einstellung'], // 🛠️
+        'generally2'     => ['symbol' => '&#9881;&#65039;', 'label' => 'Allgemein'],             // ⚙️
+        'generally3'     => ['symbol' => '&#128295;', 'label' => 'Allgemein'],             // 🔧
+        'generally4'     => ['symbol' => '&#129535;', 'label' => 'Allgemein'],             // 🧿
+        'generally'     => ['symbol' => '&#128261;', 'label' => 'Allgemein'],             // 🔅
+        'interval'      => ['symbol' => '&#9201;&#65039;', 'label' => 'Sende-Intervall'],       // ⏱️
+        'notification'  => ['symbol' => '&#128276;', 'label' => 'Benachrichtigung'],    // 🔔️
+        'keyword'       => ['symbol' => '&#128278;', 'label' => 'Keyword'],             // 🏷️
+        'update'        => ['symbol' => '&#128260;', 'label' => 'Update'],              // 🔄
+        'lora-info'     => ['symbol' => '&#128225;&#65039;', 'label' => 'Lora-Info'],           // 📡
+        'data-purge'    => ['symbol' => '&#129529;&#65039;', 'label' => 'Data-Purge'],          // 🧹
+        'ping-lora'     => ['symbol' => '&#128246;', 'label' => 'Ping Lora'],           // 📶
+        'debug-info'    => ['symbol' => '&#128030;', 'label' => 'Debug-Info'],          // 🐞
+
+        'groups'   => ['symbol' => '&#128101;&#65039;', 'label' => 'Gruppen'],  // 👥
+        'groups_define'   => ['symbol' => '&#128450;&#65039;', 'label' => 'Gruppenfilter'],  // 🗂️
+
+        'sensors'   => ['symbol' => '&#127777;&#65039;', 'label' => 'Sensoren'],  // 🌡️
+        'sensordata'   => ['symbol' => '&#128202;', 'label' => 'Sensordaten'],  // 📊
+        'threshold'   => ['symbol' => '&#129514;', 'label' => 'Schwellwerte'],  // 🧪
+
+        'mheard2'   => ['symbol' => '&#128225;&#65039;', 'label' => 'MHeard'],  // 📡
+        'mheard'   => ['symbol' => '&#128066;&#65039;', 'label' => 'MHeard'],  // 👂
+
+        'send-cmd'   => ['symbol' => '&#128228;', 'label' => 'Sende Befehl'],  // 📤
+
+        'message'   => ['symbol' => '&#128172;&#65039;', 'label' => 'Message'],  // 💬
+
+        'about'   => ['symbol' => '&#8505;&#65039;', 'label' => 'About'],  // ℹ️
+
+    ];
+
+    $key = strtolower($status);
+
+    if (!isset($icons[$key])) {
+        $key = 'unknown';
+    }
+
+    $entry = $icons[$key];
+
+    return $withLabel
+        ? $entry['symbol'] . ' ' . htmlspecialchars($entry['label'])
+        : $entry['symbol'];
+}
+
+function stopBgProcess($paramBgProcess)
+{
+    $osIssWindows   = chkOsIssWindows();
+    $bgTask         = $paramBgProcess['task'] ?? '';
+    $bgTask         = $bgTask == '' ? 'udp' : $bgTask;
+    $checkBgTaskCmd = getTaskCmd($bgTask);
+    $bgPidFile      = $bgTask  == 'udp' ? UPD_PID_FILE : CRON_PID_FILE;
+    $debugFlag      = false;
+
+    $bgTaskPid = $bgTask  == 'udp' ? getParamData('udpReceiverPid') : getParamData('cronLoopPid');
+
+    if ($bgTask  == 'cron')
+    {
+        $execDir         = 'log';
+        $basename        = pathinfo(getcwd())['basename'];
+        $cronPidFileSub  = '../' . $execDir . '/' . $bgPidFile;
+        $cronPidFileRoot = $execDir . '/' . $bgPidFile;
+        $bgPidFile       = $basename == 'menu' ? $cronPidFileSub : $cronPidFileRoot;
+    }
+
+    $bgTaskKillCmd = getTaskKillCmd($bgTask);
+    $taskResultBg  = shell_exec($checkBgTaskCmd);
+
+    if ($debugFlag === true)
+    {
+        echo "<br>bgTaskPid:$bgTaskPid";
+        echo "<br>#652#bgTask:$bgTask";
+        echo "<br>#652#bgPidFile:$bgPidFile";
+        echo "<br>#652#checkBgTaskCmd:$checkBgTaskCmd";
+        echo "<br>#652#bgTaskKillCmd:$bgTaskKillCmd";
+        echo "<br>#652#taskResultBg:$taskResultBg";
+    }
+
+    #Process is offline
+    if ($taskResultBg == '')
+    {
+        return $taskResultBg;
+    }
+
+    if ($osIssWindows === true)
+    {
+        #Beende Hintergrundprozess php.exe in Windows
+        exec($bgTaskKillCmd);
+
+        @unlink($bgPidFile);
+    }
+    else
+    {
+        #Beende Hintergrundprozess in Linux
+        #Ermittel PID anhand des Skript-Namens, um
+        #andere Bg Prozesse nicht aus Versehen zu beenden.
+        $taskResultBg = shell_exec($checkBgTaskCmd);
+
+        #Wenn PID nicht ermittelt wurde, ist der Task schon beendet
+        #oder wurde nicht gestartet.
+        if ($taskResultBg == '')
+        {
+            echo "<br>Kill Task: Task PID konnte nicht ermittelt werden!";
+            echo "<br>checkTaskCmd: $checkBgTaskCmd";
+            echo "<br>taskResult PID: " . $taskResultBg;
+
+            return false;
+        }
+        else
+        {
+            exec($bgTaskKillCmd);
+            @unlink($bgPidFile);
+        }
+    }
+
+    #Gib 1sek Zeit
+    sleep(1);
+
+    #Prüfe, ob Prozess wirklich beendet wurde
+    if ($osIssWindows === true)
+    {
+        $taskResult = shell_exec('tasklist /FI "PID eq ' . $bgTaskPid . '" | findstr /I "php.exe"');
+    }
+    else
+    {
+        $taskResult = shell_exec($checkBgTaskCmd);
+    }
+
+    if ($taskResult != '')
+    {
+        echo "<br>Task wurde nicht beendet!";
+        echo "<br>checkTaskCmd: $checkBgTaskCmd";
+        echo "<br>taskResult PID: " . $taskResult;
+
+        return false;
+    }
+
+    return true;
+}
+
+function startBgProcess($paramStartBgProcess)
+{
+    $osIsWindows = chkOsIssWindows();
+    $task        = $paramStartBgProcess['task'] ?? 'udp';
+    $bgProcFile  = $task == 'udp' ? UDP_PROC_FILE : CRON_PROC_FILE;
+    $taskCmd     = getTaskCmd($task);
+    $taskResult  = shell_exec($taskCmd);
+    $debugFlag   = false;
+
+    if ($osIsWindows === false)
+    {
+        $basename       = pathinfo(getcwd())['basename'];
+        $bgProcFileSub  = '../' . $bgProcFile;
+        $bgProcFileRoot = $bgProcFile;
+        $bgProcFile     = $basename == 'menu' ? $bgProcFileSub : $bgProcFileRoot;
+    }
+
+    if ($debugFlag === true)
+    {
+        echo "<br>#1956#startBgProcess# task:" . $task . ' Taskresult:' . $taskResult;
+        echo "<br>#1956#startBgProcess#Taskresult taskCmd:" . $taskCmd;
+        echo "<br>#1956#startBgProcess#Taskresult bgProcFile:" . $bgProcFile;
+        echo "<br>osIsWindows:";
+        var_dump($osIsWindows);
+    }
+
+    if (empty($taskResult))
+    {
+        if ($debugFlag === true)
+        {
+            echo "<br>#1956#startBgProcess#Taskresult EMpty: task:" . $task . ' Task-Result:' . $taskResult;
+            echo "<br>#1956#startBgProcess#Taskresult taskCmd:" . $taskCmd;
+            echo "<br>#1956#startBgProcess#Taskresult bgProcFile:" . $bgProcFile;
+        }
+
+        if($osIsWindows === true)
+        {
+            #Unter Windows mit Curl Starten
+            callWindowsBackgroundTask($bgProcFile);
+        }
+        else
+        {
+            #Unter Linux direkt starten
+            exec('nohup php ' . $bgProcFile . ' >/dev/null 2>&1 &');
+        }
+
+        sleep(1);
+
+        $checkTaskCmd = getTaskCmd($task);
+        $taskResult   = shell_exec($checkTaskCmd);
+
+        if ($debugFlag === true)
+        {
+            echo "<br>#1956#startBgProcess#Taskresult taskResult:" . $taskResult;
+        }
+    }
+
+    return $taskResult;
+}
+
+function callWindowsBackgroundTask($taskFile, $execDir = ''): bool
+{
+    // Holt den Projekt-Root aus SCRIPT_NAME (NICHT SCRIPT_FILENAME!)
+    $protocol    = (empty($_SERVER['HTTPS']) ? 'http' : 'https');
+    $host        = $_SERVER['HTTP_HOST'];
+    $scriptName  = $_SERVER['SCRIPT_NAME']; // z. B. /meshdash/menu/index.php
+    $projectRoot = explode('/', trim($scriptName, '/'))[0]; // ergibt 'meshdash'
+    $baseUrl     = $protocol . '://' . $host . '/' . $projectRoot;
+    $triggerLink = $baseUrl . '/task_bg.php';
+
+//    echo "<br>taskFile:$taskFile";
+//    echo "<br>#1970#callWindowsBackgroundTask#:".$triggerLink;
+
+    $postFields = array(
+        'taskFile' => "$taskFile",
+        'execDir' => "$execDir",
+    );
+
+    $debugFlag = false;
+
+    #Starte Trigger
     $ch = curl_init();
 
     # Set Curl Options
     curl_setopt($ch, CURLOPT_URL, $triggerLink);
     curl_setopt($ch, CURLOPT_HEADER, 0);
     curl_setopt($ch, CURLOPT_NOBODY, 1);
-    curl_setopt($ch, CURLOPT_TIMEOUT_MS, 100);      // max. 100ms warten
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT_MS, 50); // max. 50ms Verbindungsaufbau
-    curl_setopt($ch, CURLOPT_NOSIGNAL, 1);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+    curl_setopt($ch, CURLOPT_TIMEOUT_MS, 100); // Warte max. 100 ms und beende Verbindung
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
 
     #Ignoriere Timeout Meldung da so gewollt
     if (curl_exec($ch) === false && curl_errno($ch) != 28)
@@ -1762,79 +2024,24 @@ function triggerCronLoop()
     }
 
     curl_close($ch);
+
+    if ($debugFlag === true)
+    {
+        echo "<br> Debug: callWindowsBackgroundTask";
+        echo "<br>triggerLink:$triggerLink";
+        echo "<br>taskFile:$taskFile";
+
+        echo "<pre>";
+        print_r($postFields);
+        echo "</pre>";
+
+        echo "<pre>";
+        print_r($ch);
+        echo "</pre>";
+
+        return true;
+    }
+
+    return true;
 }
 
-function getSystemUptimeSeconds()
-{
-    if (strncasecmp(PHP_OS, 'WIN', 3) === 0)
-    {
-        // Windows: PowerShell-Abfrage nutzen
-        $cmd    = 'powershell -Command "(get-date) - (gcim Win32_OperatingSystem).LastBootUpTime | % { $_.TotalSeconds }"';
-        $uptime = trim(shell_exec($cmd));
-        $uptime = str_replace(',', '.', $uptime);
-
-        return is_numeric($uptime) ? (int) $uptime : false;
-    }
-    else
-    {
-        // Linux: aus /proc/uptime lesen
-        $uptimeContent = @file_get_contents('/proc/uptime');
-        if ($uptimeContent === false)
-        {
-            return false;
-        }
-        $parts = explode(' ', $uptimeContent);
-
-        return isset($parts[0]) ? (int) floatval($parts[0]) : false;
-    }
-}
-function getSystemRebootTimestamp()
-{
-    if (strncasecmp(PHP_OS, 'WIN', 3) === 0)
-    {
-        // Windows: PowerShell-Abfrage für LastBootUpTime im ISO-Format
-        $cmd        = 'powershell -Command "(gcim Win32_OperatingSystem).LastBootUpTime.ToString(\'yyyy-MM-dd HH:mm:ss\')"';
-        $lastReboot = trim(shell_exec($cmd));
-
-        if ($lastReboot)
-        {
-            $lastRebootDate = new DateTime($lastReboot);
-
-            return $lastRebootDate->format('Y-m-d H:i:s');
-        }
-    }
-    else
-    {
-        // Linux: Aus /proc/uptime lesen
-        $uptimeContent = @file_get_contents('/proc/uptime');
-        if ($uptimeContent === false)
-        {
-            return false;
-        }
-
-        $uptimeParts = explode(' ', $uptimeContent);
-        if (isset($uptimeParts[0]) && is_numeric($uptimeParts[0]))
-        {
-            $uptimeSeconds = (int) floatval($uptimeParts[0]); // hier: auf int casten
-        }
-        else
-        {
-            return false;
-        }
-
-        $currentDate = new DateTime();
-
-        try
-        {
-            $currentDate->sub(new DateInterval("PT{$uptimeSeconds}S"));
-
-            return $currentDate->format('Y-m-d H:i:s');
-        }
-        catch (Exception $e)
-        {
-            return false;
-        }
-    }
-
-    return false;
-}

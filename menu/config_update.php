@@ -262,16 +262,16 @@ if ($sendData === '3')
     {
         if(unlink($deleteFileImageFullPath))
         {
-            echo '<br><span class="successHint">Backupfile ' . $deleteFileImage . ' erfolgreich gelöscht.</span>';
+            echo '<br><span class="successHint">Backup-File ' . $deleteFileImage . ' erfolgreich gelöscht.</span>';
         }
         else
         {
-            echo '<br><span class="failureHint">Fehler beim Löschen von Backupfile ' . $deleteFileImage . '</span>';
+            echo '<br><span class="failureHint">Fehler beim Löschen von Backup-File ' . $deleteFileImage . '</span>';
         }
     }
     else
     {
-        echo '<br><span class="failureHint">Das Backup-File: ' . $deleteFileImage . ' wurde nicht im Backup verzeichnis gefunden.</span>';
+        echo '<br><span class="failureHint">Das Backup-File: ' . $deleteFileImage . ' wurde nicht im Backup-Verzeichnis gefunden.</span>';
     }
 }
 

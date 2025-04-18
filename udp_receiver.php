@@ -7,17 +7,28 @@ require_once 'include/func_php_core.php';
 
 $errorCode     = '';
 $errorMsg      = '';
-$file          = 'log/msg_data_' . date('Ymd') . '.log';
-$errorFile     = 'log/error_' . date('Ymd') . '.log';
+$file          = 'log/udp_msg_data_' . date('Ymd') . '.log';
+$errorFile     = 'log/udp_receiver_error_' . date('Ymd') . '.log';
+$udpPidFile    = UPD_PID_FILE;
+$udpStopFile   = UPD_STOP_FILE;
 $outDataArray  = array();
 $osTypeIsLinux = true;
 $debugFlag     = false;
 
 #Scriptexecution Time endless
-#ini_set('max_execution_time', 0);
+ini_set('max_execution_time', 0);
+
+#Check ob aufruf via CLI
+if (php_sapi_name() !== 'cli')
+{
+    die("Aufruf nur via CLI. Abbruch.");
+}
 
 ini_set('serialize_precision', 14); //Must set it's a Bug in PHP > 7.1.x
 ini_set('precision', 14);
+
+#Check what oS is running
+$osIssWindows = chkOsIssWindows();
 
 #Check what oS is running
 if (strtoupper(substr(php_uname('s'), 0, 3)) === 'WIN')
@@ -32,6 +43,9 @@ if (strtoupper(substr(php_uname('s'), 0, 3)) === 'WIN')
     {
         echo "<br>ex: $getPortInUse";
 
+        $errorText = "Windows: Port In use [$getPortInUse] at " . date('Y-m-d H:i:s') . "\n";
+        file_put_contents($errorFile, $errorText,FILE_APPEND);
+
         $splitOut = explode(' ', $getPortInUse);
 
         foreach ($splitOut as $outData)
@@ -43,11 +57,16 @@ if (strtoupper(substr(php_uname('s'), 0, 3)) === 'WIN')
         }
 
         end($outDataArray);
+
         $pid = (current($outDataArray) !== false) ? current($outDataArray) : 0;
 
         if ($pid != 0)
         {
             $resKillPid = shell_exec('taskkill /F /PID ' . $pid);
+
+            $errorText = "Windows: Kill Task  Pid: [$pid] at " . date('Y-m-d H:i:s') . "\n";
+            file_put_contents($errorFile, $errorText,FILE_APPEND);
+
             sleep(1);
         }
     }
@@ -57,6 +76,9 @@ else
     #Linux Part
     $getPortInUse = shell_exec('netstat -nlpu|grep 1799');
     ob_implicit_flush(1);
+
+    $errorText = "Linux: Port In use [$getPortInUse] at " . date('Y-m-d H:i:s') . "\n";
+    file_put_contents($errorFile, $errorText,FILE_APPEND);
 
     #If in USe kill Process
     if ($getPortInUse != '')
@@ -76,9 +98,13 @@ else
 
         if ($pid != 0)
         {
-            $pidSplit = explode('/', $pid);
-            $pidId = $pidSplit[0];
+            $pidSplit   = explode('/', $pid);
+            $pidId      = $pidSplit[0];
             $resKillPid = shell_exec('kill -9 ' . $pidId);
+
+            $errorText = "Linux: Kill Task  Pid: [$pidId] at " . date('Y-m-d H:i:s') . "\n";
+            file_put_contents($errorFile, $errorText,FILE_APPEND);
+
             sleep(1);
         }
     }
@@ -113,13 +139,16 @@ if (!@socket_bind($sock, "0.0.0.0", 1799))
     die("<br>Could not bind socket : [$errorCode] $errorMsg");
 }
 
+file_put_contents('udp.pid', getmypid());
+// PID speichern in Parameter Datenbank.
+setParamData('udpReceiverPid', getmypid());
+setParamData('udpReceiverTs', date('Y-m-d H:i:s'),'txt');
+
 //Infinite Iteration to Receive UDP Data from Bind Port
 while (true)
 {
     $bufJson   = '';
     $r         = socket_recvfrom($sock, $bufJson, 512, 0, $remote_ip, $remote_port);
-    $file      = 'log/msg_data_' . date('Ymd') . '.log';
-    $errorFile = 'log/error_' . date('Ymd') . '.log';
 
     if ($r === false)
     {
@@ -215,12 +244,20 @@ while (true)
     $db->close();
     unset($db);
 
-    if (!file_exists('udp.pid'))
+    #Rekonstruiere PID
+    if (!file_exists($udpPidFile))
+    {
+        file_put_contents('udp.pid', getmypid());
+    }
+
+    if (file_exists($udpStopFile))
     {
         socket_close($sock);
 
-        $errorText = "UDP-Listener beendet via udp.pid! at " . date('Y-m-d H:i:s') . "\n";
+        $errorText = "UDP-Listener beendet via udp_stop! at " . date('Y-m-d H:i:s') . "\n";
         file_put_contents($errorFile, $errorText,FILE_APPEND);
+        unlink($udpStopFile);
+        unlink($udpPidFile);
 
         exit();
     }

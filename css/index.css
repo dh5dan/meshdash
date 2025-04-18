@@ -103,6 +103,11 @@ iframe {
 
 /********* Menuesteuerung  */
 
+.menuitem
+{
+    text-align: left;
+}
+
 .topMenu {
     position: absolute;
     margin-left: 10px;
@@ -144,6 +149,10 @@ iframe {
     background-color: lightblue;
 }
 
+.iconBgColor {
+    /*background: orange;*/
+}
+
 /* Submenu wird jetzt seitlich rechts angezeigt */
 .submenu {
     display: none;
@@ -156,7 +165,23 @@ iframe {
     z-index: 1000;
 }
 
+.submenuIcon {
+    display: none;
+    background-color: #333; /* Für das Submenü eine dunklere Farbe */
+    position: absolute;
+    left: 100%; /* Verschiebt das Submenü nach links, sodass es rechts vom Hauptmenü erscheint */
+    top: 0; /* Submenü erscheint oben am jeweiligen li-Element */
+    min-width: 185px; /* Mindestbreite des Submenüs */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
 /* Wenn das Submenü angezeigt wird */
+#menu li.active > .submenuIcon {
+    display: block;
+    left: 100%; /* Zielposition links an das übergeordnete li */
+}
+
 #menu li.active > .submenu {
     display: block;
     left: 100%; /* Zielposition links an das übergeordnete li */

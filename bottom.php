@@ -6,6 +6,11 @@ echo '<head><title>Bottom</title>';
 echo '<meta http-equiv="content-type" content="text/html; charset=utf-8">';
 echo '<link rel="stylesheet" href="css/bottom.css?' . microtime() . '">';
 
+echo '<script type="text/javascript" src="jquery/jquery.min.js"></script>';
+echo '<script type="text/javascript" src="jquery/jquery-ui.js"></script>';
+echo '<link rel="stylesheet" href="jquery/jquery-ui.css">';
+echo '<link rel="stylesheet" href="jquery/css/jq_custom.css">';
+
 #Prevnts UTF8 Errors on misconfigured php.ini
 ini_set( 'default_charset', 'UTF-8' );
 
@@ -14,6 +19,8 @@ echo '<body>';
 
 require_once 'dbinc/param.php';
 require_once 'include/func_php_core.php';
+require_once 'include/func_php_core.php';
+require_once 'include/func_js_bottom.php';
 
 $errMsg  = utf8_decode($_REQUEST['errMsg'] ?? '');
 $msgText = $_REQUEST['msgText'] ?? '';
@@ -36,9 +43,15 @@ else
 echo '<form action="send_msg.php" method="POST">';
 echo '<input type="hidden" id="groupId" name="group" value="' . $group . '">';
     echo '<div class="bottomDmMsgLine">';
+
      echo '<span class="bottomSize16">DM:</span><input class="bottomInputDm" id="bottomDm" type="text" value="' . $dm . '" size="20" id="dm" name="dm" />';
      echo '<span class="bottomSize16">MSG:</span><input class="bottomInputMsg" type="text" value="' . $msgText . '" id="msgText" name="msgText" required />';
+
     echo '</div>';
+
+echo'<div class="bottomCounterContainer">';
+echo '<p id="byteCount">0 / 149 Byte</p>';
+echo '</div>';
 
     echo '<div class="bottomSubmitLine">';
     echo '<button class="bottomInputSubmit" type="submit">Message Absenden</button>';
