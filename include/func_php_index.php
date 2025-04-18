@@ -419,6 +419,7 @@ function showMenu()
         <li data-action="lora_info">Lora-Info</li>
         <li data-action="config_data_purge">Data-Purge</li>
         <li data-action="config_ping_lora">Ping Lora</li>
+        <li data-action="debug_info">Debug-Info</li>
       </ul>
     </li>
     <li>Gruppen
@@ -638,7 +639,7 @@ function checkExtension($param)
     exit();
 }
 
-function checkBgProcess($paramBgProcess)
+function restartBgProcess($paramBgProcess)
 {
     $osIssWindows = $paramBgProcess['osIssWindows'];
     $checkTaskCmd = $paramBgProcess['checkTaskCmd'];
@@ -680,15 +681,6 @@ function checkBgProcess($paramBgProcess)
         echo "<br>Task wurde nicht beendet!";
         echo "<br>checkTaskCmd: $checkTaskCmd";
         echo "<br>taskResult PID: " . $taskResult;
-    }
-    else
-    {
-        #Open Database
-        $db = new SQLite3('database/meshdash.db', SQLITE3_OPEN_READONLY);
-
-        #Close and write Back WAL
-        $db->close();
-        unset($db);
     }
 }
 

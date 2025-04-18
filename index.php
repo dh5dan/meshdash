@@ -181,33 +181,6 @@ if ($debugFlag === true)
 $chkExtension1 = extension_loaded('pdo_sqlite');
 $chkExtension2 = extension_loaded('sqlite3');
 
-if ($debugFlag === true)
-{
-    $errorText = date('Y-m-d H:i:s') . ' ' . phpversion() . "\n";
-
-    if ($chkExtension1 === false)
-    {
-        $errorText = date('Y-m-d H:i:s') . ' chkExtension1 = false. (pdo_sqlite)' . "\n";
-    }
-    else
-    {
-        $errorText = date('Y-m-d H:i:s') . ' chkExtension1 = true. (pdo_sqlite)' . "\n";
-    }
-
-    file_put_contents('log/debug.log', $errorText, FILE_APPEND);
-
-    if ($chkExtension2 === false)
-    {
-        $errorText = date('Y-m-d H:i:s') . ' chkExtension2 = false. (sqlite3)' . "\n";
-    }
-    else
-    {
-        $errorText = date('Y-m-d H:i:s') . ' chkExtension2 = true. (sqlite3)' . "\n";
-    }
-
-    file_put_contents('log/debug.log', $errorText, FILE_APPEND);
-}
-
 if ($chkExtension1 === false || $chkExtension2 === false)
 {
     $paramExtension['debugFlag']     = $debugFlag;
@@ -218,44 +191,23 @@ if ($chkExtension1 === false || $chkExtension2 === false)
     checkExtension($paramExtension);
 }
 
-if ($debugFlag === true)
-{
-    $errorText = date('Y-m-d H:i:s') . ' MeshDash DB found database/meshdash.db' . "\n";
-
-    if (!file_exists('database/meshdash.db'))
-    {
-        $errorText = date('Y-m-d H:i:s') . ' MeshDash DB NOT found database/meshdash.db' . "\n";
-    }
-
-    file_put_contents('log/debug.log', $errorText, FILE_APPEND);
-
-    $errorText = date('Y-m-d H:i:s') . ' MeshDash DB found database/parameter.db' . "\n";
-
-    if (!file_exists('database/parameter.db'))
-    {
-        $errorText = date('Y-m-d H:i:s') . ' MeshDash DB NOT found database/parameter.db' . "\n";
-    }
-
-    file_put_contents('log/debug.log', $errorText, FILE_APPEND);
-}
-
 #Muss ich den Process beenden?
 if ($sendData == 1)
 {
     $paramBgProcess['checkTaskCmd'] = $checkTaskCmd;
     $paramBgProcess['osIssWindows'] = $osIssWindows;
-    checkBgProcess($paramBgProcess);
+    restartBgProcess($paramBgProcess);
 }
 
 #Prüfe ob CronJob für SendQueue gesetzt ist unter Linux
 if ($osIssWindows === false)
 {
-    checkCronLoop();
+    #checkCronLoop();
 }
 else
 {
     #Trigger CronLoop Once for Windows via curl
-    triggerCronLoop();
+    #triggerCronLoop();
 }
 
 ######################################################################################

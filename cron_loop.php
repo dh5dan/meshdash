@@ -19,6 +19,8 @@ $triggerLink = $actualHost . '://' . $_SERVER['SERVER_NAME'] . dirname($_SERVER[
 $osIssWindows = chkOsIssWindows();
 $debugFlag    = true;
 
+exit();
+
 #Prüfe, ob Verzeichnis existiert und setzte es ggf. neu
 if (!is_dir("$basePath/$execDir") && $osIssWindows === false)
 {

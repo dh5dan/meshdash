@@ -1,0 +1,192 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 0;
+}
+
+.successHint {
+    background-color: darkgreen;
+    color: whitesmoke;
+    font-weight: bold;
+}
+
+.failureHint {
+    background-color: crimson;
+    color: whitesmoke;
+    font-weight: bold;
+}
+
+table {
+    width: auto;
+    border-collapse: collapse;
+}
+
+td {
+    padding: 4px;
+    vertical-align: middle;
+}
+
+input[type="text"] {
+    width: 100%;
+    max-width: 90px;
+    padding: 5px;
+}
+
+input[type="checkbox"] {
+    transform: scale(1.2);
+}
+
+.failureHint {
+    /*display: block;*/
+    padding: 10px;
+    margin: 10px 0;
+    text-align: center;
+}
+
+.btnSaveDebugInfo {
+    font-size: 14px;
+    padding: 8px 15px;
+    border: none;
+    background-color: #0056b3;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    /*width: 100%;*/
+}
+
+.cronStatusPoint {
+    /*margin-top: 7px;*/
+    /*cursor: pointer;*/
+    width: 20px;
+}
+
+
+/* backup Tabelle */
+
+.scrollable-container {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+    width: 496px;  /* Container-Breite anpassen */
+
+    -ms-overflow-style: none;  /* Für IE und Edge */
+    scrollbar-width: none;     /* Für Firefox */
+}
+
+.scrollable-container::-webkit-scrollbar {
+    display: none;             /* Für Chrome, Safari, Opera */
+}
+
+table.logTable {
+    border-collapse: collapse;
+    width: 30%;
+}
+table.logTable th, table.logTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+table.logTable tr:nth-child(even) {background-color: #f2f2f2;}
+table.logTable tr:hover {background-color: #ddd;}
+table.logTable th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #4CAF50;
+    color: white;
+}
+
+.imageDownload {
+    width: 25px;
+}
+
+.imageDelete {
+    width: 25px;
+    cursor: pointer;
+}
+
+.log-today {
+    color: green; /* hellgrün */
+}
+.log-yesterday {
+    color: blue; /* hellgelb */
+}
+.log-old {
+    color: crimson; /* hellgrau */
+}
+
+
+@media (max-width: 600px) {
+
+    td {
+        font-size: smaller;
+    }
+
+    table.logTable {
+        font-size: smaller;
+    }
+
+    table.logTable th,
+    table.logTable td{
+        padding: 2px;
+    }
+
+    .imageDownload, .imageDelete{
+        width: 15px;
+        margin: 0 5px; /* Links & Rechts 5px Abstand */
+    }
+
+    .successHint, .failureHint {
+        display: block;
+        padding: 10px;
+        margin: 10px 0;
+        text-align: center;
+    }
+
+    table {
+        font-size: 14px;
+    }
+
+    td:first-child {
+        white-space: nowrap;
+    }
+
+
+    input[type="text"], input[type="checkbox"] {
+        width: 100%;
+    }
+
+    input[type="button"] {
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    .ui-dialog {
+        width: 90% !important;
+        left: 5% !important;
+        right: 5% !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    .ui-dialog .ui-dialog-content {
+        overflow-x: auto;
+    }
+}
+
+/* Media Query für Smartphones */
+@media (max-width: 768px) {
+
+    h2 {
+        font-size: medium;
+    }
+
+    input[type="button"] {
+        display: inline-block;
+        background: #007bff;
+        color: white;
+        /*padding: 5px 10px;*/
+        border-radius: 5px;
+        cursor: pointer;
+    }
+}

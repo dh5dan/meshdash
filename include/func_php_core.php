@@ -874,7 +874,7 @@ function checkDbUpgrade($database)
             # Stop BG-Process
             $paramBgProcess['checkTaskCmd'] = $checkTaskCmd;
             $paramBgProcess['osIssWindows'] = $osIssWindows;
-            checkBgProcess($paramBgProcess);
+            restartBgProcess($paramBgProcess);
 
             ##start BG-Process
             $paramStartBgProcess['taskResult']   = '';
@@ -904,7 +904,7 @@ function checkDbUpgrade($database)
             # Stop BG-Process
             $paramBgProcess['checkTaskCmd'] = $checkTaskCmd;
             $paramBgProcess['osIssWindows'] = $osIssWindows;
-            checkBgProcess($paramBgProcess);
+            restartBgProcess($paramBgProcess);
 
             ##start BG-Process
             $paramStartBgProcess['taskResult']   = '';
@@ -932,7 +932,7 @@ function checkDbUpgrade($database)
             # Stop BG-Process
             $paramBgProcess['checkTaskCmd'] = $checkTaskCmd;
             $paramBgProcess['osIssWindows'] = $osIssWindows;
-            checkBgProcess($paramBgProcess);
+            restartBgProcess($paramBgProcess);
 
             ##start BG-Process
             $paramStartBgProcess['taskResult']   = '';
@@ -957,7 +957,7 @@ function checkDbUpgrade($database)
             # Stop BG-Process
             $paramBgProcess['checkTaskCmd'] = $checkTaskCmd;
             $paramBgProcess['osIssWindows'] = $osIssWindows;
-            checkBgProcess($paramBgProcess);
+            restartBgProcess($paramBgProcess);
 
             ##start BG-Process
             $paramStartBgProcess['taskResult']   = '';
@@ -1005,7 +1005,6 @@ function getTaskCmd(): string
     #Hinweis Pgrep -x funktioniert nicht, wenn man die PHP Datei ermitteln muss
     return  $osIssWindows === true ? 'tasklist | find "php.exe"' : "pgrep -a -f udp_receiver.php | grep -v pgrep | awk '{print $1}'";
 }
-
 function chronLog()
 {
     if ((int) getParamData('chronLogEnable') === 0)
@@ -1099,12 +1098,10 @@ function chronLog()
 
     return $returnArray;
 }
-
 function isMobile(): bool
 {
     return (bool) preg_match('/(android|iphone|ipad|ipod|blackberry|windows phone)/i', $_SERVER['HTTP_USER_AGENT']);
 }
-
 function setCronSensorInterval($intervallInMinuten, $deleteFlag): bool
 {
     $delete    = $deleteFlag == 1;
@@ -1211,7 +1208,6 @@ function setCronSensorInterval($intervallInMinuten, $deleteFlag): bool
 
     return true;
 }
-
 function checkCronLoop(int $deleteFlag = 0): bool
 {
     $delete    = $deleteFlag == 1;
@@ -1272,7 +1268,6 @@ function checkCronLoop(int $deleteFlag = 0): bool
 
     return true;
 }
-
 function setTxQueue($txQueueData): bool
 {
     $sendQueueMode = getParamData('sendQueueMode');
@@ -1406,7 +1401,6 @@ function setTxQueue($txQueueData): bool
 
     return true;
 }
-
 function getTxQueue()
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
@@ -1487,7 +1481,6 @@ function getTxQueue()
 
     return $returnValue;
 }
-
 function updateTxQueue($txQueueId): bool
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
@@ -1519,7 +1512,6 @@ function updateTxQueue($txQueueId): bool
 
     return true;
 }
-
 function setSensorAlertCounter($sensor, $sensorType): bool
 {
     if ($sensor == 'temp')
@@ -1626,7 +1618,6 @@ function setSensorAlertCounter($sensor, $sensorType): bool
 
     return true;
 }
-
 function resetSensorAlertCounter($sensor, $sensorType): bool
 {
     if ($sensor == 'temp')
@@ -1733,7 +1724,6 @@ function resetSensorAlertCounter($sensor, $sensorType): bool
 
     return true;
 }
-
 function triggerCronLoop()
 {
     $actualHost  = (empty($_SERVER['HTTPS']) ? 'http' : 'https');
@@ -1764,30 +1754,35 @@ function triggerCronLoop()
     curl_close($ch);
 }
 
-function getSystemUptimeSeconds()
+function getStatusIcon(string $status, bool $withLabel = false): string
 {
-    if (strncasecmp(PHP_OS, 'WIN', 3) === 0)
-    {
-        // Windows: PowerShell-Abfrage nutzen
-        $cmd    = 'powershell -Command "(get-date) - (gcim Win32_OperatingSystem).LastBootUpTime | % { $_.TotalSeconds }"';
-        $uptime = trim(shell_exec($cmd));
-        $uptime = str_replace(',', '.', $uptime);
+    $icons = [
+        'ok'         => ['symbol' => '&#x2705;', 'label' => 'Aktiv'],           // ✅
+        'active'     => ['symbol' => '&#x1F7E2;', 'label' => 'Aktiv'],          // 🟢
+        'wait'       => ['symbol' => '&#x1F7E1;', 'label' => 'Warten'],         // 🟡
+        'on'         => ['symbol' => '&#x1F51B;', 'label' => 'Eingeschaltet'],  // 🔛
+        'error'      => ['symbol' => '&#x274C;', 'label' => 'Fehler'],          // ❌
+        'inactive'   => ['symbol' => '&#x1F534;', 'label' => 'Inaktiv'],        // 🔴
+        'off'        => ['symbol' => '&#x1F4F4;', 'label' => 'Ausgeschaltet'],  // 📴
+        'warning'    => ['symbol' => '&#9888;&#65039;', 'label' => 'Warnung'],  // ⚠️
+        'blocked'    => ['symbol' => '&#x26D4;', 'label' => 'Blockiert'],       // ⛔
+        'unknown'    => ['symbol' => '&#x2753;', 'label' => 'Unbekannt'],       // ❓
+    ];
 
-        return is_numeric($uptime) ? (int) $uptime : false;
-    }
-    else
-    {
-        // Linux: aus /proc/uptime lesen
-        $uptimeContent = @file_get_contents('/proc/uptime');
-        if ($uptimeContent === false)
-        {
-            return false;
-        }
-        $parts = explode(' ', $uptimeContent);
+    $key = strtolower($status);
 
-        return isset($parts[0]) ? (int) floatval($parts[0]) : false;
+    if (!isset($icons[$key])) {
+        $key = 'unknown';
     }
+
+    $entry = $icons[$key];
+
+    return $withLabel
+        ? $entry['symbol'] . ' ' . htmlspecialchars($entry['label'])
+        : $entry['symbol'];
 }
+
+
 function getSystemRebootTimestamp()
 {
     if (strncasecmp(PHP_OS, 'WIN', 3) === 0)
