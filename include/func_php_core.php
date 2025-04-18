@@ -1275,6 +1275,79 @@ function checkCronLoop(int $deleteFlag = 0): bool
 
 function setTxQueue($txQueueData): bool
 {
+    $sendQueueMode = getParamData('sendQueueMode');
+    $loraIP        = getParamData('loraIp');
+    $doLogEnable   = getParamData('doLogEnable');
+    $logfile       = 'log/tx_data_' . date('Ymd') . '.log';
+    $fileLogJson   = 'log/tx_json_data_' . date('Ymd') . '.log';
+    $errorLogfile  = 'log/error_tx_data_' . date('Ymd') . '.log';
+    $sendQueueMode = $sendQueueMode == '' ? 0 : $sendQueueMode;
+    $debugFlag     = false;
+
+    if ($doLogEnable === true)
+    {
+        echo "<br></br>sendQueueMode:$sendQueueMode";
+        echo "<br>doLogEnable:$doLogEnable";
+    }
+
+    if ($sendQueueMode == 0)
+    {
+        #Workaround da Anführungszeichen derzeit via UDP nicht übertragen werden. Möglicher FW Bug
+        $msgText              = str_replace('"', '``', $txQueueData['txMsg']); // tausche mit Accent-Aigu
+        $arraySendUdp['type'] = trim($txQueueData['txType']);
+        $arraySendUdp['dst']  = trim($txQueueData['txDst']);
+        $arraySendUdp['msg']  = trim($msgText);
+
+        if ($doLogEnable == 1)
+        {
+            $messageRaw = trim($txQueueData['txType'])." ". trim($txQueueData['txDst'])." ". trim($msgText);
+
+            // Daten formatieren
+            $dataLogTx = date('Y-m-d H:i:s') . ': ' . "$messageRaw\n";
+
+            // Json-Daten in Datei speichern
+            file_put_contents($logfile, $dataLogTx, FILE_APPEND);
+        }
+
+        $message = json_encode($arraySendUdp, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+        if ($socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP))
+        {
+            socket_sendto($socket, $message, strlen($message), 0, $loraIP, 1799);
+            socket_close($socket);
+
+            if ($debugFlag === true)
+            {
+                echo "<br>Nachricht versand: " . trim($txQueueData['txType']) . " " . trim(
+                        $txQueueData['txDst']
+                    ) . " " . trim($msgText);
+            }
+
+            if ($doLogEnable == 1)
+            {
+                // Daten formatieren
+                $dataLogJson = date('Y-m-d H:i:s') . ': ' . "$message\n";
+
+                // Json-Daten in Datei speichern
+                file_put_contents($fileLogJson, $dataLogJson, FILE_APPEND);
+            }
+        }
+        else
+        {
+            $data = date('Y-m-d H:i:s') . ': ' . "Kann Socket nicht erstellen. Abbruch!";
+            file_put_contents($errorLogfile, $data, FILE_APPEND);
+
+            if ($debugFlag === true)
+            {
+                echo "<br>" . $data;
+            }
+
+            exit();
+        }
+
+        return true;
+    }
+
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
     $basename        = pathinfo(getcwd())['basename'];
     $dbFilenameSub   = '../database/tx_queue.db';
