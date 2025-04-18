@@ -55,6 +55,10 @@ if ($sendData === '1')
 $sendQueueInterval = getParamData('sendQueueInterval');
 $sendQueueInterval = $sendQueueInterval == '' ? 20 : $sendQueueInterval;
 
+$sendQueueMode        = getParamData('sendQueueMode');
+$sendQueueMode        = $sendQueueMode == '' ? 0 : $sendQueueMode;
+$sendQueueModeChecked = $sendQueueMode == 1 ? 'checked' : '';
+
 echo "<h2>Send-Queue Einstellungen von MeshDash-SQL</h2>";
 
 echo '<form id="frmSendQueue" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
@@ -64,6 +68,11 @@ echo '<table>';
 echo '<tr>';
 echo '<td>Sendeintervall in Sek. >= 5:</td>';
 echo '<td><input type="text" name="sendQueueInterval" id="sendQueueInterval" value="' . $sendQueueInterval . '" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td>Send-Queue enabled:</td>';
+echo '<td><input type="checkbox" name="sendQueueMode" ' . $sendQueueModeChecked . ' id="sendQueueMode" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';

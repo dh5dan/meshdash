@@ -157,7 +157,8 @@ function initSQLiteDatabase($database): bool
                                        ('strictCallEnable', 0, ''),
                                        ('timeZone', '', 'Europe/Berlin'),
                                        ('sendQueueInterval', '30', ''),
-                                       ('cronLoopPid', '', '')
+                                       ('cronLoopPid', '', ''),
+                                       ('sendQueueMode', 0, '')
            ");
 
         #Close and write Back WAL

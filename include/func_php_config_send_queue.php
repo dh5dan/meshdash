@@ -10,6 +10,9 @@ function saveSendQueueSettings(): bool
     $sendQueueInterval         = trim($_REQUEST['sendQueueInterval']) ?? 20;
     setParamData('sendQueueInterval', $sendQueueInterval);
 
+    $sendQueueMode         = $_REQUEST['sendQueueMode'] ?? 0;
+    setParamData('sendQueueMode', $sendQueueMode);
+
     if ($sendQueueInterval != 20)
     {
         file_put_contents($intervalFilename, $sendQueueInterval);

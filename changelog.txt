@@ -1,5 +1,10 @@
-Version 1.10.12 SQL
+Version 1.10.14 SQL
 
+Feature: Send-Queue ist nun abschaltbar im Menu Sende-Intervall.
+         Default ist abgeschaltet.
+         Es gibt wohl noch vereinzelt Probleme mit der Queue.
+###########################################
+Version 1.10.12 SQL
 BUGFIX: Calls mit Zahlen im Präfix wurden nicht im Own-Call Filter angezeigt.
 ##########################################
 Version 1.10.10 SQL
