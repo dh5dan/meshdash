@@ -27,6 +27,10 @@ Einige Funktionen von MeshDash:
 - Update über die Weboberfläche
 - Senden von Befehlen an den Lora
 - Sensorabfragen mit Schwellwertbenachrichtigung
+- Senden von Nachrichten über eine Send-Queue mit festen Intervallen.  
+  Dies gewährleistet, das aufeinanderfolgende Nachrichten mit einem  
+  eingestellten Zeitabstand gesendet werden, um Sendekollisionen zu vermeiden.
+- Byte-Counter der die verbleibende Anzahl von Zeichen pro Nachricht anzeigt.
 
 Das Projekt ist mittlerweile aus der **Beta-Phase**, doch es können immer mal noch Fehler auftreten.  
 Falls Probleme auftreten, bitte im Issue-Bereich von GitHub melden,  
@@ -82,12 +86,27 @@ Sie wird in regelmässigen Abständen aktualisiert.
 ![FILES](/docs/30_send_command.jpg)
 ![FILES](/docs/31_send_command.jpg)
 
+### Debug-Informationen sofort auf einen Blick
+Ideal zur Fehleranalyse als Screenshot.  
+Auch können hier einfach Logdateien heruntergeladen werden,  
+die weitere hilfreiche Informationen liefern können.
+
+![FILES](/docs/33_debug_info.jpg)
+![FILES](/docs/33_debug_info_logs.jpg)
+
+### Jetzt auch mit Byte-Counter Anzeige  
+Die Angabe in Byte ist dem UTF-8 Format geschuldet,  
+da diese gegenüber einem ASCII-Zeichen mehr als 1 Byte groß sind.  
+Die max. Textlänge ist aber derzeit auf 150 Zeichen beschränkt.
+
+![FILES](/docs/34_msg_byte_counter.jpg)
+
 
 ### Nun auch mit Tab-Benachrichtigungen bei neuen Nachrichten.
 ![FILES](/docs/60_desktop_tab_alert.jpg)
 ![FILES](/docs/61_handy_Tab_alert.jpg)
 
-## Noch offene Punkte die u.a. auf der To-do-Liste stehen:
+### Noch offene Punkte die u.a. auf der To-do-Liste stehen:
 - MHeard konfigurierbar machen für Request-/Acknowledged Ziele.
 
 ### Weitere Featureanfragen stehen unter den ISSUES mit dem TAG Erweiterungen
