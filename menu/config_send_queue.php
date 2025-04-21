@@ -30,11 +30,11 @@ $sendData = $_REQUEST['sendData'] ?? 0;
 $osIssWindows = chkOsIssWindows();
 $osName       = $osIssWindows === true ? 'Windows' : 'Linux';
 
-$execDir          = 'log';
-$basename         = pathinfo(getcwd())['basename'];
-$lockFilenameSub  = '../' . $execDir . '/cron_loop.lock';
-$lockFilenameRoot = $execDir . '/cron_loop.lock';
-$lockFilename     = $basename == 'menu' ? $lockFilenameSub : $lockFilenameRoot;
+$execDir         = 'log';
+$currentBaseDir  = pathinfo(getcwd())['basename'];
+$cronPidFileSub  = '../' . $execDir . '/' . CRON_STOP_FILE;
+$cronPidFileRoot = $execDir . '/' . CRON_STOP_FILE;
+$cronPidFile     = $currentBaseDir == 'menu' ? $cronPidFileSub : $cronPidFileRoot;
 
 if ($sendData === '1')
 {
@@ -55,9 +55,11 @@ if ($sendData === '1')
 $sendQueueInterval = getParamData('sendQueueInterval');
 $sendQueueInterval = $sendQueueInterval == '' ? 20 : $sendQueueInterval;
 
-$sendQueueMode        = getParamData('sendQueueMode');
-$sendQueueMode        = $sendQueueMode == '' ? 0 : $sendQueueMode;
-$sendQueueModeChecked = $sendQueueMode == 1 ? 'checked' : '';
+$sendQueueEnabled        = getParamData('sendQueueMode');
+$sendQueueEnabled        = $sendQueueEnabled == '' ? 0 : $sendQueueEnabled;
+$sendQueueEnabledChecked = $sendQueueEnabled == 1 ? 'checked' : '';
+
+$resCheckCronLoopBgTask = checkCronLoopBgTask() == '' ? getStatusIcon('inactive') : getStatusIcon('active');
 
 echo "<h2>Send-Queue Einstellungen von MeshDash-SQL</h2>";
 
@@ -72,21 +74,14 @@ echo '</tr>';
 
 echo '<tr>';
 echo '<td>Send-Queue enabled:</td>';
-echo '<td><input type="checkbox" name="sendQueueMode" ' . $sendQueueModeChecked . ' id="sendQueueMode" value="1" /></td>';
+echo '<td><input type="checkbox" name="sendQueueMode" ' . $sendQueueEnabledChecked . ' id="sendQueueMode" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
 echo '<td>Send-Cron Status:</td>';
 
 echo '<td>';
-if (file_exists($lockFilename))
-{
-    echo '<img src="../image/punkt_green.png" id="bgTask" class="cronStatusPoint" alt="statusColor">';
-}
-else
-{
-    echo '<img src="../image/punkt_red.png" id="bgTask" class="cronStatusPoint" alt="statusColor">';
-}
+echo $resCheckCronLoopBgTask;
 echo '</td>';
 
 echo '</tr>';

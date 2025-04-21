@@ -1,12 +1,27 @@
-Version 1.10.14 SQL
+Version 1.10.16 SQL
 
+FEATURE: Trigger-Strategie geändert für TX-Queue.
+         Die Instanz wurde nun separiert und ist jetzt besser steuerbar.
+         Doppelte oder keine Aussendung sollten jetzt nicht mehr vorkommen.
+         Die Abschaltung der Tx-Queue Funktion bleibt aber erhalten,
+         sollten doch noch Probleme aufkommen.
+FEATURE: Debug-Info Seite zur Fehleranalyse hinzugefügt.
+FEATURE: Icons den Menüpunkten hinzugefügt.
+FEATURE: Byte-Zähler im Eingabefenster nun vorhanden 0-149 Bytes.
+         Bytes daher, da Html-Entity/UTF-8 mehr verbrauchen und nicht als ein Zeichen = 1 Byte zählen.
+         Danke an DK5EN für das Skript.
+
+INFO:    Ein Reboot muss hier auf jeden Fall einmalig durchgeführt werden
+         damit sichergestellt ist, das alle Parameter sauber neu initialisiert werden können.
+#################################################################
+Version 1.10.14 SQL
 Feature: Send-Queue ist nun abschaltbar im Menu Sende-Intervall.
          Default ist abgeschaltet.
          Es gibt wohl noch vereinzelt Probleme mit der Queue.
-###########################################
+#################################################################
 Version 1.10.12 SQL
 BUGFIX: Calls mit Zahlen im Präfix wurden nicht im Own-Call Filter angezeigt.
-##########################################
+#################################################################
 Version 1.10.10 SQL
 FEATURE: Umstellung aller versendeten Nachrichten auf Send-QUEUE Default 20 Sekunden.
          Neuer Menüpunkt zum Einstellen des Sende-Intervalls
@@ -24,7 +39,7 @@ Auswertung WX-Daten als Sensordaten.
 Auswertung INA226 Daten aus Info-Bereich und Anzeige in Sensordaten.
 BUGFIX: Mit MeshCom 4.34q (build: Mar 6 2025 / 15:17:43)
         gab es einen Fehler im <TR>-Tag der Infoseite, was die Auswertung von Call verhindert hat.
-        Dieses wird nun durch einen Workaround korrigiert. Ist in Version R aber behoben.
+        Über einenen Workaround wird dies nun korrigiert. Ist in Version R aber behoben.
 FEATURE: Mit 4.34q (build: Mar 6 2025 / 15:17:43) gibt es ein neues Info-Feld Startzeit.
 FEATURE: Schwellwertangaben für Sensordaten implementiert mit Alert-Funktion.
 FEATURE: RegEx entfernt bei Msg Eingabe. Alle Zeichen erlaubt.

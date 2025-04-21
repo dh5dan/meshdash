@@ -36,14 +36,15 @@ $autostartBgProcess = true;
 $sendData           = $_REQUEST['sendData'] ?? 0;
 $sendDataCheck      = $_REQUEST['sendDataCheck'] ?? 0;
 $imgTaskRunning     = 'image/punkt_green.png';
-$imgTaskStopped     = 'image/punkt_red.png';
-$imgTaskStatus      = $imgTaskRunning;
+$imgTaskStoppedUdp  = 'image/punkt_red.png';
+$imgTaskStatusUdp   = $imgTaskRunning;
 $doCheckLoraIp      = true;
-$taskStatusFlag     = 1;
+$taskStatusFlagUdp  = 1;
 $debugFlag          = false; // For debug only
 
 #Check what oS is running
-$osIssWindows = chkOsIssWindows();
+$osIssWindows     = chkOsIssWindows();
+$sendQueueEnabled = (int) getParamData('sendQueueMode');
 
 #Hole Task Command abhängig vom OS
 $checkTaskCmd = getTaskCmd();
@@ -60,89 +61,16 @@ if (!is_writable('database') || !is_writable('log') || !is_writable('execute') |
     echo '<br>Bitte die Installation/Update mit SUDO SU ausführen.</b>';
     echo '</span>';
 
-    if ($debugFlag === true)
-    {
-        $errorText = date('Y-m-d H:i:s') . ' Keine Schreibrechte! Exit().' . "\n";
-        file_put_contents('log/debug.log', $errorText, FILE_APPEND);
-    }
-
     exit();
 }
 
-if ($debugFlag === true)
-{
-    $errorText = date('Y-m-d H:i:s') . ' Version MeshDash' . VERSION . "\n";
-    file_put_contents('log/debug.log', $errorText, FILE_APPEND);
-
-    if ($sendData != 0)
-    {
-        $errorText = date('Y-m-d H:i:s') . ' SendData: ' . $sendData . "\n";
-        file_put_contents('log/debug.log', $errorText, FILE_APPEND);
-    }
-}
-
 #Wenn Datenbank noch nicht existiert dann neu initiieren
-if (!file_exists('database/meshdash.db'))
-{
-    initSQLiteDatabase('meshdash');
-}
-else
-{
-    checkDbUpgrade('meshdash');
-}
-
-if (!file_exists('database/parameter.db'))
-{
-    initSQLiteDatabase('parameter');
-}
-
-if (!file_exists('database/keywords.db'))
-{
-    initSQLiteDatabase('keywords');
-}
-
-if (!file_exists('database/sensordata.db'))
-{
-    initSQLiteDatabase('sensordata');
-}
-else
-{
-    checkDbUpgrade('sensordata');
-}
-
-if (!file_exists('database/sensor_th_temp.db'))
-{
-    initSQLiteDatabase('sensor_th_temp');
-}
-
-if (!file_exists('database/sensor_th_ina226.db'))
-{
-    initSQLiteDatabase('sensor_th_ina226');
-}
-
-if (!file_exists('database/mheard.db'))
-{
-    initSQLiteDatabase('mheard');
-}
-else
-{
-    checkDbUpgrade('mheard');
-}
-
-if (!file_exists('database/groups.db'))
-{
-    initSQLiteDatabase('groups');
-}
-
-if (!file_exists('database/tx_queue.db'))
-{
-    initSQLiteDatabase('tx_queue');
-}
+initDatabases();
 
 #Setzte Leere LoraIp neu in param.php
 if ($sendData === '11')
 {
-    setLoraIpDb();
+    initSetBaseParam();
 }
 
 #Prüfe ob Lora Ip gesetzt wurde in param.php
@@ -151,20 +79,9 @@ if ($doCheckLoraIp === true)
     echo '<span class="unsetDisplayFlex">';
 
     $param['debugFlag'] = $debugFlag;
-    $doCheckLoraIp      = checkLoraIPDb($param);
+    $doCheckLoraIp      = checkBaseParam($param);
 
     echo '</span>';
-}
-
-if ($debugFlag === true)
-{
-    $errorText = date('Y-m-d H:i:s') . ' Os ist Linux' . "\n";
-    if ($osIssWindows === true)
-    {
-        $errorText = date('Y-m-d H:i:s') . ' Os ist Windows' . "\n";
-    }
-
-    file_put_contents('log/debug.log', $errorText, FILE_APPEND);
 }
 
 #Major/Minor Version ermitteln für PHP.ini Modifikation unter Linux
@@ -172,41 +89,8 @@ $phpVersionSplit = explode('.', phpversion());
 $phpVersionMajor = $phpVersionSplit[0];
 $phpVersionMinor = $phpVersionSplit[1];
 
-if ($debugFlag === true)
-{
-    $errorText = date('Y-m-d H:i:s') . ' PHP Version :' . phpversion() . "\n";
-    file_put_contents('log/debug.log', $errorText, FILE_APPEND);
-}
-
 $chkExtension1 = extension_loaded('pdo_sqlite');
 $chkExtension2 = extension_loaded('sqlite3');
-
-if ($debugFlag === true)
-{
-    $errorText = date('Y-m-d H:i:s') . ' ' . phpversion() . "\n";
-
-    if ($chkExtension1 === false)
-    {
-        $errorText = date('Y-m-d H:i:s') . ' chkExtension1 = false. (pdo_sqlite)' . "\n";
-    }
-    else
-    {
-        $errorText = date('Y-m-d H:i:s') . ' chkExtension1 = true. (pdo_sqlite)' . "\n";
-    }
-
-    file_put_contents('log/debug.log', $errorText, FILE_APPEND);
-
-    if ($chkExtension2 === false)
-    {
-        $errorText = date('Y-m-d H:i:s') . ' chkExtension2 = false. (sqlite3)' . "\n";
-    }
-    else
-    {
-        $errorText = date('Y-m-d H:i:s') . ' chkExtension2 = true. (sqlite3)' . "\n";
-    }
-
-    file_put_contents('log/debug.log', $errorText, FILE_APPEND);
-}
 
 if ($chkExtension1 === false || $chkExtension2 === false)
 {
@@ -218,45 +102,14 @@ if ($chkExtension1 === false || $chkExtension2 === false)
     checkExtension($paramExtension);
 }
 
-if ($debugFlag === true)
-{
-    $errorText = date('Y-m-d H:i:s') . ' MeshDash DB found database/meshdash.db' . "\n";
-
-    if (!file_exists('database/meshdash.db'))
-    {
-        $errorText = date('Y-m-d H:i:s') . ' MeshDash DB NOT found database/meshdash.db' . "\n";
-    }
-
-    file_put_contents('log/debug.log', $errorText, FILE_APPEND);
-
-    $errorText = date('Y-m-d H:i:s') . ' MeshDash DB found database/parameter.db' . "\n";
-
-    if (!file_exists('database/parameter.db'))
-    {
-        $errorText = date('Y-m-d H:i:s') . ' MeshDash DB NOT found database/parameter.db' . "\n";
-    }
-
-    file_put_contents('log/debug.log', $errorText, FILE_APPEND);
-}
-
-#Muss ich den Process beenden?
+#Muss ich den UDP-Process beenden?
 if ($sendData == 1)
 {
-    $paramBgProcess['checkTaskCmd'] = $checkTaskCmd;
-    $paramBgProcess['osIssWindows'] = $osIssWindows;
-    checkBgProcess($paramBgProcess);
+    $paramBgProcess['task'] = 'udp';
+    stopBgProcess($paramBgProcess);
 }
-
-#Prüfe ob CronJob für SendQueue gesetzt ist unter Linux
-if ($osIssWindows === false)
-{
-    checkCronLoop();
-}
-else
-{
-    #Trigger CronLoop Once for Windows via curl
-    triggerCronLoop();
-}
+#Lösche alten Linux-Cron Eintrag, wenn vorhanden
+deleteOldCron();
 
 ######################################################################################
 ##########  Top bereich
@@ -268,42 +121,40 @@ $tabsJson = getGroupTabsJson();
 echo '<input type="hidden" id="tabConfig" value=\'' . $tabsJson . '\' />';
 
 #Check TaskStatus
-$taskResult = shell_exec($checkTaskCmd);
+$taskResultUdp = shell_exec($checkTaskCmd);
 
 if ($autostartBgProcess === true && $sendData != 1)
 {
-    $paramStartBgProcess['taskResult']   = $taskResult;
-    $paramStartBgProcess['osIssWindows'] = $osIssWindows;
-    $paramStartBgProcess['checkTaskCmd'] = $checkTaskCmd;
-    $taskResult                          = startBgProcess($paramStartBgProcess);
-}
+    $paramStartUdpBgProcess['task'] = 'udp';
+    $taskResultUdp                  = startBgProcess($paramStartUdpBgProcess);
 
-#Setzte Bild für Task gestoppt sonst bleibt er grün
-if (empty($taskResult))
-{
-    $imgTaskStatus  = $imgTaskStopped;
-    $taskStatusFlag = 0;
-}
-
-if ($debugFlag === true)
-{
-    if ($debugFlag === true)
+    #Prüfe ob SendQueue Aktiv ist und starte Cron-loop
+    if ($sendQueueEnabled == 1)
     {
-        $errorText = date('Y-m-d H:i:s') . ' TaskResult:' . $taskResult . "\n";
-        file_put_contents('log/debug.log', $errorText, FILE_APPEND);
+        $paramStartCronBgProcess['task'] = 'cron';
+        $taskResultCron                  = startBgProcess($paramStartCronBgProcess);
     }
+}
+
+#Setzte Bild für UDP-Task gestoppt sonst bleibt er grün
+if (empty($taskResultUdp))
+{
+    $imgTaskStatusUdp  = $imgTaskStoppedUdp;
+    $taskStatusFlagUdp = 0;
 }
 
 echo '<div class="top">';
 echo '<h1 class="topText">';
 
-showMenu();
+#showMenu();
+showMenuIcons();
 
 echo '<div class="topLeft">';
-echo '<img src="' . $imgTaskStatus . '" id="bgTask" class="topImagePoint" alt="statusColor">';
+echo '<img src="' . $imgTaskStatusUdp . '" id="bgTask" class="topImagePoint" alt="statusColor">';
 echo '</div>';
 
-echo '<span class="topTitle" >MeshDash-SQL V ' . VERSION.'</span>';
+#echo '<span class="topTitle" >MeshDash-SQL V ' . VERSION.'</span>';
+echo '<span class="topTitle" >&#128007;&#128007;&#128007; MeshDash-SQL V ' . VERSION.' &#128007;&#128007;&#128007;</span>';
 
 // Neues Div für Uhrzeit, ohne das Layout zu zerstören
 echo '<div class="topRight" id="datetime">Hole Zeit!</div>';
@@ -316,7 +167,7 @@ echo '<div id="top-tabs"></div>';
 
 echo '<form id="frmIndex" method="post"  action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
-echo '<input type="hidden" name="taskStatusFlag" id="taskStatusFlag" value="'.$taskStatusFlag.'" />';
+echo '<input type="hidden" name="taskStatusFlag" id="taskStatusFlag" value="'.$taskStatusFlagUdp.'" />';
 echo '</form>';
 
 #Lade Iframes

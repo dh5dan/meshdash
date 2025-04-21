@@ -1,56 +1,63 @@
 <?php
 
-function callWindowsBackgroundTask($taskFile, $execDir = ''): bool
+function initDatabases()
 {
-    $actualHost  = (empty($_SERVER['HTTPS']) ? 'http' : 'https');
-    $triggerLink = $actualHost . '://' . $_SERVER['SERVER_NAME'] . dirname($_SERVER["REQUEST_URI"] . '?') . '/' . 'task_bg.php';
-
-    $postFields = array(
-        'taskFile' => "$taskFile",
-        'execDir' => "$execDir",
-    );
-
-    $debugFlag = false;
-
-    #Starte Trigger
-    $ch = curl_init();
-
-    # Set Curl Options
-    curl_setopt($ch, CURLOPT_URL, $triggerLink);
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_NOBODY, 1);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-    curl_setopt($ch, CURLOPT_TIMEOUT_MS, 100); // Warte max. 100 ms und beende Verbindung
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
-
-    #Ignoriere Timeout Meldung da so gewollt
-    if (curl_exec($ch) === false && curl_errno($ch) != 28)
+    if (!file_exists('database/meshdash.db'))
     {
-        echo 'Curl error: ' . curl_error($ch);
-        echo 'Curl error: ' . curl_errno($ch);
+        initSQLiteDatabase('meshdash');
+    }
+    else
+    {
+        checkDbUpgrade('meshdash');
     }
 
-    curl_close($ch);
-
-    if ($debugFlag === true)
+    if (!file_exists('database/parameter.db'))
     {
-        echo "<br> Debug: callWindowsBackgroundTask";
-        echo "<br>triggerLink:$triggerLink";
-        echo "<br>taskFile:$taskFile";
-
-        echo "<pre>";
-        print_r($postFields);
-        echo "</pre>";
-
-        echo "<pre>";
-        print_r($ch);
-        echo "</pre>";
-
-        return true;
+        initSQLiteDatabase('parameter');
     }
 
-    return true;
+    if (!file_exists('database/keywords.db'))
+    {
+        initSQLiteDatabase('keywords');
+    }
+
+    if (!file_exists('database/sensordata.db'))
+    {
+        initSQLiteDatabase('sensordata');
+    }
+    else
+    {
+        checkDbUpgrade('sensordata');
+    }
+
+    if (!file_exists('database/sensor_th_temp.db'))
+    {
+        initSQLiteDatabase('sensor_th_temp');
+    }
+
+    if (!file_exists('database/sensor_th_ina226.db'))
+    {
+        initSQLiteDatabase('sensor_th_ina226');
+    }
+
+    if (!file_exists('database/mheard.db'))
+    {
+        initSQLiteDatabase('mheard');
+    }
+    else
+    {
+        checkDbUpgrade('mheard');
+    }
+
+    if (!file_exists('database/groups.db'))
+    {
+        initSQLiteDatabase('groups');
+    }
+
+    if (!file_exists('database/tx_queue.db'))
+    {
+        initSQLiteDatabase('tx_queue');
+    }
 }
 
 function initSQLiteDatabase($database): bool
@@ -405,49 +412,97 @@ function initSQLiteDatabase($database): bool
 
 function showMenu()
 {
-    echo '
-<div id="menu-icon" class="topMenu">&#9776;</div>
-<div id="menu">
-  <ul>
-    <li>Einstellung
-      <ul class="submenu">
-        <li data-action="config_generally">Allgemein</li>
-        <li data-action="config_send_queue">Sende-Intervall</li>
-        <li data-action="config_alerting">Benachrichtigung</li>
-        <li data-action="config_keyword">Keyword</li>
-        <li data-action="config_update">Update</li>
-        <li data-action="lora_info">Lora-Info</li>
-        <li data-action="config_data_purge">Data-Purge</li>
-        <li data-action="config_ping_lora">Ping Lora</li>
-      </ul>
-    </li>
-    <li>Gruppen
-      <ul class="submenu">
-        <li data-action="grp_definition">Gruppen definieren</li>
-      </ul>
-    </li>
-     <li>Sensoren
-      <ul class="submenu">
-        <li data-action="sensor_data">Sensordaten</li>
-        <li data-action="sensor_threshold">Sensorschwellwerte</li>
-      </ul>
-    </li>
-    <li data-action="mHeard">MHeard</li>';
+    echo '<div id="menu-icon" class="topMenu">&#9776;</div>';
+    echo '<div id="menu">';
+    echo '<ul>';
+        echo '<li>Einstellung';
+          echo '<ul class="submenu">';
+            echo '<li data-action="config_generally">Allgemein</li>';
+            echo '<li data-action="config_send_queue">Sende-Intervall</li>';
+            echo '<li data-action="config_alerting">Benachrichtigung</li>';
+            echo '<li data-action="config_keyword">Keyword</li>';
+            echo '<li data-action="config_update">Update</li>';
+            echo '<li data-action="lora_info">Lora-Info</li>';
+            echo '<li data-action="config_data_purge">Data-Purge</li>';
+            echo '<li data-action="config_ping_lora">Ping Lora</li>';
+            echo '<li data-action="debug_info">Debug-Info</li>';
+          echo '</ul>';
+        echo '</li>';
+
+        echo '<li>Gruppen';
+          echo '<ul class="submenu">';
+            echo '<li data-action="grp_definition">Gruppen definieren</li>';
+          echo '</ul>';
+        echo '</li>';
+
+        echo '<li>Sensoren';
+          echo '<ul class="submenu">';
+            echo '<li data-action="sensor_data">Sensordaten</li>';
+            echo '<li data-action="sensor_threshold">Sensorschwellwerte</li>';
+          echo '</ul>';
+        echo '</li>';
+
+        echo '<li data-action="mHeard">MHeard</li>';
 
     if (function_exists('curl_version'))
     {
-        echo '  <li data-action="send_command">Sende Befehl</li>';
+        echo '<li data-action="send_command">Sende Befehl</li>';
     }
 
-    echo '
-    <li data-action="message">Message</li>
-     <li data-action="about">About</li>
-  </ul>
-</div>
-';
+        echo '<li data-action="message">Message</li>';
+        echo '<li data-action="about">About</li>';
+    echo '</ul>';
+echo '</div>';
+
 }
 
-function setLoraIpDb()
+function showMenuIcons()
+{
+    echo '<div id="menu-icon" class="topMenu">&#9776;</div>';
+    echo '<div id="menu">';
+    echo '<ul>';
+    echo '<li class="menuitem">' . getStatusIcon('configuration', true) . ' ' . getStatusIcon('right_triangle');
+    echo '<ul class="submenuIcon">';
+    echo '<li class="menuitem" data-action="config_generally">' . getStatusIcon('generally', true) . '</li>';
+    echo '<li data-action="config_send_queue">' . getStatusIcon('interval', true) . '</li>';
+    echo '<li data-action="config_alerting">' . getStatusIcon('notification', true) . '</li>';
+    echo '<li data-action="config_keyword">' . getStatusIcon('keyword', true) . '</li>';
+    echo '<li data-action="config_update">' . getStatusIcon('update', true) . '</li>';
+    echo '<li data-action="lora_info">' . getStatusIcon('lora-info', true) . '</li>';
+    echo '<li data-action="config_data_purge">' . getStatusIcon('data-purge', true) . '</li>';
+    echo '<li data-action="config_ping_lora">' . getStatusIcon('ping-lora', true) . '</li>';
+    echo '<li data-action="debug_info">' . getStatusIcon('debug-info', true) . '</li>';
+    echo '</ul>';
+    echo '</li>';
+
+    echo '<li class="menuitem">' . getStatusIcon('groups', true) . ' ' . getStatusIcon('right_triangle');
+    echo '<ul class="submenuIcon">';
+    echo '<li data-action="grp_definition">' . getStatusIcon('groups_define', true) . '</li>';
+    echo '</ul>';
+    echo '</li>';
+
+    echo '<li class="menuitem">' . getStatusIcon('sensors', true) . ' ' . getStatusIcon('right_triangle');
+    echo '<ul class="submenuIcon">';
+    echo '<li data-action="sensor_data">' . getStatusIcon('sensordata', true) . '</li>';
+    echo '<li data-action="sensor_threshold">' . getStatusIcon('threshold', true) . '</li>';
+    echo '</ul>';
+    echo '</li>';
+
+    echo '<li class="menuitem" data-action="mHeard">' . getStatusIcon('mheard', true) . '</li>';
+
+    if (function_exists('curl_version'))
+    {
+        echo '<li class="menuitem" data-action="send_command">' . getStatusIcon('send-cmd', true) . '</li>';
+    }
+
+    echo '<li class="menuitem" data-action="message">' . getStatusIcon('message', true) . '</li>';
+    echo '<li class="menuitem" data-action="about">' . getStatusIcon('about', true) . '</li>';
+    echo '</ul>';
+    echo '</div>';
+
+}
+
+function initSetBaseParam()
 {
     $loraIp   = trim($_REQUEST['paramSetLoraIp']);
     $callSign = strtoupper(trim($_REQUEST['inputParamCallSign']));
@@ -468,7 +523,7 @@ function setLoraIpDb()
     exit();
 }
 
-function checkLoraIPDb($param)
+function checkBaseParam($param)
 {
     $loraIP    = getParamData('loraIp');
     $callSign  = getParamData('callSign');
@@ -636,87 +691,5 @@ function checkExtension($param)
     echo '</span>';
 
     exit();
-}
-
-function checkBgProcess($paramBgProcess)
-{
-    $osIssWindows = $paramBgProcess['osIssWindows'];
-    $checkTaskCmd = $paramBgProcess['checkTaskCmd'];
-
-    if ($osIssWindows === true)
-    {
-        #Beende Hintergrundprozess php.exe in Windows
-        exec('taskkill /f /fi "imagename eq php.exe"');
-    }
-    else
-    {
-        #Beende Hintergrundprozess in Linux
-        #Ermittel PID anhand des Skript-Namens, um
-        #andere Bg Prozesse nicht aus Versehen zu beenden.
-        $taskResultBg = shell_exec($checkTaskCmd);
-
-        #Wenn PID nicht ermittelt wurde, ist der Task schon beendet
-        #oder wurde nicht gestartet.
-        if ($taskResultBg == '')
-        {
-            echo "<br>Kill sektion: Task PID konnte nicht ermittelt werden!";
-            echo "<br>checkTaskCmd: $checkTaskCmd";
-            echo "<br>taskResult PID: " . $taskResultBg;
-        }
-        else
-        {
-            exec('kill -9 ' . $taskResultBg);
-        }
-    }
-
-    #Gib 1sek Zeit
-    sleep(1);
-
-    #Prüfe, ob Prozess wirklich beendet wurde
-    $taskResult = shell_exec($checkTaskCmd);
-
-    if ($taskResult != '')
-    {
-        echo "<br>Task wurde nicht beendet!";
-        echo "<br>checkTaskCmd: $checkTaskCmd";
-        echo "<br>taskResult PID: " . $taskResult;
-    }
-    else
-    {
-        #Open Database
-        $db = new SQLite3('database/meshdash.db', SQLITE3_OPEN_READONLY);
-
-        #Close and write Back WAL
-        $db->close();
-        unset($db);
-    }
-}
-
-function startBgProcess($paramStartBgProcess)
-{
-    $taskResult   = $paramStartBgProcess['taskResult'];
-    $osIssWindows = $paramStartBgProcess['osIssWindows'];
-    $checkTaskCmd = $paramStartBgProcess['checkTaskCmd'];
-
-    if (empty($taskResult))
-    {
-        if($osIssWindows === true)
-        {
-            #Unter Windows mit Curl Starten
-            callWindowsBackgroundTask('udp_receiver.php');
-        }
-        else
-        {
-            #Unter Linux direkt starten
-            #exec('nohup php test_receiver.php >/dev/null 2>&1 &');
-            exec('nohup php udp_receiver.php >/dev/null 2>&1 &');
-        }
-
-        sleep(1);
-        #Check TaskStatus
-        $taskResult = shell_exec($checkTaskCmd);
-    }
-
-    return $taskResult;
 }
 

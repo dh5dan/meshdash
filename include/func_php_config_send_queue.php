@@ -3,15 +3,27 @@ function saveSendQueueSettings(): bool
 {
     $execDir              = 'log';
     $basename             = pathinfo(getcwd())['basename'];
-    $intervalFilenameSub  = '../' . $execDir . '/cron_interval.conf';
-    $intervalFilenameRoot = $execDir . '/cron_interval.conf';
+    $intervalFilenameSub  = '../' . $execDir . '/' . CRON_CONF_FILE;
+    $intervalFilenameRoot = $execDir . '/' . CRON_CONF_FILE;
     $intervalFilename     = $basename == 'menu' ? $intervalFilenameSub : $intervalFilenameRoot;
 
-    $sendQueueInterval         = trim($_REQUEST['sendQueueInterval']) ?? 20;
+    $sendQueueInterval = trim($_REQUEST['sendQueueInterval']) ?? 20;
     setParamData('sendQueueInterval', $sendQueueInterval);
 
-    $sendQueueMode         = $_REQUEST['sendQueueMode'] ?? 0;
+    $sendQueueMode = $_REQUEST['sendQueueMode'] ?? 0;
     setParamData('sendQueueMode', $sendQueueMode);
+
+    #Hintergrundprozess
+    $paramBgProcess['task'] = 'cron';
+
+    if ($sendQueueMode === 0)
+    {
+        stopBgProcess($paramBgProcess);
+    }
+    else
+    {
+        startBgProcess($paramBgProcess);
+    }
 
     if ($sendQueueInterval != 20)
     {
@@ -24,9 +36,6 @@ function saveSendQueueSettings(): bool
             unlink($intervalFilename);
         }
     }
-
-    #Trigger CronLoop Once for Windows via curl
-    triggerCronLoop();
 
     return true;
 }

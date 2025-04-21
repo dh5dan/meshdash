@@ -71,6 +71,20 @@ body {
     box-sizing: border-box;
 }
 
+/* Standard: StatusContainer bleibt neben dem Button */
+.bottomCounterContainer {
+    position: absolute;
+    bottom: 75px; /* Höhe über dem Submit-Button */
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    box-sizing: border-box;
+    z-index: 10; /* optional, damit es überlappt falls nötig */
+}
+
+
 .bottomStatus {
     font-weight: bold;
 }
@@ -148,5 +162,12 @@ body {
         font-size: smaller;
         overflow: hidden;
         box-sizing: border-box;
+    }
+}
+
+@media (max-width: 768px) {
+    .bottomCounterContainer {
+        bottom: 86px;
+        left: 62%;
     }
 }

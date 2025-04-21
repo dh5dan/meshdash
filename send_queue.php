@@ -17,7 +17,6 @@ require_once 'include/func_php_core.php';
 $logfile      = 'log/tx_queue_data_' . date('Ymd') . '.log';
 $errorLogfile = 'log/error_tx_queue_data_' . date('Ymd') . '.log';
 $fileLogJson  = 'log/tx_queue_json_data_' . date('Ymd') . '.log';
-$debugFlag    = true;
 
 #file_put_contents("log/send_queue_log.log", date('Y-m-d H:i:s') . " - SendQueue-Job ausgeführt\n", FILE_APPEND);
 echo "<br>Starte Abarbeitung von TX-Send-Queue";
@@ -44,11 +43,6 @@ if ($resGetTxQueue !== false)
             $data = date('Y-m-d H:i:s') . ': ' . "Maximale Zeichen länge von 150 Zeichen überschritten. Abbruch!";
             file_put_contents($errorLogfile, $data, FILE_APPEND);
 
-            if ($debugFlag === true)
-            {
-                echo "<br>" . $data;
-            }
-
             exit();
         }
 
@@ -65,18 +59,8 @@ if ($resGetTxQueue !== false)
             socket_sendto($socket, $message, strlen($message), 0, $loraIP, 1799);
             socket_close($socket);
 
-            if ($debugFlag === true)
-            {
-                echo "<br>Nachricht versand: $txType $txDst $msgText";
-            }
-
             #Setzte send Flag
             updateTxQueue($txQueueId);
-
-            if ($debugFlag === true)
-            {
-                echo "<br>Send Flag gesetzt für txQueueId: $txQueueId";
-            }
 
             if ($doLogEnable == 1)
             {
@@ -92,11 +76,6 @@ if ($resGetTxQueue !== false)
             $data = date('Y-m-d H:i:s') . ': ' . "Kann Socket nicht erstellen. Abbruch!";
             file_put_contents($errorLogfile, $data, FILE_APPEND);
 
-            if ($debugFlag === true)
-            {
-                echo "<br>" . $data;
-            }
-
             exit();
         }
     }
@@ -105,19 +84,7 @@ if ($resGetTxQueue !== false)
         $data = date('Y-m-d H:i:s') . ': ' . "Nachrichten Inhalt ist leer für txQueueId: $txQueueId";
         file_put_contents($errorLogfile, $data, FILE_APPEND);
 
-        if ($debugFlag === true)
-        {
-            echo "<br>" . $data;
-        }
-
         exit();
-    }
-}
-else
-{
-    if ($debugFlag === true)
-    {
-        echo "<br>Keine Daten zum Versand gefunden.";
     }
 }
 
