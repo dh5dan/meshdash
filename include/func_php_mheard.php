@@ -12,8 +12,6 @@ function getMheard($loraIp)
     // Holen des HTML-Inhalts von der Remote-Seite
     $htmlContent = @file_get_contents($url);
 
-    $debugFlag = false;
-
     if ($htmlContent === false)
     {
         echo "<br>Keine Daten zu finden unter der Url:" . $url;
@@ -74,11 +72,6 @@ function getMheard($loraIp)
 
     if (count($heardData) > 0)
     {
-        if ($debugFlag === true)
-        {
-            echo "<br>SetMehardData: speichern";
-        }
-
         setMheardData($heardData);
     }
 
@@ -87,15 +80,6 @@ function getMheard($loraIp)
         echo '<h3>Keine MHeard-Daten gefunden.';
         echo '<br>Zeige zuletzt gespeicherte Werte wenn vorhanden.</br>';
         return false;
-    }
-
-    if ($debugFlag === true)
-    {
-        // Ausgabe der extrahierten Daten
-        echo "<br>CountData:".count($heardData);
-        echo '<br>#Debug#heardData#<br><pre>';
-        print_r($heardData);
-        echo '</pre>';
     }
 
     return true;

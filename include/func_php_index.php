@@ -410,52 +410,6 @@ function initSQLiteDatabase($database): bool
     return true;
 }
 
-function showMenu()
-{
-    echo '<div id="menu-icon" class="topMenu">&#9776;</div>';
-    echo '<div id="menu">';
-    echo '<ul>';
-        echo '<li>Einstellung';
-          echo '<ul class="submenu">';
-            echo '<li data-action="config_generally">Allgemein</li>';
-            echo '<li data-action="config_send_queue">Sende-Intervall</li>';
-            echo '<li data-action="config_alerting">Benachrichtigung</li>';
-            echo '<li data-action="config_keyword">Keyword</li>';
-            echo '<li data-action="config_update">Update</li>';
-            echo '<li data-action="lora_info">Lora-Info</li>';
-            echo '<li data-action="config_data_purge">Data-Purge</li>';
-            echo '<li data-action="config_ping_lora">Ping Lora</li>';
-            echo '<li data-action="debug_info">Debug-Info</li>';
-          echo '</ul>';
-        echo '</li>';
-
-        echo '<li>Gruppen';
-          echo '<ul class="submenu">';
-            echo '<li data-action="grp_definition">Gruppen definieren</li>';
-          echo '</ul>';
-        echo '</li>';
-
-        echo '<li>Sensoren';
-          echo '<ul class="submenu">';
-            echo '<li data-action="sensor_data">Sensordaten</li>';
-            echo '<li data-action="sensor_threshold">Sensorschwellwerte</li>';
-          echo '</ul>';
-        echo '</li>';
-
-        echo '<li data-action="mHeard">MHeard</li>';
-
-    if (function_exists('curl_version'))
-    {
-        echo '<li data-action="send_command">Sende Befehl</li>';
-    }
-
-        echo '<li data-action="message">Message</li>';
-        echo '<li data-action="about">About</li>';
-    echo '</ul>';
-echo '</div>';
-
-}
-
 function showMenuIcons()
 {
     echo '<div id="menu-icon" class="topMenu">&#9776;</div>';

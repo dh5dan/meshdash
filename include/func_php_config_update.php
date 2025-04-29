@@ -269,8 +269,8 @@ function showBackups()
                 continue;
             }
 
-            $datum       = "{$matches[3]}.{$matches[2]}.{$matches[1]}";
-            $uhrzeit     = "{$matches[4]}:{$matches[5]}:{$matches[6]}";
+            $datum       = "$matches[3].$matches[2].$matches[1]";
+            $uhrzeit     = "$matches[4]:$matches[5]:$matches[6]";
             $downloadUrl = $downloadBase . $filename;
 
             echo '<tr>';
@@ -365,7 +365,7 @@ function getLatestRelease()
 
     $repoOwner = 'dh5dan';  // Deinen GitHub-Nutzername
     $repoName  = 'meshdash';         // Repository-Name
-    $apiUrl    = "https://api.github.com/repos/{$repoOwner}/{$repoName}/releases/latest";
+    $apiUrl    = "https://api.github.com/repos/$repoOwner/$repoName/releases/latest";
 
     // cURL initialisieren
     $ch = curl_init();
