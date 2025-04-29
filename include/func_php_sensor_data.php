@@ -276,8 +276,6 @@ function showSensorData()
         }
 
         echo '<table>';
-
-
     }
     else
     {

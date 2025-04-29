@@ -1,5 +1,5 @@
 <?php
-const VERSION = '1.10.16';
+const VERSION = '1.10.18';
 date_default_timezone_set('Europe/Berlin');
 
 const TRIGGER_LINK_SEND_QUEUE = 'http://localhost/5d/send_queue.php';

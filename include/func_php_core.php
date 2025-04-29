@@ -957,13 +957,14 @@ function addColumn($database, $tabelle, $spalte, $typ = 'TEXT', $default = null)
     $db->close();
 }
 
-function getTaskCmd($mode = 'udp')
+function getTaskCmd($mode)
 {
     #Check what oS is running
     $osIssWindows    = chkOsIssWindows();
     $udpReceiverPid  = getParamData('udpReceiverPid');
     $cronLoopPid     = getParamData('cronLoopPid');
     $cronLoopPidFile = 'log/' . CRON_PID_FILE;
+    $mode            = $mode == '' ? 'udp' : $mode;  // default UDP
 
     if ($mode == 'udp')
     {
@@ -1236,6 +1237,7 @@ function setCronSensorInterval($intervallInMinuten, $deleteFlag): bool
         // Crontab aktualisieren
         file_put_contents('/tmp/crontab.txt', implode("\n", $cronJobs) . "\n");
         exec('crontab /tmp/crontab.txt');
+
         if ($debugFlag === true)
         {
             echo "Cronjob wurde hinzugefügt.\n";
@@ -1298,7 +1300,7 @@ function setTxQueue($txQueueData): bool
     $sendQueueMode = $sendQueueMode == '' ? 0 : $sendQueueMode;
     $debugFlag     = false;
 
-    if ($doLogEnable === true)
+    if ($debugFlag === true)
     {
         echo "<br>sendQueueMode:$sendQueueMode";
         echo "<br>doLogEnable:$doLogEnable";
@@ -1444,7 +1446,7 @@ function getTxQueue()
         "         SELECT * 
                           FROM txQueue AS tx
                          WHERE tx.txFlag = 0
-                         AND strftime('%s', 'now', 
+                           AND strftime('%s', 'now', 
                                 CASE 
                                     -- Sommerzeit (letzter Sonntag im März bis letzter Sonntag im Oktober)
                                     WHEN (
@@ -1594,27 +1596,27 @@ function setSensorAlertCounter($sensor, $sensorType): bool
         $dbIna266->exec('PRAGMA synchronous = NORMAL;');
 
         $queryIna226 = " UPDATE sensorThIna226 SET sensorThIna226vBusAlertCount = sensorThIna226vBusAlertCount + 1,
-                                                       sensorThIna226vBusAlertTimestamp = '$timeStampIna226';
+                                                   sensorThIna226vBusAlertTimestamp = '$timeStampIna226';
                          ";
 
         if ($sensorType == 'vShunt')
         {
             $queryIna226 = " UPDATE sensorThIna226 SET sensorThIna226vShuntAlertCount = sensorThIna226vShuntAlertCount + 1,
-                                                           sensorThIna226vShuntAlertTimestamp = '$timeStampIna226';
+                                                       sensorThIna226vShuntAlertTimestamp = '$timeStampIna226';
                          ";
         }
 
         if ($sensorType == 'vCurrent')
         {
             $queryIna226 = " UPDATE sensorThIna226 SET sensorThIna226vCurrentAlertCount = sensorThIna226vCurrentAlertCount + 1,
-                                                           sensorThIna226vCurrentAlertTimestamp = '$timeStampIna226';
+                                                       sensorThIna226vCurrentAlertTimestamp = '$timeStampIna226';
                          ";
         }
 
         if ($sensorType == 'vPower')
         {
             $queryIna226 = " UPDATE sensorThIna226 SET sensorThIna226vPowerAlertCount = sensorThIna226vPowerAlertCount + 1,
-                                                           sensorThIna226vPowerAlertTimestamp = '$timeStampIna226';
+                                                       sensorThIna226vPowerAlertTimestamp = '$timeStampIna226';
                          ";
         }
 
@@ -1832,15 +1834,15 @@ function getStatusIcon(string $status, bool $withLabel = false): string
 function stopBgProcess($paramBgProcess)
 {
     $osIssWindows   = chkOsIssWindows();
-    $bgTask         = $paramBgProcess['task'] ?? '';
-    $bgTask         = $bgTask == '' ? 'udp' : $bgTask;
-    $checkBgTaskCmd = getTaskCmd($bgTask);
-    $bgPidFile      = $bgTask  == 'udp' ? UPD_PID_FILE : CRON_PID_FILE;
+    $taskBg         = $paramBgProcess['task'] ?? '';
+    $taskBg         = $taskBg == '' ? 'udp' : $taskBg;
+    $checkBgTaskCmd = getTaskCmd($taskBg);
+    $bgPidFile      = $taskBg  == 'udp' ? UPD_PID_FILE : CRON_PID_FILE;
     $debugFlag      = false;
 
-    $bgTaskPid = $bgTask  == 'udp' ? getParamData('udpReceiverPid') : getParamData('cronLoopPid');
+    $bgTaskPid = $taskBg  == 'udp' ? getParamData('udpReceiverPid') : getParamData('cronLoopPid');
 
-    if ($bgTask  == 'cron')
+    if ($taskBg  == 'cron')
     {
         $execDir         = 'log';
         $basename        = pathinfo(getcwd())['basename'];
@@ -1849,13 +1851,13 @@ function stopBgProcess($paramBgProcess)
         $bgPidFile       = $basename == 'menu' ? $cronPidFileSub : $cronPidFileRoot;
     }
 
-    $bgTaskKillCmd = getTaskKillCmd($bgTask);
+    $bgTaskKillCmd = getTaskKillCmd($taskBg);
     $taskResultBg  = shell_exec($checkBgTaskCmd);
 
     if ($debugFlag === true)
     {
         echo "<br>bgTaskPid:$bgTaskPid";
-        echo "<br>#652#bgTask:$bgTask";
+        echo "<br>#652#bgTask:$taskBg";
         echo "<br>#652#bgPidFile:$bgPidFile";
         echo "<br>#652#checkBgTaskCmd:$checkBgTaskCmd";
         echo "<br>#652#bgTaskKillCmd:$bgTaskKillCmd";
@@ -1927,9 +1929,9 @@ function stopBgProcess($paramBgProcess)
 function startBgProcess($paramStartBgProcess)
 {
     $osIsWindows = chkOsIssWindows();
-    $task        = $paramStartBgProcess['task'] ?? 'udp';
-    $bgProcFile  = $task == 'udp' ? UDP_PROC_FILE : CRON_PROC_FILE;
-    $taskCmd     = getTaskCmd($task);
+    $taskBg      = $paramStartBgProcess['task'] ?? 'udp';
+    $bgProcFile  = $taskBg == 'udp' ? UDP_PROC_FILE : CRON_PROC_FILE;
+    $taskCmd     = getTaskCmd($taskBg);
     $taskResult  = shell_exec($taskCmd);
     $debugFlag   = false;
 
@@ -1943,7 +1945,7 @@ function startBgProcess($paramStartBgProcess)
 
     if ($debugFlag === true)
     {
-        echo "<br>#1956#startBgProcess# task:" . $task . ' Taskresult:' . $taskResult;
+        echo "<br>#1956#startBgProcess# task:" . $taskBg . ' Task-Result:' . $taskResult;
         echo "<br>#1956#startBgProcess#Taskresult taskCmd:" . $taskCmd;
         echo "<br>#1956#startBgProcess#Taskresult bgProcFile:" . $bgProcFile;
         echo "<br>osIsWindows:";
@@ -1954,7 +1956,7 @@ function startBgProcess($paramStartBgProcess)
     {
         if ($debugFlag === true)
         {
-            echo "<br>#1956#startBgProcess#Taskresult EMpty: task:" . $task . ' Task-Result:' . $taskResult;
+            echo "<br>#1956#startBgProcess#Taskresult EMpty: task:" . $taskBg . ' Task-Result:' . $taskResult;
             echo "<br>#1956#startBgProcess#Taskresult taskCmd:" . $taskCmd;
             echo "<br>#1956#startBgProcess#Taskresult bgProcFile:" . $bgProcFile;
         }
@@ -1972,7 +1974,7 @@ function startBgProcess($paramStartBgProcess)
 
         sleep(1);
 
-        $checkTaskCmd = getTaskCmd($task);
+        $checkTaskCmd = getTaskCmd($taskBg);
         $taskResult   = shell_exec($checkTaskCmd);
 
         if ($debugFlag === true)

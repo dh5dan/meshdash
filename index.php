@@ -2,6 +2,7 @@
 header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1.
 header("Pragma: no-cache"); // HTTP 1.0.
 header("Expires: 0"); // Proxies.
+
 echo '<!DOCTYPE html>';
 echo '<html lang="de">';
 echo '<head><title>MeshDash-SQL</title>';
@@ -15,7 +16,6 @@ echo '<head><title>MeshDash-SQL</title>';
   echo '<link rel="stylesheet" href="jquery/css/jq_custom.css">';
   echo '<link rel="stylesheet" href="css/index.css?' . microtime() . '">';
   echo '<link rel="icon" type="image/png" sizes="16x16" href="favicon.png">';
-
 echo '</head>';
 echo '<body>';
 
@@ -42,12 +42,16 @@ $doCheckLoraIp      = true;
 $taskStatusFlagUdp  = 1;
 $debugFlag          = false; // For debug only
 
+#Wenn Datenbank noch nicht existiert, dann neu initiieren.
+#Muss immer zuerst stattfinden!
+initDatabases();
+
 #Check what oS is running
 $osIssWindows     = chkOsIssWindows();
 $sendQueueEnabled = (int) getParamData('sendQueueMode');
 
 #Hole Task Command abhängig vom OS
-$checkTaskCmd = getTaskCmd();
+$checkTaskCmd = getTaskCmd('udp');
 echo '<input type="hidden" id="version" value="' . VERSION . '"/>';
 
 #Prüfen, ob schreibrechte für Datenbank und Log existieren
@@ -63,9 +67,6 @@ if (!is_writable('database') || !is_writable('log') || !is_writable('execute') |
 
     exit();
 }
-
-#Wenn Datenbank noch nicht existiert dann neu initiieren
-initDatabases();
 
 #Setzte Leere LoraIp neu in param.php
 if ($sendData === '11')
@@ -153,8 +154,9 @@ echo '<div class="topLeft">';
 echo '<img src="' . $imgTaskStatusUdp . '" id="bgTask" class="topImagePoint" alt="statusColor">';
 echo '</div>';
 
-#echo '<span class="topTitle" >MeshDash-SQL V ' . VERSION.'</span>';
-echo '<span class="topTitle" >&#128007;&#128007;&#128007; MeshDash-SQL V ' . VERSION.' &#128007;&#128007;&#128007;</span>';
+echo '<span class="topTitle">MeshDash-SQL V ' . VERSION . '</span>';
+#Oster-Edition
+#echo '<span class="topTitle" >&#128007;&#128007;&#128007; MeshDash-SQL V ' . VERSION.' &#128007;&#128007;&#128007;</span>';
 
 // Neues Div für Uhrzeit, ohne das Layout zu zerstören
 echo '<div class="topRight" id="datetime">Hole Zeit!</div>';
@@ -167,7 +169,7 @@ echo '<div id="top-tabs"></div>';
 
 echo '<form id="frmIndex" method="post"  action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
-echo '<input type="hidden" name="taskStatusFlag" id="taskStatusFlag" value="'.$taskStatusFlagUdp.'" />';
+echo '<input type="hidden" name="taskStatusFlag" id="taskStatusFlag" value="' . $taskStatusFlagUdp . '" />';
 echo '</form>';
 
 #Lade Iframes

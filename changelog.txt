@@ -1,5 +1,9 @@
+Version 1.10.18 SQL
+BUGFIX: Issue 167 Upgrade-Fehler von Beta-Release via install_5d_sh
+BUGFIX: Debugausgabe bei Funktion: setTxQueue() entfernt.
+INFO:   Code-Refactoring
+#################################################################
 Version 1.10.16 SQL
-
 FEATURE: Trigger-Strategie geändert für TX-Queue.
          Die Instanz wurde nun separiert und ist jetzt besser steuerbar.
          Doppelte oder keine Aussendung sollten jetzt nicht mehr vorkommen.
@@ -7,7 +11,7 @@ FEATURE: Trigger-Strategie geändert für TX-Queue.
          sollten doch noch Probleme aufkommen.
 FEATURE: Debug-Info Seite zur Fehleranalyse hinzugefügt.
 FEATURE: Icons den Menüpunkten hinzugefügt.
-FEATURE: Byte-Zähler im Eingabefenster nun vorhanden 0-149 Bytes.
+FEATURE: Byte-Zähler im Eingabefenster jetzt vorhanden. 0-149 Bytes.
          Bytes daher, da Html-Entity/UTF-8 mehr verbrauchen und nicht als ein Zeichen = 1 Byte zählen.
          Danke an DK5EN für das Skript.
 
@@ -39,7 +43,7 @@ Auswertung WX-Daten als Sensordaten.
 Auswertung INA226 Daten aus Info-Bereich und Anzeige in Sensordaten.
 BUGFIX: Mit MeshCom 4.34q (build: Mar 6 2025 / 15:17:43)
         gab es einen Fehler im <TR>-Tag der Infoseite, was die Auswertung von Call verhindert hat.
-        Über einenen Workaround wird dies nun korrigiert. Ist in Version R aber behoben.
+        Über einen Workaround wird dies nun korrigiert. Ist in Version R aber behoben.
 FEATURE: Mit 4.34q (build: Mar 6 2025 / 15:17:43) gibt es ein neues Info-Feld Startzeit.
 FEATURE: Schwellwertangaben für Sensordaten implementiert mit Alert-Funktion.
 FEATURE: RegEx entfernt bei Msg Eingabe. Alle Zeichen erlaubt.

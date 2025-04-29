@@ -65,7 +65,7 @@ elseif ($sendData === '13')
 
     $db = new SQLite3('../database/meshdash.db');
     $db->exec("DELETE FROM meshdash WHERE DATE(timestamps) < '$purgeDateNat';");
-    echo '<br>Es wurden ' . $db->changes() . ' Nachrichtendaten gel&ouml;scht.';
+    echo '<br>Es wurden ' . $db->changes() . ' Nachrichtendaten gelöscht.';
 
     if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
     {

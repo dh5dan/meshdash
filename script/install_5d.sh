@@ -1,6 +1,6 @@
 #!/bin/bash
 clear
-echo "MeshDash Install-Script V 1.00.84"
+echo "MeshDash Install-Script V 1.00.86"
 echo
 echo "Installation Von MeshDash-SQL"
 echo 
@@ -70,10 +70,19 @@ ZIPFILE=$(ls *.zip)
 # Funktion zum Kopieren der Dateien
 copy_files() {
 
+    echo
+    echo "Entferne alte Zip-Pakete aus dem /home/pi/ Verzeichnis"
+    sudo rm /home/pi/meshdash*.zip
+
     echo "Kopiere Dateien nach /home/pi..."
 
-    sudo cp "$FILE1" /home/pi/
-    sudo cp "$FILE2" /home/pi/
+    if [ -f "$FILE1" ]; then
+      sudo cp "$FILE1" /home/pi/
+    fi
+
+    if [ -f "$FILE2" ]; then
+      sudo cp "$FILE2" /home/pi/
+    fi
 
     # Überprüfen, ob eine .zip Datei existiert
     if [ -z "$ZIPFILE" ]; then

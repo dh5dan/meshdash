@@ -177,8 +177,6 @@ function getPhpConfig()
 
                 // Prüfen, ob der Wert den Min-Wert erreicht oder überschreitet
                 $isOk = $phpIniValueInt >= $minValue;
-
-                #echo "<br>pkey:".$checkPhpKey.' pval:'.$phpKeyValue. ' pvalint:'.$phpIniValueInt . ' minval:'.$minValues[$checkPhpKey]."<br>";
             }
 
             // Wenn ok, 'OK' als Status setzen
@@ -251,29 +249,27 @@ function getWritableStatus(): array
     }
 
     // 2. Ausgabe im monospace Block
+    echo '<tr>';
     if (!empty($result))
     {
-        echo '<tr>';
         echo '<td style="vertical-align: top;">Schreibstatus Directory:</td>';
         echo '<td><pre style="margin:0; font-family: monospace;">';
 
         foreach ($result as $checkDir => $dirAccess)
         {
-            // Padding auf gleiche Länge für Ausrichtung des =>
+            // Padding auf gleiche Länge für Ausrichtung des Pfeils
             $line = str_pad($checkDir, $maxLen) . ' => ' . $dirAccess;
             echo htmlspecialchars($line) . "\n";
         }
 
         echo '</pre></td>';
-        echo '</tr>';
     }
     else
     {
-        echo '<tr>';
         echo '<td>Schreibstatus Directory:</td>';
         echo '<td>Kein Eintrag</td>';
-        echo '</tr>';
     }
+    echo '</tr>';
 
     return $result;
 }
@@ -334,9 +330,9 @@ function getSqliteDbSizes(): array
     }
 
     // Ausgabe
+    echo '<tr>';
     if (!empty($result))
     {
-        echo '<tr>';
         echo '<td style="vertical-align: top;">Datenbanken:</td>';
         echo '<td><pre style="margin:0; font-family: monospace;">';
 
@@ -351,15 +347,13 @@ function getSqliteDbSizes(): array
         }
 
         echo '</pre></td>';
-        echo '</tr>';
     }
     else
     {
-        echo '<tr>';
         echo '<td>Datenbanken:</td>';
         echo '<td>Keine gefunden</td>';
-        echo '</tr>';
     }
+    echo '</tr>';
 
     return $result;
 }
@@ -427,9 +421,6 @@ function getLoadAverage()
     {
         // Unix-basierte Systeme: sys_getloadavg verwenden
         $load = sys_getloadavg();
-//        $load[0] = 1.7083984375;
-//        $load[1] = 0.5395507812;
-//        $load[2] = 0.00537109375;
 
         foreach ($load as $index => $loadValue)
         {
