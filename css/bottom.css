@@ -84,7 +84,6 @@ body {
     z-index: 10; /* optional, damit es überlappt falls nötig */
 }
 
-
 .bottomStatus {
     font-weight: bold;
 }
@@ -97,6 +96,11 @@ body {
     border-radius: 5px;
     display: inline-block;
     margin-bottom: 10px;
+}
+
+#entitySelect {
+    /*margin: -10px;*/
+    font-family: monospace;
 }
 
 @media (max-width: 1180px) {
@@ -167,7 +171,16 @@ body {
 
 @media (max-width: 768px) {
     .bottomCounterContainer {
-        bottom: 86px;
+        bottom: 88px;
         left: 62%;
+        font-size: 14px;
+    }
+
+    .bottomInputMsg {
+        max-width: 180px;
+    }
+
+    .bottomSize16 {
+        font-size: 14px;
     }
 }

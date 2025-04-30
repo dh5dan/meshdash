@@ -69,8 +69,9 @@ function getGroupParameter(int $mode = 0)
     $db  = new SQLite3($dbFilename);
     $db->busyTimeout(5000); // warte wenn busy in millisekunden
     $res = $db->query("
-                        SELECT * FROM groups
-                        ORDER BY groupId;
+                        SELECT * 
+                          FROM groups
+                      ORDER BY groupId;
                     ");
     $rows = 0;
     while ($dsData = $res->fetchArray(SQLITE3_ASSOC))
@@ -87,7 +88,15 @@ function getGroupParameter(int $mode = 0)
         {
             $groupId                        = $dsData['groupId'] ?? 0;
             $returnValue[$groupId]['id']    = $dsData['groupNumber'] ?? 0;
-            $returnValue[$groupId]['label'] = 'Gruppe ' . $dsData['groupNumber'] ?? 0;
+
+            if (isMobile() === false)
+            {
+                $returnValue[$groupId]['label'] = 'Gruppe ' . $dsData['groupNumber'] ?? 0;
+            }
+            else
+            {
+                $returnValue[$groupId]['label'] = $dsData['groupNumber'] ?? 0;
+            }
         }
 
         if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)

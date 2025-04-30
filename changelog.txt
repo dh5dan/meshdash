@@ -1,3 +1,11 @@
+Version 1.10.20 SQL
+
+FEATURE: Bezeichnung Gruppe aus der mobilen Ansicht entfernt.
+FEATURE: Auswahl der gängigsten Emoji neben Nachrichtenfeld möglich.
+FEATURE: Bei neuen Nachrichten zusätzliche Auswahl der Hintergrundfarbe möglich zum roten Punkt.
+FEATURE: Das Changelog zur aktuellen Release-Version ist nun zusätzlich Abrufbar unter Update.
+BUGFIX:  Beim Browserrefresh wird nun das korrekte Tab aktiviert, was zuletzt genutzt wurde.
+#################################################################
 Version 1.10.18 SQL
 BUGFIX: Issue 167 Upgrade-Fehler von Beta-Release via install_5d_sh
 BUGFIX: Debugausgabe bei Funktion: setTxQueue() entfernt.

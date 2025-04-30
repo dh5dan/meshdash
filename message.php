@@ -61,9 +61,8 @@ $doLogEnable = getParamData('doLogEnable');
 #Prüfe, ob das reine Rufzeichen nur genommen werden soll ohne SSID
 $strictCallEnable = getParamData('strictCallEnable');
 
-$sqlAddon = '';
-$group    = $_REQUEST['group'] ?? -1;
-
+$sqlAddon    = '';
+$group       = $_REQUEST['group'] ?? -1;
 $callSignSql = $callSign;
 
 if ($strictCallEnable == 1)
@@ -71,7 +70,7 @@ if ($strictCallEnable == 1)
     $callSignSql = explode("-", $callSign, 2)[0]; // Trennen nach dem ersten '-'
 }
 
-echo '<input type="hidden" id="group" value="' . $group . '" />';
+echo '<input type="hidden" id="group" name="group" value="' . $group . '" />';
 
 if ($group > 0)
 {

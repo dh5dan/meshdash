@@ -407,6 +407,41 @@ function getLatestRelease()
     header('Location: ' . $downloadUrl);
 }
 
+function getLatestChangelog()
+{
+    // get_latest_release.php
+
+    $repoOwner   = 'dh5dan';  // Deinen GitHub-Nutzername
+    $repoName    = 'meshdash';         // Repository-Name
+    $apiUrl      = "https://api.github.com/repos/$repoOwner/$repoName/releases/latest";
+    $arrayReturn = array();
+
+    // cURL initialisieren
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $apiUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_USERAGENT, 'MeshDash-Update-Script'); // User-Agent muss gesetzt sein
+
+    $response = curl_exec($ch);
+    if (curl_errno($ch))
+    {
+        die('Fehler: ' . curl_error($ch));
+    }
+    curl_close($ch);
+
+    $releaseData = json_decode($response, true);
+
+    if (!$releaseData)
+    {
+        die('Konnte Changelog-Daten nicht lesen.');
+    }
+
+    $arrayReturn['version'] = $releaseData['tag_name'];
+    $arrayReturn['body']    = str_replace("\r\n", '<br>', $releaseData['body']);
+
+    return $arrayReturn;
+}
+
 
 
 

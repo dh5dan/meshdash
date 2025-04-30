@@ -104,6 +104,16 @@
                let groupValue     = doc.find("#group").val();
                let scrollPosition = doc.scrollTop(); // Aktuelle Scroll-Position merken
 
+               // Stelle sicher, dass der Tab zur aktuellen Gruppe aktiv ist
+               if (groupValue !== undefined && groupValue !== null) {
+                   let tabSelector = '#top-tabs .tab[data-group="' + groupValue + '"]';
+                   if (!$(tabSelector).hasClass('active')) {
+                       $('#top-tabs .tab').removeClass('active'); // alle inaktiv
+                       $(tabSelector).addClass('active');         // aktuellen aktiv setzen
+                       activeGroupId = parseInt(groupValue);       // intern merken
+                   }
+               }
+
                // Prüfen, ob der Benutzer ganz oben ist (Scroll-Position = 0)
                let isAtTop = (scrollPosition === 0);
 
@@ -382,8 +392,8 @@
        // Klick-Handler für Tabs
        $('#top-tabs .tab').on('click', function ()
        {
-           isTabClick = true; // loadNewMessages blockieren
-           let groupId = $(this).data('group');
+           isTabClick      = true; // loadNewMessages blockieren
+           let groupId     = $(this).data('group');
            let bottomFrame = $('#bottom-frame');
 
            // Markiere den angeklickten Tab als aktiv

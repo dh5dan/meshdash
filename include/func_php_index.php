@@ -647,3 +647,14 @@ function checkExtension($param)
     exit();
 }
 
+function setNewMsgBgColor()
+{
+    $newMsgBgColor     = getParamData('newMsgBgColor');
+    $newMsgBgColor = $newMsgBgColor == '' ? '#FFFFFF' : $newMsgBgColor;
+    echo '<style>
+            .new-message-indicator {
+                background-color: ' . $newMsgBgColor . ' !important;
+            }
+           </style>';
+}
+
