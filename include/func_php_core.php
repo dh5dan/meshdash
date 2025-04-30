@@ -60,7 +60,7 @@ function setParamData($key, $value, $mode = 'int'): bool
 
     if ($mode === 'int')
     {
-        $param_value = trim($value);
+        $param_value = (int) $value;
         $param_text  = '';
     }
 

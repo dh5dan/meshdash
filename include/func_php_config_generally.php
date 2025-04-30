@@ -17,6 +17,7 @@ function saveGenerallySettings(): bool
     $chronMode         = $_REQUEST['chronMode'] == '' ? 'zip' : $_REQUEST['chronMode'];
     $strictCallEnable  = $_REQUEST['strictCallEnable'] ?? 0;
     $selTzName         = $_REQUEST['selTzName'] ?? 'Europe/Berlin';
+    $newMsgBgColor     = $_REQUEST['newMsgBgColor'] ?? '#FFFFFF';
 
     setParamData('noPosData', $noPosData);
     setParamData('noDmAlertGlobal', $noDmAlertGlobal);
@@ -32,6 +33,7 @@ function saveGenerallySettings(): bool
     setParamData('chronMode', trim($chronMode), 'txt');
     setParamData('strictCallEnable', $strictCallEnable);
     setParamData('timeZone', $selTzName, 'txt');
+    setParamData('newMsgBgColor', $newMsgBgColor, 'txt');
 
     return true;
 }

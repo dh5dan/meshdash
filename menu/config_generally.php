@@ -68,6 +68,7 @@ $noDmAlertGlobal   = getParamData('noDmAlertGlobal');
 $noTimeSyncMsg     = getParamData('noTimeSyncMsg');
 $loraIp            = getParamData('loraIp');
 $callSign          = getParamData('callSign');
+$newMsgBgColor     = getParamData('newMsgBgColor');
 $maxScrollBackRows = getParamData('maxScrollBackRows');
 $doLogEnable       = getParamData('doLogEnable');
 $doNotBackupDb     = getParamData('doNotBackupDb');
@@ -97,6 +98,8 @@ $onClickChronModeCheckedDelete = $chronMode == 'delete' ? 'checked' : '';
 $onClickOnCallChecked0 = $clickOnCall == 0 ? 'checked' : '';
 $onClickOnCallChecked1 = $clickOnCall == 1 ? 'checked' : '';
 $onClickOnCallChecked2 = $clickOnCall == 2 ? 'checked' : '';
+
+$newMsgBgColor = $newMsgBgColor == '' ? '#FFFFFF' : $newMsgBgColor;
 
 echo "<h2>Basiseinstellungen von MeshDash-SQL</h2>";
 
@@ -217,7 +220,7 @@ echo '<td colspan="2"><hr></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Max. ScrollBack Reihen (30-200):</td>';
+echo '<td>Max. Scroll-Back Reihen (30-200):</td>';
 echo '<td><input type="text" name="maxScrollBackRows" id="maxScrollBackRows" value="' . $maxScrollBackRows . '" /></td>';
 echo '</tr>';
 
@@ -227,8 +230,13 @@ echo '<td><input type="text" name="loraIp"  id="loraIp" value="' . $loraIp . '" 
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Rufzeichen:</td>';
+echo '<td>Rufzeichen mit SSID:</td>';
 echo '<td><input type="text" name="callSign"  id="callSign" value="' . $callSign . '" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td>Hintergrundfarbe <b>Neue Nachrichten</b>:</td>';
+echo '<td><input type="color" name="newMsgBgColor"  id="newMsgBgColor" value="' . $newMsgBgColor . '" /></td>';
 echo '</tr>';
 
 echo '<tr>';

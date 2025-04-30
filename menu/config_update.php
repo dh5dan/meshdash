@@ -275,11 +275,33 @@ if ($sendData === '3')
     }
 }
 
-#Lod latest Release from GitHub
+#Load latest Release from GitHub
 if ($sendData === '4')
 {
   getLatestRelease();
 }
+
+#Load latest Changelog from GitHub
+if ($sendData === '5')
+{
+    $resGetLatestChangelog = getLatestChangelog();
+
+    if ($resGetLatestChangelog !== false)
+    {
+        $latestChangelogVersion = $resGetLatestChangelog['version'];
+        $latestChangelog        = $resGetLatestChangelog['body'];
+        $dialogTitle            = 'Changelog V' . $latestChangelogVersion;
+
+        echo "<script>
+                dialogChangeLog('$latestChangelog', '$dialogTitle', 750);
+              </script>";
+    }
+    else
+    {
+        echo '<input type="hidden" id="changeLogBody" value="">';
+    }
+}
+
 ob_end_flush(); // Ausgabe abschließen
 echo '<form id="frmConfigUpdate" action="' . $_SERVER['REQUEST_URI'] . '" method="post" enctype="multipart/form-data">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
@@ -296,7 +318,12 @@ if ($sendData != 1)
 
     echo '<tr>';
     echo '<td ><label for="updateFile">Lade letztes Release von GitHub herunter:&nbsp;</label></td>';
-    echo '<td><input type="button" class="btnDwnLatestRelease" id="btnDwnLatestRelease" value="Hole letzte Release-Version"></td>';
+    echo '<td><input type="button" class="btnDwnLatestRelease" id="btnDwnLatestRelease" value="Lade letzte Release-Version  "></td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td ><label for="btnShowChangeLog">Zeige Changelog zur letzten release-Version:&nbsp;</label></td>';
+    echo '<td><input type="button" class="btnDwnLatestRelease" id="btnShowChangeLog" value="Release Changelog anzeigen"></td>';
     echo '</tr>';
 
     echo '<tr>';

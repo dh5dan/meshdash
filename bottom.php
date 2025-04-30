@@ -20,6 +20,7 @@ echo '<body>';
 require_once 'dbinc/param.php';
 require_once 'include/func_php_core.php';
 require_once 'include/func_php_core.php';
+require_once 'include/func_php_bottom.php';
 require_once 'include/func_js_bottom.php';
 
 $errMsg  = utf8_decode($_REQUEST['errMsg'] ?? '');
@@ -44,8 +45,14 @@ echo '<form action="send_msg.php" method="POST">';
 echo '<input type="hidden" id="groupId" name="group" value="' . $group . '">';
     echo '<div class="bottomDmMsgLine">';
 
-     echo '<span class="bottomSize16">DM:</span><input class="bottomInputDm" id="bottomDm" type="text" value="' . $dm . '" size="20" id="dm" name="dm" />';
-     echo '<span class="bottomSize16">MSG:</span><input class="bottomInputMsg" type="text" value="' . $msgText . '" id="msgText" name="msgText" required />';
+     echo '<span class="bottomSize16">DM:</span>';
+     echo'<input class="bottomInputDm" id="bottomDm" type="text" value="' . $dm . '" size="20" id="dm" name="dm" />';
+     echo '<span class="bottomSize16">MSG:</span>';
+     echo'<input class="bottomInputMsg" type="text" value="' . $msgText . '" id="msgText" name="msgText" required />';
+
+     echo '<select id="entitySelect">';
+     selectEmoticons();
+     echo '</select>';
 
     echo '</div>';
 

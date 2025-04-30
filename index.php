@@ -112,8 +112,8 @@ if ($sendData == 1)
 #Lösche alten Linux-Cron Eintrag, wenn vorhanden
 deleteOldCron();
 
-######################################################################################
-##########  Top bereich
+#####################################################################################
+##########  Top-Bereich
 #####################################################################################
 
 // Beispiel-Daten, die du aus der SQLite-Datenbank holen könntest
@@ -143,6 +143,8 @@ if (empty($taskResultUdp))
     $imgTaskStatusUdp  = $imgTaskStoppedUdp;
     $taskStatusFlagUdp = 0;
 }
+
+setNewMsgBgColor();
 
 echo '<div class="top">';
 echo '<h1 class="topText">';

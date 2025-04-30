@@ -60,6 +60,16 @@
             return false;
         });
 
+        $("#btnShowChangeLog").on("click", function ()
+        {
+            let sendData  = 5;
+            $("#sendData").val(sendData);
+            $("#frmConfigUpdate").trigger('submit');
+            $("#pageLoading").show();
+
+            return false;
+        });
+
         $("#btnConfigUpdateReload").on("click", function ()
         {
             // Ermittelt die Base-URL dynamisch
@@ -144,6 +154,24 @@
     function reloadBottomFrame()
     {
         parent.document.getElementById("bottom-frame").contentWindow.location.reload();
+    }
+
+    function dialogChangeLog(outputMsg, titleMsg, width) {
+        width     = !width ? 300 : width;
+        titleMsg  = !width ? '' : titleMsg;
+        outputMsg = !outputMsg ? '' : outputMsg;
+
+        $("<div></div>").html(outputMsg).dialog({
+            title: titleMsg,
+            resizable: true,
+            modal: true,
+            width: width,
+            buttons: {
+                'Hinweis schliessen': function () {
+                    $(this).dialog("close");
+                }
+            }
+        }).prev(".ui-dialog-titlebar").css("background", "red");
     }
 
 </script>
