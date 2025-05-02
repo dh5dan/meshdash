@@ -33,3 +33,12 @@
 .ui-datepicker-header {
     color: #333333;
 }
+
+.ui-datepicker .ui-icon {
+    display: block;
+    text-indent: -99999px;
+    overflow: hidden;
+    background-repeat: no-repeat;
+    left: 0.9em;
+    top: 0.9em;
+}

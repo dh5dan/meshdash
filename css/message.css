@@ -17,11 +17,13 @@ body {
 .successHint {
     background-color: darkgreen;
     color: whitesmoke;
+    font-weight: bold;
 }
 
 .failureHint {
     background-color: crimson;
     color: whitesmoke;
+    font-weight: bold;
 }
 
 .imageAck {
@@ -37,6 +39,22 @@ body {
     vertical-align: middle; /* Vertikale Ausrichtung im Text */
     margin-left: 5px; /* Abstand zum Text */
     margin-bottom: 2px;
+}
+
+.searchInfo {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.btnPagePagination
+{
+    font-size: 14px;
+    padding: 8px 15px;
+    border: none;
+    background-color: #0056b3;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
 }
 
 /* info container*/
@@ -65,7 +83,6 @@ body {
     text-align: left;
 }
 
-
 /* Media Query für Smartphones */
 @media (max-width: 768px) {
 
@@ -79,5 +96,14 @@ body {
 
     .setFontMsg {
      font-size: smaller;
+    }
+
+    input[type="button"] {
+        display: inline-block;
+        background: #007bff;
+        color: white;
+        /*padding: 5px 10px;*/
+        border-radius: 5px;
+        cursor: pointer;
     }
 }

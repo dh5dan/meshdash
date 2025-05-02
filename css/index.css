@@ -101,6 +101,22 @@ iframe {
     font-weight: bold;
 }
 
+/*   DateTimePicker */
+.searchDbDialog::placeholder {
+    color:navy;
+    opacity:0.5;
+    transition: opacity 1s;
+    font-size: 14px;
+}
+
+.searchTsDate {
+    max-width: 120px;
+}
+
+.searchTsTime {
+    max-width: 80px;
+}
+
 /********* Menuesteuerung  */
 
 .menuitem
@@ -226,6 +242,17 @@ iframe {
     transform: translate(50%, -50%); /* Sorgt dafür, dass der Punkt schön positioniert wird */
 }
 
+.dbSearchIcon {
+    font-size: 25px;  /* oder z.B. 0.8em oder was du brauchst */
+    position: relative;
+    top: -5px; /* kleiner Wert anpassen – z.B. 1px, 2px, 3px */
+    cursor: pointer;
+}
+
+.btnSearchDelete {
+    cursor: pointer;
+}
+
 @media (max-width: 440px) {
 
     #message-frame {
@@ -274,5 +301,17 @@ iframe {
         height: auto;
         min-height: 60px; /* Sicherstellen, dass es sichtbar bleibt */
         max-height: 120px; /* Begrenzung nach oben */
+    }
+
+    .ui-dialog {
+        width: 90% !important;
+        left: 5% !important;
+        right: 5% !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    .ui-dialog .ui-dialog-content {
+        overflow-x: auto;
     }
 }

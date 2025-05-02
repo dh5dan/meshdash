@@ -13,12 +13,13 @@
         });
 
         $("#purgeDate").datepicker();
+        $('#ui-datepicker-div').draggable();
 
         $("#btnPurgeData").on("click", function ()
         {
             let purgeDate      = $("#purgeDate").val();
             let titleMsg    = 'Hinweis';
-            let outputMsg = 'Anzahl der zu l&ouml;schenden Nachrichtendaten ermitteln vor dem ' + purgeDate + '?';
+            let outputMsg = 'Anzahl der zu löschenden Nachrichtendaten ermitteln vor dem ' + purgeDate + '?';
             let width       = 700;
             let sendData    = 11;
 
@@ -49,7 +50,7 @@
 
         function dialogConfirm(output_msg, title_msg, width, sendData) {
             width      = !width ? 300 : width;
-            title_msg  = !width ? '' : title_msg;
+            title_msg  = !title_msg ? '' : title_msg;
             output_msg = !output_msg ? '' : output_msg;
             sendData   = !sendData ? 0 : sendData;
 
@@ -73,7 +74,7 @@
 
         function dialog(outputMsg, titleMsg, width) {
             width     = !width ? 300 : width;
-            titleMsg  = !width ? '' : titleMsg;
+            titleMsg  = !titleMsg ? '' : titleMsg;
             outputMsg = !outputMsg ? '' : outputMsg;
 
             $("<div></div>").html(outputMsg).dialog({

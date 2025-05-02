@@ -33,6 +33,7 @@ Einige Funktionen von MeshDash:
 - Byte-Counter der die verbleibende Anzahl von Zeichen pro Nachricht anzeigt.
 - Auswahl gängiger Emoji über ein DropDown.
 - Zusätzliche Kennzeichnung neuer Nachrichten mit Hintergrundfarbe und Sound.
+- Suchfunktion nach Auswahlkriterien über die gesamte Nachrichtendatenbank möglich.
 
 Das Projekt ist mittlerweile aus der **Beta-Phase**, doch es können immer mal noch Fehler auftreten.  
 Falls Probleme auftreten, bitte im Issue-Bereich von GitHub melden,  
@@ -53,7 +54,10 @@ Die Dateien befinden sich unter **Assets** – bitte darauf klicken, um die List
 ![ASSETS](/docs/assets.jpg)
 
 ### In MeshDash ist nun ein Abruf der aktuellen Release-Version möglich.
+#### Der direkte Abruf des Changelogs kann hier nun auch vorgenommen werden.
 ![FILES](/docs/update_menu.jpg)
+
+#### Hier wird das Changelog in einem Dialog-Fenster angezeigt.
 ![FILES](/docs/50_md_release_version.jpg)
 
 **Für die Installation sind nur folgende Dateien relevant:**  
@@ -108,6 +112,11 @@ Die max. Textlänge ist aber derzeit auf 150 Zeichen beschränkt.
 Über ein Drop-Down kann eine kleine Auswahl an gängigen Emoji vorgenommen werden.
 ![FILES](/docs/32_send_command.jpg)
 
+### Suchfunktion über die gesamte Nachrichtendatenbank nach Auswahlkriterien
+#### Über die Lupe öffnet man den Suchdialog mit den Suchkriterien.
+![FILES](/docs/search_01.jpg)
+#### MIt Klick auf ein Datumsfeld öffnet sich ein Datetime-Dialog.
+![FILES](/docs/search_02.jpg)
 
 ### Nun auch mit Tab-Benachrichtigungen bei neuen Nachrichten.
 Einstellbar sind die Hintergrundfarbe allgemein und Soundbenachrichtigungen pro Tab-Gruppe.

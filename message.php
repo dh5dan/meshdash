@@ -5,7 +5,7 @@ header("Expires: 0"); // Proxies.
 
 echo '<!DOCTYPE html>';
 echo '<html lang="de">';
-echo '<head><title>Einstellungen</title>';
+echo '<head><title>Nachrichten</title>';
 
 #Prevnts UTF8 Errors on misconfigured php.ini
 ini_set( 'default_charset', 'UTF-8' );
@@ -61,9 +61,120 @@ $doLogEnable = getParamData('doLogEnable');
 #Prüfe, ob das reine Rufzeichen nur genommen werden soll ohne SSID
 $strictCallEnable = getParamData('strictCallEnable');
 
-$sqlAddon    = '';
-$group       = $_REQUEST['group'] ?? -1;
-$callSignSql = $callSign;
+$sqlAddon       = '';
+$sqlAddonSearch = '';
+$group          = $_REQUEST['group'] ?? -1;
+$callSignSql    = $callSign;
+$doSearchQuery  = false;
+
+$searchMsg    = $_REQUEST['searchMsg'] ?? '';
+$searchSrc    = $_REQUEST['searchSrc'] ?? '';
+$searchDst    = $_REQUEST['searchDst'] ?? '';
+$searchTsFrom = $_REQUEST['searchTsFrom'] ?? '';
+$searchTsTo   = $_REQUEST['searchTsTo'] ?? '';
+$searchPage   = $_REQUEST['page'] ?? '';
+$totalRows    = $_REQUEST['totalRows'] ?? 0;
+$totalPages   = $_REQUEST['totalPages'] ?? 0;
+
+$page    = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$perPage = 100;
+$offset  = ($page - 1) * $perPage;
+
+$searchTsFromUrl = $searchTsFrom;
+$searchTsToUrl   = $searchTsTo;
+
+if ($totalRows != 0)
+{
+    echo '<span class="setFontMsg searchInfo">';
+    echo 'Gefundene Datensätze:' . $totalRows;
+    echo '<br>Entspricht ' . $totalPages . ' Seiten bei ' . $perPage . ' Einträgen pro Seite';
+    echo '</span>';
+
+    echo '<br><br><span class="setFontMsg searchInfo">';
+
+    if ($page > 1)
+    {
+        echo '<input type="button" class="btnPagePagination" value="« Zurück" ';
+        echo 'data-group="' . $group . '" ';
+        echo 'data-search_msg="' . $searchMsg . '" ';
+        echo 'data-search_src="' . $searchSrc . '" ';
+        echo 'data-search_dst="' . $searchDst . '" ';
+        echo 'data-search_ts_from="' . $searchTsFromUrl . '" ';
+        echo 'data-search_ts_to="' . $searchTsToUrl . '" ';
+        echo 'data-total_rows="' . $totalRows . '" ';
+        echo 'data-total_pages="' . $totalPages . '" ';
+        echo 'data-current_page="' . $page . '" ';
+        echo 'data-search_direction="back" ';
+        echo '/>';
+
+        echo "&nbsp;&nbsp;&nbsp;Seite $page von $totalPages&nbsp;&nbsp;&nbsp;";
+    }
+
+    if ($page < $totalPages)
+    {
+        echo '<input type="button" class="btnPagePagination" value="Weiter »" ';
+        echo 'data-group="' . $group . '" ';
+        echo 'data-search_msg="' . $searchMsg . '" ';
+        echo 'data-search_src="' . $searchSrc . '" ';
+        echo 'data-search_dst="' . $searchDst . '" ';
+        echo 'data-search_ts_from="' . $searchTsFromUrl . '" ';
+        echo 'data-search_ts_to="' . $searchTsToUrl . '" ';
+        echo 'data-total_rows="' . $totalRows . '" ';
+        echo 'data-total_pages="' . $totalPages . '" ';
+        echo 'data-current_page="' . $page . '" ';
+        echo 'data-search_direction="forward" ';
+        echo '/>';
+    }
+
+    if ($page == 1)
+    {
+        echo "&nbsp;&nbsp;&nbsp;Seite $page von $totalPages&nbsp;&nbsp;&nbsp;";
+    }
+    echo '</span>';
+    echo "<hr>";
+}
+
+#Konvertiere Datum in ein Timestamp
+$searchTsFrom = $searchTsFrom != '' ? str_replace('T', ' ', $searchTsFrom).':00' : '';
+$searchTsTo   = $searchTsTo != '' ? str_replace('T',' ', $searchTsTo).':59' : '';
+
+if ($searchMsg != '' || $searchSrc != '' || $searchDst != '' || $searchTsFrom != '' || $searchTsTo != '')
+{
+    $doSearchQuery = true;
+
+    $conditions = [];
+
+    if ($searchMsg !== '') {
+        $conditions[] = "lower(msg) LIKE lower('%$searchMsg%')";
+    }
+
+    if ($searchSrc !== '') {
+        $conditions[] = "lower(substr(src, 1, instr(src || ',', ',') - 1)) LIKE lower('%$searchSrc%')";
+    }
+
+    if ($searchDst !== '') {
+        $conditions[] = "lower(dst) LIKE lower('%$searchDst%')";
+    }
+
+    if ($searchTsFrom !== '' && $searchTsTo !== '') {
+        $conditions[] = "timestamps BETWEEN '$searchTsFrom' AND '$searchTsTo'";
+    }
+
+    if ($searchTsFrom !== '' && $searchTsTo === '') {
+        $conditions[] = "timestamps >= '$searchTsFrom'";
+    }
+
+    if ($searchTsFrom === '' && $searchTsTo !== '') {
+        $conditions[] = "timestamps <= '$searchTsTo'";
+    }
+
+    $conditions[] = "type = 'msg'";
+    $conditions[] = "lower(msg) NOT LIKE lower('%{CET}%')";
+
+    if (!empty($conditions)) {
+        $sqlAddonSearch = 'WHERE ' . implode(' AND ', $conditions);
+    }
+}
 
 if ($strictCallEnable == 1)
 {
@@ -106,27 +217,96 @@ echo '<audio id="alertSoundDst" src="sound\\' . $alertSoundFileDst . '" preload=
 echo '<input type="hidden" id="posStatusValue" value="'. $posStatusValue . '" />';
 echo '<input type="hidden" id="noTimeSyncMsgValue" value="'. $noTimeSyncMsgValue . '" />';
 
-//#Prevents Buffering in Browser for flush()
-//ini_set('zlib.output_compression',0);
-//ini_set('implicit_flush',1);
-//#ob_end_clean(); //verhindert laden von css
-//set_time_limit(0);
-
-# Lighttpd Prevent Buffering
-# add this to /etc/lighttpd.conf
-#server.stream-response-body = 1
-
 $db = new SQLite3('database/meshdash.db', SQLITE3_OPEN_READONLY);
 $db->busyTimeout(5000); // warte wenn busy in millisekunden
 
-// Hole mir die letzten 30 Nachrichten aus der Datenbank
-$result = $db->query("SELECT * 
+if ($searchPage == '' && $doSearchQuery === true)
+{
+    // Für Pagination: Gesamtanzahl holen (ohne LIMIT)
+    $countQuery  = "SELECT COUNT(*) AS total FROM meshdash $sqlAddonSearch";
+    $countResult = $db->query($countQuery);
+    $totalRows   = $countResult->fetchArray(SQLITE3_ASSOC)['total'];
+    $totalPages  = ceil($totalRows / $perPage);
+
+    if ($totalRows == 0)
+    {
+        echo '<br><span class="failureHint">Keine Daten zum Suchkriterium vorhanden.</span>';
+        exit();
+    }
+
+    echo '<span class="setFontMsg searchInfo">';
+    echo 'Gefundene Datensätze:' . $totalRows;
+    echo '<br>Entspricht ' . $totalPages . ' Seiten bei ' . $perPage . ' Einträgen pro Seite';
+    echo '</span>';
+
+    echo '<br><br><span class="setFontMsg searchInfo">';
+
+    if ($page > 1)
+    {
+        echo '<input type="button" class="btnPagePagination" value="« Zurück" ';
+        echo 'data-group="' . $group . '" ';
+        echo 'data-search_msg="' . $searchMsg . '" ';
+        echo 'data-search_src="' . $searchSrc . '" ';
+        echo 'data-search_dst="' . $searchDst . '" ';
+        echo 'data-search_ts_from="' . $searchTsFromUrl . '" ';
+        echo 'data-search_ts_to="' . $searchTsToUrl . '" ';
+        echo 'data-total_rows="' . $totalRows . '" ';
+        echo 'data-total_pages="' . $totalPages . '" ';
+        echo 'data-current_page="' . $page . '" ';
+        echo 'data-search_direction="back" ';
+        echo '/>';
+
+        echo "&nbsp;&nbsp;&nbsp;Seite $page von $totalPages&nbsp;&nbsp;&nbsp;";
+    }
+
+    if ($page < $totalPages)
+    {
+        echo '<input type="button" class="btnPagePagination" value="Weiter »" ';
+        echo 'data-group="' . $group . '" ';
+        echo 'data-search_msg="' . $searchMsg . '" ';
+        echo 'data-search_src="' . $searchSrc . '" ';
+        echo 'data-search_dst="' . $searchDst . '" ';
+        echo 'data-search_ts_from="' . $searchTsFromUrl . '" ';
+        echo 'data-search_ts_to="' . $searchTsToUrl . '" ';
+        echo 'data-total_rows="' . $totalRows . '" ';
+        echo 'data-total_pages="' . $totalPages . '" ';
+        echo 'data-current_page="' . $page . '" ';
+        echo 'data-search_direction="forward" ';
+        echo '/>';
+    }
+
+    if ($page == 1)
+    {
+        echo "&nbsp;&nbsp;&nbsp;Seite $page von $totalPages&nbsp;&nbsp;&nbsp;";
+    }
+
+    echo '</span>';
+    echo "<hr>";
+}
+
+if ($doSearchQuery === true)
+{
+    $searchQuery = "SELECT * 
+                      FROM meshdash
+                           $sqlAddonSearch
+                           
+                  ORDER BY timestamps DESC
+                     LIMIT $perPage OFFSET $offset
+                        ";
+
+    $result = $db->query($searchQuery);
+}
+else
+{
+    # Hole mir die letzten 30 Nachrichten aus der Datenbank
+    # Maybe False when Database is locked
+    $result = $db->query("SELECT * 
                               FROM meshdash
                              WHERE msgIsAck = 0
                                    $sqlAddon
                           ORDER BY timestamps DESC
                              LIMIT $maxScrollBackRows");
-# Maybe False when Database is locked
+}
 
 #Init Values
 $keyword1Text      = '';
@@ -211,8 +391,8 @@ if ($result !== false)
         }
 
         #Ersetzte durch aussagekräftige Meldung von OE1XAR-45,
-        # wenn Flag noTimeSync = 0 sonst continue;
-        #chtung ergebnis muss auf Type geprüft werden da sonst ein false als 0 interpretiert wird
+        #wenn Flag noTimeSync = 0 sonst continue;
+        #Achtung, Ergebnis muss auf Type geprüft werden da sonst ein false als 0 interpretiert wird
         if (strpos($msg, '{CET}') !== false && $noTimeSyncMsgValue == 0)
         {
             $msg = str_replace('{CET}',' TimeSync: CET ', $msg);
@@ -220,7 +400,7 @@ if ($result !== false)
         else if (strpos($msg, '{CET}') !== false && $noTimeSyncMsgValue == 1)
         {
             #Wird jetzt in SQL abgefangen
-            updateMeshDashData($msgId,'msgIsTimeSync', 1);
+            updateMeshDashData($msgId,'msgIsTimeSync', 1, $doSearchQuery);
             continue;
         }
 
@@ -362,7 +542,7 @@ if ($result !== false)
             if ($resCheckMsgAck === true)
             {
                 #Wird jetzt in SQL abgefangen
-                updateMeshDashData($msgId,'msgIsAck', 1);
+                updateMeshDashData($msgId,'msgIsAck', 1, $doSearchQuery);
                 continue;
             }
 
@@ -401,7 +581,7 @@ if ($result !== false)
                 echo 'document.getElementById("alertSoundSrc").play();'; // Ton abspielen
                 echo '</script>';
 
-                updateMeshDashData($msgId,'alertExecutedSrc', 1);
+                updateMeshDashData($msgId,'alertExecutedSrc', 1, $doSearchQuery);
             }
 
             #DestinatationCall
@@ -411,7 +591,7 @@ if ($result !== false)
                 echo 'document.getElementById("alertSoundDst").play();'; // Ton abspielen
                 echo '</script>';
 
-                updateMeshDashData($msgId,'alertExecutedDst', 1);
+                updateMeshDashData($msgId,'alertExecutedDst', 1, $doSearchQuery);
             }
 
             $alertSrcCss = '';

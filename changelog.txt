@@ -1,5 +1,10 @@
+Version 1.10.24 SQL
+FEATURE: Setzten von Indizes auf meshdash Datenbank zur Abfrageoptimierung
+FEATURE: NEU: Suchfunktion über die gesamte Nachrichtendatenbank nach Auswahlkriterien.
+FEATURE: Anpassung Anleitung an neue Suchfunktion.
+BUGFIX:  New-Message reagierte auch auf Zeitsync bei "Kein Filter" Tab.
+#################################################################
 Version 1.10.22 SQL
-
 BUGFIX:  Fehlerhafte Erkennung der Send-Queue Status-Info in Debug-Info, wenn Wert = 0.
 BUGFIX:  Browser-Reload wechselt nicht auf letzten Tab, wenn dieser Own-Call war.
 BUGFIX:  Browser-Reload setzt bei Wechsel auf letzten Tab nicht die Gruppen Id im DM-Feld.
@@ -13,7 +18,7 @@ FEATURE: Bezeichnung Gruppe aus der mobilen Ansicht entfernt.
 FEATURE: Auswahl der gängigsten Emoji neben Nachrichtenfeld möglich.
 FEATURE: Bei neuen Nachrichten zusätzliche Auswahl der Hintergrundfarbe möglich zum roten Punkt.
 FEATURE: Das Changelog zur aktuellen Release-Version ist nun zusätzlich Abrufbar unter Update.
-BUGFIX:  Beim Browserrefresh wird nun das korrekte Tab aktiviert, was zuletzt genutzt wurde.
+BUGFIX:  Beim Browser-Refresh wird jetzt das korrekte Tab aktiviert, welches zuletzt genutzt wurde.
 #################################################################
 Version 1.10.18 SQL
 BUGFIX: Issue 167 Upgrade-Fehler von Beta-Release via install_5d_sh

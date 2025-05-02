@@ -107,6 +107,7 @@ function initSQLiteDatabase($database): bool
 
         #Set Index
         $db->exec("CREATE INDEX IF NOT EXISTS idx_timestamps ON meshdash(timestamps);");
+        $db->exec("CREATE INDEX IF NOT EXISTS idx_dst ON meshdash(dst);");
 
         #Close and write Back WAL
         $db->close();
