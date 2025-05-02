@@ -40,7 +40,7 @@ $logDir     = $basename == 'menu' ? $logDirSub : $logDirRoot;
 $osIssWindows            = chkOsIssWindows();
 $sendQueueInterval       = getParamData('sendQueueInterval');
 $sendQueueMode           = getParamData('sendQueueMode');
-$sendQueueMode           = $sendQueueMode == '' ? getStatusIcon('error') : getStatusIcon('ok');
+$sendQueueMode           = $sendQueueMode == '' || $sendQueueMode == 0 ? getStatusIcon('error') : getStatusIcon('ok');
 
 $checkTaskCmdUdpReceiver = getTaskCmd('udp');
 $taskResultUdpReceiver   = shell_exec($checkTaskCmdUdpReceiver); //Prüfe Hintergrundprozess

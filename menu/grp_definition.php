@@ -61,12 +61,33 @@ $groupNumber4EnabledChecked = $groupNumber4Enabled == 1 ? 'checked' : '';
 $groupNumber5EnabledChecked = $groupNumber5Enabled == 1 ? 'checked' : '';
 $groupNumber6EnabledChecked = $groupNumber6Enabled == 1 ? 'checked' : ''; // Notfall gruppe
 
+$groupSound1Enabled        = $resGetGroupParameter[1]['groupSound'] ?? 0;
+$groupSound2Enabled        = $resGetGroupParameter[2]['groupSound'] ?? 0;
+$groupSound3Enabled        = $resGetGroupParameter[3]['groupSound'] ?? 0;
+$groupSound4Enabled        = $resGetGroupParameter[4]['groupSound'] ?? 0;
+$groupSound5Enabled        = $resGetGroupParameter[5]['groupSound'] ?? 0;
+$groupSound6Enabled        = $resGetGroupParameter[6]['groupSound'] ?? 0; // Notfall-Gruppe
+$groupSoundNoFilterEnabled = $resGetGroupParameter[-1]['groupSound'] ?? 0; // Kein Filter
+$groupSoundOwnCallEnabled  = $resGetGroupParameter[-2]['groupSound'] ?? 0; // Own Call
+
+$groupSound1EnabledChecked        = $groupSound1Enabled == 1 ? 'checked' : '';
+$groupSound2EnabledChecked        = $groupSound2Enabled == 1 ? 'checked' : '';
+$groupSound3EnabledChecked        = $groupSound3Enabled == 1 ? 'checked' : '';
+$groupSound4EnabledChecked        = $groupSound4Enabled == 1 ? 'checked' : '';
+$groupSound5EnabledChecked        = $groupSound5Enabled == 1 ? 'checked' : '';
+$groupSound6EnabledChecked        = $groupSound6Enabled == 1 ? 'checked' : ''; // Notfall-Gruppe
+$groupSoundOwnCallEnabledChecked  = $groupSoundOwnCallEnabled == 1 ? 'checked' : ''; // Own Call
+$groupSoundNoFilterEnabledChecked = $groupSoundNoFilterEnabled == 1 ? 'checked' : ''; // Kein Filter
+
 $groupNumber1 = $resGetGroupParameter[1]['groupNumber'] ?? 0;
 $groupNumber2 = $resGetGroupParameter[2]['groupNumber'] ?? 0;
 $groupNumber3 = $resGetGroupParameter[3]['groupNumber'] ?? 0;
 $groupNumber4 = $resGetGroupParameter[4]['groupNumber'] ?? 0;
 $groupNumber5 = $resGetGroupParameter[5]['groupNumber'] ?? 0;
 $groupNumber6 = $resGetGroupParameter[6]['groupNumber'] ?? 0; // Notfall gruppe
+
+$groupSoundFile = getParamData('groupSoundFile');
+$groupSoundFile = $groupSoundFile == '' ? 'new_message.wav' : $groupSoundFile;
 
 echo '<h2>Gruppen-Definition zur Filterung<span class="lineBreak">der Nachrichten</span>';
 echo '<br><span class="hintText failureHint">Hinweis: Die Änderung wird erst nach einem Reload der Seite sichtbar!</span></h2>';
@@ -76,52 +97,87 @@ echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
 echo '<table>';
 
 echo '<tr>';
-echo '<td>Gruppe1 :</td>';
-echo '<td><input type="text" name="groupNumber1" id="groupNumber1" value="' . $groupNumber1 . '" placeholder="1-99999"  /></td>';
-echo '<td><input type="checkbox" name="groupNumber1Enabled" ' . $groupNumber1EnabledChecked . ' id="groupNumber1Enabled" value="1" /></td>';
+echo '<td>&nbsp</td>';
+echo '<td>&nbsp;</td>';
+echo '<td>&#x2714;&#65039;/&#x274C;</td>';
+echo '<td>&#x1F50A;/&#x1F507;</td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Gruppe2 :</td>';
-echo '<td><input type="text" name="groupNumber2" id="groupNumber2" value="' . $groupNumber2 . '" placeholder="1-99999"  /></td>';
-echo '<td><input type="checkbox" name="groupNumber2Enabled" ' . $groupNumber2EnabledChecked . ' id="groupNumber2Enabled" value="1" /></td>';
+echo '<td>Gruppe 1 :</td>';
+echo '<td><input type="text" class="groupIdField" name="groupNumber1" id="groupNumber1" value="' . $groupNumber1 . '" placeholder="1-99999"  /></td>';
+echo '<td class="tdCenter"><input type="checkbox" name="groupNumber1Enabled" ' . $groupNumber1EnabledChecked . ' id="groupNumber1Enabled" value="1" /></td>';
+echo '<td class="tdCenter"><input type="checkbox" name="groupSound1Enabled" ' . $groupSound1EnabledChecked . ' id="groupSound1Enabled" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Gruppe3 :</td>';
-echo '<td><input type="text" name="groupNumber3" id="groupNumber3" value="' . $groupNumber3 . '" placeholder="1-99999"  /></td>';
-echo '<td><input type="checkbox" name="groupNumber3Enabled" ' . $groupNumber3EnabledChecked . ' id="groupNumber3Enabled" value="1" /></td>';
+echo '<td>Gruppe 2 :</td>';
+echo '<td class=""><input type="text" class="groupIdField" name="groupNumber2" id="groupNumber2" value="' . $groupNumber2 . '" placeholder="1-99999"  /></td>';
+echo '<td class="tdCenter"><input type="checkbox" name="groupNumber2Enabled" ' . $groupNumber2EnabledChecked . ' id="groupNumber2Enabled" value="1" /></td>';
+echo '<td class="tdCenter"><input type="checkbox" name="groupSound2Enabled" ' . $groupSound2EnabledChecked . ' id="groupSound2Enabled" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Gruppe4 :</td>';
-echo '<td><input type="text" name="groupNumber4" id="groupNumber4" value="' . $groupNumber4 . '" placeholder="1-99999"  /></td>';
-echo '<td><input type="checkbox" name="groupNumber4Enabled" ' . $groupNumber4EnabledChecked . ' id="groupNumber4Enabled" value="1" /></td>';
+echo '<td>Gruppe 3 :</td>';
+echo '<td class=""><input type="text" class="groupIdField" name="groupNumber3" id="groupNumber3" value="' . $groupNumber3 . '" placeholder="1-99999"  /></td>';
+echo '<td class="tdCenter"><input type="checkbox" name="groupNumber3Enabled" ' . $groupNumber3EnabledChecked . ' id="groupNumber3Enabled" value="1" /></td>';
+echo '<td class="tdCenter"><input type="checkbox" name="groupSound3Enabled" ' . $groupSound3EnabledChecked . ' id="groupSound3Enabled" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Gruppe5 :</td>';
-echo '<td><input type="text" name="groupNumber5" id="groupNumber5" value="' . $groupNumber5 . '" placeholder="1-99999"  /></td>';
-echo '<td><input type="checkbox" name="groupNumber5Enabled" ' . $groupNumber5EnabledChecked . ' id="groupNumber5Enabled" value="1" /></td>';
+echo '<td>Gruppe 4 :</td>';
+echo '<td class=""><input type="text" class="groupIdField" name="groupNumber4" id="groupNumber4" value="' . $groupNumber4 . '" placeholder="1-99999"  /></td>';
+echo '<td class="tdCenter"><input type="checkbox" name="groupNumber4Enabled" ' . $groupNumber4EnabledChecked . ' id="groupNumber4Enabled" value="1" /></td>';
+echo '<td class="tdCenter"><input type="checkbox" name="groupSound4Enabled" ' . $groupSound4EnabledChecked . ' id="groupSound4Enabled" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td colspan="2">&nbsp;</td>';
+echo '<td>Gruppe 5 :</td>';
+echo '<td class=""><input type="text" class="groupIdField" name="groupNumber5" id="groupNumber5" value="' . $groupNumber5 . '" placeholder="1-99999"  /></td>';
+echo '<td class="tdCenter"><input type="checkbox" name="groupNumber5Enabled" ' . $groupNumber5EnabledChecked . ' id="groupNumber5Enabled" value="1" /></td>';
+echo '<td class="tdCenter"><input type="checkbox" name="groupSound5Enabled" ' . $groupSound5EnabledChecked . ' id="groupSound5Enabled" value="1" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td>Own-Call :</td>';
+echo '<td class="">&nbsp;</td>';
+echo '<td class="">&nbsp;</td>';
+echo '<td class="tdCenter"><input type="checkbox" name="groupSoundOwnCallEnabled" ' . $groupSoundOwnCallEnabledChecked . ' id="groupSoundOwnCallEnabled" value="1" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td>Kein Filter :</td>';
+echo '<td class="">&nbsp;</td>';
+echo '<td class="">&nbsp;</td>';
+echo '<td class="tdCenter"><input type="checkbox" name="groupSoundNoFilterEnabled" ' . $groupSoundNoFilterEnabledChecked . ' id="groupSoundNoFilterEnabled" value="1" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td colspan="5">&nbsp;</td>';
 echo '</tr>';
 
 echo '<tr>';
 echo '<td>Notfall-Gruppe :</td>';
-echo '<td><input type="text" name="groupNumber6" id="groupNumber6" value="' . $groupNumber6 . '" placeholder="1-99999"  /></td>';
-echo '<td><input type="checkbox" name="groupNumber6Enabled" ' . $groupNumber6EnabledChecked . ' id="groupNumber6Enabled" value="1" /></td>';
+echo '<td class="tdCenter"><input type="text" class="groupIdField" name="groupNumber6" id="groupNumber6" value="' . $groupNumber6 . '" placeholder="1-99999"  /></td>';
+echo '<td class="tdCenter"><input type="checkbox" name="groupNumber6Enabled" ' . $groupNumber6EnabledChecked . ' id="groupNumber6Enabled" value="1" /></td>';
+echo '<td class="tdCenter"><input type="checkbox" name="groupSound6Enabled" ' . $groupSound6EnabledChecked . ' id="groupSound6Enabled" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td colspan="3"><hr></td>';
+echo '<td colspan="5"><hr></td>';
 echo '</tr>';
 
+echo '<tr>';
+echo '<td>Sound-File :</td>';
+echo '<td colspan="5"><input type="text" class="" name="groupSoundFile" id="groupSoundFile" value="' . $groupSoundFile . '" placeholder="Sound-File"  /></td>';
+echo '</tr>';
 
 echo '<tr>';
-echo '<td colspan="3">';
+echo '<td colspan="5"><hr></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td colspan="4">';
 if ($sendData === '1')
 {
     echo '<input type="button" class="failureHint" id="btnGrpDefinitionReload" value="MeshDash-Seite neu laden"/>';

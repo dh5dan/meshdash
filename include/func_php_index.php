@@ -53,6 +53,10 @@ function initDatabases()
     {
         initSQLiteDatabase('groups');
     }
+    else
+    {
+        checkDbUpgrade('groups');
+    }
 
     if (!file_exists('database/tx_queue.db'))
     {
@@ -165,7 +169,8 @@ function initSQLiteDatabase($database): bool
                                        ('timeZone', '', 'Europe/Berlin'),
                                        ('sendQueueInterval', '30', ''),
                                        ('cronLoopPid', '', ''),
-                                       ('sendQueueMode', 0, '')
+                                       ('sendQueueMode', 0, ''),
+                                       ('soundFileNewMsg', '', 'new_message.wav'),
            ");
 
         #Close and write Back WAL
@@ -368,7 +373,8 @@ function initSQLiteDatabase($database): bool
                                 (
                                   groupId INTEGER PRIMARY KEY,              
                                   groupNumber INTEGER NOT NULL,
-                                  groupEnabled INTEGER NOT NULL
+                                  groupEnabled INTEGER NOT NULL,
+                                  groupSound INTEGER NOT NULL
                                 )
                 ");
 
@@ -656,5 +662,30 @@ function setNewMsgBgColor()
                 background-color: ' . $newMsgBgColor . ' !important;
             }
            </style>';
+}
+
+function setNewMsgAudioItems()
+{
+    $resGetGroupParameter = getGroupParameter();
+    $groupSoundFile       = getParamData('groupSoundFile');
+
+    if ($groupSoundFile == '')
+    {
+        return false;
+    }
+
+    foreach ($resGetGroupParameter as $groupParameter=>$groupParameterValue)
+    {
+        if ($groupParameterValue['groupEnabled'] == 1 && $groupParameterValue['groupSound'] == 1)
+        {
+            $groupId = $groupParameterValue['groupNumber'];
+            echo '<audio id="beep_' . $groupId . '" src="sound/' . $groupSoundFile . '" preload="auto"></audio>';
+        }
+
+        if ((int) $groupParameter < 0 && $groupParameterValue['groupSound'] == 1)
+        {
+            echo '<audio id="beep_' . $groupParameter . '" src="sound/' . $groupSoundFile . '" preload="auto"></audio>';
+        }
+    }
 }
 

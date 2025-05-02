@@ -43,7 +43,7 @@ while ($row = $result1->fetchArray(SQLITE3_ASSOC))
 $groupsSql = implode(',', $groups);
 $groupsSql .= ",'*','$callSign'";
 
-if ($debugFlag)
+if ($debugFlag === true)
 {
     echo "<br>groupsSql:$groupsSql";
     echo "<br>#38#defined grp#<br><pre>";
@@ -68,7 +68,7 @@ $query = "SELECT DISTINCT dst
 
 $result2 = $db2->query($query);
 
-if ($debugFlag)
+if ($debugFlag === true)
 {
     echo "<br>" . $query;
 }
@@ -92,7 +92,7 @@ else
     exit();
 }
 
-if ($debugFlag)
+if ($debugFlag === true)
 {
     echo "<br>lastCheckedFormatted:$lastCheckedFormatted";
     echo "<br>#74#mergedData#<br><pre>";

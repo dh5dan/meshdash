@@ -34,6 +34,9 @@
            });
        }, 5000);
 
+       // Globale Sound-Merkliste
+       let playedSoundForGroup = {};
+
         // Funktion zur Nachrichtenprüfung
        function checkNewMessages(groupId, lastChecked)
        {
@@ -44,6 +47,24 @@
                    if (groupId !== activeGroupId)
                    {
                        $(`.tab[data-group="${groupId}"]`).addClass("new-message-indicator"); // Markierung setzen
+
+                       // Sound nur einmal abspielen
+                       if (!playedSoundForGroup[groupId])
+                       {
+                           // Generiere dynamisch die ID des Audio-Tags
+                           let audioId = `#beep_${groupId}`;
+                           let audioElement = $(audioId)[0];
+
+                           // Wenn Audio-Tag vorhanden ist: abspielen
+                           if (audioElement)
+                           {
+                               audioElement.play().catch((e) => {
+                                   console.warn(`Konnte Audio für Gruppe ${groupId} nicht abspielen:`, e);
+                               });
+                           }
+
+                           playedSoundForGroup[groupId] = true;
+                       }
                    }
                }
            });
@@ -98,19 +119,38 @@
            let messageFrame = $("#message-frame"); // ID des Iframes
            let currentSrc   = messageFrame.attr("src");
 
+           // let savedGroupId = sessionStorage.getItem('groupId');
+           // console.log(savedGroupId); // Achtung: ist ein String! => "-2"
+
            if (currentSrc && currentSrc.includes("message.php"))
            {
                let doc            = messageFrame.contents();
                let groupValue     = doc.find("#group").val();
                let scrollPosition = doc.scrollTop(); // Aktuelle Scroll-Position merken
+               let groupId        = parseInt(groupValue, 10);
 
                // Stelle sicher, dass der Tab zur aktuellen Gruppe aktiv ist
                if (groupValue !== undefined && groupValue !== null) {
-                   let tabSelector = '#top-tabs .tab[data-group="' + groupValue + '"]';
-                   if (!$(tabSelector).hasClass('active')) {
-                       $('#top-tabs .tab').removeClass('active'); // alle inaktiv
-                       $(tabSelector).addClass('active');         // aktuellen aktiv setzen
-                       activeGroupId = parseInt(groupValue);       // intern merken
+
+                   // tabSelector ist jetzt ein jQuery-Objekt, nicht mehr nur ein String
+                   let tabSelector = $('#top-tabs .tab').filter(function ()
+                   {
+                       return $(this).data('group') === groupId;
+                   });
+
+                   if (tabSelector.length > 0 && !tabSelector.hasClass('active'))
+                   {
+                       $('#top-tabs .tab').removeClass('active');
+                       tabSelector.addClass('active');
+                       activeGroupId = groupId; //Setzte Wert für New-Message Prüfung ob Tab out of Focus
+                   }
+
+                   //Setzte Gruppen Id in DM Feld wenn ID > 0
+                   let bottomFrame = $('#bottom-frame');
+
+                   if (groupValue > 0 && bottomFrame.contents().find('#bottomDm').val() === '')
+                   {
+                       bottomFrame.contents().find('#bottomDm').val(groupValue);
                    }
                }
 
@@ -408,12 +448,15 @@
            let groupBottom = groupId; // Unveränderter wert für Bottom own Call Filter
 
            // // Schreibe Gruppennummer in Abhängig vom Tab in Bottom Iframe und da in das DM-Feld
+           let groupIdSession = groupId; //Hier originale Id nehmen für Session
            groupId = groupId === -1 || groupId === -2 ? '' : groupId;
            groupId = groupId === 0 ? '*' : groupId;
+
            bottomFrame.contents().find('#bottomDm').val(groupId);
            bottomFrame.contents().find('#groupId').val(groupBottom);
 
-           sessionStorage.setItem('groupId', groupId);  // Speichern der Gruppen-ID für die aktuelle Instanz
+           sessionStorage.setItem('groupId', groupIdSession);  // Speichern der Gruppen-ID für die aktuelle Instanz
+           playedSoundForGroup[groupIdSession] = false; //Setzte Audio zurück, sodass neuer Sound gespielt werden kann
 
            ////////////////////////////// Start Tab-Timestamp
            // Erkenne Tab-Wechsel und aktualisiere Timestamp,
@@ -422,7 +465,8 @@
 
            //console.log('TabOnClick newGroupId:'+ newGroupId + " activeGroupId:"+activeGroupId);
 
-           if (activeGroupId !== null && activeGroupId !== newGroupId) {
+           if (activeGroupId !== null && activeGroupId !== newGroupId)
+           {
                // Setze den Timestamp NUR für die alte aktive Gruppe
                lastFocusLostTimestamps[activeGroupId] = Math.floor(Date.now() / 1000);
            }

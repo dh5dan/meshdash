@@ -34,6 +34,14 @@ body {
     width: 100%;
 }
 
+.groupIdField {
+    max-width: 50px;
+}
+
+.tdCenter {
+    text-align: center;
+}
+
 @media (max-width: 600px) {
 
     .successHint, .failureHint {

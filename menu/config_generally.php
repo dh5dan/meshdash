@@ -162,7 +162,7 @@ echo '<td><input type="checkbox" name="doLogEnable" ' . $doLogEnableChecked . ' 
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Chron-Log aktivieren:</td>';
+echo '<td>Log-Rotation aktivieren:</td>';
 echo '<td><input type="checkbox" name="chronLogEnable" ' . $chronLogEnableChecked . ' id="chronLogEnable" value="1" /></td>';
 echo '</tr>';
 
@@ -172,7 +172,7 @@ echo '<td><input type="text" name="retentionDays" id="retentionDays" value="' . 
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Chron-Mode:</td>';
+echo '<td>Log-Rotation Modus:</td>';
 echo '<td>&nbsp;</td>';
 echo '</tr>';
 
