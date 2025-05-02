@@ -2,7 +2,7 @@
 
 ## Was ist MeshDash-SQL?
 
-MeshDash_SQL ist eine Webanwendung zur Anzeige und Verwaltung von Nachrichten  
+MeshDash-SQL ist eine Webanwendung zur Anzeige und Verwaltung von Nachrichten  
 auf ESP32-basierten Geräten, die mit der Firmware MeshCom arbeiten.  
 Die Verarbeitung und Speicherung der Daten erfolgt über Sqlite3 daher auch der Zusatz SQL.
 
@@ -31,6 +31,8 @@ Einige Funktionen von MeshDash:
   Dies gewährleistet, das aufeinanderfolgende Nachrichten mit einem  
   eingestellten Zeitabstand gesendet werden, um Sendekollisionen zu vermeiden.
 - Byte-Counter der die verbleibende Anzahl von Zeichen pro Nachricht anzeigt.
+- Auswahl gängiger Emoji über ein DropDown.
+- Zusätzliche Kennzeichnung neuer Nachrichten mit Hintergrundfarbe und Sound.
 
 Das Projekt ist mittlerweile aus der **Beta-Phase**, doch es können immer mal noch Fehler auftreten.  
 Falls Probleme auftreten, bitte im Issue-Bereich von GitHub melden,  
@@ -62,16 +64,17 @@ Hier mal ein Beispiel:
 
 ![FILES](/docs/files.jpg)
 
-## Was steht in der Kurzanleitung.pdf?
+## Was steht in der Manual-Mesh-Dash-SQL.pdf?
 
-Die **Kurzanleitung.pdf** enthält:
+Die **Kurzanleitung.pdf** wurde nun abgelöst durch eine vollwertige Anleitung.  
+Die neue **Manual-Mesh-Dash-SQL.pdf** enthält:
 
 
-- Eine kleine Installations-Anleitung mit den wichtigsten Schritten zur Einrichtung von MeshDash.
-
-- Ein **kurzes User-Manual** mit Screenshots der Weboberfläche und Erklärungen zu den Menüpunkten.
-
-Diese Datei hilft dir, MeshDash schnell zu installieren und zu nutzen.  
+- Eine Installations-Anleitung mit den wichtigsten Schritten zur Einrichtung von MeshDash.
+- Ein **detailliertes User-Manual** mit Screenshots der Weboberfläche und Erklärungen zu den Menüpunkten.
+- Ein Troubleshooting Guide mit Tipps zur Fehleranalyse von MeshDash.
+ 
+Diese Datei hilft, MeshDash schnell zu installieren und zu nutzen.  
 Sie wird in regelmässigen Abständen aktualisiert.
 
 ## Hier noch ein paar Bilder aus den Menüpunkten:
@@ -101,8 +104,13 @@ Die max. Textlänge ist aber derzeit auf 150 Zeichen beschränkt.
 
 ![FILES](/docs/34_msg_byte_counter.jpg)
 
+### Einfügen von Emoji
+Über ein Drop-Down kann eine kleine Auswahl an gängigen Emoji vorgenommen werden.
+![FILES](/docs/32_send_command.jpg)
+
 
 ### Nun auch mit Tab-Benachrichtigungen bei neuen Nachrichten.
+Einstellbar sind die Hintergrundfarbe allgemein und Soundbenachrichtigungen pro Tab-Gruppe.
 ![FILES](/docs/60_desktop_tab_alert.jpg)
 ![FILES](/docs/61_handy_Tab_alert.jpg)
 
