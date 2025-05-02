@@ -17,6 +17,9 @@ function saveGroupsSettings(): bool
     $updateArray[5]['number'] = $_REQUEST['groupNumber5'] ?? 0;
     $updateArray[6]['number'] = $_REQUEST['groupNumber6'] ?? 0;
 
+    $updateArray[-1]['number'] = 0;
+    $updateArray[-2]['number'] = 0;
+
     $updateArray[1]['enabled'] = $_REQUEST['groupNumber1Enabled'] ?? 0;
     $updateArray[2]['enabled'] = $_REQUEST['groupNumber2Enabled'] ?? 0;
     $updateArray[3]['enabled'] = $_REQUEST['groupNumber3Enabled'] ?? 0;
@@ -24,20 +27,43 @@ function saveGroupsSettings(): bool
     $updateArray[5]['enabled'] = $_REQUEST['groupNumber5Enabled'] ?? 0;
     $updateArray[6]['enabled'] = $_REQUEST['groupNumber6Enabled'] ?? 0;
 
+    $updateArray[-1]['enabled'] = 0;
+    $updateArray[-2]['enabled'] = 0;
+
+    $updateArray[1]['sound'] = $_REQUEST['groupSound1Enabled'] ?? 0;
+    $updateArray[2]['sound'] = $_REQUEST['groupSound2Enabled'] ?? 0;
+    $updateArray[3]['sound'] = $_REQUEST['groupSound3Enabled'] ?? 0;
+    $updateArray[4]['sound'] = $_REQUEST['groupSound4Enabled'] ?? 0;
+    $updateArray[5]['sound'] = $_REQUEST['groupSound5Enabled'] ?? 0;
+    $updateArray[6]['sound'] = $_REQUEST['groupSound6Enabled'] ?? 0;
+
+    $updateArray[-1]['sound'] = $_REQUEST['groupSoundNoFilterEnabled'] ?? 0;
+    $updateArray[-2]['sound'] = $_REQUEST['groupSoundOwnCallEnabled'] ?? 0;
+
+    $groupSoundFile = $_REQUEST['groupSoundFile'] ?? 'new_message.wav';
+    setParamData('groupSoundFile', $groupSoundFile, 'txt');
+
     $db = new SQLite3($dbFilename);
     $db->exec('PRAGMA synchronous = NORMAL;');
 
-    for ($groupId = 1; $groupId <= 6; $groupId++)
+    for ($groupId = -2; $groupId <= 6; $groupId++)
     {
+        if ($groupId == 0)
+        {
+            continue;
+        }
+
         $groupNumber  = $updateArray[$groupId]['number'];
         $groupEnabled = $updateArray[$groupId]['enabled'];
+        $groupSound   = $updateArray[$groupId]['sound'];
 
         $db->exec("
-                        REPLACE INTO groups (groupId, groupNumber, groupEnabled)
+                        REPLACE INTO groups (groupId, groupNumber, groupEnabled, groupSound)
                         VALUES (
                                 '$groupId',
                                 '$groupNumber',
-                                '$groupEnabled'
+                                '$groupEnabled',
+                                '$groupSound'
                         );
                     "
         );
@@ -83,6 +109,7 @@ function getGroupParameter(int $mode = 0)
             $groupId                               = $dsData['groupId'] ?? 0;
             $returnValue[$groupId]['groupNumber']  = $dsData['groupNumber'] ?? 0;
             $returnValue[$groupId]['groupEnabled'] = $dsData['groupEnabled'] ?? 0;
+            $returnValue[$groupId]['groupSound']   = $dsData['groupSound'] ?? 0;
         }
         else if ( $dsData['groupEnabled'] ?? 0 == 1)
         {

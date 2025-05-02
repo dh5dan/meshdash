@@ -833,6 +833,7 @@ function columnExists($database, $tabelle, $spalte): bool
     $db->close();
     return false; // Spalte existiert nicht
 }
+
 function checkVersion($currentVersion, $targetVersion, $operator)
 {
     $currentVersion = preg_replace('/[^0-9.]/', '', $currentVersion);
@@ -840,6 +841,7 @@ function checkVersion($currentVersion, $targetVersion, $operator)
 
     return version_compare($targetVersion, $currentVersion, $operator);
 }
+
 function checkDbUpgrade($database)
 {
     $debugFlag = false;
@@ -900,30 +902,18 @@ function checkDbUpgrade($database)
             addColumn($database, 'sensordata', 'ina226vShunt');
             addColumn($database, 'sensordata', 'ina226vCurrent');
             addColumn($database, 'sensordata', 'ina226vPower');
-
-            ## Prozess neu laden damit Feld befüllt wird
-            # Stop UDP BG-Process
-            $paramBgProcess['task'] = 'udp';
-            stopBgProcess($paramBgProcess);
-
-            ##start UDP BG-Process
-            $paramStartBgProcess['task'] = 'udp';
-            startBgProcess($paramStartBgProcess);
         }
 
         if (!columnExists($database, 'mheard', 'mhType') && $database === 'mheard')
         {
             // Spalte hinzufügen
             addColumn($database, 'mheard', 'mhType');
+        }
 
-            ## Prozess neu laden damit Feld befüllt wird
-            # Stop UDP BG-Process
-            $paramBgProcess['task'] = 'udp';
-            stopBgProcess($paramBgProcess);
-
-            ##start UDP BG-Process
-            $paramStartBgProcess['task']       = 'udp';
-            startBgProcess($paramStartBgProcess);
+        if (!columnExists($database, 'groups', 'groupSound') && $database === 'groups')
+        {
+            // Spalte hinzufügen
+            addColumn($database, 'groups', 'groupSound');
         }
     }
 }
@@ -1995,9 +1985,6 @@ function callWindowsBackgroundTask($taskFile, $execDir = ''): bool
     $projectRoot = explode('/', trim($scriptName, '/'))[0]; // ergibt 'meshdash'
     $baseUrl     = $protocol . '://' . $host . '/' . $projectRoot;
     $triggerLink = $baseUrl . '/task_bg.php';
-
-//    echo "<br>taskFile:$taskFile";
-//    echo "<br>#1970#callWindowsBackgroundTask#:".$triggerLink;
 
     $postFields = array(
         'taskFile' => "$taskFile",

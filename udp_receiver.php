@@ -77,7 +77,7 @@ else
     $getPortInUse = shell_exec('netstat -nlpu|grep 1799');
     ob_implicit_flush(1);
 
-    $errorText = "Linux: Port In use [$getPortInUse] at " . date('Y-m-d H:i:s') . "\n";
+    $errorText = "Linux: Port 1799 In use with Port: [$getPortInUse] at " . date('Y-m-d H:i:s') . "\n";
     file_put_contents($errorFile, $errorText,FILE_APPEND);
 
     #If in USe kill Process

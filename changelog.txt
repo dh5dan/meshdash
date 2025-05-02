@@ -1,5 +1,14 @@
-Version 1.10.20 SQL
+Version 1.10.22 SQL
 
+BUGFIX:  Fehlerhafte Erkennung der Send-Queue Status-Info in Debug-Info, wenn Wert = 0.
+BUGFIX:  Browser-Reload wechselt nicht auf letzten Tab, wenn dieser Own-Call war.
+BUGFIX:  Browser-Reload setzt bei Wechsel auf letzten Tab nicht die Gruppen Id im DM-Feld.
+BUGFIX:  Änderungen im DM Feld bei Gruppen setzt diese wieder zurück auf den Default-Wert.
+FEATURE: Ausführliche detaillierte Anleitung von MeshDash. Löst Kurzanleitung ab.
+FEATURE: Anpassung fehlerhafter Begriff "Cronlog" zu Log-Rotation in Einstellungen.
+FEATURE: Soundbenachrichtigung wenn neue Nachricht. Einstellbar unter Gruppen.
+#################################################################
+Version 1.10.20 SQL
 FEATURE: Bezeichnung Gruppe aus der mobilen Ansicht entfernt.
 FEATURE: Auswahl der gängigsten Emoji neben Nachrichtenfeld möglich.
 FEATURE: Bei neuen Nachrichten zusätzliche Auswahl der Hintergrundfarbe möglich zum roten Punkt.

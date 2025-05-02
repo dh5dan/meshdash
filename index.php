@@ -166,6 +166,11 @@ echo '<div class="topRight" id="datetime">Hole Zeit!</div>';
 echo '</h1>';
 echo '</div>';
 
+#Define Sound New-Messages
+setNewMsgAudioItems();
+#echo '<audio id="beep_-1" src="sound/new_message.wav" preload="auto"></audio>';
+
+
 // Hier kommen die Tabs
 echo '<div id="top-tabs"></div>';
 
