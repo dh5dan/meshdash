@@ -133,7 +133,7 @@ $tabsJson = getGroupTabsJson();
 echo '<input type="hidden" id="tabConfig" value=\'' . $tabsJson . '\' />';
 
 #Check TaskStatus
-$taskResultUdp = shell_exec($checkTaskCmd);
+$taskResultUdp = file_exists('udp.pid');
 
 if ($autostartBgProcess === true && $sendData != 1)
 {
