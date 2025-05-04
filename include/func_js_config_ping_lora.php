@@ -16,7 +16,7 @@
 
         function dialogConfirm(output_msg, title_msg, width, sendData) {
             width      = !width ? 300 : width;
-            title_msg  = !width ? '' : title_msg;
+            title_msg  = !title_msg ? '' : title_msg;
             output_msg = !output_msg ? '' : output_msg;
             sendData   = !sendData ? 0 : sendData;
 
@@ -40,7 +40,7 @@
 
         function dialog(outputMsg, titleMsg, width) {
             width     = !width ? 300 : width;
-            titleMsg  = !width ? '' : titleMsg;
+            titleMsg  = !titleMsg ? '' : titleMsg;
             outputMsg = !outputMsg ? '' : outputMsg;
 
             $("<div></div>").html(outputMsg).dialog({

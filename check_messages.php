@@ -35,12 +35,13 @@ $result1 = $db1->query("
         ");
 
 $groups = [];
+
 while ($row = $result1->fetchArray(SQLITE3_ASSOC))
 {
     $groups[] = "'" . SQLite3::escapeString($row['groupNumber']) . "'";
 }
 
-$groupsSql = implode(',', $groups);
+$groupsSql  = implode(',', $groups);
 $groupsSql .= ",'*','$callSign'";
 
 if ($debugFlag === true)
@@ -57,13 +58,14 @@ $db2->busyTimeout(5000); // warte wenn busy in millisekunden
 
 // Zeitstempel des letzten Checks abrufen
 $lastChecked          = isset($_GET['lastChecked']) ? intval($_GET['lastChecked']) : 0;
-$lastCheckedFormatted = $lastChecked ? date('Y-m-d H:i:s', $lastChecked) : '2000-01-01 00:00:00';
+$lastCheckedFormatted = $lastChecked != '' ? date('Y-m-d H:i:s', $lastChecked) : '2000-01-01 00:00:00';
 
 $query = "SELECT DISTINCT dst
             FROM meshdash 
             WHERE timestamps > '$lastCheckedFormatted'
             AND dst in ($groupsSql)
-            AND type = 'msg';
+            AND type = 'msg'
+            AND msg NOT LIKE '%{CET}%';
         ";
 
 $result2 = $db2->query($query);

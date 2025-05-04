@@ -11,9 +11,19 @@ echo '<head><title>MeshDash-SQL</title>';
   echo '<meta http-equiv="content-type" content="text/html; charset=utf-8">';
 
   echo '<script type="text/javascript" src="jquery/jquery.min.js"></script>';
-  echo '<script type="text/javascript" src="jquery/jquery-ui.js"></script>';
-  echo '<link rel="stylesheet" href="jquery/jquery-ui.css">';
+
+  #echo '<link rel="stylesheet" href="jquery/jquery-ui.css">';
+  echo '<link rel="stylesheet" href="jquery/jquery-ui-1.13.3/jquery-ui.css">';
   echo '<link rel="stylesheet" href="jquery/css/jq_custom.css">';
+
+  # Achtung das ist V jquery-ui-1.13.3 weil nur die mit dem DateTimePicker Addon funktioniert
+  echo '<script type="text/javascript" src="jquery/jquery-ui-1.13.3/jquery-ui.min.js"></script>';
+
+
+  echo '<script type="text/javascript" src="jquery/jquery-ui-timepicker-addon/jquery-ui-timepicker-addon.min.js"></script>';
+  echo '<script type="text/javascript" src="jquery/jquery-ui-timepicker-addon/jquery-ui-sliderAccess.js"></script>';
+  echo '<link rel="stylesheet" href="jquery/jquery-ui-timepicker-addon/jquery-ui-timepicker-addon.min.css">';
+
   echo '<link rel="stylesheet" href="css/index.css?' . microtime() . '">';
   echo '<link rel="icon" type="image/png" sizes="16x16" href="favicon.png">';
 echo '</head>';
@@ -53,6 +63,7 @@ $sendQueueEnabled = (int) getParamData('sendQueueMode');
 #Hole Task Command abhängig vom OS
 $checkTaskCmd = getTaskCmd('udp');
 echo '<input type="hidden" id="version" value="' . VERSION . '"/>';
+echo '<input type="hidden" id="callSign" value="' . getParamData('callSign') . '"/>';
 
 #Prüfen, ob schreibrechte für Datenbank und Log existieren
 if (!is_writable('database') || !is_writable('log') || !is_writable('execute') || !is_writable('sound'))
@@ -149,11 +160,11 @@ setNewMsgBgColor();
 echo '<div class="top">';
 echo '<h1 class="topText">';
 
-#showMenu();
 showMenuIcons();
 
 echo '<div class="topLeft">';
 echo '<img src="' . $imgTaskStatusUdp . '" id="bgTask" class="topImagePoint" alt="statusColor">';
+echo '<span class="dbSearchIcon" id="dbSearch">&#128270;</span>';
 echo '</div>';
 
 echo '<span class="topTitle">MeshDash-SQL V ' . VERSION . '</span>';
@@ -168,8 +179,6 @@ echo '</div>';
 
 #Define Sound New-Messages
 setNewMsgAudioItems();
-#echo '<audio id="beep_-1" src="sound/new_message.wav" preload="auto"></audio>';
-
 
 // Hier kommen die Tabs
 echo '<div id="top-tabs"></div>';

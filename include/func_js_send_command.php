@@ -18,20 +18,20 @@
             outputMsg += '<b>−−extudp on/off</b> Aktiviere/Deaktiviere die Aussendung <span class="indented">von UDP-Paketen an das eingestelltes Ziel.</span><br>';
             outputMsg += '<b>−−proz</b> Display-Anzeige wechselt die Anzeige <span class="indented">zu Akku in %</span><br>';
 
-            outputMsg += '<b>−−volt</b> Display-Anzeige wechselt die Anzeige <span class="indented">zur Akku in V</span><br>';
+            outputMsg += '<b>−−volt</b> Display-Anzeige wechselt die Anzeige <span class="indented">zu Akku in V</span><br>';
             outputMsg += '<b>−−proz</b> Display-Anzeige wechselt die Anzeige <span class="indented">zu Akku in %</span><br>';
             outputMsg += '<b>−−maxv 99.9</b> maximale Ladespannung in V<br>';
             outputMsg += '<b>−−button on/off</b> aktiviert/deaktiviert den User-Button <span class="indented">(TBEAM, TLORA, ESP32/E22, HELTEC V2/V3)</span><br>';
             outputMsg += '<b>−−all</b> bringt wieder laufend POS Meldungen am Display <span class="indented">bis eine Meldung kommt</span><br>';
             outputMsg += '<b>−−msg</b> bringt nur Meldungen am Display <span class="indented">(ab der nächsten Meldung)</span><br>';
-            outputMsg += '<b>−−display off/on</b> Damit wird das Display abgeschaltet <span class="indented">und nur bei einer Text-Meldung für 30 Sekunden </span><span class="indented"> aktiviert (Gateway bleibt permanent off)</span><br>';
+            outputMsg += '<b>−−display off/on</b> Damit wird das Display abgeschaltet <span class="indented">und nur bei einer Text-Meldung für 30 Sekunden</span><span class="indented"> aktiviert (Gateway bleibt permanent off)</span><br>';
             outputMsg += '<b>−−sendpos</b> eine POS-Meldung mit der letzten <span class="indented">gespeicherten Position wird sofort gesendet</span><br>';
             outputMsg += '<b>−−setlat xx.xxxxxx</b> in ° setzen wenn kein GPS <span class="indented">vorhanden (Werte > 0 East)</span><br>';
             outputMsg += '<b>−−setlon xxx.xxxxxx w.o.</b> (Werte > 0 Nord)<br>';
             outputMsg += '<b>−−utcoff +/- 99.9</b> setzen der Zeitdifferenz zwischen <span class="indented">der lokalen zeit und UTC</span><br>';
 
-            outputMsg += '<b>−−track on</b> aktiviert die Anzeige für SmartBeaconing <span class="indented">(Sendeintervall in Sekunden, Heading in ° (last/aktuell), </span><span class="indented">Distance in Meter (zum letzten Punkt))</span><br>';
-            outputMsg += '<b>−−track off</b> deaktiviert die Anzeige für SmartBeaconing<br>';
+            outputMsg += '<b>−−track on</b> aktiviert die Anzeige für Smart-Beaconing <span class="indented">(Sendeintervall in Sekunden, Heading in ° (last/aktuell), </span><span class="indented">Distance in Meter (zum letzten Punkt))</span><br>';
+            outputMsg += '<b>−−track off</b> deaktiviert die Anzeige für Smart-Beaconing<br>';
             outputMsg += '<b>−−wx</b> Zeigt Wetterdaten an <span class="indented">(BME280/BMP280 muss vorhanden sein)</span><br>';
 
             outputMsg += '<b>−−pos</b> die aktuellen gespeicherte Position <span class="indented">und das Datum/Uhrzeit abfragen</span><br>';

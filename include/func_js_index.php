@@ -1,8 +1,114 @@
 <script>
    $(function ($)
    {
+       $.datepicker.setDefaults({
+           showOn: "both",
+           buttonImageOnly: true,
+           buttonImage: "",
+           buttonText: "",
+           regional: "de",
+           dateFormat: 'dd.mm.yy',
+           monthNames: ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
+           dayNamesMin: ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa" ],
+       });
 
-      /////////////////////////////////////////Tab Indikator /////////////////////////////////////
+       ///////////////////////////// TimePicker Addon
+       $.timepicker.setDefaults({
+           timeOnlyTitle: 'Zeit wählen',
+           timeText: 'Zeit',
+           hourText: 'Stunde',
+           minuteText: 'Minute',
+           secondText: 'Sekunde',
+           millisecText: 'Millisekunde',
+           microsecText: 'Mikrosekunde',
+           timezoneText: 'Zeitzone',
+           currentText: 'Jetzt',
+           closeText: 'Einfügen/Schliessen',
+           timeFormat: 'HH:mm',
+           timeSuffix: '',
+           regional: "de",
+           amNames: ['vorm.', 'AM', 'A'],
+           pmNames: ['nachm.', 'PM', 'P'],
+           isRTL: false,
+           showButtonPanel: true,
+           addSliderAccess: true,
+           sliderAccessArgs: {
+               touchonly: false
+           },
+           altRedirectFocus: true
+       });
+
+       ///////////////////////////// Search DB
+
+       //Klick auf Lupe
+       $("#dbSearch").on("click", function ()
+       {
+           let titleMsg        = 'DB-Suchparameter';
+           let outputMsg       = '';
+           let width           = 700;
+           let groupId = $("#message-frame").contents().find("#group").val();
+           let isMobile = isMobileOrTablet();
+
+           outputMsg  = '<table>';
+
+           outputMsg  += '<tr>';
+           outputMsg  += '<td colspan="2"><b>Suchkriterien sind logisch UND-Verknüpft</b></td>';
+           outputMsg  += '</tr>';
+
+           outputMsg  += '<tr>';
+           outputMsg  += '<td>Nachricht:</td>';
+           outputMsg  += '<td><input class="searchDbDialog" type="text" name="searchMsg" id="searchMsg" placeholder="Suchtext"></td>';
+           outputMsg  += '</tr>';
+
+           outputMsg  += '<tr>';
+           outputMsg  += '<td>Absender:</td>';
+           outputMsg  += '<td><input class="searchDbDialog" type="text" name="searchSrc" id="searchSrc" placeholder="Call-Absender"></td>';
+           outputMsg  += '</tr>';
+
+           outputMsg  += '<tr>';
+           outputMsg  += '<td>Ziel:</td>';
+           outputMsg  += '<td><input class="searchDbDialog" type="text" name="searchDst" id="searchDst" placeholder="Suche in Ziel"></td>';
+           outputMsg  += '</tr>';
+
+           outputMsg  += '<tr>';
+           outputMsg  += '<td>Von:</td>';
+           outputMsg  += '<td><input class="searchDbDialog searchTsDate" readonly type="text" name="searchTsFrom" id="searchTsFrom" placeholder="TT.MM.JJJJ">';
+           outputMsg  += '&nbsp;<input class="searchDbDialog searchTsTime" readonly type="text" name="searchTsFromTime" id="searchTsFromTime" placeholder="HH:MM">&nbsp;&nbsp;';
+           outputMsg  += '<span class="btnSearchDelete" id="btnSearchDeleteFrom">&#x274C;</span></td>';
+           outputMsg  += '</tr>';
+
+           outputMsg  += '<tr>';
+           outputMsg  += '<td>Bis:</td>';
+           outputMsg  += '<td><input class="searchDbDialog searchTsDate" readonly type="text" name="searchTsTo" id="searchTsTo" placeholder="TT.MM.JJJJ">';
+           outputMsg  += '&nbsp;<input class="searchDbDialog searchTsTime" readonly type="text" name="searchTsToTime" id="searchTsToTime" placeholder="HH:MM">&nbsp;&nbsp;';
+           outputMsg  += '<span class="btnSearchDelete" id="btnSearchDeleteTo">&#x274C;</span></td>';
+           outputMsg  += '</tr>';
+
+           outputMsg  += '</table>';
+
+           outputMsg += '<input readonly type="text" id="focusTrap" style="opacity: 0; height: 1px; width: 1px; border: none; padding: 0; margin: 0;">';
+
+           dialogSearchDb(outputMsg, titleMsg, width, groupId);
+
+           return false;
+       });
+
+       //Delete DateTime Fields in Search-Dialog
+       // Event-Delegation verwenden!
+       $(document).on("click", "#btnSearchDeleteFrom", function () {
+
+           $("#searchTsFrom").val('');
+           $("#searchTsFromTime").val('');
+       });
+
+       $(document).on("click", "#btnSearchDeleteTo", function () {
+
+           $("#searchTsTo").val('');
+           $("#searchTsToTime").val('');
+       });
+
+
+       /////////////////////////////////////////Tab Indikator /////////////////////////////////////
 
        // Objekt für jede Gruppe, um den letzten Fokusverlust zu speichern
        let lastFocusLostTimestamps = {};
@@ -365,7 +471,8 @@
                    let version   = $("#version").val();
                    let width     = 600;
 
-                   outputMsg  = 'MeshDash ' + version;
+                   outputMsg  = '<img src="image/MeshDash-SQL-Logo.png" alt="MDS-Logo" class="mdsLogo" width="90px">';
+                   outputMsg += '<br>MeshDash ' + version;
                    outputMsg += '<br>Basierend auf der ursprünglichen Version von Andre DL4QB';
                    outputMsg += '<br><br>Erweitert als reine PHP-Version mit tatkräftiger';
                    outputMsg += '<br>Unterstützung von Andre, wie auch zahlreichen Beta-Tester.';
@@ -487,7 +594,7 @@
 
        function dialogConfirm(output_msg, title_msg, width, sendData) {
             width      = !width ? 300 : width;
-            title_msg  = !width ? '' : title_msg;
+            title_msg  = !title_msg ? '' : title_msg;
             output_msg = !output_msg ? '' : output_msg;
             sendData   = !sendData ? 0 : sendData;
 
@@ -510,7 +617,7 @@
 
        function dialogConfirmParam(output_msg, title_msg, width, sendData) {
            width      = !width ? 300 : width;
-           title_msg  = !width ? '' : title_msg;
+           title_msg  = !title_msg ? '' : title_msg;
            output_msg = !output_msg ? '' : output_msg;
            sendData   = !sendData ? 0 : sendData;
 
@@ -532,7 +639,7 @@
 
        function dialog(outputMsg, titleMsg, width) {
             width     = !width ? 300 : width;
-            titleMsg  = !width ? '' : titleMsg;
+            titleMsg  = !titleMsg ? '' : titleMsg;
             outputMsg = !outputMsg ? '' : outputMsg;
 
             $("<div></div>").html(outputMsg).dialog({
@@ -548,6 +655,138 @@
             }).prev(".ui-dialog-titlebar").css("background", "red");
         }
 
-    });
+       function dialogSearchDb(outputMsg, titleMsg, width, groupId) {
+           width     = !width ? 300 : width;
+           titleMsg  = !titleMsg ? '' : titleMsg;
+           outputMsg = !outputMsg ? '' : outputMsg;
+
+           $("<div></div>").html(outputMsg).dialog({
+               title: titleMsg,
+               resizable: true,
+               modal: true,
+               width: width,
+               open: function(event, ui) {
+
+                   // Initialisierung nur, wenn vorhanden
+                   if ($("#searchTsFrom").length > 0)
+                   {
+                       $("#searchTsFrom").datetimepicker({
+                           altField: "#searchTsFromTime"
+                       });
+
+                       $('#ui-datepicker-div').draggable();
+                   }
+
+                   if ($("#searchTsTo").length > 0)
+                   {
+                       $("#searchTsTo").datetimepicker({
+                           altField: "#searchTsToTime",
+                           hour: 23,
+                           minute: 59
+                       });
+
+                       $('#ui-datepicker-div').draggable();
+                   }
+
+                   let thisDialog = $(this).closest(".ui-dialog");
+
+                   thisDialog.on("focusout", function() {
+                       setTimeout(function() {
+                           if (!thisDialog.find(":focus").length)
+                           {
+                               $("#focusTrap").focus();
+                           }
+                       }, 10);
+                   });
+
+                   $("#focusTrap").focus();
+               },
+               close: function () {
+                   // Wichtig: Picker sauber entfernen, falls nochmal geöffnet wird
+                   if ($("#searchTsFrom").length > 0)
+                   {
+                       $("#searchTsFrom").datetimepicker("destroy");
+                   }
+
+                   if ($("#searchTsTo").length > 0)
+                   {
+                       $("#searchTsTo").datetimepicker("destroy");
+                   }
+
+                   $(this).dialog("destroy").remove();
+               },
+               buttons: {
+                   'Suche ausführen': function () {
+                       let searchValMsg        = $("#searchMsg").val().trim();
+                       let searchValSrc        = $("#searchSrc").val().trim();
+                       let searchValDst        = $("#searchDst").val().trim();
+                       let searchValTsFromDate = $("#searchTsFrom").val();
+                       let searchValTsFromTime = $("#searchTsFromTime").val();
+                       let searchValTsToDate   = $("#searchTsTo").val();
+                       let searchValTsToTime   = $("#searchTsToTime").val();
+
+                       if (searchValTsFromDate !== '')
+                       {
+                           searchValTsFromDate = convertToISO(searchValTsFromDate);
+                       }
+
+                       if (searchValTsToDate !== '')
+                       {
+                           searchValTsToDate = convertToISO(searchValTsToDate);
+                       }
+
+                       let searchValTsFrom = searchValTsFromDate + 'T' + searchValTsFromTime; // Zeit mit einbeziehen
+                       let searchValTsTo   = searchValTsToDate + 'T' + searchValTsToTime;     // Zeit mit einbeziehen
+
+
+                       // Plausibilitätsprüfung: TsFromDate darf nicht nach TsToDate sein
+                       if (searchValTsFrom && searchValTsTo && new Date(searchValTsFrom) > new Date(searchValTsTo)) {
+                           let outputMsgErr = 'Das "Von"-Datum darf nicht nach dem "Bis"-Datum liegen.';
+                           dialog(outputMsgErr, 'Hinweis!', 500);
+                           return false;
+                       }
+
+                       // Entferne Bindestrich, wenn Wert leer
+                       searchValTsFrom = searchValTsFrom === 'T' ? '' : searchValTsFrom;
+                       searchValTsTo   = searchValTsTo === 'T' ? '' : searchValTsTo;
+
+                       if (searchValMsg.length === 0 && searchValSrc.length === 0 && searchValDst.length === 0 && searchValTsFromDate.length === 0 && searchValTsToDate.length === 0)
+                       {
+                           let outputMsgErr = 'Bitte mind. ein Suchkriterium zur Suche eingeben.';
+                           dialog(outputMsgErr, 'Hinweis!', 500)
+                           return false;
+                       }
+
+                       if (searchValMsg.length > 0 && searchValMsg.length <= 2)
+                       {
+                           let outputMsgErr = 'Bitte mind. 3 Zeichen für die Nachrichten-Suche angeben.';
+                           dialog(outputMsgErr, 'Hinweis!', 500)
+                           return false;
+                       }
+
+                       isTabClick = true; //stoppe Intervall
+                       $("#message-frame").attr("src", `message.php?group=${groupId}&searchMsg=${encodeURIComponent(searchValMsg)}&searchSrc=${encodeURIComponent(searchValSrc)}&searchDst=${encodeURIComponent(searchValDst)}&searchTsFrom=${encodeURIComponent(searchValTsFrom)}&searchTsTo=${encodeURIComponent(searchValTsTo)}`);
+                       $(this).dialog("close");
+                   },
+                   'Abbruch': function () {
+
+                       $(this).dialog("close");
+                   }
+               }
+           }).prev(".ui-dialog-titlebar").css("background", "red");
+       }
+
+       function isMobileOrTablet() {
+           const userAgent = navigator.userAgent;
+
+           // Prüfen auf mobile Geräte und Tablets (iOS und Android)
+           return /Mobi|Android|iPhone|iPad|iPod|Windows Phone|BlackBerry|Tablet/i.test(userAgent);
+       }
+
+       function convertToISO(date) {
+           const [day, month, year] = date . split('.');
+           return `${year}-${month . padStart(2, '0')}-${day . padStart(2, '0')}`;
+       }
+   });
 
 </script>

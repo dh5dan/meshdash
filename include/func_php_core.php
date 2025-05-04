@@ -779,13 +779,18 @@ function setSensorData($sensorData): bool
     return true;
 }
 
-function updateMeshDashData($msgId, $key, $value): bool
+function updateMeshDashData($msgId, $key, $value, $doNothing = false): bool
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
     $basename       = pathinfo(getcwd())['basename'];
     $dbFilenameSub  = '../database/meshdash.db';
     $dbFilenameRoot = 'database/meshdash.db';
     $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+
+    if ($doNothing === true)
+    {
+        return true;
+    }
 
     $db = new SQLite3($dbFilename);
     $db->exec('PRAGMA synchronous = NORMAL;');
@@ -794,7 +799,7 @@ function updateMeshDashData($msgId, $key, $value): bool
     $value = trim(SQLite3::escapeString($value));
 
     $db->exec(" UPDATE meshdash
-                        SET $key = $value
+                          SET $key = $value
                         WHERE msg_id = '$msgId';
                     ");
 
@@ -915,6 +920,17 @@ function checkDbUpgrade($database)
             // Spalte hinzufügen
             addColumn($database, 'groups', 'groupSound');
         }
+
+        #Setzte diverse Indizes auf den Datenbanken
+        #Meshdash
+        addIndex('meshdash', 'meshdash','idx_timestamps', 'timestamps');
+        addIndex('meshdash', 'meshdash','idx_dst', 'dst');
+        addIndex('meshdash', 'meshdash','idx_type', 'type');
+        addIndex('meshdash', 'meshdash','idx_check_msg', 'type, dst, timestamps');
+        #sensordata
+        addIndex('sensordata', 'sensordata','idx_timestamps', 'timestamps');
+        #mheard
+        addIndex('mheard', 'mheard','idx_timestamps', 'timestamps');
     }
 }
 
@@ -942,6 +958,22 @@ function addColumn($database, $tabelle, $spalte, $typ = 'TEXT', $default = null)
     if (!$db->exec($query))
     {
         echo "<br>Fehler beim Hinzufügen der Spalte: $spalte in Tabelle $tabelle bei Datenbank $database.";
+    }
+
+    $db->close();
+}
+
+function addIndex($database, $tabelle, $IndexName, $indexField)
+{
+    // SQLite3-Datenbank öffnen
+    $db = new SQLite3('database/' . $database . '.db');
+    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+
+    // SQL Befehl zum Hinzufügen des Index
+    $query = "CREATE INDEX IF NOT EXISTS $IndexName ON $tabelle($indexField);";
+    if (!$db->exec($query))
+    {
+        echo "<br>Fehler beim Hinzufügen des Index mit Idexname: $IndexName und IndexField: $indexField bei Datenbank $database.";
     }
 
     $db->close();
@@ -2033,4 +2065,3 @@ function callWindowsBackgroundTask($taskFile, $execDir = ''): bool
 
     return true;
 }
-
