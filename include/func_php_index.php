@@ -172,6 +172,7 @@ function initSQLiteDatabase($database): bool
                                        ('cronLoopPid', '', ''),
                                        ('sendQueueMode', 0, ''),
                                        ('soundFileNewMsg', '', 'new_message.wav'),
+                                       ('mheardGroup', 0, '')
            ");
 
         #Close and write Back WAL
@@ -688,5 +689,7 @@ function setNewMsgAudioItems()
             echo '<audio id="beep_' . $groupParameter . '" src="sound/' . $groupSoundFile . '" preload="auto"></audio>';
         }
     }
+
+    return true;
 }
 

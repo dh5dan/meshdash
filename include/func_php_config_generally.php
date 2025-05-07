@@ -18,6 +18,7 @@ function saveGenerallySettings(): bool
     $strictCallEnable  = $_REQUEST['strictCallEnable'] ?? 0;
     $selTzName         = $_REQUEST['selTzName'] ?? 'Europe/Berlin';
     $newMsgBgColor     = $_REQUEST['newMsgBgColor'] ?? '#FFFFFF';
+    $mheardGroup       = $_REQUEST['mheardGroup'] ?? 0;
 
     setParamData('noPosData', $noPosData);
     setParamData('noDmAlertGlobal', $noDmAlertGlobal);
@@ -34,6 +35,7 @@ function saveGenerallySettings(): bool
     setParamData('strictCallEnable', $strictCallEnable);
     setParamData('timeZone', $selTzName, 'txt');
     setParamData('newMsgBgColor', $newMsgBgColor, 'txt');
+    setParamData('mheardGroup', $mheardGroup);
 
     return true;
 }

@@ -5,15 +5,16 @@ ini_set( 'default_charset', 'UTF-8' );
 require_once 'dbinc/param.php';
 require_once 'include/func_php_core.php';
 
-$errorCode     = '';
-$errorMsg      = '';
-$file          = 'log/udp_msg_data_' . date('Ymd') . '.log';
-$errorFile     = 'log/udp_receiver_error_' . date('Ymd') . '.log';
-$udpPidFile    = UPD_PID_FILE;
-$udpStopFile   = UPD_STOP_FILE;
-$outDataArray  = array();
-$osTypeIsLinux = true;
-$debugFlag     = false;
+$errorCode      = '';
+$errorMsg       = '';
+$file           = 'log/udp_msg_data_' . date('Ymd') . '.log';
+$errorFile      = 'log/udp_receiver_error_' . date('Ymd') . '.log';
+$callMsgLogFile = 'log/call_message_' . date('Ymd') . '.log';
+$udpPidFile     = UPD_PID_FILE;
+$udpStopFile    = UPD_STOP_FILE;
+$outDataArray   = array();
+$osTypeIsLinux  = true;
+$debugFlag      = false;
 
 #Scriptexecution Time endless
 ini_set('max_execution_time', 0);
@@ -80,7 +81,7 @@ else
     $errorText = "Linux: Port 1799 In use with Port: [$getPortInUse] at " . date('Y-m-d H:i:s') . "\n";
     file_put_contents($errorFile, $errorText,FILE_APPEND);
 
-    #If in USe kill Process
+    #If in Use kill Process
     if ($getPortInUse != '')
     {
         $splitOut = explode(' ', $getPortInUse);
@@ -243,6 +244,24 @@ while (true)
     #Close Database connection
     $db->close();
     unset($db);
+
+    #Trigger MessageSeite um Keywords abzuarbeiten
+    $resCallMessagePage = callMessagePage();
+
+    #Prüfe ob Logging aktiv ist
+    if (getParamData('doLogEnable') == 1)
+    {
+        if ($resCallMessagePage === true)
+        {
+            $callMsgText = "Message.php Triggered via Curl at " . date('Y-m-d H:i:s') . "\n";
+        }
+        else
+        {
+            $callMsgText = "Error: Message.php NOT Triggered via Curl at " . date('Y-m-d H:i:s') . "\n";
+        }
+
+        file_put_contents($callMsgLogFile, $callMsgText, FILE_APPEND);
+    }
 
     #Rekonstruiere PID
     if (!file_exists($udpPidFile))

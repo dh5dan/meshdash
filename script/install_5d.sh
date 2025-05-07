@@ -1,6 +1,6 @@
 #!/bin/bash
 clear
-echo "MeshDash Install-Script V 1.00.86"
+echo "MeshDash Install-Script V 1.00.88"
 echo
 echo "Installation Von MeshDash-SQL"
 echo 
@@ -147,6 +147,7 @@ sudo apt-get install unzip -f -y
 sudo apt-get install lynx -f -y
 sudo apt-get install php-curl -f -y
 sudo apt-get install wget -f -y
+sudo apt-get install fonts-noto -f -y
 echo
 echo
 sudo lighty-enable-mod fastcgi

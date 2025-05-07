@@ -123,9 +123,6 @@ Einstellbar sind die Hintergrundfarbe allgemein und Soundbenachrichtigungen pro 
 ![FILES](/docs/60_desktop_tab_alert.jpg)
 ![FILES](/docs/61_handy_Tab_alert.jpg)
 
-### Noch offene Punkte die u.a. auf der To-do-Liste stehen:
-- MHeard konfigurierbar machen für Request-/Acknowledged Ziele.
-
 ### Weitere Featureanfragen stehen unter den ISSUES mit dem TAG Erweiterungen
 
 

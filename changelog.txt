@@ -1,3 +1,16 @@
+Version 1.10.26 SQL
+FEATURE: Es kann nun die Gruppe eingestellt werden, wo eine MHeard-Abfrage reagieren soll.
+FEATURE: Abarbeitung Mheard/Keywords ohne WebBrowser-Abhängigkeit.
+         Damit werden auch alle anderen Keyword-Szenarien im Hintergrund abgearbeitet.
+FEATURE: Update der MeshDash Anleitung.
+BUGFIX:  Fehler bei INIT Parameter.db (nur bei Neuinstallation).
+         Dieser Fehler ist in V 1.10.22/24 enthalten.
+         Bestandsinstallationen via Web-Update sind nicht davon betroffen.
+BUGFIX:  Wenn Absender über Hops kommt, wurde das Ziel nicht eindeutig adressiert bei mheard.
+BUGFIX:  Im Pi Browser Chromium werden Unicode Zeichen nicht angezeigt
+         Install "sudo apt fonts-noto" behebt das Problem.
+         Die Install_5d.sh wurde dahingehend angepasst.
+#################################################################
 Version 1.10.24 SQL
 FEATURE: Setzten von Indizes auf meshdash Datenbank zur Abfrageoptimierung
 FEATURE: NEU: Suchfunktion über die gesamte Nachrichtendatenbank nach Auswahlkriterien.
