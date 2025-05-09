@@ -1320,7 +1320,10 @@ function setTxQueue($txQueueData): bool
     $fileLogJson   = 'log/tx_json_data_' . date('Ymd') . '.log';
     $errorLogfile  = 'log/error_tx_data_' . date('Ymd') . '.log';
     $sendQueueMode = $sendQueueMode == '' ? 0 : $sendQueueMode;
-    $debugFlag     = false;
+
+    #Eliminiere Hops in Quelle und Ziel
+    $txQueueData['txDst'] = explode(',', $txQueueData['txDst'])[0];
+    $debugFlag            = false;
 
     if ($debugFlag === true)
     {
@@ -2056,6 +2059,64 @@ function callWindowsBackgroundTask($taskFile, $execDir = ''): bool
         print_r($postFields);
         echo "</pre>";
 
+        echo "<pre>";
+        print_r($ch);
+        echo "</pre>";
+
+        return true;
+    }
+
+    return true;
+}
+
+function callMessagePage(): bool
+{
+    $triggerLink = 'http://localhost/5d/message.php';
+
+    $debugFlag = false;
+
+    #Starte Trigger
+    $ch = curl_init();
+
+    # Set Curl Options
+    curl_setopt($ch, CURLOPT_URL, $triggerLink);
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    curl_setopt($ch, CURLOPT_NOBODY, 1);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+    curl_setopt($ch, CURLOPT_TIMEOUT_MS, 100); // Warte max. 100 ms und beende Verbindung
+
+    #Ignoriere Timeout Meldung da so gewollt
+    if (curl_exec($ch) === false && curl_errno($ch) != 28)
+    {
+        echo 'Curl error: ' . curl_error($ch);
+        echo 'Curl error: ' . curl_errno($ch);
+
+        $callMsgText = "Error: Message.php NOT Triggered via Curl at " . date('Y-m-d H:i:s') . "\n";
+        $callMsgText .= 'Curl error: ' . curl_error($ch);
+        $callMsgText .= 'Curl error: ' . curl_errno($ch);
+        $callMsgText .= 'triggerLink:' . $triggerLink;
+
+        if ($debugFlag === true)
+        {
+            file_put_contents('log/debug_call_message.log', $callMsgText, FILE_APPEND);
+        }
+
+        return false;
+    }
+
+    $callMsgText = "Success: Message.php Triggered via Curl at " . date('Y-m-d H:i:s') . "\n";
+    $callMsgText .= 'triggerLink:' . $triggerLink;
+
+    if ($debugFlag === true)
+    {
+        file_put_contents('log/debug_call_message.log', $callMsgText, FILE_APPEND);
+    }
+
+    curl_close($ch);
+
+    if ($debugFlag === true)
+    {
+        echo "<br> Debug: callMessage";
         echo "<pre>";
         print_r($ch);
         echo "</pre>";

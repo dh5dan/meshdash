@@ -78,6 +78,7 @@ $retentionDays     = getParamData('retentionDays'); //Tage logs behalten
 $chronMode         = getParamData('chronMode'); // zip|delete
 $strictCallEnable  = getParamData('strictCallEnable'); // Strict Call Flag
 $selTzName         = getParamData('timeZone') ?? 'Europe/Berlin'; // ZeitZone
+$mheardGroup       = getParamData('mheardGroup') ?? 0; // 0= egal welche Gruppe
 
 $selTzName                = $selTzName == '' ? 'Europe/Berlin' : $selTzName;
 $noPosDataChecked         = $noPosData == 1 ? 'checked' : '';
@@ -91,7 +92,6 @@ $retentionDays            = $retentionDays == '' ? 7 : $retentionDays;
 $chronMode                = $chronMode == '' ? 'zip' : $chronMode;
 $strictCallEnableChecked  = $strictCallEnable == 1 ? 'checked' : '';
 
-
 $onClickChronModeCheckedZip    = $chronMode == 'zip' ? 'checked' : '';
 $onClickChronModeCheckedDelete = $chronMode == 'delete' ? 'checked' : '';
 
@@ -100,6 +100,8 @@ $onClickOnCallChecked1 = $clickOnCall == 1 ? 'checked' : '';
 $onClickOnCallChecked2 = $clickOnCall == 2 ? 'checked' : '';
 
 $newMsgBgColor = $newMsgBgColor == '' ? '#FFFFFF' : $newMsgBgColor;
+
+$mheardGroup = $mheardGroup == 0 ? '' : $mheardGroup;
 
 echo "<h2>Basiseinstellungen von MeshDash-SQL</h2>";
 
@@ -220,6 +222,11 @@ echo '<td colspan="2"><hr></td>';
 echo '</tr>';
 
 echo '<tr>';
+echo '<td>Anfrage Mheard-Gruppe:</td>';
+echo '<td><input type="text"  name="mheardGroup" id="mheardGroup" value="' . $mheardGroup . '" /></td>';
+echo '</tr>';
+
+echo '<tr>';
 echo '<td>Max. Scroll-Back Reihen (30-200):</td>';
 echo '<td><input type="text" name="maxScrollBackRows" id="maxScrollBackRows" value="' . $maxScrollBackRows . '" /></td>';
 echo '</tr>';
@@ -237,6 +244,10 @@ echo '</tr>';
 echo '<tr>';
 echo '<td>Hintergrundfarbe <b>Neue Nachrichten</b>:</td>';
 echo '<td><input type="color" name="newMsgBgColor"  id="newMsgBgColor" value="' . $newMsgBgColor . '" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td colspan="2"><hr></td>';
 echo '</tr>';
 
 echo '<tr>';

@@ -54,6 +54,8 @@ $alertSoundFileDst = getParamData('alertSoundFileDst');
 $alertEnabledDst   = getParamData('alertEnabledDst');
 $alertSoundCallDst = getParamData('alertSoundCallDst');
 $clickOnCall       = getParamData('clickOnCall');
+$mheardGroup       = getParamData('mheardGroup');
+$mheardGroup       = $mheardGroup == '' ? 0 : $mheardGroup;
 
 #Prüfe ob Logging aktiv ist
 $doLogEnable = getParamData('doLogEnable');
@@ -546,10 +548,14 @@ if ($result !== false)
                 continue;
             }
 
-            #Prüfe ob Mheard Keyword geschickt wurde
-            if ($mhSend == 0)
+            #Prüfe ob Mheard Keyword geschickt wurde.
+            #Prüfe ob MH Gruppe gesetzt wurde, ansonsten reagiere auf alles != all
+            #Anfrage gilt nicht, wenn Mh schon gesendet wurde. mhSend = 1
+            #MhTargetFlag = 1 sende nur an das anfragende CallSign zurück.
+            $mheardGroup = $mheardGroup == 0 ? $dst : $mheardGroup;
+            if ($mhSend == 0 && $dst != 'all' && $dst != '*' && $dst == $mheardGroup)
             {
-                checkMheard($msgId, $msg, $src, $callSign, $loraIp);
+                checkMheard($msgId, $msg, $src, $dst, $callSign, $loraIp, 1);
             }
 
             echo '<h3 class="setFontMsgHeader">';

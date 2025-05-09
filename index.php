@@ -42,6 +42,13 @@ require_once 'include/func_php_grp_definition.php';
 error_reporting(E_ALL);
 ini_set('display_errors',1);
 
+
+
+//#Trigger MessageSeite um Keywords abzuarbeiten
+//$resCallMessagePage = callMessagePage();
+//echo "<br>resc: ";
+//var_dump($resCallMessagePage);
+
 $autostartBgProcess = true;
 $sendData           = $_REQUEST['sendData'] ?? 0;
 $sendDataCheck      = $_REQUEST['sendDataCheck'] ?? 0;
@@ -132,9 +139,6 @@ $tabsJson = getGroupTabsJson();
 
 echo '<input type="hidden" id="tabConfig" value=\'' . $tabsJson . '\' />';
 
-#Check TaskStatus
-$taskResultUdp = file_exists('udp.pid');
-
 if ($autostartBgProcess === true && $sendData != 1)
 {
     $paramStartUdpBgProcess['task'] = 'udp';
@@ -147,6 +151,9 @@ if ($autostartBgProcess === true && $sendData != 1)
         $taskResultCron                  = startBgProcess($paramStartCronBgProcess);
     }
 }
+
+#Check TaskStatus
+$taskResultUdp = file_exists('udp.pid');
 
 #Setzte Bild für UDP-Task gestoppt sonst bleibt er grün
 if (empty($taskResultUdp))

@@ -109,8 +109,15 @@ function checkMsgAck($msg): bool
     return $ackFound;
 }
 
-function checkMheard($msgId, $msg, $src, $callSign, $loraIp)
+function checkMheard($msgId, $msg, $src, $dst, $callSign, $loraIp, $mhTargetFlag)
 {
+    #Eliminiere Hops in Quelle und Ziel
+    $src = explode(',', $src)[0];
+    $dst = explode(',', $dst)[0];
+
+    #$mhTargetFlag 1= Sende an Anfragecall 0=sende an anfrageGruppe
+    $mhTarget  = $mhTargetFlag == 1 ? $src : $dst;
+    $mhTarget  = $callSign == $dst ? $src : $mhTarget;
     $debugFlag = false;
 
     if ($debugFlag === true)
@@ -118,10 +125,13 @@ function checkMheard($msgId, $msg, $src, $callSign, $loraIp)
         echo "<br>msgId:$msgId";
         echo "<br>msg:$msg";
         echo "<br>src:$src";
-        echo "<br>dst:$callSign";
+        echo "<br>dst:$dst";
+        echo "<br>callSign:$callSign";
+        echo "<br>mhTargetFlag:$mhTargetFlag";
+        echo "<br>mhTarget:$mhTarget";
     }
 
-    // Regulärer Ausdruck für "mheard", gefolgt von einem Rufzeichen mit optionaler SSID (1-999)
+    // Regulärer Ausdruck für "mheard", gefolgt von einem Rufzeichen mit SSID (1-999)
     $pattern = '/\bmheard\s+([A-Za-z0-9]+-\d{1,3})\b/i';
 
     if (preg_match($pattern, $msg, $matches))
@@ -144,7 +154,7 @@ function checkMheard($msgId, $msg, $src, $callSign, $loraIp)
 
             if ($resGetMheard === true)
             {
-                sendMheard($msgId, $src);
+                sendMheard($msgId, $mhTarget);
             }
         }
         else
@@ -167,7 +177,10 @@ function checkMheard($msgId, $msg, $src, $callSign, $loraIp)
 function sendMheard($msgId, $src)
 {
     #Prüfe ob Logging aktiv ist
-    $doLogEnable = getParamData('doLogEnable');
+    $doLogEnable   = getParamData('doLogEnable');
+    $sendQueueMode = getParamData('sendQueueMode');
+    $sendQueueMode = $sendQueueMode == '' ? 0 : $sendQueueMode;
+    $mheardTarget = getParamData('mheardTarget'); // 0=Gruppe / 1=Call
 
     $db = new SQLite3('database/mheard.db', SQLITE3_OPEN_READONLY);
     $db->busyTimeout(5000); // warte wenn busy in millisekunden
@@ -230,10 +243,15 @@ function sendMheard($msgId, $src)
             {
                 updateMeshDashData($msgId, 'mhSend', 1);
 
-                if ($doLogEnable === 1)
+                if ($doLogEnable === 1 && $sendQueueMode == 1)
                 {
                     $logText = date('Y-m-d H:i:s') . " MHeard in Send-Queue gespeichert: Ziel: $src MHListe: $sendMheardList\n";
                     file_put_contents('log/send_queue_mheard.log', $logText, FILE_APPEND);
+                }
+                else
+                {
+                    $logText = date('Y-m-d H:i:s') . " MHeard gesendet: Ziel: $src MHListe: $sendMheardList\n";
+                    file_put_contents('log/send_mheard.log', $logText, FILE_APPEND);
                 }
             }
         }
