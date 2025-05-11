@@ -12,8 +12,8 @@ if ($debugFlag === true)
 }
 
 #Wenn Datei nicht existiert, dann exit.
-#Verhindert das ein offener Browser eine 0 byte Datei erzeugt
-if (!file_exists('database/parameter.db'))
+#Verhindert das ein offener Browser eine 0 byte Datenbank-Datei erzeugt
+if (!file_exists('database/parameter.db') || !file_exists('database/groups.db') || !file_exists('database/meshdash.db'))
 {
     exit();
 }
@@ -42,7 +42,16 @@ while ($row = $result1->fetchArray(SQLITE3_ASSOC))
 }
 
 $groupsSql  = implode(',', $groups);
-$groupsSql .= ",'*','$callSign'";
+
+#Wenn noch keine Gruppe definiert wurde
+if ($groupsSql != '')
+{
+    $groupsSql .= ",'*','$callSign'";
+}
+else
+{
+    $groupsSql .= "'*','$callSign'";
+}
 
 if ($debugFlag === true)
 {

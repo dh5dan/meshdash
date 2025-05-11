@@ -514,7 +514,16 @@
        ///////////////// Top Tabs
 
        // JSON aus dem Hidden-Feld auslesen und parsen
-       let tabs = JSON.parse($('#tabConfig').val());
+       //let tabs = JSON.parse($('#tabConfig').val());
+
+       let tabs = [];
+       try
+       {
+           tabs = JSON.parse($('#tabConfig').val());
+       } catch (e)
+       {
+           tabs = [];
+       }
 
        // Container für Tabs
        let tabsContainer = $('#top-tabs');

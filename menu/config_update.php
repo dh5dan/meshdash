@@ -30,7 +30,7 @@ ini_set('post_max_size', '30M'); // Erhöht die maximale POST-Daten-Größe auf 
 ini_set('memory_limit', '256M'); // Falls nötig das Speicherlimit erhöhen (128M)
 
 $sendData      = $_REQUEST['sendData'] ?? 0;
-$debugFlag     = $_REQUEST['debug'] ?? 0 == 1;
+$debugFlag     = false;
 $doUpdate      = true;
 
 if ($doUpdate === false)
