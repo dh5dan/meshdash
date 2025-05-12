@@ -38,6 +38,20 @@ html {
     width: 100%;
 }
 
+/* Ensure the map has a defined size */
+#map {
+    height: 500px;
+    width: 100%;
+}
+
+.text-below-marker {
+    min-width: 100px;
+    left: -45px !important;
+    text-align: center;
+    min-height: 1.2em;
+    margin-top: 0 !important;
+    font-family: Arial, Helvetica, sans-serif;
+}
 
 @media screen and (max-width: 768px) {
 

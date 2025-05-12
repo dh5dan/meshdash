@@ -28,7 +28,7 @@ td {
 
 input[type="text"] {
     width: 100%;
-    max-width: 90px;
+    max-width: 140px;
     padding: 5px;
 }
 
@@ -87,7 +87,7 @@ select {
 
 
     input[type="text"], input[type="checkbox"] {
-        width: 100%;
+        /*width: 100%;*/
     }
 
     input[type="button"] {

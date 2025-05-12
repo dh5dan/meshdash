@@ -24,12 +24,20 @@ require_once '../include/func_php_config_generally.php';
 error_reporting(E_ALL);
 ini_set('display_errors',1);
 
-$sendData = $_REQUEST['sendData'] ?? 0;
-$hardware = '';
+$sendData  = $_REQUEST['sendData'] ?? 0;
+$hardware  = '';
+$lineBreak = '';
 
 #Check what oS is running
 $osIssWindows = chkOsIssWindows();
 $osName       = $osIssWindows === true ? 'Windows' : 'Linux';
+$isMobile     = isMobile();
+
+#Wenn Mobile, Linebreak zur besseren Lesbarkeit einfügen
+if ($isMobile === true)
+{
+    $lineBreak = "<br />";
+}
 
 if ($sendData === '1')
 {
@@ -80,6 +88,9 @@ $strictCallEnable  = getParamData('strictCallEnable'); // Strict Call Flag
 $selTzName         = getParamData('timeZone') ?? 'Europe/Berlin'; // ZeitZone
 $mheardGroup       = getParamData('mheardGroup') ?? 0; // 0= egal welche Gruppe
 
+$openStreetTileServerUrl = trim(getParamData('openStreetTileServerUrl')) ?? 'tile.openstreetmap.org';
+$openStreetTileServerUrl = $openStreetTileServerUrl == '' ? 'tile.openstreetmap.org' : $openStreetTileServerUrl;
+
 $selTzName                = $selTzName == '' ? 'Europe/Berlin' : $selTzName;
 $noPosDataChecked         = $noPosData == 1 ? 'checked' : '';
 $noDmAlertGlobalChecked   = $noDmAlertGlobal == 1 ? 'checked' : '';
@@ -125,22 +136,22 @@ echo '<td colspan="2"><hr></td>';
 echo '</tr>';
 
 echo '<tr>';
-    echo '<td>POS-Meldungen abschalten:</td>';
+    echo '<td>POS-Meldungen AUS:</td>';
     echo '<td><input type="checkbox" name="noPosData" ' . $noPosDataChecked . ' id="noPosData" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-    echo '<td>DM-Alert global abschalten:</td>';
+    echo '<td>DM-Alert global AUS:</td>';
     echo '<td><input type="checkbox" name="noDmAlertGlobal" ' . $noDmAlertGlobalChecked . ' id="noDmAlertGlobal" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Keine Time Sync-Meldung erhalten:</td>';
+echo '<td>Time Sync-Meldung AUS:</td>';
 echo '<td><input type="checkbox" name="noTimeSyncMsg" ' . $noTimeSyncMsgChecked . ' id="noTimeSyncMsg" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>DB vom Backup ausschließen:</td>';
+echo '<td>DB in Backup:</td>';
 echo '<td><input type="checkbox" name="doNotBackupDb" ' . $doNotBackupDbChecked . ' id="doNotBackupDb" value="1" /></td>';
 echo '</tr>';
 
@@ -179,12 +190,12 @@ echo '<td>&nbsp;</td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>&nbsp;- Logs in Zip-Archiv speichern:</td>';
+echo '<td>&nbsp;- in Zip-Archiv speichern:</td>';
 echo '<td><input type="radio" name="chronMode" ' . $onClickChronModeCheckedZip . ' id="chronModeZip" value="zip" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>&nbsp;- Logs sofort löschen:</td>';
+echo '<td>&nbsp;- sofort löschen:</td>';
 echo '<td><input type="radio" name="chronMode" ' . $onClickChronModeCheckedDelete . ' id="chronModeDelete" value="delete" /></td>';
 echo '</tr>';
 
@@ -227,7 +238,7 @@ echo '<td><input type="text"  name="mheardGroup" id="mheardGroup" value="' . $mh
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Max. Scroll-Back Reihen (30-200):</td>';
+echo '<td>Max. Scroll-Back '.$lineBreak.'Reihen (30-200):</td>';
 echo '<td><input type="text" name="maxScrollBackRows" id="maxScrollBackRows" value="' . $maxScrollBackRows . '" /></td>';
 echo '</tr>';
 
@@ -242,8 +253,13 @@ echo '<td><input type="text" name="callSign"  id="callSign" value="' . $callSign
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Hintergrundfarbe <b>Neue Nachrichten</b>:</td>';
+echo '<td>Hintergrundfarbe '.$lineBreak.'<b>Neue Nachrichten</b>:</td>';
 echo '<td><input type="color" name="newMsgBgColor"  id="newMsgBgColor" value="' . $newMsgBgColor . '" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td>OpenStreet Tile-Url:</td>';
+echo '<td><input type="text" name="openStreetTileServerUrl"  id="openStreetTileServerUrl" value="' . $openStreetTileServerUrl . '" /></td>';
 echo '</tr>';
 
 echo '<tr>';

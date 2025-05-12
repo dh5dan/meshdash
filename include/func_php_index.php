@@ -172,7 +172,8 @@ function initSQLiteDatabase($database): bool
                                        ('cronLoopPid', '', ''),
                                        ('sendQueueMode', 0, ''),
                                        ('soundFileNewMsg', '', 'new_message.wav'),
-                                       ('mheardGroup', 0, '')
+                                       ('mheardGroup', 0, ''),
+                                       ('openStreeTileServerUrl', '', 'tile.openstreetmap.org') 
            ");
 
         #Close and write Back WAL
@@ -415,6 +416,7 @@ function initSQLiteDatabase($database): bool
         $db->close();
         unset($db);
     }
+
     return true;
 }
 
@@ -666,7 +668,7 @@ function setNewMsgBgColor()
            </style>';
 }
 
-function setNewMsgAudioItems()
+function setNewMsgAudioItems(): bool
 {
     $resGetGroupParameter = getGroupParameter();
     $groupSoundFile       = getParamData('groupSoundFile');

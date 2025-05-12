@@ -1,3 +1,10 @@
+Version 1.10.28 SQL
+FEATURE: Mheard-Nodes können nun in OpenStreetMap angezeigt werden.
+FEATURE: Einstellung der OpenStreetMap Tile-Server URL
+FEATURE: UX-Textoptimierung für mobile Geräte.
+FEATURE: Anhebung von post_max_size auf 30 MB in user.ini für Updates > 8 MB.
+BUGFIX:  Fehler bei check_messages wenn noch keine Gruppe definiert wurde.
+#################################################################
 Version 1.10.26 SQL
 FEATURE: Es kann nun die Gruppe eingestellt werden, wo eine MHeard-Abfrage reagieren soll.
 FEATURE: Abarbeitung Mheard/Keywords ohne WebBrowser-Abhängigkeit.
@@ -142,7 +149,7 @@ BUGFIX: MSG Iframe Refresh-Interval auf 5Sek. gesetzt,
 um DOM im Browser genug Zeit zu geben Speicher zurückzugeben.
 #################################################################
 Version 1.09.90beta SQL
-Optimization Ajax call to prevent memory leaks in DOM on some Browsers
+Optimization Ajax-Call to prevent memory leaks in DOM on some Browsers
 #################################################################
 Version 1.09.88beta SQL
 Codeanpassung Backup. Verhindert, dass exkludierte Verzeichnisnamen
@@ -177,7 +184,7 @@ Schalter implementiert, um DB vom Backup auszuschliessen.
 Dies verhindert u.U. das sich ein Backup oder Update aufhängt. (locked File)
 BUG: Beim reinen Backup wird der Button Seite neu laden angezeigt.
 Responsive Design: Anpassung Gruppen
-Set Lock-Flag in Menu Event-Handler for Ajax Refresh with isTabClick.
+Set Lock-Flag in Menu Event-Handler for Ajax-Refresh with isTabClick.
 #################################################################
 Version 1.09.78beta SQL
 Workaround für Bug mit Anführungszeichen. Ersetzten durch ``

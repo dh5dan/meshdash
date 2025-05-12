@@ -90,12 +90,8 @@ function showMheard($localCallSign)
     $db = new SQLite3('database/mheard.db', SQLITE3_OPEN_READONLY);
     $db->busyTimeout(5000); // warte wenn busy in millisekunden
 
-    // Hole mir die letzten 30 Nachrichten aus der Datenbank
-    $result = $db->query("SELECT timestamps from mheard
-                               GROUP BY timestamps
-                               ORDER BY timestamps DESC
-                                  LIMIT 1;
-                        ");
+    // Hole mir den Timestamp der letzten importierten Mheard Liste aus der Datenbank
+    $result = $db->query("SELECT max(timestamps) as timestamps from mheard;");
 
     $dsData = $result->fetchArray(SQLITE3_ASSOC);
 
@@ -126,11 +122,11 @@ function showMheard($localCallSign)
             echo '</tr>';
 
             echo '<tr>';
-            echo '<th>LHeard call</th>';
+            echo '<th>MHeard-Call</th>';
             echo '<th>Date</th>';
             echo '<th>Time</th>';
             echo '<th>Type</th>';
-            echo '<th>LHeard hardware</th>';
+            echo '<th>Hardware</th>';
             echo '<th>Mod</th>';
             echo '<th>RSSI</th>';
             echo '<th>SNR</th>';
@@ -183,4 +179,41 @@ function showMheard($localCallSign)
     #Close and write Back WAL
     $db->close();
     unset($db);
+}
+
+function getOwnPosition($callSign)
+{
+    $returnArray = array();
+    $debugFlag   = false;
+
+    $dbMd = new SQLite3('database/meshdash.db', SQLITE3_OPEN_READONLY);
+    $dbMd->busyTimeout(5000); // warte wenn busy in millisekunden
+
+    // Hole mir die pos-Daten aus der Datenbank
+    $resultMdOwn    = $dbMd->query("SELECT latitude, longitude 
+                                         FROM meshdash
+                                        WHERE src = '$callSign'
+                                          AND type = 'pos'
+                                     ORDER BY timestamps DESC
+                                        LIMIT 1;
+                                            ");
+    $dsDataMdOwn    = $resultMdOwn->fetchArray(SQLITE3_ASSOC);
+    $validDataMdOwn = !empty($dsDataMdOwn);
+
+    if ($validDataMdOwn)
+    {
+        $returnArray['latitude']   = substr($dsDataMdOwn['latitude'],0,7);
+        $returnArray['longitude']  = substr($dsDataMdOwn['longitude'],0,6);
+
+        if ($debugFlag === true)
+        {
+            echo "<pre>";
+            print_r($returnArray);
+            echo "</pre>";
+        }
+
+        return $returnArray;
+    }
+
+    return false;
 }
