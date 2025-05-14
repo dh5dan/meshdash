@@ -103,6 +103,27 @@ body {
     font-family: monospace;
 }
 
+
+.bottomImgIcons {
+    cursor: pointer;
+    width: 35px;
+    box-sizing: border-box; /* Wichtig */
+}
+
+.bottomIconContainer {
+    display: flex;
+    /*margin-top: 5px;*/
+    gap: 10px;
+}
+
+.bottomImgIcons.active {
+    border: 2px solid yellow;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.2);
+    /*padding: 2px;*/
+}
+
+
 @media (max-width: 1180px) {
     .bottomStatusContainer {
         font-size: 14px;
@@ -122,6 +143,7 @@ body {
         width: 100%;
         justify-content: flex-start; /* Span und Input links ausrichten */
         gap: 0;
+        /*margin-bottom: 0;*/
     }
 
     .bottomDmMsgLine span {
@@ -134,6 +156,7 @@ body {
         max-width: 100%; /* Sicherstellen, dass es den verfügbaren Platz nutzt */
         flex-shrink: 0; /* Verhindert Verkleinerung */
         text-align: center;
+        font-size: xx-small;
     }
 
     .bottomInputMsg {
@@ -148,12 +171,13 @@ body {
     }
 
     .bottomSubmitLine {
-        flex-direction: column;
+        /*flex-direction: column;*/
         align-items: flex-end; /* Button rechts angelehnt */
-        margin-right: 10px;
-        padding-right: 10px;
+        /*margin-right: 10px;*/
+        /*padding-right: 10px;*/
         width: auto;
         max-width: 100%; /* Verhindert Overflow */
+        margin-left: 90px;
     }
 
     .bottomStatusContainer {
@@ -166,6 +190,17 @@ body {
         font-size: smaller;
         overflow: hidden;
         box-sizing: border-box;
+    }
+
+    .bottomIconContainer {
+        display: flex;
+        margin-left: -10px;
+        padding-bottom: 2px;
+        gap: 10px;
+    }
+
+    .bottomImgIcons {
+        width: 25px;
     }
 }
 
@@ -182,5 +217,11 @@ body {
 
     .bottomSize16 {
         font-size: 14px;
+    }
+}
+
+@media (max-width: 468px) {
+    .bottomInputMsg {
+        max-width: 150px;
     }
 }

@@ -5,16 +5,19 @@
         const $byteCountDisplay = $("#byteCount");
         const maxBytes          = 149;
 
-        function getUTF8ByteSize(str) {
+        function getUTF8ByteSize(str)
+        {
             return new TextEncoder().encode(str).length;
         }
 
-        function updateByteCounter() {
-            let text = $input.val();
+        function updateByteCounter()
+        {
+            let text     = $input.val();
             let byteSize = getUTF8ByteSize(text);
 
-            while (byteSize > maxBytes) {
-                text = text.slice(0, -1);
+            while (byteSize > maxBytes)
+            {
+                text     = text.slice(0, -1);
                 byteSize = getUTF8ByteSize(text);
             }
 
@@ -45,6 +48,23 @@
 
             // Bytezähler aktualisieren
             updateByteCounter();
+        });
+
+        $('.bottomImgIcons').on('click', function () {
+            $('.bottomImgIcons').removeClass('active'); // alle zurücksetzen
+            $(this).addClass('active'); // das geklickte hervorheben
+
+            let index = $(".bottomImgIcons").index(this); // Gibt 0, 1 oder 2 zurück
+
+            // AJAX an PHP senden
+            $.post("ajax_set_call_click.php", { icon_index: index }, function (response) {
+                //console.log("Antwort vom Server:", response);
+
+                // Hier ggf. das iframe triggern zum Neuladen
+                // message-frame neu laden
+                let groupId = $(parent.document.getElementById("message-frame").contentWindow.document).find("#group").val();
+                $(parent.document).find('#message-frame').attr('src', `message.php?group=${groupId}`);
+            });
         });
 
         function dialogConfirm(output_msg, title_msg, width, sendData) {

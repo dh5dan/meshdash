@@ -1,6 +1,6 @@
 #!/bin/bash
 clear
-echo "MeshDash Install-Script V 1.00.88"
+echo "MeshDash Install-Script V 1.00.90"
 echo
 echo "Installation Von MeshDash-SQL"
 echo 
@@ -226,8 +226,6 @@ echo
 # Setzt alle Verzeichnisse auf global 755 (r-x)
 sudo find /var/www/html/5d/ -type d -exec chmod 755 {} \;
 echo
-# Setzt udp.pid auf 644. Not Halt für BG-Prozess udp_receiver.php
-sudo chmod -R 644 /var/www/html/5d/udp.pid
 # Setzt execute Verzeichnis auf 755 da hier die Ausführbaren Dateien sind für Keyword
 sudo chmod -R 755 /var/www/html/5d/execute
 #Setzte Owner und Gruppe für Web-Server im gesamten Verzeichnis

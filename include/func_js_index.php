@@ -579,8 +579,6 @@
            // für den tab der den Fokus verloren hat.
            let newGroupId = $(this).data("group"); // Neue Gruppe
 
-           //console.log('TabOnClick newGroupId:'+ newGroupId + " activeGroupId:"+activeGroupId);
-
            if (activeGroupId !== null && activeGroupId !== newGroupId)
            {
                // Setze den Timestamp NUR für die alte aktive Gruppe
@@ -596,7 +594,7 @@
            //console.log("Tab gewechselt zu Gruppe:", activeGroupId);
            ///////////////////////////// END Tab-Timestamp
 
-           setTimeout(() => { isTabClick = false; }, 500); // warte 500ms ds seite geladen wurde
+           setTimeout(() => { isTabClick = false; }, 500); // warte 500ms bis Seite geladen wurde
        });
 
        ///////////// Dialog Section
