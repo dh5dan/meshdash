@@ -64,8 +64,8 @@
             let bottomFrame = parent.document.getElementById('bottom-frame'); // Zugriff über parent
 
             if (bottomFrame && bottomFrame.contentWindow) {
-                let statusTextPos = posStatusValue === '1' ? 'Pos-Filter: ON' : 'Pos-Filter: OFF';
-                let statusTextTs  = noTimeSyncMsgValue === '1' ? 'NoTimeSync-Filter: ON' : 'NoTimeSync: OFF';
+                let statusTextPos = posStatusValue === '1' ? 'Pos: ON' : 'Pos: OFF';
+                let statusTextTs  = noTimeSyncMsgValue === '1' ? 'NTS: ON' : 'NTS: OFF';
 
                 let posStatus = $(bottomFrame.contentWindow.document).find('#posStatus');
                 let noTimeSync = $(bottomFrame.contentWindow.document).find('#noTimeSync');

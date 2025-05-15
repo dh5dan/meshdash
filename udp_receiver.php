@@ -76,14 +76,14 @@ else
 {
     #Linux Part
     $getPortInUse = shell_exec('netstat -nlpu|grep 1799');
-    ob_implicit_flush(1);
-
-    $errorText = "Linux: Port 1799 In use with Port: [$getPortInUse] at " . date('Y-m-d H:i:s') . "\n";
-    file_put_contents($errorFile, $errorText,FILE_APPEND);
 
     #If in Use kill Process
     if ($getPortInUse != '')
     {
+        $errorText = "Linux: Port 1799 in use: [$getPortInUse] at " . date('Y-m-d H:i:s') . "\n";
+        $errorText .= "Try to kill process at " . date('Y-m-d H:i:s') . "\n";
+        file_put_contents($errorFile, $errorText,FILE_APPEND);
+
         $splitOut = explode(' ', $getPortInUse);
 
         foreach ($splitOut as $outData)
@@ -94,6 +94,7 @@ else
             }
         }
 
+        #Pointer to end of array
         end($outDataArray);
         $pid = (current($outDataArray) !== false) ? current($outDataArray) : 0;
 
@@ -103,7 +104,7 @@ else
             $pidId      = $pidSplit[0];
             $resKillPid = shell_exec('kill -9 ' . $pidId);
 
-            $errorText = "Linux: Kill Task  Pid: [$pidId] at " . date('Y-m-d H:i:s') . "\n";
+            $errorText = "Linux: Kill process with pid: [$pidId] at " . date('Y-m-d H:i:s') . "\n";
             file_put_contents($errorFile, $errorText,FILE_APPEND);
 
             sleep(1);

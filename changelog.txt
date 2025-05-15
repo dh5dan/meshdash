@@ -1,4 +1,12 @@
 Version 1.10.28 SQL
+BUGFIX: udp.pid aus install_5d.sh entfernt, da hier nicht mehr notwendig.
+        Neue Install-Version 1.00.90
+BUGFIX: LOG-Meldung Port IN-USE bei udp_receiver wurde falsch diagnostiziert
+FEATURE: Call in DM, QRZ und @ nun via Icon im Eingabefeld steuerbar.
+FEATURE: Update MeshDash Anleitung - Troubleshooting 403 Forbidden
+Feature: Responsive-Anpassung für View-Port 360px in der Nachrichteneingabe
+#################################################################
+Version 1.10.28 SQL
 FEATURE: Mheard-Nodes können nun in OpenStreetMap angezeigt werden.
 FEATURE: Einstellung der OpenStreetMap Tile-Server URL
 FEATURE: UX-Textoptimierung für mobile Geräte.
