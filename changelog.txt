@@ -1,4 +1,4 @@
-Version 1.10.28 SQL
+Version 1.10.30 SQL
 BUGFIX: udp.pid aus install_5d.sh entfernt, da hier nicht mehr notwendig.
         Neue Install-Version 1.00.90
 BUGFIX: LOG-Meldung Port IN-USE bei udp_receiver wurde falsch diagnostiziert
