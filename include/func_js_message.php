@@ -1,18 +1,6 @@
 <script>
     $(function ($) {
 
-        // window.setTimeout(function() {
-        //     // Hole den Gruppenwert aus dem Hidden-Feld
-        //     let group = $('#group').val();
-        //
-        //     // Nutze URLSearchParams, um den Query-String zu aktualisieren
-        //     let params = new URLSearchParams(window.location.search);
-        //     params.set('group', group);
-        //
-        //     // Baue die neue URL zusammen (ohne den Hash, falls vorhanden)
-        //     window.location.href = window.location.protocol + "//" + window.location.host + window.location.pathname + "?" + params.toString();
-        // }, 2000);
-
         $(".btnPagePagination").on("click", function ()
         {
             let group           = $(this).data('group');
@@ -58,26 +46,33 @@
         setInterval(updatePosStatus, 1000);  // Alle 1 Sekunde Status prüfen
 
         function updatePosStatus() {
-            let posStatusValue = $('#posStatusValue').val();
+            let posStatusValue     = $('#posStatusValue').val();
             let noTimeSyncMsgValue = $('#noTimeSyncMsgValue').val();
-
-            let bottomFrame = parent.document.getElementById('bottom-frame'); // Zugriff über parent
+            let bottomFrame        = parent.document.getElementById('bottom-frame'); // Zugriff über parent
 
             if (bottomFrame && bottomFrame.contentWindow) {
-                let statusTextPos = posStatusValue === '1' ? 'Pos: ON' : 'Pos: OFF';
-                let statusTextTs  = noTimeSyncMsgValue === '1' ? 'NTS: ON' : 'NTS: OFF';
+
+                let posOff = 'POS:<img class="statusImageBottom" src="image/punkt_red.png" width="15px" >';
+                let posOn  = 'POS:<img class="statusImageBottom" src="image/punkt_green.png" width="15px" >';
+
+                let ntsOff = 'NTS:<img class="statusImageBottom" src="image/punkt_red.png" width="15px" >';
+                let ntsOn  = 'NTS:<img class="statusImageBottom" src="image/punkt_green.png" width="15px" >';
+
+                let statusTextPos = posStatusValue === '1' ? posOff : posOn; // Invertierte Logik
+                let statusTextTs  = noTimeSyncMsgValue === '1' ? ntsOff : ntsOn; // Invertierte Logik
 
                 let posStatus = $(bottomFrame.contentWindow.document).find('#posStatus');
+
                 let noTimeSync = $(bottomFrame.contentWindow.document).find('#noTimeSync');
 
                 if (posStatus.length)
                 {
-                    posStatus.text(statusTextPos);
+                    posStatus.html(statusTextPos);
                 }
 
                 if (noTimeSync.length)
                 {
-                    noTimeSync.text(statusTextTs);
+                    noTimeSync.html(statusTextTs);
                 }
             }
         }

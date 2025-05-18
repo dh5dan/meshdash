@@ -211,6 +211,22 @@ if ($noTimeSyncMsgValue == 1)
     $sqlAddon .= ' AND msgIsTimeSync = 0 ';
 }
 
+#Gruppe POS
+if ($group == -3)
+{
+    $sqlAddon       = " AND type = 'pos' ";
+    $noPosData      = 0;
+    $posStatusValue = 0;
+}
+
+#Gruppe {CET}
+if ($group == -4)
+{
+    $sqlAddon            = " AND type = 'msg' ";
+    $sqlAddon           .= " AND msg like '{CET}%' ";
+    $noTimeSyncMsgValue = 0;
+}
+
 #Soundfiles Preload
 echo '<audio id="alertSoundSrc" src="sound\\' . $alertSoundFileSrc . '" preload="auto"></audio>';
 echo '<audio id="alertSoundDst" src="sound\\' . $alertSoundFileDst . '" preload="auto"></audio>';
@@ -300,7 +316,7 @@ if ($doSearchQuery === true)
 }
 else
 {
-    # Hole mir die letzten 30 Nachrichten aus der Datenbank
+    # Hole mir die letzten xx Nachrichten aus der Datenbank
     # Maybe False when Database is locked
     $result = $db->query("SELECT * 
                               FROM meshdash

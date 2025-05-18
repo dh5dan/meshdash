@@ -15,7 +15,7 @@
        {
            let outputMsg;
            let titleMsg = 'Mheard-Nodes in OpenStreetMap';
-           let width = 750;
+           let width    = 750;
 
            outputMsg = '<!DOCTYPE html>';
            outputMsg += '<html lang="en">';
@@ -31,13 +31,19 @@
        });
 
        ////////////// Dialog OpenStreet
-
        function dialogOpenStreet(contentHtml, title, width) {
+
+           let viewportWidth = $(window).width();
+           let dialogWidth   = viewportWidth * 1;  // 95 % der Bildschirmbreite
+           if (dialogWidth > 800) dialogWidth = width; // Max-Breite, z.B. width für Desktop
+
            $("<div></div>").html(contentHtml).dialog({
                title: title,
                resizable: true,
                modal: true,
-               width: width,
+               width: dialogWidth,
+               height: "auto",
+               position: { my: "center top", at: "center top", of: window, collision: "fit" },
                open: function () {
                    // Falls vorher schon Map initialisiert: sauber entfernen
                    if (leafletMap)
@@ -154,13 +160,28 @@
                    // Dialog-Container komplett entfernen (vermeidet ID-Konflikte)
                    $(this).dialog("destroy").remove();
                },
-               buttons: {
-                   'Karte schliessen': function () {
-                       $(this).dialog("close");
+               buttons: [
+                   {
+                       text: "Karte schließen",
+                       class: "desktop-only-button",
+                       click: function () {
+                           $(this).dialog("close");
+                       }
                    }
-               }
+               ]
            }).prev(".ui-dialog-titlebar").css("background", "red");
+
+           $(".ui-dialog-buttonpane").css({
+               "padding": "2px",         // reduziert den Innenabstand
+               "margin-top": "5px",      // weniger Abstand nach oben
+               "height": "auto"          // Höhe an Inhalt anpassen (default ist meist auto)
+           });
+           $(".ui-dialog-buttonset button").css({
+               "padding": "2px 6px",     // kleinerer Button
+               "font-size": "12px"       // kleinere Schrift
+           });
        }
+
 
        ///////////// Dialog Section
 

@@ -256,7 +256,8 @@ iframe {
 @media (max-width: 440px) {
 
     #message-frame {
-        max-height: calc(100vh - 310px) !important;
+        /*max-height: calc(100vh - 310px) !important;*/
+        max-height: calc(100vh - 270px) !important;
     }
 }
 

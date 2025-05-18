@@ -54,12 +54,17 @@ $groupNumber4Enabled = $resGetGroupParameter[4]['groupEnabled'] ?? 0;
 $groupNumber5Enabled = $resGetGroupParameter[5]['groupEnabled'] ?? 0;
 $groupNumber6Enabled = $resGetGroupParameter[6]['groupEnabled'] ?? 0; // Notfall gruppe
 
+$groupPosEnabled = $resGetGroupParameter[-3]['groupEnabled'] ?? 0; // Pos gruppe
+$groupCetEnabled = $resGetGroupParameter[-4]['groupEnabled'] ?? 0; // Cet gruppe
+
 $groupNumber1EnabledChecked = $groupNumber1Enabled == 1 ? 'checked' : '';
 $groupNumber2EnabledChecked = $groupNumber2Enabled == 1 ? 'checked' : '';
 $groupNumber3EnabledChecked = $groupNumber3Enabled == 1 ? 'checked' : '';
 $groupNumber4EnabledChecked = $groupNumber4Enabled == 1 ? 'checked' : '';
 $groupNumber5EnabledChecked = $groupNumber5Enabled == 1 ? 'checked' : '';
 $groupNumber6EnabledChecked = $groupNumber6Enabled == 1 ? 'checked' : ''; // Notfall gruppe
+$groupPosEnabledChecked = $groupPosEnabled == 1 ? 'checked' : '';
+$groupCetEnabledChecked = $groupCetEnabled == 1 ? 'checked' : '';
 
 $groupSound1Enabled        = $resGetGroupParameter[1]['groupSound'] ?? 0;
 $groupSound2Enabled        = $resGetGroupParameter[2]['groupSound'] ?? 0;
@@ -69,6 +74,8 @@ $groupSound5Enabled        = $resGetGroupParameter[5]['groupSound'] ?? 0;
 $groupSound6Enabled        = $resGetGroupParameter[6]['groupSound'] ?? 0; // Notfall-Gruppe
 $groupSoundNoFilterEnabled = $resGetGroupParameter[-1]['groupSound'] ?? 0; // Kein Filter
 $groupSoundOwnCallEnabled  = $resGetGroupParameter[-2]['groupSound'] ?? 0; // Own Call
+$groupSoundPosEnabled      = $resGetGroupParameter[-3]['groupSound'] ?? 0; // Kein Filter
+$groupSoundCetEnabled      = $resGetGroupParameter[-4]['groupSound'] ?? 0; // Own Call
 
 $groupSound1EnabledChecked        = $groupSound1Enabled == 1 ? 'checked' : '';
 $groupSound2EnabledChecked        = $groupSound2Enabled == 1 ? 'checked' : '';
@@ -78,6 +85,8 @@ $groupSound5EnabledChecked        = $groupSound5Enabled == 1 ? 'checked' : '';
 $groupSound6EnabledChecked        = $groupSound6Enabled == 1 ? 'checked' : ''; // Notfall-Gruppe
 $groupSoundOwnCallEnabledChecked  = $groupSoundOwnCallEnabled == 1 ? 'checked' : ''; // Own Call
 $groupSoundNoFilterEnabledChecked = $groupSoundNoFilterEnabled == 1 ? 'checked' : ''; // Kein Filter
+$groupSoundPosEnabledChecked  = $groupSoundPosEnabled == 1 ? 'checked' : ''; // POS Call
+$groupSoundCetEnabledChecked = $groupSoundCetEnabled == 1 ? 'checked' : ''; // CET Filter
 
 $groupNumber1 = $resGetGroupParameter[1]['groupNumber'] ?? 0;
 $groupNumber2 = $resGetGroupParameter[2]['groupNumber'] ?? 0;
@@ -150,6 +159,24 @@ echo '<td>Kein Filter :</td>';
 echo '<td class="">&nbsp;</td>';
 echo '<td class="">&nbsp;</td>';
 echo '<td class="tdCenter"><input type="checkbox" name="groupSoundNoFilterEnabled" ' . $groupSoundNoFilterEnabledChecked . ' id="groupSoundNoFilterEnabled" value="1" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td colspan="5">&nbsp;</td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td>POS-Filter :</td>';
+echo '<td class="">&nbsp;</td>';
+echo '<td class="tdCenter"><input type="checkbox" name="groupPosEnabled" ' . $groupPosEnabledChecked . ' id="groupPosEnabled" value="1" /></td>';
+echo '<td class="tdCenter"><input type="checkbox" name="groupSoundPosEnabled" ' . $groupSoundPosEnabledChecked . ' id="groupSoundPosEnabled" value="1" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td>CET-Filter :</td>';
+echo '<td class="">&nbsp;</td>';
+echo '<td class="tdCenter"><input type="checkbox" name="groupCetEnabled" ' . $groupCetEnabledChecked . ' id="groupCetEnabled" value="1" /></td>';
+echo '<td class="tdCenter"><input type="checkbox" name="groupSoundCetEnabled" ' . $groupSoundCetEnabledChecked . ' id="groupSoundCetEnabled" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';

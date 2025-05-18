@@ -66,7 +66,7 @@ echo '<p id="byteCount">0 / 149 Byte</p>';
 echo '</div>';
 
     echo '<div class="bottomSubmitLine">';
-    echo '<button class="bottomInputSubmit" type="submit">MSG Absenden</button>';
+    echo '<button class="bottomInputSubmit" type="submit">Absenden</button>';
 
             echo '<div class="bottomIconContainer">';
             echo '<img class="bottomImgIcons ' . $clickOnCallDMActiveCss . '" src=" image/call_dm.png" >';
@@ -79,7 +79,7 @@ echo '</div>';
     echo'<div class="bottomStatusContainer">';
         echo '<div id="posStatus" class="bottomStatus"></div>';
         echo '<div id="noTimeSync" class="bottomStatus"></div>';
-        echo '<div id="LoraIP" class="bottomStatus">Lora: ' . $loraIP . '</div>';
+        echo '<div id="LoraIP" class="bottomStatus">IP: ' . $loraIP . '</div>';
     echo '</div>';
 echo '</form>';
 

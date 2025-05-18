@@ -1,3 +1,12 @@
+Version 1.10.32 SQL
+FEATURE: POS/NTS Status werden nun visuell durch einen roten/grünen Punkt dargestellt im Sendefenster.
+FEATURE: Aktualisierung der Send-Befehle im Info-Dialog und Sortierung nach Alphabet.
+FEATURE: Browser MeshCom-Icon durch MeshDash Icon ersetzt.
+FEATURE: In der Kartenansicht entfällt der Schliessen-Button. Bringt mehr Platz in der mobilen Ansicht.
+FEATURE: Anpassung der Kartendarstellung damit mehr von der Karte sichtbar ist auf mobilen Geräten.
+FEATURE: Pos/CET Filter jetzt zusätzlich als TAB definierbar in Gruppenmenü.
+FEATURE: Visueller Loader beim Update wird angezeigt, so das man sieht, ob das Update noch arbeitet.
+#################################################################
 Version 1.10.30 SQL
 BUGFIX: udp.pid aus install_5d.sh entfernt, da hier nicht mehr notwendig.
         Neue Install-Version 1.00.90
@@ -7,7 +16,7 @@ FEATURE: Update MeshDash Anleitung - Troubleshooting 403 Forbidden
 Feature: Responsive-Anpassung für View-Port 360px in der Nachrichteneingabe
 #################################################################
 Version 1.10.28 SQL
-FEATURE: Mheard-Nodes können nun in OpenStreetMap angezeigt werden.
+FEATURE: Mheard-Nodes können jetzt in OpenStreetMap angezeigt werden.
 FEATURE: Einstellung der OpenStreetMap Tile-Server URL
 FEATURE: UX-Textoptimierung für mobile Geräte.
 FEATURE: Anhebung von post_max_size auf 30 MB in user.ini für Updates > 8 MB.
