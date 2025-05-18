@@ -435,6 +435,9 @@
                case 'config_update':
                    iframeSrc = 'menu/config_update.php';
                    break;
+               case 'config_restore':
+                   iframeSrc = 'menu/config_restore.php';
+                   break;
                case 'lora_info':
                    iframeSrc = 'menu/lora_info.php';
                    break;

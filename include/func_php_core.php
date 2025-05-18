@@ -1795,7 +1795,7 @@ function getStatusIcon(string $status, bool $withLabel = false): string
         'off'        => ['symbol' => '&#x1F4F4;', 'label' => 'Ausgeschaltet'],  // 📴
         'attention'  => ['symbol' => '&#10071;', 'label' => 'Achtung'],         // ❗
 
-        'loop'       => ['symbol' => '&#128257;', 'label' => 'Loop'],           // 🔁
+        'restore'       => ['symbol' => '&#128257;', 'label' => 'Restore'],     // 🔁
         'locked'     => ['symbol' => '&#128274;', 'label' => 'Gesperrt'],       // 🔒
         'unlocked'   => ['symbol' => '&#128275;', 'label' => 'Entsperrt'],      // 🔓
         'clock'      => ['symbol' => '&#128338;', 'label' => 'Uhr'],            // 🕒

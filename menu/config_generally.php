@@ -151,7 +151,7 @@ echo '<td><input type="checkbox" name="noTimeSyncMsg" ' . $noTimeSyncMsgChecked 
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>DB in Backup:</td>';
+echo '<td>Kein DB-Backup:</td>';
 echo '<td><input type="checkbox" name="doNotBackupDb" ' . $doNotBackupDbChecked . ' id="doNotBackupDb" value="1" /></td>';
 echo '</tr>';
 

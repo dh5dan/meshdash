@@ -1,3 +1,11 @@
+Version 1.10.34 SQL
+FEATURE: Backup der Datenbank im laufenden Betrieb.
+FEATURE: install_5d.sh mit Möglichkeit des Online-Downloads der aktuellen Release.
+FEATURE: update_5d.sh mit Möglichkeit des Online-Downloads der aktuellen Release.
+FEATURE: Restore eines vorhanden Backups ausführen.
+BUGFIX: Fehler in der Bezeichnung zum DB-Backup. Es soll heissen: "Kein DB-Backup:".
+BUGFIX: udp.pid aus update_5d.sh entfernt, da nicht mehr benötigt.
+#################################################################
 Version 1.10.32 SQL
 FEATURE: POS/NTS Status werden nun visuell durch einen roten/grünen Punkt dargestellt im Sendefenster.
 FEATURE: Aktualisierung der Send-Befehle im Info-Dialog und Sortierung nach Alphabet.

@@ -131,7 +131,7 @@ if ($sendData === '1')
 
                 if ($debugFlag === true)
                 {
-                    $tt        = "Backup-File ' . $backupFile . ' erfolgreich erstellt!\n";
+                    $tt         = "Backup-File ' . $backupFile . ' erfolgreich erstellt!\n";
                     $errorText .= date('Y-m-d H:i:s') . ' result:' . $tt . "\n";
 
                     file_put_contents('../log/debug_update.log', $errorText, FILE_APPEND);
@@ -192,7 +192,7 @@ if ($sendData === '1')
 
                     if ($debugFlag === true)
                     {
-                        $tt        = "UFehler beim Entpacken der Update-Datei!\n";
+                        $tt        = "Fehler beim Entpacken der Update-Datei!\n";
                         $errorText = date('Y-m-d H:i:s') . ' result:' . $tt . "\n";
 
                         file_put_contents('../log/debug_update.log', $errorText, FILE_APPEND);
@@ -202,7 +202,7 @@ if ($sendData === '1')
         }
         else
         {
-            echo '<br><span class="failureHint">Dies ist kein gültiges Meshdash-SQL Update Packet!</span>';
+            echo '<br><span class="failureHint">Dies ist kein gültiges Meshdash-SQL Update_Datei!</span>';
 
             if ($debugFlag === true)
             {
@@ -288,8 +288,11 @@ if ($sendData === '5')
         $latestChangelog        = $resGetLatestChangelog['body'];
         $dialogTitle            = 'Changelog V' . $latestChangelogVersion;
 
+        // Fett: **text**
+        $markdown = preg_replace('/\*\*(.*?)\*\*/', '<strong>$1</strong>', $latestChangelog);
+
         echo "<script>
-                dialogChangeLog('$latestChangelog', '$dialogTitle', 750);
+                dialogChangeLog('$markdown', '$dialogTitle', 750);
               </script>";
     }
     else
@@ -313,12 +316,12 @@ if ($sendData != 1)
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td ><label for="updateFile">Lade letztes Release von GitHub herunter:&nbsp;</label></td>';
+    echo '<td ><label for="updateFile">Lade aktuelles Release von GitHub herunter:&nbsp;</label></td>';
     echo '<td><input type="button" class="btnDwnLatestRelease" id="btnDwnLatestRelease" value="Lade letzte Release-Version  "></td>';
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td ><label for="btnShowChangeLog">Zeige Changelog zur letzten release-Version:&nbsp;</label></td>';
+    echo '<td ><label for="btnShowChangeLog">Zeige Changelog zur aktuellen Release-Version:&nbsp;</label></td>';
     echo '<td><input type="button" class="btnDwnLatestRelease" id="btnShowChangeLog" value="Release Changelog anzeigen"></td>';
     echo '</tr>';
 

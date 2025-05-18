@@ -1,13 +1,14 @@
 #!/bin/bash
 clear
-echo "MeshDash Update-Script V 1.00.44"
+echo "MeshDash Update-Script V 1.00.46"
 echo
 echo "UPDATE einer bestehenden MeshDash SQL Installation."
-echo "Es wird nur das MeshDash installiert,"
-echo "kein PHP oder sonstige Tools."
-echo "Zur installation der nötigen Tools wie PHP, Webbrowser bitte die install.sh ausführen."
+echo "Es wird nur das MeshDash installiert, kein PHP oder sonstige Tools."
+echo "Zur Installation der nötigen Tools wie PHP, Webbrowser bitte die install_5d.sh ausführen."
 echo
-echo "Das NEUE Zip File muss bereits im /home Verzeichnis des aktuellen Users kopiert sein!"
+echo "Falls sich kein ZIP-Archiv im Home-Verzeichnis des aktuellen Benutzers befindet,"
+echo "wird im nächsten Schritt angeboten, die aktuelle Release-Version von GitHub herunterzuladen."
+echo "Eine Internetverbindung ist nur erforderlich, wenn der Download der Release online erfolgen soll."
 echo
 echo
 echo "Wenn ja, geht es sofort weiter, wenn nein, wird das Update abgebrochen."
@@ -23,8 +24,49 @@ else
 		echo "Kein Update. ENDE."
   	exit
 fi
-echo "OK, es geht weiter mit dem Update..."
-sleep 2
+##################################################
+# Suche nach einer Datei mit dem Muster "meshdash-sql_*.zip"
+if ls meshdash-sql_*.zip 1> /dev/null 2>&1; then
+    echo
+    echo "OK, es geht weiter mit der Installation..."
+    sleep 2
+else
+   echo
+       echo "Keine Meshdash-Zip Datei gefunden."
+
+       # Frage ob Online-Download gewünscht ist
+       read -r -p "Soll die neueste Version von GitHub jetzt heruntergeladen werden? (ja/nein) " downloadChoice
+       if [ "$downloadChoice" != "ja" ]; then
+           echo "Installation abgebrochen."
+           exit 1
+       fi
+
+       echo "Hole neueste Release-Infos von GitHub..."
+       echo
+       # API-Abfrage und Extrahieren der Download-URL für das meshdash*.zip Archiv
+       downloadUrl=$(curl -s "https://api.github.com/repos/dh5dan/meshdash/releases/latest" \
+         | grep "browser_download_url" \
+         | grep "meshdash-sql.*\.zip" \
+         | head -n 1 \
+         | cut -d '"' -f 4)
+
+       if [ -z "$downloadUrl" ]; then
+           echo "Fehler: Keine passende ZIP-Datei im neuesten Release gefunden."
+           exit 1
+       fi
+
+       echo "Lade Datei herunter: $downloadUrl"
+       filename="${downloadUrl##*/}"   # schneidet alles vor dem letzten Slash weg, bleibt nur der Dateiname
+       wget --show-progress -q -O "$filename" "$downloadUrl"
+
+       if [ $? -ne 0 ]; then
+           echo "Fehler beim Herunterladen der ZIP-Datei."
+           exit 1
+       fi
+
+       echo
+       echo "Download abgeschlossen."
+fi
 ######################################
 # Funktion, um das Verzeichnis /home/pi zu überprüfen
 check_home_pi() {
@@ -54,8 +96,13 @@ copy_files() {
 
     echo "Kopiere Dateien nach /home/pi..."
 
-    sudo cp "$FILE1" /home/pi/
-    sudo cp "$FILE2" /home/pi/
+     if [ -f "$FILE1" ]; then
+          sudo cp "$FILE1" /home/pi/
+     fi
+
+     if [ -f "$FILE2" ]; then
+          sudo cp "$FILE2" /home/pi/
+     fi
 
     # Überprüfen, ob eine .zip Datei existiert
     if [ -z "$ZIPFILE" ]; then
@@ -78,12 +125,12 @@ check_home_pi
 if [ $? -eq 0 ]; then
     echo "Installationsvorgang kann fortgesetzt werden."
       echo "Wechseln ins Verzeichnis /home/pi..."
-        cd /home/pi
+         cd /home/pi || exit
 else
     copy_files
     echo "Haupt-Installation wird nun ausgeführt."
       echo "Wechseln ins Verzeichnis /home/pi..."
-         cd /home/pi
+        cd /home/pi || exit
 fi
 ######################################
 echo
@@ -106,6 +153,12 @@ echo
 ###### Update Web-Application   ######
 ######################################
 hostIp=$(hostname -I | awk '{print $1}')
+echo
+echo "Stoppe lighttpd wenn aktiv."
+if systemctl is-active --quiet lighttpd.service; then
+    sudo systemctl stop lighttpd.service
+fi
+sleep 3
 echo
 if systemctl is-active --quiet checkmh.service; then
   echo "Stoppe checkmh Service da neue Version ggf. kopiert wird"
@@ -134,20 +187,14 @@ echo "Erzeuge Verzeichnis 5d in /var/www/html"
 sudo mkdir -p /var/www/html/5d
 sudo chmod -R 755 /var/www/html/5d
 echo
-echo "Kopiere nun die Daten in das Zielverzeichnis"
-echo
+echo "Kopiere nun die Daten in das HTML-Zielverzeichnis"
 sudo cp -r ./* /var/www/html/5d/
 sudo cp -r ./.htaccess /var/www/html/5d/
 sudo cp -r ./.user.ini /var/www/html/5d/
-echo
 # Setzt alle .php-Dateien auf global 644 (r--)
 sudo find /var/www/html/5d/ -type f -name "*.php" -exec chmod 644 {} \;
-echo
 # Setzt alle Verzeichnisse auf global 755 (r-x)
 sudo find /var/www/html/5d/ -type d -exec chmod 755 {} \;
-echo
-# Setzt udp.pid auf 644. Not Halt für BG-Prozess udp_receiver.php
-sudo chmod -R 644 /var/www/html/5d/udp.pid
 # Setzt execute Verzeichnis auf 755 da hier die Ausführbaren Dateien sind für Keyword
 sudo chmod -R 755 /var/www/html/5d/execute
 #Setzte Owner und Gruppe für Web-Server im gesamten Verzeichnis
@@ -163,6 +210,12 @@ echo "Aktiviere Systemdienst checkmh.service"
 sudo systemctl daemon-reload
 sudo systemctl enable checkmh.service
 sudo systemctl start checkmh.service
+echo
+###############################################
+### Starte jetzt lighthttpd
+echo "Starte Webserver und warte 3 Sekunden"
+sudo systemctl start lighttpd
+sleep 3
 echo
 ###############################################
 #Räume auf
@@ -181,4 +234,4 @@ echo
 echo
 echo FERTIG!
 echo
-echo "Starte nun Deinen Webbrowser und gib http://$hostIp/5d ein."
+echo "Starte nun den Webbrowser und gib http://$hostIp/5d ein."

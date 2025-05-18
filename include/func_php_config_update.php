@@ -2,10 +2,11 @@
 
 function backupApp($sourceDir, $backupDir)
 {
-    $zip            = new ZipArchive();
-    $backupFullPath = $backupDir . '/backup_' . date('Ymd_His') . '.zip';
-    $backupFile     = 'backup_' . date('Ymd_His') . '.zip';
-    $doNotBackupDb  = getParamData('doNotBackupDb');
+    $zip                   = new ZipArchive();
+    $backupFullPath        = $backupDir . '/backup_' . date('Ymd_His') . '.zip';
+    $backupFile            = 'backup_' . date('Ymd_His') . '.zip';
+    $doNotBackupDb         = getParamData('doNotBackupDb');
+    $arrayDeleteDbBakFiles = array();
 
     $excludeList = [
         'backup/',   // komplettes Verzeichnis
@@ -25,6 +26,16 @@ function backupApp($sourceDir, $backupDir)
         echo '<span class="failureHint">Datenbank wird nicht gesichert!</span>';
         $excludeList[] = "database/";   // komplettes Verzeichnis
     }
+    else
+    {
+        $resDoDatabaseCopyForBackup = doDatabaseCopyForBackup();
+
+        if ($resDoDatabaseCopyForBackup === false)
+        {
+            echo "<br>Fehler beim Anlegen des Backups der Datenbank aufgetreten!";
+            return false;
+        }
+    }
 
     if ($zip->open($backupFullPath, ZipArchive::CREATE) === true)
     {
@@ -38,8 +49,20 @@ function backupApp($sourceDir, $backupDir)
             if ($file->isDir()) continue; // Verzeichnisse überspringen
 
             // Relativen Pfad berechnen (richtig für Windows und Linux)
-            $relativePath = str_replace($sourceDir . DIRECTORY_SEPARATOR, '', $file->getPathname());
-            $relativePath = str_replace('\\', '/', $relativePath); // Für Windows korrigieren
+            $absolutePath      = $file->getPathname();
+            $relativePath      = str_replace($sourceDir . DIRECTORY_SEPARATOR, '', $absolutePath);
+            $relativePath      = str_replace('\\', '/', $relativePath); // Für Windows korrigieren
+            $doDeleteDBBakFile = false; // Flag, um nach dem Archivieren die temporäre .bak-Datei zu löschen
+
+            // Nur .bak-Dateien im Hauptverzeichnis "database/" zulassen
+            if (preg_match('#^database/([^/]+\.bak)$#', $relativePath))
+            {
+                $doDeleteDBBakFile = true;               // zulässig
+            }
+            elseif (preg_match('#^database/#', $relativePath))
+            {
+                continue; // andere Dateien im database/-Ordner ignorieren
+            }
 
             // Prüfen, ob die Datei oder ihr Verzeichnis ausgeschlossen werden soll
             foreach ($excludeList as $excluded)
@@ -62,14 +85,25 @@ function backupApp($sourceDir, $backupDir)
 
             // Datei ins ZIP-Archiv hinzufügen
             $zip->addFile($file->getPathname(), $relativePath);
+
+            #Packe zu löschende Datenbank BAK-Files in Array, da sie hier noch nicht gelöscht werden können
+            if ($doDeleteDBBakFile === true)
+            {
+                $arrayDeleteDbBakFiles[] = "../" . $relativePath;
+            }
         }
 
         @$zip->close();
 
         if (!file_exists($backupFullPath))
         {
-            echo "<br> Fehler beim Anlegen des Backups $backupFile aufgetreten!";
+            echo "<br>Fehler beim Anlegen des Backups $backupFile aufgetreten!";
             return false;
+        }
+
+        foreach ($arrayDeleteDbBakFiles as $file)
+        {
+            unlink($file);
         }
 
         return $backupFile;
@@ -442,6 +476,77 @@ function getLatestChangelog()
     return $arrayReturn;
 }
 
+function doDatabaseCopyForBackup(): bool
+{
+    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    $basename      = pathinfo(getcwd())['basename'];
+    $dbDirSub      = '../database';
+    $dbDirRoot     = 'database';
+    $dbDir         = $basename == 'menu' ? $dbDirSub : $dbDirRoot;
+    $suffix        = '.db';
+    $backupSuffix  = '.bak';
+    $errorOccurred = false;
+    $osIssWindows  = chkOsIssWindows();
 
+    if (!is_dir($dbDir))
+    {
+        echo "Datenbankverzeichnis nicht gefunden: $dbDir\n";
+
+        return false;
+    }
+
+    // Alle *.db-Dateien im Verzeichnis auflisten
+    $dbFiles = glob($dbDir . '/*' . $suffix);
+
+    foreach ($dbFiles as $dbPath)
+    {
+        $dbName     = basename($dbPath);
+        $backupPath = realpath($dbDir) . DIRECTORY_SEPARATOR . basename($dbName, $suffix) . $backupSuffix;
+
+        if ($osIssWindows === false)
+        {
+            $backupPath = $dbDir . '/' . basename($dbName, $suffix) . $backupSuffix;
+        }
+
+        // Backup-Datei vor VACUUM INTO sicher löschen wenn noch vorhanden
+        if (file_exists($backupPath))
+        {
+            @unlink($backupPath);
+            // Sicherheitscheck: Ist sie wirklich weg?
+            if (file_exists($backupPath))
+            {
+                echo "Konnte $backupPath nicht löschen (wird gesperrt?)\n";
+                $errorOccurred = true;
+                continue;
+            }
+        }
+
+        try
+        {
+            $db = new SQLite3($dbPath, SQLITE3_OPEN_READONLY);
+            $db->busyTimeout(5000); // warte wenn busy in millisekunden
+            $query = "VACUUM main INTO '$backupPath'";
+
+            if (!$db->exec($query))
+            {
+                echo "Fehler beim Backup von $dbPath: " . $db->lastErrorMsg() . "\n";
+                $errorOccurred = true;
+            }
+
+            $db->close();
+        }
+        catch (Exception $e)
+        {
+            echo "Fehler bei $dbName: " . $e->getMessage() . "\n";
+        }
+    }
+
+    if ($errorOccurred === true)
+    {
+        return false;
+    }
+
+    return true;
+}
 
 
