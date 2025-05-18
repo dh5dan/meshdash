@@ -42,13 +42,6 @@ require_once 'include/func_php_grp_definition.php';
 error_reporting(E_ALL);
 ini_set('display_errors',1);
 
-
-
-//#Trigger MessageSeite um Keywords abzuarbeiten
-//$resCallMessagePage = callMessagePage();
-//echo "<br>resc: ";
-//var_dump($resCallMessagePage);
-
 $autostartBgProcess = true;
 $sendData           = $_REQUEST['sendData'] ?? 0;
 $sendDataCheck      = $_REQUEST['sendDataCheck'] ?? 0;

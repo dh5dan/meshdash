@@ -5,7 +5,8 @@
         {
             let titleMsg  = 'Hinweis';
             let outputMsg = 'Es wird vor dem Update ein Backup des aktuellen Systems durchgeführt.';
-            outputMsg += '<br><br>Update jetzt durchführen?';
+                outputMsg += '<br>Dieser Vorgang dauert eventuell ein paar Sekunden – bitte kurz warten.';
+                outputMsg += '<br><br>Update jetzt durchführen?';
             let width     = 750;
             let sendData  = 1;
             let fileInput = $('#updateFile');

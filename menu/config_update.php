@@ -112,11 +112,7 @@ if ($sendData === '1')
 
             if ($backupFile === false)
             {
-                echo '<br><span class="failureHint">Fehler beim Erstellen des Backups!</span>';
-
-                echo "<pre>";
-                print_r($_FILES);
-                echo "</pre>";
+                echo '<br><span class="failureHint">Fehler beim Erstellen des Backups! Bitte nochmal versuchen.</span>';
 
                 if ($debugFlag === true)
                 {   $tArray = implode(',',$_FILES);
@@ -355,5 +351,8 @@ echo "<br><br>";
 showBackups();
 
 echo '</form>';
+
+echo '<div id="pageLoading" class="pageLoadingSub"></div>';
+
 echo '</body>';
 echo '</html>';

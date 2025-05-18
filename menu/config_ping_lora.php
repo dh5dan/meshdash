@@ -71,7 +71,7 @@ echo '<input type="hidden" name="loraIp" id="loraIP" value="' . $loraIp . '" />'
 echo '<input type="button" class="submitParamLoraIp" id="btnPingLoraIp" value="Ping jetzt aus&uuml;hren"  />';
 echo '</form>';
 
-echo '<div id="pageLoading" class="pageLoading"></div>';
+echo '<div id="pageLoading" class="pageLoadingSub"></div>';
 
 echo '</body>';
 echo '</html>';

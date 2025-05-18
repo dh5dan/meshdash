@@ -565,7 +565,7 @@
 
            // // Schreibe Gruppennummer in Abhängig vom Tab in Bottom Iframe und da in das DM-Feld
            let groupIdSession = groupId; //Hier originale Id nehmen für Session
-           groupId = groupId === -1 || groupId === -2 ? '' : groupId;
+           groupId = groupId === -1 || groupId === -2 || groupId === -3 || groupId === -4 ? '' : groupId;
            groupId = groupId === 0 ? '*' : groupId;
 
            bottomFrame.contents().find('#bottomDm').val(groupId);
