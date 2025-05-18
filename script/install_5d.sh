@@ -1,12 +1,12 @@
 #!/bin/bash
 clear
-echo "MeshDash Install-Script V 1.00.90"
+echo "MeshDash Install-Script V 1.00.92"
 echo
-echo "Installation Von MeshDash-SQL"
+echo "Installation von MeshDash-SQL"
 echo 
-echo "Das Zip File muss bereits im /home Verzeichnis des Aktuellen Users kopiert sein!"
-echo
-echo "Der Raspberry muss Programme installieren und muss daher eine Internetverbindung haben!"
+echo "Falls sich kein ZIP-Archiv im Home-Verzeichnis des aktuellen Benutzers befindet,"
+echo "wird im nächsten Schritt gefragt, ob die aktuelle Release-Version von GitHub heruntergeladen werden soll."
+echo "Hinweis: Für den Download und nachfolgende Installationen wird eine aktive Internetverbindung benötigt."
 echo
 echo
 echo "Wenn ja, geht es sofort weiter, wenn nein, wird die Installation abgebrochen."
@@ -32,10 +32,41 @@ if ls meshdash-sql_*.zip 1> /dev/null 2>&1; then
     echo "OK, es geht weiter mit der Installation..."
     sleep 2
 else
-    echo
-    echo "Die Updatedatei wurde nicht gefunden!"
-    echo "Bitte die Zip-Datei in das selbe Verzeichnis legen und install_5d.sh neu starten."
-    exit
+   echo
+       echo "Keine Meshdash-Zip Datei gefunden."
+
+       # Frage ob Online-Download gewünscht ist
+       read -r -p "Soll die neueste Version von GitHub jetzt heruntergeladen werden? (ja/nein) " downloadChoice
+       if [ "$downloadChoice" != "ja" ]; then
+           echo "Installation abgebrochen."
+           exit 1
+       fi
+
+       echo "Hole neueste Release-Infos von GitHub..."
+       echo
+       # API-Abfrage und Extrahieren der Download-URL für das meshdash*.zip Archiv
+       downloadUrl=$(curl -s "https://api.github.com/repos/dh5dan/meshdash/releases/latest" \
+         | grep "browser_download_url" \
+         | grep "meshdash-sql.*\.zip" \
+         | head -n 1 \
+         | cut -d '"' -f 4)
+
+       if [ -z "$downloadUrl" ]; then
+           echo "Fehler: Keine passende ZIP-Datei im neuesten Release gefunden."
+           exit 1
+       fi
+
+       echo "Lade Datei herunter: $downloadUrl"
+       filename="${downloadUrl##*/}"   # schneidet alles vor dem letzten Slash weg, bleibt nur der Dateiname
+       wget --show-progress -q -O "$filename" "$downloadUrl"
+
+       if [ $? -ne 0 ]; then
+           echo "Fehler beim Herunterladen der ZIP-Datei."
+           exit 1
+       fi
+
+       echo
+       echo "Download abgeschlossen."
 fi
 ##################################################
 # Funktion, um das Verzeichnis /home/pi zu überprüfen
@@ -219,17 +250,15 @@ echo "Kopiere nun die Daten in das HTML-Zielverzeichnis"
 sudo cp -r ./* /var/www/html/5d/
 sudo cp -r ./.htaccess /var/www/html/5d/
 sudo cp -r ./.user.ini /var/www/html/5d/
-echo
 # Setzt alle .php-Dateien auf global 644 (r--)
 sudo find /var/www/html/5d/ -type f -name "*.php" -exec chmod 644 {} \;
-echo
 # Setzt alle Verzeichnisse auf global 755 (r-x)
 sudo find /var/www/html/5d/ -type d -exec chmod 755 {} \;
-echo
 # Setzt execute Verzeichnis auf 755 da hier die Ausführbaren Dateien sind für Keyword
 sudo chmod -R 755 /var/www/html/5d/execute
 #Setzte Owner und Gruppe für Web-Server im gesamten Verzeichnis
 sudo chown -R www-data:www-data /var/www/html/5d
+echo
 echo "Kopiere Systemdienst-Dateien und setzte Rechte für checkmh.service"
 sudo chmod -R 755 script/checkmh.sh
 sudo chmod -R 644 script/checkmh.service
@@ -266,5 +295,5 @@ echo "Alle Cronjobs von www-data wurden gelöscht."
 # Ready fpr Take-Off
 echo FERTIG!
 echo
-echo "Starte nun Deinen Webbrowser und gib http://$hostIp/5d ein."
+echo "Starte nun den Webbrowser und gib http://$hostIp/5d ein."
 echo

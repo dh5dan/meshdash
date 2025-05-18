@@ -432,6 +432,7 @@ function showMenuIcons()
     echo '<li data-action="config_alerting">' . getStatusIcon('notification', true) . '</li>';
     echo '<li data-action="config_keyword">' . getStatusIcon('keyword', true) . '</li>';
     echo '<li data-action="config_update">' . getStatusIcon('update', true) . '</li>';
+    echo '<li data-action="config_restore">' . getStatusIcon('restore', true) . '</li>';
     echo '<li data-action="lora_info">' . getStatusIcon('lora-info', true) . '</li>';
     echo '<li data-action="config_data_purge">' . getStatusIcon('data-purge', true) . '</li>';
     echo '<li data-action="config_ping_lora">' . getStatusIcon('ping-lora', true) . '</li>';

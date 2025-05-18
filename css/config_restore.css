@@ -1,0 +1,149 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.successHint {
+    background-color: darkgreen;
+    color: whitesmoke;
+    font-weight: bold;
+}
+
+.failureHint {
+    background-color: crimson;
+    color: whitesmoke;
+    font-weight: bold;
+}
+
+/* backup Tabelle */
+
+.scrollable-container {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+    width: 496px;  /* Container-Breite anpassen */
+
+    -ms-overflow-style: none;  /* Für IE und Edge */
+    scrollbar-width: none;     /* Für Firefox */
+}
+
+.scrollable-container::-webkit-scrollbar {
+    display: none;             /* Für Chrome, Safari, Opera */
+}
+
+table.backupTable {
+    border-collapse: collapse;
+    width: 30%;
+}
+table.backupTable th, table.backupTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+table.backupTable tr:nth-child(even) {background-color: #f2f2f2;}
+table.backupTable tr:hover {background-color: #ddd;}
+table.backupTable th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #4CAF50;
+    color: white;
+}
+
+.imageDownload {
+    width: 25px;
+}
+
+.imageDelete {
+    width: 25px;
+    cursor: pointer;
+}
+
+.reloadMsg {
+    font-size: 20px;
+}
+
+.hintText {
+    font-size: 14px;
+}
+
+.btnConfigRestoreBackup, .btnConfigRestore, .btnDwnLatestRelease {
+    font-size: 14px;
+    padding: 8px 15px;
+    border: none;
+    background-color: #0056b3;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+/* Media Query für Smartphones */
+@media (max-width: 768px) {
+
+    .hintText {
+        font-size: 12px;
+    }
+
+    .lineBreak {
+        display: block;
+    }
+
+    h2 {
+        font-size: medium;
+    }
+
+    td {
+     font-size: smaller;
+    }
+
+    table.backupTable {
+        font-size: smaller;
+    }
+
+    table.backupTable th,
+    table.backupTable td{
+        padding: 2px;
+    }
+
+    .imageDownload, .imageDelete{
+        width: 15px;
+        margin: 0 5px; /* Links & Rechts 5px Abstand */
+    }
+
+    input[type="file"]::-webkit-file-upload-button {
+        visibility: hidden;
+    }
+
+    input[type="file"]::before {
+        content: "Datei auswählen";
+        font-size: 14px;
+        display: inline-block;
+        background: #007bff;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    input[type="button"] {
+        display: inline-block;
+        font-size: 11px;
+        background: #007bff;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .ui-dialog {
+        width: 90% !important;
+        left: 5% !important;
+        right: 5% !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    .ui-dialog .ui-dialog-content {
+        overflow-x: auto;
+    }
+}
