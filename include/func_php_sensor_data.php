@@ -2,14 +2,18 @@
 
 function getSensorData($loraIp, int $mode = 0)
 {
+
+    $url       = "http" . "://" . $loraIp . "/wx";
+    $wxArray   = array();
     $debugFlag = false;
 
-    $url  = "http" . "://" . $loraIp . "/wx";
     $html = @file_get_contents($url);
 
     if ($html === false)
     {
-        die('<span class="failureHint">Fehler beim Abrufen der WX-Seite!</span>');
+        echo '<span class="failureHint">' . date('H:i:s') . '-Fehler beim Abrufen der WX-Seite.</span>';
+
+        return false;
     }
 
     $doc = new DOMDocument();
@@ -19,8 +23,6 @@ function getSensorData($loraIp, int $mode = 0)
 
     $xpath = new DOMXPath($doc);
     $rows  = $xpath->query("//table//tr");
-
-    $wxArray = [];
 
     foreach ($rows as $row)
     {
@@ -57,8 +59,95 @@ function getSensorData($loraIp, int $mode = 0)
 
     if (count($wxArray) == 0)
     {
-        echo '<h3>Keine Sensordaten gefunden.';
-        echo '<br>Zeige zuletzt gespeicherte Werte, wenn vorhanden.</br></h3>';
+        echo '<span class="failureHint">Keine Sensordaten gefunden.';
+        echo '<br>Zeige zuletzt gespeicherte Werte, wenn vorhanden.</br></span>';
+        return false;
+    }
+
+    if ($mode === 1)
+    {
+        return $wxArray;
+    }
+
+    return true;
+}
+
+function getSensorData2($loraIp, int $mode = 0)
+{
+    $url       = 'http://' . $loraIp . '/?page=wx';
+    $wxArray   = array();
+    $html      = @file_get_contents($url);
+
+    if ($html === false)
+    {
+        echo '<span class="failureHint">' . date('H:i:s') . '-Fehler beim Abrufen der WX-Seite.</span>';
+
+        return false;
+    }
+
+    $doc = new DOMDocument();
+    libxml_use_internal_errors(true);
+    $doc->loadHTML($html);
+    libxml_clear_errors();
+
+    $xpath = new DOMXPath($doc);
+    $rows  = $xpath->query('//table[@class="table"]//tr');
+
+    foreach ($rows as $row) {
+        $tds = $row->getElementsByTagName('td');
+
+        if ($tds->length === 2)
+        {
+            $key   = trim($tds->item(0)->nodeValue);
+            $value = trim($tds->item(1)->nodeValue);
+
+            // Normalize key
+            $key = strtolower($key);
+            $key = str_replace([' ', '-', ':', '(', ')'], '_', $key);
+
+            if ($key === 'item')
+            {
+                continue;
+            }
+
+            switch ($key)
+            {
+                case 'BME(P)280':
+                case 'BME680':
+                case 'MCU811':
+                case 'LPS33':
+                case '1-Wire':
+                case 'Temperature':
+                case 'Tout':
+                case 'Humidity':
+                case 'QFE':
+                case 'QNH':
+                case 'Altitude asl':
+                case 'Gas':
+                case 'eCO2':
+                $wxArray[$key] = $value;
+                    break;
+
+                default:
+                    // Fallback: speichern, wenn noch nicht gesetzt
+                    if (!isset($wxArray[$key]))
+                    {
+                        $wxArray[$key] = $value;
+                    }
+                    break;
+            }
+        }
+    }
+
+    if (count($wxArray) > 0)
+    {
+        setSensorData2($wxArray);
+    }
+
+    if (count($wxArray) == 0)
+    {
+        echo '<span class="failureHint">Keine Sensordaten gefunden.';
+        echo '<br>Zeige zuletzt gespeicherte Werte, wenn vorhanden.</br></span>';
         return false;
     }
 

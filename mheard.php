@@ -74,11 +74,17 @@ echo '</form>';
 
 if($sendData == 1)
 {
-    getMheard($loraIp);
+    $resGetMheard = getMheard($loraIp);
+
+    if ($resGetMheard === true)
+    {
+        echo '<span class="successHint">' . date('H:i:s') . '-MHeard wurden erfolgreich abgespeichert!</span>';
+    }
 }
 
 showMheard($callSign);
 
+echo '<div id="pageLoading" class="pageLoadingSub"></div>';
 echo '</body>';
 echo '</html>';
 

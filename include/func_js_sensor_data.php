@@ -5,6 +5,8 @@
         $("#btnGetSensorData").on("click", function ()
         {
             let sendData  = 1;
+
+            $("#pageLoading").show();
             $("#sendData").val(sendData);
             $("#frmSensorData").trigger('submit');
         });
@@ -26,7 +28,6 @@
                 buttons: {
                     'OK': function () {
                         $("#sendData").val(sendData);
-                        //$("#frmIndex").submit();
                         $("#frmMheard").trigger('submit');
                     }, 'Abbruch': function () {
                         $(this).dialog("close");

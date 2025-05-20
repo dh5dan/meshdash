@@ -43,6 +43,19 @@ body {
     width: 100%;
 }
 
+.successHint {
+    background-color: darkgreen;
+    color: whitesmoke;
+    font-weight: bold;
+}
+
+.failureHint {
+    background-color: crimson;
+    color: whitesmoke;
+    font-weight: bold;
+    display: block;
+}
+
 @media (max-width: 600px) {
 
     .successHint, .failureHint {
