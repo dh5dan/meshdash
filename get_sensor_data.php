@@ -5,7 +5,16 @@ require_once 'include/func_php_sensor_data.php';
 require_once 'include/func_php_lora_info.php';
 
 $loraIp           = getParamData('loraIp');
-$resGetSensorData = getSensorData($loraIp, 1);
+
+#Check new GUI
+if (checkLoraNewGui($loraIp) === true)
+{
+    $resGetSensorData = getSensorData2($loraIp, 1);
+}
+else
+{
+    $resGetSensorData = getSensorData($loraIp, 1);
+}
 
 echo "<br>getSensorData:<br>";
 echo "<pre>";

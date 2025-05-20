@@ -7,6 +7,8 @@
         $("#btnGetMheard").on("click", function ()
         {
             let sendData  = 1;
+
+            $("#pageLoading").show();
             $("#sendData").val(sendData);
             $("#frmMheard").trigger('submit');
         });

@@ -1,7 +1,7 @@
 <?php
 echo '<!DOCTYPE html>';
 echo '<html lang="de">';
-echo '<head><title>Einstellungen</title>';
+echo '<head><title>Sensordaten</title>';
 
 #Prevnts UTF8 Errors on misconfigured php.ini
 ini_set( 'default_charset', 'UTF-8' );
@@ -44,12 +44,25 @@ echo '</form>';
 
 if ($sendData == 1)
 {
-    getSensorData($loraIp);
-    echo '<span class="successHint">'.date('H:i:s').'-Sensordaten wurden erfolgreich abgespeichert!</span>';
+    #Check new GUI
+    if (checkLoraNewGui($loraIp) === true)
+    {
+        $resGetSensorData = getSensorData2($loraIp);
+    }
+    else
+    {
+        $resGetSensorData = getSensorData($loraIp);
+    }
+
+    if ($resGetSensorData !== false)
+    {
+        echo '<span class="successHint">' . date('H:i:s') . '-Sensordaten wurden erfolgreich abgespeichert!</span>';
+    }
 }
 
 showSensorData();
 
+echo '<div id="pageLoading" class="pageLoadingSub"></div>';
 echo '</body>';
 echo '</html>';
 

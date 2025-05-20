@@ -2,11 +2,16 @@
 
 function sendCommand($loraCmd, $loraIp): bool
 {
-    $loraCmd = trim($loraCmd);
-
+    $loraCmd     = trim($loraCmd);
     $actualHost  = 'http';
     $triggerLink = $actualHost . '://' . $loraIp . '/?command=' . urlencode($loraCmd);
     $debugFlag   = false;
+
+    #Check new GUI
+    if (checkLoraNewGui($loraIp) === true)
+    {
+        $triggerLink = $actualHost . '://' . $loraIp . '/setparam/?manualcommand=' . urlencode($loraCmd);
+    }
 
     if ($debugFlag === true)
     {
@@ -31,7 +36,6 @@ function sendCommand($loraCmd, $loraIp): bool
     if (curl_exec($ch) === false && $loraCmd != '--ota-update')
     {
         echo '<span>Curl error: ' . curl_error($ch) . '</span>';
-        #echo '<br>Curl error: ' . curl_errno($ch);
         echo '<br>';
         echo '<br>';
         curl_close($ch);
@@ -63,13 +67,16 @@ function getLocalIpAddressesLinux(): array
     $interfaces = shell_exec("ip -o -4 addr show | awk '{print $4}'");
     $interfaces = explode("\n", trim($interfaces));
 
-    foreach ($interfaces as $interface) {
-        if (strpos($interface, '127.0.0.1') === false) {
+    foreach ($interfaces as $interface)
+    {
+        if (strpos($interface, '127.0.0.1') === false)
+        {
             // Netzmaske (z.B. /24) entfernen und IP zur Liste hinzufügen
             $ip = explode('/', $interface)[0];
 
             // Doppelte IPs vermeiden
-            if (!in_array($ip, $ips)) {
+            if (!in_array($ip, $ips))
+            {
                 $ips[] = $ip;
             }
         }

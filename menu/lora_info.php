@@ -24,18 +24,28 @@ require_once '../include/func_php_lora_info.php';
 error_reporting(E_ALL);
 ini_set('display_errors',1);
 
-$sendData    = $_REQUEST['sendData'] ?? 0;
-$loraIp       = getParamData('loraIp');
+$sendData = $_REQUEST['sendData'] ?? 0;
+$loraIp   = getParamData('loraIp');
+$btnText  = $sendData == 1 ? 'Infoseite neu laden' : 'Infoseite laden';
 
-echo "<h2>Lora Info-Seite</h2>";
+echo "<h2>Lora Infoseite</h2>";
 
 echo '<form id="frmLoraInfo" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
 
-showLoraInfo(getLoraInfo($loraIp));
+echo '<table class="table">';
 
+echo '<tr>';
+echo '<th colspan="3"><input type="button" class="btnLoadLoraInfo" id="btnLoadLoraInfo" value="' . $btnText . '" /></th>';
+echo '</tr>';
 
+if ($sendData == 1)
+{
+       showLoraInfo(getLoraInfo($loraIp));
+}
+
+echo '<table>';
 echo '</form>';
-
+echo '<div id="pageLoading" class="pageLoadingSub"></div>';
 echo '</body>';
 echo '</html>';

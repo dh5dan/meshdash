@@ -155,6 +155,25 @@ echo '<td colspan="2"><hr></td>';
 echo '</tr>';
 
 echo '<tr>';
+echo '<td>Lora-Node GUI-Status:</td>';
+echo '<td>';
+#Check new GUI
+if (checkLoraNewGui(getParamData('loraIp')) === true)
+{
+    echo "<br> FW >= v4.34x.05.18 mit neuer GUI erkannt";
+}
+else
+{
+    echo "<br> FW < v4.34x.05.18 mit alter GUI erkannt";
+}
+echo '</td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td colspan="2"><hr></td>';
+echo '</tr>';
+
+echo '<tr>';
 echo '<td>UDP-Receiver BG-Status:</td>';
 echo '<td>';
 echo  $statusImageUpdReceiver;

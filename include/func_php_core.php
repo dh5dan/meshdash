@@ -630,17 +630,17 @@ function setMheardData($heardData): bool
 
     foreach ($heardData AS $key)
     {
-        $callSign = SQLite3::escapeString($key['callSign']);
-        $date     = SQLite3::escapeString($key['date']);
-        $time     = SQLite3::escapeString($key['time']);
-        $mhType   = SQLite3::escapeString($key['mhType']);
-        $hardware = SQLite3::escapeString($key['hardware']);
-        $mod      = SQLite3::escapeString($key['mod']);
-        $rssi     = SQLite3::escapeString($key['rssi']);
-        $snr      = SQLite3::escapeString($key['snr']);
-        $dist     = SQLite3::escapeString($key['dist']);
-        $pl       = SQLite3::escapeString($key['pl']);
-        $m        = SQLite3::escapeString($key['m']);
+        $callSign = SQLite3::escapeString($key['callSign'] ?? '');
+        $date     = SQLite3::escapeString($key['date'] ?? '');
+        $time     = SQLite3::escapeString($key['time'] ?? '');
+        $mhType   = SQLite3::escapeString($key['mhType'] ?? '');
+        $hardware = SQLite3::escapeString($key['hardware'] ?? '');
+        $mod      = SQLite3::escapeString($key['mod'] ?? '');
+        $rssi     = SQLite3::escapeString($key['rssi'] ?? '');
+        $snr      = SQLite3::escapeString($key['snr'] ?? '');
+        $dist     = SQLite3::escapeString($key['dist'] ?? '');
+        $pl       = SQLite3::escapeString($key['pl'] ?? '');
+        $m        = SQLite3::escapeString($key['m'] ?? '');
 
         $db->exec(
             "
@@ -714,6 +714,96 @@ function setSensorData($sensorData): bool
     $altAsl         = SQLite3::escapeString($sensorData['ALT asl'] ?? '');
     $gas            = SQLite3::escapeString($sensorData['GAS'] ?? '');
     $eCo2           = SQLite3::escapeString($sensorData['eCO2'] ?? '');
+    $ina226vBus     = SQLite3::escapeString($sensorData['vBUS'] ?? '');
+    $ina226vShunt   = SQLite3::escapeString($sensorData['vSHUNT'] ?? '');
+    $ina226vCurrent = SQLite3::escapeString($sensorData['vCURRENT'] ?? '');
+    $ina226vPower   = SQLite3::escapeString($sensorData['vPOWER'] ?? '');
+
+    $db->exec(
+        "
+                        REPLACE INTO sensordata (
+                                                 timestamps,
+                                                 bme280,
+                                                 bme680,
+                                                 mcu811,
+                                                 lsp33,
+                                                 oneWire,
+                                                 temp,
+                                                 tout,
+                                                 hum,
+                                                 qfe,
+                                                 qnh,
+                                                 altAsl,
+                                                 gas,
+                                                 eCo2,
+                                                 ina226vBus,
+                                                 ina226vShunt,
+                                                 ina226vCurrent,
+                                                 ina226vPower
+                                                 )
+                                VALUES (
+                                        '$timeStamps',
+                                        '$bme280',
+                                        '$bme680',
+                                        '$mcu811',
+                                        '$lsp33',
+                                        '$oneWire',
+                                        '$temp',
+                                        '$tout',
+                                        '$hum',
+                                        '$qfe',
+                                        '$qnh',
+                                        '$altAsl',
+                                        '$gas',
+                                        '$eCo2',
+                                        '$ina226vBus',
+                                        '$ina226vShunt',
+                                        '$ina226vCurrent',
+                                        '$ina226vPower'
+                                );
+                    "
+    );
+
+    if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+    {
+        echo "<br>setParamData";
+        echo "<br>ErrMsg:" . $db->lastErrorMsg();
+        echo "<br>ErrNum:" . $db->lastErrorCode();
+    }
+
+
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
+    return true;
+}
+
+function setSensorData2($sensorData): bool
+{
+    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    $basename       = pathinfo(getcwd())['basename'];
+    $dbFilenameSub  = '../database/sensordata.db';
+    $dbFilenameRoot = 'database/sensordata.db';
+    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+    $timeStamps     = date('Y-m-d H:i:s');
+
+    $db = new SQLite3($dbFilename);
+    $db->exec('PRAGMA synchronous = NORMAL;');
+
+    $bme280         = SQLite3::escapeString($sensorData['bme_p_280'] ?? '');
+    $bme680         = SQLite3::escapeString($sensorData['bme680'] ?? '');
+    $mcu811         = SQLite3::escapeString($sensorData['mcu811'] ?? '');
+    $lsp33          = SQLite3::escapeString($sensorData['lps33'] ?? '');
+    $oneWire        = SQLite3::escapeString($sensorData['1_wire'] ?? '');
+    $tout           = SQLite3::escapeString($sensorData['tout'] ?? '');
+    $temp           = SQLite3::escapeString($sensorData['temperature'] ?? '');
+    $hum            = SQLite3::escapeString($sensorData['humidity'] ?? '');
+    $qfe            = SQLite3::escapeString($sensorData['qfe'] ?? '');
+    $qnh            = SQLite3::escapeString($sensorData['qnh'] ?? '');
+    $altAsl         = SQLite3::escapeString($sensorData['altitude_asl'] ?? '');
+    $gas            = SQLite3::escapeString($sensorData['gas'] ?? '');
+    $eCo2           = SQLite3::escapeString($sensorData['eco2'] ?? '');
     $ina226vBus     = SQLite3::escapeString($sensorData['vBUS'] ?? '');
     $ina226vShunt   = SQLite3::escapeString($sensorData['vSHUNT'] ?? '');
     $ina226vCurrent = SQLite3::escapeString($sensorData['vCURRENT'] ?? '');
@@ -2122,6 +2212,26 @@ function callMessagePage(): bool
         echo "</pre>";
 
         return true;
+    }
+
+    return true;
+}
+
+function checkLoraNewGui($loraIp): bool
+{
+    $actualHost  = 'http';
+    $triggerLink = $actualHost . '://' . $loraIp . '/getparam/?setcall=';
+
+    $ch = curl_init($triggerLink);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    $jsonContent = json_decode($response, true);
+
+    if ($jsonContent === null || !isset($jsonContent['returncode']))
+    {
+        return false;
     }
 
     return true;

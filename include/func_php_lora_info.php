@@ -1,16 +1,18 @@
 <?php
 
-function getLoraInfo($loraIp)
+function getLoraInfo($loraIp): array
 {
     // URL der Seite
     $actualHost  = 'http';
     $url         = $actualHost . '://' . $loraIp . '/info';
     $ina226Count = -1;
+    $info        = array();  // Das Array, in dem alle Daten abgelegt werden
     $debugFlag   = false;
 
-    if ($debugFlag === true)
+    #Check new GUI
+    if (checkLoraNewGui($loraIp) === true)
     {
-        $url = $actualHost . '://192.168.1.111/meshdash/test/info_new/info.html';
+        return getLoraInfo2($loraIp);
     }
 
     // HTML-Inhalt abrufen
@@ -18,15 +20,16 @@ function getLoraInfo($loraIp)
 
     if ($htmlContent === false)
     {
-        echo "Fehler beim Abrufen der Info-Seite.";
-        exit;
+        echo '<tr>';
+        echo '<th colspan="3" ><span class="failureHint">Fehler beim Abrufen der Info-Seite.</span></th>';
+        echo '</tr>';
+
+        return $info;
     }
 
     #Workaround in MeshCom 4.34q (build: Mar 6 2025 / 15:17:43)
     #Falscher Tr Tag auf info Seite, dadurch wird Call nicht mehr erkannt und Hardware
     $htmlContent = preg_replace('/<tr><tr><\/tr>/', '</tr><tr>', $htmlContent);
-
-    $info = [];  // Das Array, in dem alle Daten abgelegt werden
 
     // HTML mit DOMDocument parsen
     $doc = new DOMDocument();
@@ -154,7 +157,7 @@ function getLoraInfo($loraIp)
                     ++$ina226Count;
                 }
 
-                #Schreibe normale Werte in Form Key = Value
+                #Schreibe normale Werte in der Form: Key = Value
                 if ($ina226Count == -1)
                 {
                     $info[$key] = $value;
@@ -185,14 +188,117 @@ function getLoraInfo($loraIp)
     return $info;
 }
 
+function getLoraInfo2($loraIp): array
+{
+    $url       = 'http://' . $loraIp . '/?page=info';
+    $info      = array();
+    $html      = @file_get_contents($url);
+
+    if ($html === false)
+    {
+        echo '<tr>';
+        echo '<th colspan="3" ><span class="failureHint">Fehler beim Abrufen der Info-Seite.</span></th>';
+        echo '</tr>';
+
+        return $info;
+    }
+
+    $doc = new DOMDocument();
+    libxml_use_internal_errors(true);
+    $doc->loadHTML($html);
+    libxml_clear_errors();
+
+    $xpath = new DOMXPath($doc);
+    $rows  = $xpath->query('//table[@class="table"]//tr');
+
+    foreach ($rows as $row) {
+        $tds = $row->getElementsByTagName('td');
+
+        if ($tds->length === 2) {
+            $key   = trim($tds->item(0)->nodeValue);
+            $value = trim($tds->item(1)->nodeValue);
+
+            // Normalize key
+            $key = strtolower($key);
+            $key = str_replace([' ', '-', ':', '(', ')'], '_', $key);
+
+            switch ($key) {
+                case 'call':
+                case 'hardware':
+                case 'firmware':
+                case 'start_date':
+                case 'utc_offset':
+                case 'battery':
+                case 'country':
+                case 'frequency':
+                case 'bandwidth':
+                case 'spreading_factor_sf':
+                case 'coding_rate_cr':
+                case 'tx_power':
+                case 'wifi_ap':
+                case 'wifi_ssid':
+                case 'hasipaddress':
+                case 'ip_address':
+                case 'gw_address':
+                case 'dns_address':
+                case 'sub_mask':
+                    $info[$key] = $value;
+                    break;
+
+                case 'settings':
+                    $lines = explode('<br>', $tds->item(1)->ownerDocument->saveHTML($tds->item(1)));
+                    foreach ($lines as $line)
+                    {
+                        if (preg_match('/(.+?):\s*(on|off)/i', strip_tags($line), $matches))
+                        {
+                            $settingKey                    = strtolower(str_replace([' ', '-'], '_', trim($matches[1])));
+                            $info['settings'][$settingKey] = strtolower($matches[2]);
+                        }
+                    }
+                    break;
+
+                case 'aprs_text':
+                    $info['aprs_text'] = $value;
+                    break;
+
+                case 'mesh_settings':
+                    $lines = explode('<br>', $tds->item(1)->ownerDocument->saveHTML($tds->item(1)));
+                    foreach ($lines as $line)
+                    {
+                        if (preg_match('/(.+?):\s*(.+)/i', strip_tags($line), $matches))
+                        {
+                            $meshKey = strtolower(str_replace([' ', '-'], '_', trim($matches[1])));
+                            $info['mesh_settings'][$meshKey] = trim($matches[2]);
+                        }
+                    }
+                    break;
+
+                default:
+                    // Fallback: speichern, wenn noch nicht gesetzt
+                    if (!isset($info[$key])) {
+                        $info[$key] = $value;
+                    }
+                    break;
+            }
+        }
+    }
+
+    return $info;
+}
+
 function showLoraInfo($localInfoArray)
 {
-    echo '<table class="table">';
+    if (count($localInfoArray) == 0)
+    {
+        return false;
+    }
 
-    echo '<tr>';
-    echo '<th class="thCenter">Lora-Infoseite</th>';
-    echo '<th colspan="2"><input type="button" class="btnLoadLoraInfo" id="btnLoadLoraInfo" value="Info-Seite neu laden" /></th>';
-    echo '</tr>';
+    #Wenn Daten aus new GUI dann andere Darstellung anzeigen
+    if (isset($localInfoArray['item']) && $localInfoArray['item'] == 'Value')
+    {
+        showLoraInfo2($localInfoArray);
+        return true;
+    }
 
     echo '<tr>';
     echo '<th colspan="10" ><hr></th>';
@@ -232,6 +338,7 @@ function showLoraInfo($localInfoArray)
     echo '<td>SETTINGS:</td>';
     echo '<td colspan="2">&nbsp;</td>';
     echo '</tr>';
+
     foreach ($localInfoArray['setting'] AS $key=>$value)
     {
         echo '<tr>';
@@ -320,9 +427,141 @@ function showLoraInfo($localInfoArray)
     echo '<td>Subnetz-Maske:</td>';
     echo '<td colspan="2">' . $localInfoArray['SUB-MASK'] . '</td>';
     echo '</tr>';
+}
 
-    echo '<table>';
+function showLoraInfo2($localInfoArray)
+{
+    if (count($localInfoArray) == 0)
+    {
+        return false;
+    }
 
+    echo '<tr>';
+    echo '<th colspan="10" ><hr></th>';
+    echo '</tr>';
 
+    echo '<tr>';
+    echo '<td>Firmware:</td>';
+    echo '<td colspan="2">' . $localInfoArray['firmware'] . '</td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td>Startzeit:</td>';
+    echo '<td colspan="2">' . ($localInfoArray['start_date'] ?? '') . '</td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td>Rufzeichen:</td>';
+    echo '<td colspan="2">' . $localInfoArray['call'] . '</td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td>Hardware:</td>';
+    echo '<td colspan="2">' . $localInfoArray['hardware'] . '</td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td >UTC-OFF:</td>';
+    echo '<td colspan="2">' . $localInfoArray['utc_offset'] . '</td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td>BATT:</td>';
+    echo '<td colspan="2">' . $localInfoArray['battery'] . '</td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td>SETTINGS:</td>';
+    echo '<td colspan="2">&nbsp;</td>';
+    echo '</tr>';
+
+    foreach ($localInfoArray['settings'] AS $key=>$value)
+    {
+        echo '<tr>';
+        echo '<td>&nbsp;</td>';
+        echo '<td>' . $key . '</td>';
+        echo '<td>' . $value . '</td>';
+        echo '</tr>';
+    }
+
+    echo '<tr>';
+    echo '<td>APRS-TXT:</td>';
+    echo '<td colspan="2">' . $localInfoArray['aprs_text'] . '</td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td>MESH-Settings:</td>';
+    echo '<td colspan="2">Max-Hops: ' . $localInfoArray['mesh_settings']['max_hop_text'] . '</td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td>&nbsp;</td>';
+    echo '<td colspan="2">Hops-Pos: ' . $localInfoArray['mesh_settings']['max_hop_pos'] . '</td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td>COUNTRY:</td>';
+    echo '<td colspan="2">' . $localInfoArray['country'] . '</td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td>Frequenz:</td>';
+    echo '<td colspan="2">' . $localInfoArray['frequency'] . '</td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td>Bandbreite:</td>';
+    echo '<td colspan="2">' . $localInfoArray['bandwidth'] . '</td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td>Spread-Factor::</td>';
+    echo '<td colspan="2">' . $localInfoArray['spreading_factor__sf_'] . '</td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td>Coding-Rate:</td>';
+    echo '<td colspan="2">' . $localInfoArray['coding_rate__cr_'] . '</td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td>Sendeleistung:</td>';
+    echo '<td colspan="2">' . $localInfoArray['tx_power'] . '</td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td>SSID:</td>';
+    echo '<td colspan="2">' . $localInfoArray['wifi_ssid'] . '</td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td>WIFI-AP:</td>';
+    echo '<td colspan="2">' . $localInfoArray['wifi_ap'] . '</td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td>Hat Ip-Adresse:</td>';
+    echo '<td colspan="2">' . $localInfoArray['hasipaddress'] . '</td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td>IP-Adresse:</td>';
+    echo '<td colspan="2">' . $localInfoArray['ip_address'] . '</td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td>Gateway Adresse:</td>';
+    echo '<td colspan="2">' . $localInfoArray['gw_address'] . '</td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td>DNS-Maske:</td>';
+    echo '<td colspan="2">' . $localInfoArray['dns_address'] . '</td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td>Subnetz-Maske:</td>';
+    echo '<td colspan="2">' . $localInfoArray['sub_mask'] . '</td>';
+    echo '</tr>';
 }
 

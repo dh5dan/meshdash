@@ -1,3 +1,11 @@
+Version 1.10.36 SQL
+FEATURE: Anpassung an neue MeshCom GUI >= v4.34x.05.18 mit Autoerkennung
+FEATURE: Mheard new GUI wird unterstützt
+FEATURE: Lora-Info new GUI wird unterstützt
+FEATURE: Sensordaten new GUI wird unterstützt ausser INA266
+FEATURE: Send-Befehl new GUI wird unterstützt
+BUGFIX: Diverse Anpassungen und Fehlerbehebungen
+#################################################################
 Version 1.10.34 SQL
 FEATURE: Backup der Datenbank im laufenden Betrieb.
 FEATURE: install_5d.sh mit Möglichkeit des Online-Downloads der aktuellen Release.
