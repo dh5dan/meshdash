@@ -68,6 +68,7 @@ $sqlAddonSearch = '';
 $group          = $_REQUEST['group'] ?? -1;
 $callSignSql    = $callSign;
 $doSearchQuery  = false;
+$bubbleView    = true;
 
 $searchMsg    = $_REQUEST['searchMsg'] ?? '';
 $searchSrc    = $_REQUEST['searchSrc'] ?? '';
@@ -522,6 +523,13 @@ if ($result !== false)
             $fwSubVersion    = $row['fw_sub'] ?? '';  // FirmwareSub Version
             $altitude        = number_format($altitude * 0.3048); // Umrechnung Fuss -> Meter
 
+            if ($bubbleView === true)
+            {
+                echo '<div class="chat-container">';
+                echo '<div class="message-row incoming">';
+                echo '<div class="message-bubble">';
+            }
+
             echo '<h3 class="setFontMsgHeader">';
             echo 'MsgId: ' . $msgId . ' (' . $srcType . ')<br>' . $timestamp . ' ';
             echo 'Quelle ' . $src . ', Ziel all</h3>';
@@ -541,7 +549,17 @@ if ($result !== false)
                 }
             echo '</div>';
 
-            echo '</h3><hr>';
+            if ($bubbleView === true)
+            {
+                echo '</div>';
+                echo '</div>';
+                echo '</div>';
+                echo '</h3>';
+            }
+            else
+            {
+                echo '</h3><hr>';
+            }
 
         }
         else if ($type === 'msg')
@@ -574,6 +592,19 @@ if ($result !== false)
                 checkMheard($msgId, $msg, $src, $dst, $callSign, $loraIp, 1);
             }
 
+            $parts     = explode(',', $src);
+            $firstCall = array_shift($parts); // Nimmt das erste Rufzeichen und entfernt es aus dem Array
+            $restCalls = implode(',', $parts);
+
+            if ($bubbleView === true)
+            {
+                $cssInOutBubble = (strtolower($firstCall) === strtolower($callSign)) ? 'outgoing' : 'incoming';
+
+                echo '<div class="chat-container">';
+                echo '<div class="message-row ' . $cssInOutBubble . '">';
+                echo '<div class="message-bubble">';
+            }
+
             echo '<h3 class="setFontMsgHeader">';
             echo $timestamp . ' ' . 'MsgId: ' . $msgId . ' (' . $srcType . ')';
 
@@ -583,9 +614,6 @@ if ($result !== false)
                 echo '<img src="image/ack_icon.png" alt="ack" class="imageAck">';
             }
 
-            $parts     = explode(',', $src);
-            $firstCall = array_shift($parts); // Nimmt das erste Rufzeichen und entfernt es aus dem Array
-            $restCalls = implode(',', $parts);
 
             echo '<br>VIA: ' . $restCalls . '</h3>';
             echo '<h3 class="setFontMsg">';
@@ -669,7 +697,17 @@ if ($result !== false)
                 echo '<img src="image/ack_icon.png" alt="ack" class="imageMheard">';
             }
 
-            echo '</h3><hr>';
+            if ($bubbleView === true)
+            {
+                echo '</div>';
+                echo '</div>';
+                echo '</div>';
+                echo '</h3>';
+            }
+            else
+            {
+                echo '</h3><hr>';
+            }
         }
 
         flush();

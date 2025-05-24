@@ -1,4 +1,8 @@
 Version 1.10.38 SQL
+FEATURE: Bubble-Darstellung der Nachrichten. Ansicht ist schaltbar.
+
+#################################################################
+Version 1.10.38 SQL
 BUGFIX: MH-Liste wird mehrfach gesendet bei neuer GUI.
 BUGFIX: Send-Befehl bei neuer GUI funktionierte nicht.
 BUGFIX: Fehlermeldung bei Remote Reboot entfernt.
