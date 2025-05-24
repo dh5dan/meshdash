@@ -52,7 +52,7 @@ function sendCommand($loraCmd, $loraIp): bool
     }
 
     #Fehler abfangen
-    if (curl_exec($ch) === false && $loraCmd != '--ota-update')
+    if (curl_exec($ch) === false && $loraCmd != '--ota-update'  && $loraCmd != '--reboot')
     {
         echo '<span>Curl error: ' . curl_error($ch) . '</span>';
         echo '<br>';

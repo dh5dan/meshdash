@@ -56,7 +56,6 @@
             let sendData  = 4;
             $("#sendData").val(sendData);
             $("#frmConfigUpdate").trigger('submit');
-            $("#pageLoading").show();
 
             return false;
         });
@@ -66,7 +65,6 @@
             let sendData  = 5;
             $("#sendData").val(sendData);
             $("#frmConfigUpdate").trigger('submit');
-            $("#pageLoading").show();
 
             return false;
         });
