@@ -1,5 +1,8 @@
 Version 1.10.38 SQL
-BUGFIX:  MH-Liste wird mehrfach gesendet bei neuer GUI.
+BUGFIX: MH-Liste wird mehrfach gesendet bei neuer GUI.
+BUGFIX: Send-Befehl bei neuer GUI funktionierte nicht.
+BUGFIX: Fehlermeldung bei Remote Reboot entfernt.
+BUGFIX: Loader bei Release/Changelog deaktiviert
 Feature: GUI Erkennung nun global als Parameter in der DB.
 #################################################################
 Version 1.10.36 SQL
