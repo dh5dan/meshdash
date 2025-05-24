@@ -1022,6 +1022,14 @@ function checkDbUpgrade($database)
         #mheard
         addIndex('mheard', 'mheard','idx_timestamps', 'timestamps');
     }
+
+    if (checkVersion(VERSION,'1.10.40','>='))
+    {
+        // Enable bubble-style view if not specified. As of V1.10.40
+        if (getParamData('bubbleStyleView') === '') {
+            setParamData('bubbleStyleView', 1);
+        }
+    }
 }
 
 function addColumn($database, $tabelle, $spalte, $typ = 'TEXT', $default = null)

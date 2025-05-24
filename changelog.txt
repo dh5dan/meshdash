@@ -1,9 +1,17 @@
 Version 1.10.38 SQL
+FEATURE: Bubble-Darstellung der Nachrichten. Ansicht ist schaltbar.
+         Switch liegt unter Einstellungen und schaltet auf die klassische Ansicht um.
+FEATURE: Visuelle Hervorhebung von/an (nur im Bubble-Style)
+FEATURE: Diverse Anpassungen im Msg-Header.
+         Via-Anzeige nur dann, wenn auch via vorhanden.
+         Pos-Meldung: Adressat-Quelle gesplittet in Von/Via.
+#################################################################
+Version 1.10.38 SQL
 BUGFIX: MH-Liste wird mehrfach gesendet bei neuer GUI.
 BUGFIX: Send-Befehl bei neuer GUI funktionierte nicht.
 BUGFIX: Fehlermeldung bei Remote Reboot entfernt.
 BUGFIX: Loader bei Release/Changelog deaktiviert
-Feature: GUI Erkennung nun global als Parameter in der DB.
+FEATURE: GUI Erkennung nun global als Parameter in der DB.
 #################################################################
 Version 1.10.36 SQL
 FEATURE: Anpassung an neue MeshCom GUI >= v4.34x.05.18 mit Autoerkennung

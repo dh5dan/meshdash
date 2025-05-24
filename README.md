@@ -16,7 +16,7 @@ auf eine webbasierte Plattform bringen soll.
 Vornehmlich ist die Applikation für Linux ausgelegt, sie ist aber auch  
 unter Windows lauffähig. Hier muss allerdings schon ein funktionierender Webserver  
 mit aktiven PHP-Modulen die nötigt sind vorhanden sein.  
-Hier läuft die App unter Win10 mit einem Apache und PHP >= 7.4.23.
+Hier läuft die App unter Win10 mit Apache und PHP >= 7.4.23.
 
 Einige Funktionen von MeshDash:
 
@@ -34,6 +34,8 @@ Einige Funktionen von MeshDash:
 - Auswahl gängiger Emoji über ein DropDown.
 - Zusätzliche Kennzeichnung neuer Nachrichten mit Hintergrundfarbe und Sound.
 - Suchfunktion nach Auswahlkriterien über die gesamte Nachrichtendatenbank möglich.
+- Restore-Funktion eines zuvor gesicherten Backups
+- Darstellung der Nachrichten im Bubble-Style
 
 Das Projekt ist mittlerweile aus der **Beta-Phase**, doch es können immer mal noch Fehler auftreten.  
 Falls Probleme auftreten, bitte im Issue-Bereich von GitHub melden,  
@@ -67,6 +69,12 @@ Hier mal ein Beispiel:
 - update.sh (Das Update-Skript ist optional, da Webupdate vorhanden)
 
 ![FILES](/docs/files.jpg)
+
+### Neu ist auch die Restore-Funktion eines zuvor angelegten Backups
+![FILES](/docs/restore.jpg)
+
+### Die Ansicht kann nun auch im Bubble-Styl dargestellt werden
+![FILES](/docs/bubble_style_view.jpg)
 
 ## Was steht in der Manual-Mesh-Dash-SQL.pdf?
 

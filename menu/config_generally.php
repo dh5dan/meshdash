@@ -87,6 +87,7 @@ $chronMode         = getParamData('chronMode'); // zip|delete
 $strictCallEnable  = getParamData('strictCallEnable'); // Strict Call Flag
 $selTzName         = getParamData('timeZone') ?? 'Europe/Berlin'; // ZeitZone
 $mheardGroup       = getParamData('mheardGroup') ?? 0; // 0= egal welche Gruppe
+$bubbleStyleView   = getParamData('bubbleStyleView') ?? 0; // 1= Bubble Style aktiv
 
 $openStreetTileServerUrl = trim(getParamData('openStreetTileServerUrl')) ?? 'tile.openstreetmap.org';
 $openStreetTileServerUrl = $openStreetTileServerUrl == '' ? 'tile.openstreetmap.org' : $openStreetTileServerUrl;
@@ -97,7 +98,7 @@ $noDmAlertGlobalChecked   = $noDmAlertGlobal == 1 ? 'checked' : '';
 $noTimeSyncMsgChecked     = $noTimeSyncMsg == 1 ? 'checked' : '';
 $doLogEnableChecked       = $doLogEnable == 1 ? 'checked' : '';
 $doNotBackupDbChecked     = $doNotBackupDb == 1 ? 'checked' : '';
-
+$bubbleStyleViewChecked   = $bubbleStyleView == 1 ? 'checked' : '';
 $chronLogEnableChecked    = $chronLogEnable == 1 ? 'checked' : '';
 $retentionDays            = $retentionDays == '' ? 7 : $retentionDays;
 $chronMode                = $chronMode == '' ? 'zip' : $chronMode;
@@ -153,6 +154,11 @@ echo '</tr>';
 echo '<tr>';
 echo '<td>Kein DB-Backup:</td>';
 echo '<td><input type="checkbox" name="doNotBackupDb" ' . $doNotBackupDbChecked . ' id="doNotBackupDb" value="1" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td>Bubble-Style View:</td>';
+echo '<td><input type="checkbox" name="bubbleStyleView" ' . $bubbleStyleViewChecked . ' id="bubbleStyleView" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';

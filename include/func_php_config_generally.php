@@ -5,21 +5,22 @@ function saveGenerallySettings(): bool
     $noDmAlertGlobal         = $_REQUEST['noDmAlertGlobal'] ?? 0;
     $noTimeSyncMsg           = $_REQUEST['noTimeSyncMsg'] ?? 0;
     $doLogEnable             = $_REQUEST['doLogEnable'] ?? 0;
-    $loraIp                  = $_REQUEST['loraIp'] ?? '0.0.0.0';
+    $loraIp                  = trim($_REQUEST['loraIp']) ?? '0.0.0.0';
     $loraIp                  = $loraIp == '' ? '0.0.0.0' : $loraIp;
-    $callSign                = $_REQUEST['callSign'] ?? '';
-    $maxScrollBackRows       = $_REQUEST['maxScrollBackRows'] ?? 60;
+    $callSign                = trim($_REQUEST['callSign']) ?? '';
+    $maxScrollBackRows       = trim($_REQUEST['maxScrollBackRows']) ?? 60;
     $maxScrollBackRows       = $maxScrollBackRows == '' ? 60 : $maxScrollBackRows;
     $doNotBackupDb           = $_REQUEST['doNotBackupDb'] ?? 0;
     $clickOnCall             = $_REQUEST['clickOnCall'] ?? 0;
     $chronLogEnable          = $_REQUEST['chronLogEnable'] ?? 0;
-    $retentionDays           = $_REQUEST['retentionDays'] ?? 7;
+    $retentionDays           = trim($_REQUEST['retentionDays']) ?? 7;
     $chronMode               = $_REQUEST['chronMode'] == '' ? 'zip' : $_REQUEST['chronMode'];
     $strictCallEnable        = $_REQUEST['strictCallEnable'] ?? 0;
     $selTzName               = $_REQUEST['selTzName'] ?? 'Europe/Berlin';
     $newMsgBgColor           = $_REQUEST['newMsgBgColor'] ?? '#FFFFFF';
-    $mheardGroup             = $_REQUEST['mheardGroup'] ?? 0;
-    $openStreetTileServerUrl = $_REQUEST['openStreetTileServerUrl'] ?? 'tile.openstreetmap.org';;
+    $mheardGroup             = trim($_REQUEST['mheardGroup']) ?? 0;
+    $openStreetTileServerUrl = trim($_REQUEST['openStreetTileServerUrl']) ?? 'tile.openstreetmap.org';
+    $bubbleStyleView         = $_REQUEST['bubbleStyleView'] ?? 0;
 
     setParamData('noPosData', $noPosData);
     setParamData('noDmAlertGlobal', $noDmAlertGlobal);
@@ -38,6 +39,7 @@ function saveGenerallySettings(): bool
     setParamData('newMsgBgColor', $newMsgBgColor, 'txt');
     setParamData('mheardGroup', $mheardGroup);
     setParamData('openStreetTileServerUrl', $openStreetTileServerUrl, 'txt');
+    setParamData('bubbleStyleView', $bubbleStyleView);
 
     return true;
 }
