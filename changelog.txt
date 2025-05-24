@@ -1,3 +1,7 @@
+Version 1.10.38 SQL
+BUGFIX:  MH-Liste wird mehrfach gesendet bei neuer GUI.
+Feature: GUI Erkennung nun global als Parameter in der DB.
+#################################################################
 Version 1.10.36 SQL
 FEATURE: Anpassung an neue MeshCom GUI >= v4.34x.05.18 mit Autoerkennung
 FEATURE: Mheard new GUI wird unterstützt

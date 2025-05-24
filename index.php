@@ -126,6 +126,8 @@ deleteOldCron();
 #####################################################################################
 ##########  Top-Bereich
 #####################################################################################
+#Setzte flag wenn neue MeshCom Gui erkannt wurde
+checkLoraNewGui();
 
 // Beispiel-Daten, die du aus der SQLite-Datenbank holen könntest
 $tabsJson = getGroupTabsJson();

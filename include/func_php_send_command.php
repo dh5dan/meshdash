@@ -8,9 +8,9 @@ function sendCommand($loraCmd, $loraIp): bool
     $debugFlag   = false;
 
     #Check new GUI
-    if (checkLoraNewGui($loraIp) === true)
+    if (getParamData('isNewMeshGui') == 1)
     {
-        $triggerLink = $actualHost . '://' . $loraIp . '/setparam/?manualcommand=' . urlencode($loraCmd);
+        $triggerLink = $actualHost . '://' . $loraIp . '/setparam/?manualcommand=' . rawurlencode($loraCmd);
     }
 
     if ($debugFlag === true)
@@ -18,19 +18,38 @@ function sendCommand($loraCmd, $loraIp): bool
         echo "<br> Debug: sendCommand";
         echo "<br>triggerLink:$triggerLink";
 
-        return true;
+      #  return true;
     }
 
     #Starte Trigger
     $ch = curl_init();
 
-    # Set Curl Options
-    curl_setopt($ch, CURLOPT_URL, $triggerLink);
-    curl_setopt($ch, CURLOPT_HEADER, 0);
-    curl_setopt($ch, CURLOPT_NOBODY, 1);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-    curl_setopt($ch, CURLOPT_VERBOSE, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT_MS, 5000); // Warte max. 5 Sek.
+
+    #Check new GUI
+    if (getParamData('isNewMeshGui') == 1)
+    {
+        # Set Curl Options
+        curl_setopt($ch, CURLOPT_URL, $triggerLink);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT_MS, 5000);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+        // ⚠️ WICHTIG: Header setzen (Content-Type: application/json)
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json',]);
+
+        // Kein Body senden – wir bleiben bei GET
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+    }
+    else
+    {
+        # Set Curl Options
+        curl_setopt($ch, CURLOPT_URL, $triggerLink);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_NOBODY, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_VERBOSE, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT_MS, 5000); // Warte max. 5 Sek.
+    }
 
     #Fehler abfangen
     if (curl_exec($ch) === false && $loraCmd != '--ota-update')

@@ -45,7 +45,7 @@ echo '</form>';
 if ($sendData == 1)
 {
     #Check new GUI
-    if (checkLoraNewGui($loraIp) === true)
+    if (getParamData('isNewMeshGui') == 1)
     {
         $resGetSensorData = getSensorData2($loraIp);
     }

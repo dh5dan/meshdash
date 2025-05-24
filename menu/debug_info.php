@@ -158,7 +158,7 @@ echo '<tr>';
 echo '<td>Lora-Node GUI-Status:</td>';
 echo '<td>';
 #Check new GUI
-if (checkLoraNewGui(getParamData('loraIp')) === true)
+if (getParamData('isNewMeshGui') == 1)
 {
     echo "<br> FW >= v4.34x.05.18 mit neuer GUI erkannt";
 }

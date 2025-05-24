@@ -2217,8 +2217,9 @@ function callMessagePage(): bool
     return true;
 }
 
-function checkLoraNewGui($loraIp): bool
+function checkLoraNewGui(): bool
 {
+    $loraIp      = getParamData('loraIp');
     $actualHost  = 'http';
     $triggerLink = $actualHost . '://' . $loraIp . '/getparam/?setcall=';
 
@@ -2229,10 +2230,14 @@ function checkLoraNewGui($loraIp): bool
 
     $jsonContent = json_decode($response, true);
 
+    #Alte GUI erkannt
     if ($jsonContent === null || !isset($jsonContent['returncode']))
     {
+        setParamData('isNewMeshGui',0);
         return false;
     }
 
+    #Neue GUI erkannt
+    setParamData('isNewMeshGui',1);
     return true;
 }

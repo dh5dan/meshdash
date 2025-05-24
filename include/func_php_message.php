@@ -150,6 +150,8 @@ function checkMheard($msgId, $msg, $src, $dst, $callSign, $loraIp, $mhTargetFlag
                 echo "<br>Übereinstimmung! Funktion wird ausgeführt ...";
             }
 
+            #Setzte auf Pending, um bei Verzögerungen ggf. Mehrfachaussendungen zu vermeiden
+            updateMeshDashData($msgId, 'mhSend', -1);
             $resGetMheard = getMheard($loraIp); //Hole aktuelle Mh-Liste
 
             if ($resGetMheard === true)
@@ -180,7 +182,7 @@ function sendMheard($msgId, $src)
     $doLogEnable   = getParamData('doLogEnable');
     $sendQueueMode = getParamData('sendQueueMode');
     $sendQueueMode = $sendQueueMode == '' ? 0 : $sendQueueMode;
-    $mheardTarget = getParamData('mheardTarget'); // 0=Gruppe / 1=Call
+    #$mheardTarget = getParamData('mheardTarget'); // 0=Gruppe / 1=Call (derzeit ungenutzt)
 
     $db = new SQLite3('database/mheard.db', SQLITE3_OPEN_READONLY);
     $db->busyTimeout(5000); // warte wenn busy in millisekunden
