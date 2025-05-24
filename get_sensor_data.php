@@ -7,7 +7,7 @@ require_once 'include/func_php_lora_info.php';
 $loraIp           = getParamData('loraIp');
 
 #Check new GUI
-if (checkLoraNewGui($loraIp) === true)
+if (getParamData('isNewMeshGui') == 1)
 {
     $resGetSensorData = getSensorData2($loraIp, 1);
 }

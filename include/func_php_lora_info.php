@@ -10,7 +10,7 @@ function getLoraInfo($loraIp): array
     $debugFlag   = false;
 
     #Check new GUI
-    if (checkLoraNewGui($loraIp) === true)
+    if (getParamData('isNewMeshGui') == 1)
     {
         return getLoraInfo2($loraIp);
     }

@@ -10,7 +10,7 @@ function getMheard($loraIp)
     $url        = $actualHost . '://' . $loraIp . '/mheard';
 
     #Check New GUI
-    if (checkLoraNewGui($loraIp) === true)
+    if (getParamData('isNewMeshGui') == 1)
     {
         return getMheard2($loraIp);
     }
