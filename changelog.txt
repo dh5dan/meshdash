@@ -1,4 +1,4 @@
-Version 1.10.38 SQL
+Version 1.10.40 SQL
 FEATURE: Bubble-Darstellung der Nachrichten. Ansicht ist schaltbar.
          Switch liegt unter Einstellungen und schaltet auf die klassische Ansicht um.
 FEATURE: Visuelle Hervorhebung von/an (nur im Bubble-Style)
