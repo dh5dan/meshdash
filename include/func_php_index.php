@@ -173,7 +173,8 @@ function initSQLiteDatabase($database): bool
                                        ('sendQueueMode', 0, ''),
                                        ('soundFileNewMsg', '', 'new_message.wav'),
                                        ('mheardGroup', 0, ''),
-                                       ('openStreeTileServerUrl', '', 'tile.openstreetmap.org') 
+                                       ('openStreeTileServerUrl', '', 'tile.openstreetmap.org'),
+                                       ('bubbleStyleView', 1, '')
            ");
 
         #Close and write Back WAL

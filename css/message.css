@@ -83,8 +83,107 @@ body {
     text-align: left;
 }
 
+
+.fromToSquareIncoming {
+    background-color: lightgray;
+}
+
+.fromToSquareIncoming a {
+    text-decoration: none !important;
+}
+
+.fromToSquareOutgoing {
+    background-color: cadetblue;
+}
+
+.fromToSquareOutgoing a {
+    text-decoration: none !important;
+}
+
+/*  BUBBLES */
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+.message-row {
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.message-row.incoming {
+    justify-content: flex-start;
+}
+
+.message-row.outgoing {
+    justify-content: flex-start;
+    margin-left: 50px;
+}
+
+.message-bubble {
+    position: relative;
+    max-width: 40%;
+    min-width: 30%;
+    /*padding: 10px 15px;*/
+    padding: 0 15px;
+    border-radius: 15px;
+    background-color: lightblue;
+    color: #000;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    display: inline-block;
+}
+
+.message-row.outgoing .message-bubble {
+    background-color: #2e9afe;;
+}
+
+.message-bubble::after {
+    content: "";
+    position: absolute;
+    top: 10px;
+    width: 0;
+    height: 0;
+    border: 10px solid transparent;
+}
+
+.message-row.incoming .message-bubble::after {
+    left: -20px;
+    border-right-color: lightblue;
+}
+
+.message-row.outgoing .message-bubble::after {
+    right: -20px;
+    border-left-color: #2e9afe;
+}
+
+.bubbleFontMsgHeaderIncoming {
+    font-size: 18px;
+    color: #242424 !important;
+}
+
+.bubbleFontMsgHeaderOutgoing {
+    font-size: 18px;
+    color: #242424 !important;
+
+}
+
+.bubbleFontMsgOutgoing {
+    color: whitesmoke;
+}
+
+.bubbleFontMsgIncoming {
+
+}
+
 /* Media Query für Smartphones */
 @media (max-width: 768px) {
+
+    .message-bubble {
+        max-width: 85%;
+        min-width: 30%;
+    }
 
     .info-container {
      font-size: 13px;

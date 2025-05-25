@@ -63,11 +63,12 @@ $doLogEnable = getParamData('doLogEnable');
 #Prüfe, ob das reine Rufzeichen nur genommen werden soll ohne SSID
 $strictCallEnable = getParamData('strictCallEnable');
 
-$sqlAddon       = '';
-$sqlAddonSearch = '';
-$group          = $_REQUEST['group'] ?? -1;
-$callSignSql    = $callSign;
-$doSearchQuery  = false;
+$sqlAddon        = '';
+$sqlAddonSearch  = '';
+$group           = $_REQUEST['group'] ?? -1;
+$callSignSql     = $callSign;
+$doSearchQuery   = false;
+$bubbleStyleView = getParamData('bubbleStyleView') == 1;
 
 $searchMsg    = $_REQUEST['searchMsg'] ?? '';
 $searchSrc    = $_REQUEST['searchSrc'] ?? '';
@@ -522,9 +523,29 @@ if ($result !== false)
             $fwSubVersion    = $row['fw_sub'] ?? '';  // FirmwareSub Version
             $altitude        = number_format($altitude * 0.3048); // Umrechnung Fuss -> Meter
 
+            if ($bubbleStyleView === true)
+            {
+                echo '<div class="chat-container">';
+                echo '<div class="message-row incoming">';
+                echo '<div class="message-bubble">';
+            }
+
+            $parts     = explode(',', $src);
+            $firstCall = array_shift($parts); // Nimmt das erste Rufzeichen und entfernt es aus dem Array
+            $restCalls = implode(',', $parts);
+
             echo '<h3 class="setFontMsgHeader">';
             echo 'MsgId: ' . $msgId . ' (' . $srcType . ')<br>' . $timestamp . ' ';
-            echo 'Quelle ' . $src . ', Ziel all</h3>';
+            #echo 'Quelle: ' . $src . ', Ziel: all</h3>';
+
+            if ($restCalls != '')
+            {
+                echo 'Von: ' . $firstCall . ' VIA: ' . $restCalls . ' Ziel: all</h3>';
+            }
+            else
+            {
+                echo 'Von: ' . $firstCall . ' Ziel: all</h3>';
+            }
 
             echo '<div class="info-container">';
                 echo '<div class="info-row"><span class="info-label">Längengrad: </span><span class="info-value">'.$lat . ' ' . $latDir.'</span></div>';
@@ -541,7 +562,17 @@ if ($result !== false)
                 }
             echo '</div>';
 
-            echo '</h3><hr>';
+            if ($bubbleStyleView === true)
+            {
+                echo '</div>';
+                echo '</div>';
+                echo '</div>';
+                echo '</h3>';
+            }
+            else
+            {
+                echo '</h3><hr>';
+            }
 
         }
         else if ($type === 'msg')
@@ -574,7 +605,29 @@ if ($result !== false)
                 checkMheard($msgId, $msg, $src, $dst, $callSign, $loraIp, 1);
             }
 
-            echo '<h3 class="setFontMsgHeader">';
+            $parts     = explode(',', $src);
+            $firstCall = array_shift($parts); // Nimmt das erste Rufzeichen und entfernt es aus dem Array
+            $restCalls = implode(',', $parts);
+
+            $bubbleFontMsgHeader = '';
+            $bubbleFontMsg       = '';
+            $fromToSquare        = '';
+
+            if ($bubbleStyleView === true)
+            {
+                $cssInOutBubble = (strtolower($firstCall) === strtolower($callSign)) ? 'outgoing' : 'incoming';
+
+                $bubbleFontMsgHeader = (strtolower($firstCall) === strtolower($callSign)) ? 'bubbleFontMsgHeaderOutgoing' : 'bubbleFontMsgHeaderIncoming';
+                $bubbleFontMsg       = (strtolower($firstCall) === strtolower($callSign)) ? 'bubbleFontMsgOutgoing' : 'bubbleFontMsgIncoming';
+                $fromToSquare        = (strtolower($firstCall) === strtolower($callSign)) ? 'fromToSquareOutgoing' : 'fromToSquareIncoming'; //Hervorhebung von/an
+
+                #Bubble CSS-Container
+                echo '<div class="chat-container">';
+                echo '<div class="message-row ' . $cssInOutBubble . '">';
+                echo '<div class="message-bubble">';
+            }
+
+            echo '<h3 class="setFontMsgHeader ' . $bubbleFontMsgHeader . '">';
             echo $timestamp . ' ' . 'MsgId: ' . $msgId . ' (' . $srcType . ')';
 
             #Wenn Bestätigung vorliegt dann bild mit grünem Haken einblenden
@@ -583,12 +636,13 @@ if ($result !== false)
                 echo '<img src="image/ack_icon.png" alt="ack" class="imageAck">';
             }
 
-            $parts     = explode(',', $src);
-            $firstCall = array_shift($parts); // Nimmt das erste Rufzeichen und entfernt es aus dem Array
-            $restCalls = implode(',', $parts);
+            if ($restCalls != '')
+            {
+                echo '<br>VIA: ' . $restCalls;
+            }
 
-            echo '<br>VIA: ' . $restCalls . '</h3>';
-            echo '<h3 class="setFontMsg">';
+            echo '</h3>';
+            echo '<h3 class="setFontMsg ' . $bubbleFontMsg . '">';
 
             #Source Call.
             #
@@ -644,15 +698,15 @@ if ($result !== false)
                 $replaceQrz    = '<a href="#" onclick="sendToBottomFrame(\'$1\')">$0</a>';
                 $linkedTextQrz = preg_replace($patternQrz, $replaceQrz, $firstCall);
 
-                echo '<span class="' . $alertSrcCss . '">' . $linkedTextQrz. '</span> > ' . '<span class="' . $alertDstCss . '">' . $dstTxt . '</span> : ' . $linkedText;
+                echo '<span class="' . $fromToSquare . '"><span class="' . $alertSrcCss . '">' . $linkedTextQrz. '</span> > ' . '<span class="' . $alertDstCss . '">' . $dstTxt . '</span> :</span> ' . $linkedText;
             }
             else if ($clickOnCall == 1)
             {
-                $patternQrz = '/\b([a-zA-Z0-9]+)(?:-\d+)?\b/';
+                $patternQrz    = '/\b([a-zA-Z0-9]+)(?:-\d+)?\b/';
                 $replaceQrz    = '<a href="https://qrz.com/db/$1" target="_blank">$0</a>';
                 $linkedTextQrz = preg_replace($patternQrz, $replaceQrz, $firstCall);
 
-                echo '<span class="' . $alertSrcCss . '">' . $linkedTextQrz . '</span>' . ' > ' . '<span class="' . $alertDstCss . '">' . $dstTxt . '</span> : ' . $linkedText;
+                echo '<span class="' . $fromToSquare . '"><span class="' . $alertSrcCss . '">' . $linkedTextQrz . '</span>' . ' > ' . '<span class="' . $alertDstCss . '">' . $dstTxt . '</span> :</span> ' . $linkedText;
             }
             else
             {
@@ -660,7 +714,7 @@ if ($result !== false)
                 $replaceQrz    = '<a href="#" onclick="sendToBottomMsgFrame(\'$1\')">$0</a>';
                 $linkedTextQrz = preg_replace($patternQrz, $replaceQrz, $firstCall);
 
-                echo '<span class="' . $alertSrcCss . '">' . $linkedTextQrz. '</span> > ' . '<span class="' . $alertDstCss . '">' . $dstTxt . '</span> : ' . $linkedText;
+                echo '<span class="' . $fromToSquare . '"><span class="' . $alertSrcCss . '">' . $linkedTextQrz. '</span> > ' . '<span class="' . $alertDstCss . '">' . $dstTxt . '</span> :</span> ' . $linkedText;
             }
 
             if ($mhSend == 1)
@@ -669,7 +723,17 @@ if ($result !== false)
                 echo '<img src="image/ack_icon.png" alt="ack" class="imageMheard">';
             }
 
-            echo '</h3><hr>';
+            if ($bubbleStyleView === true)
+            {
+                echo '</div>';
+                echo '</div>';
+                echo '</div>';
+                echo '</h3>';
+            }
+            else
+            {
+                echo '</h3><hr>';
+            }
         }
 
         flush();
