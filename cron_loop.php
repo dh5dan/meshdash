@@ -21,7 +21,7 @@ $debugTime   = date('Y-m-d H:i:s');
 $triggerLink = TRIGGER_LINK_SEND_QUEUE;
 
 #Check what oS is running
-$osIssWindows = chkOsIssWindows();
+$osIssWindows = chkOsIsWindows();
 $debugFlag    = true;
 
 $cron_loop_pid = getParamData('cronLoopPid');

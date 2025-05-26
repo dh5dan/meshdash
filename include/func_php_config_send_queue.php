@@ -16,7 +16,7 @@ function saveSendQueueSettings(): bool
     #Hintergrundprozess
     $paramBgProcess['task'] = 'cron';
 
-    if ($sendQueueMode === 0)
+    if ($sendQueueMode == 0)
     {
         stopBgProcess($paramBgProcess);
     }

@@ -12,13 +12,11 @@ echo '<head><title>MeshDash-SQL</title>';
 
   echo '<script type="text/javascript" src="jquery/jquery.min.js"></script>';
 
-  #echo '<link rel="stylesheet" href="jquery/jquery-ui.css">';
   echo '<link rel="stylesheet" href="jquery/jquery-ui-1.13.3/jquery-ui.css">';
   echo '<link rel="stylesheet" href="jquery/css/jq_custom.css">';
 
   # Achtung das ist V jquery-ui-1.13.3 weil nur die mit dem DateTimePicker Addon funktioniert
   echo '<script type="text/javascript" src="jquery/jquery-ui-1.13.3/jquery-ui.min.js"></script>';
-
 
   echo '<script type="text/javascript" src="jquery/jquery-ui-timepicker-addon/jquery-ui-timepicker-addon.min.js"></script>';
   echo '<script type="text/javascript" src="jquery/jquery-ui-timepicker-addon/jquery-ui-sliderAccess.js"></script>';
@@ -29,7 +27,7 @@ echo '<head><title>MeshDash-SQL</title>';
 echo '</head>';
 echo '<body>';
 
-#Prevnts UTF8 Errors on misconfigured php.ini
+#Prevents UTF8 Errors on misconfigured php.ini
 ini_set( 'default_charset', 'UTF-8' );
 
 require_once 'dbinc/param.php';
@@ -43,8 +41,7 @@ error_reporting(E_ALL);
 ini_set('display_errors',1);
 
 $autostartBgProcess = true;
-$sendData           = $_REQUEST['sendData'] ?? 0;
-$sendDataCheck      = $_REQUEST['sendDataCheck'] ?? 0;
+$sendData           = $_REQUEST['sendData'] ?? '0';
 $imgTaskRunning     = 'image/punkt_green.png';
 $imgTaskStoppedUdp  = 'image/punkt_red.png';
 $imgTaskStatusUdp   = $imgTaskRunning;
@@ -52,16 +49,24 @@ $doCheckLoraIp      = true;
 $taskStatusFlagUdp  = 1;
 $debugFlag          = false; // For debug only
 
+
+#Major/Minor Version ermitteln für PHP.ini Modifikation unter Linux
+$phpVersionSplit = explode('.', phpversion());
+$phpVersionMajor = $phpVersionSplit[0];
+$phpVersionMinor = $phpVersionSplit[1];
+
+if ($phpVersionMajor < 7 || ($phpVersionMajor == 7 && $phpVersionMinor < 4))
+{
+echo '<br><span class="failureHint">Die benötigte PHP-Version muss mind. PHP 7.4 sein!</span>';
+exit();
+}
+
 #Wenn Datenbank noch nicht existiert, dann neu initiieren.
 #Muss immer zuerst stattfinden!
 initDatabases();
 
-#Check what oS is running
-$osIssWindows     = chkOsIssWindows();
 $sendQueueEnabled = (int) getParamData('sendQueueMode');
 
-#Hole Task Command abhängig vom OS
-$checkTaskCmd = getTaskCmd('udp');
 echo '<input type="hidden" id="version" value="' . VERSION . '"/>';
 echo '<input type="hidden" id="callSign" value="' . getParamData('callSign') . '"/>';
 
@@ -96,11 +101,6 @@ if ($doCheckLoraIp === true)
     echo '</span>';
 }
 
-#Major/Minor Version ermitteln für PHP.ini Modifikation unter Linux
-$phpVersionSplit = explode('.', phpversion());
-$phpVersionMajor = $phpVersionSplit[0];
-$phpVersionMinor = $phpVersionSplit[1];
-
 $chkExtension1 = extension_loaded('pdo_sqlite');
 $chkExtension2 = extension_loaded('sqlite3');
 
@@ -109,13 +109,13 @@ if ($chkExtension1 === false || $chkExtension2 === false)
     $paramExtension['debugFlag']     = $debugFlag;
     $paramExtension['chkExtension1'] = $chkExtension1;
     $paramExtension['chkExtension2'] = $chkExtension2;
-    $paramExtension['osIssWindows '] = $osIssWindows ;
+    $paramExtension['osIssWindows']  = chkOsIsWindows();
 
     checkExtension($paramExtension);
 }
 
 #Muss ich den UDP-Process beenden?
-if ($sendData == 1)
+if ($sendData === '1')
 {
     $paramBgProcess['task'] = 'udp';
     stopBgProcess($paramBgProcess);
@@ -134,16 +134,16 @@ $tabsJson = getGroupTabsJson();
 
 echo '<input type="hidden" id="tabConfig" value=\'' . $tabsJson . '\' />';
 
-if ($autostartBgProcess === true && $sendData != 1)
+if ($autostartBgProcess === true && $sendData !== '1')
 {
     $paramStartUdpBgProcess['task'] = 'udp';
-    $taskResultUdp                  = startBgProcess($paramStartUdpBgProcess);
+    startBgProcess($paramStartUdpBgProcess);
 
     #Prüfe ob SendQueue Aktiv ist und starte Cron-loop
     if ($sendQueueEnabled == 1)
     {
         $paramStartCronBgProcess['task'] = 'cron';
-        $taskResultCron                  = startBgProcess($paramStartCronBgProcess);
+        startBgProcess($paramStartCronBgProcess);
     }
 }
 

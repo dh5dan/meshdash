@@ -29,7 +29,7 @@ $hardware  = '';
 $lineBreak = '';
 
 #Check what oS is running
-$osIssWindows = chkOsIssWindows();
+$osIssWindows = chkOsIsWindows();
 $osName       = $osIssWindows === true ? 'Windows' : 'Linux';
 $isMobile     = isMobile();
 

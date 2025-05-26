@@ -27,7 +27,7 @@ ini_set('display_errors',1);
 $sendData = $_REQUEST['sendData'] ?? 0;
 
 #Check what oS is running
-$osIssWindows = chkOsIssWindows();
+$osIssWindows = chkOsIsWindows();
 $osName       = $osIssWindows === true ? 'Windows' : 'Linux';
 
 $execDir         = 'log';

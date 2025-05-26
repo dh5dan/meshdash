@@ -379,7 +379,7 @@ function showSensorData()
 function checkSensor($resGetSensorData)
 {
     #Check what oS is running
-    $osIssWindows = chkOsIssWindows();
+    $osIssWindows = chkOsIsWindows();
     $debugFlag    = true;
 
     #Setze AlertCount zurück
@@ -880,7 +880,7 @@ function checkSensorAlertCount(): bool
 
     if ($dbIna226->lastErrorMsg() > 0 && $dbIna226->lastErrorMsg() < 100)
     {
-        echo "<br>setParamData";
+        echo "<br>checkSensorAlertCount (ina226)";
         echo "<br>ErrMsg:" . $dbIna226->lastErrorMsg();
         echo "<br>ErrNum:" . $dbIna226->lastErrorCode();
 
@@ -988,7 +988,7 @@ function checkSensorAlertCount(): bool
 
     if ($dbTemp->lastErrorMsg() > 0 && $dbTemp->lastErrorMsg() < 100)
     {
-        echo "<br>setParamData";
+        echo "<br>checkSensorAlertCount (Temp)";
         echo "<br>ErrMsg:" . $dbTemp->lastErrorMsg();
         echo "<br>ErrNum:" . $dbTemp->lastErrorCode();
 

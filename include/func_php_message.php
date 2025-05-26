@@ -2,7 +2,7 @@
 
 function execScriptCurl($keywordCmd): bool
 {
-    $osIssWindows = chkOsIssWindows();
+    $osIssWindows = chkOsIsWindows();
 
     if ($osIssWindows === true)
     {
@@ -35,16 +35,16 @@ function updateAckReqId($msgId, $ackReqId): bool
 
     $db = new SQLite3($dbFilename);
     $db->exec('PRAGMA synchronous = NORMAL;');
-    #$db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->busyTimeout(5000); // warte wenn busy in millisekunden
 
     @$db->exec(" UPDATE meshdash
                           SET ackReq = $ackReqId
                         WHERE msg_id = '$msgId'
                     ");
 
-    if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
     {
-        echo "<br>setParamData";
+        echo "<br>updateAckReqId";
         echo "<br>ErrMsg:" . $db->lastErrorMsg();
         echo "<br>ErrNum:" . $db->lastErrorCode();
     }
@@ -66,15 +66,15 @@ function updateAckId($ackId): bool
 
     $db = new SQLite3($dbFilename);
     $db->exec('PRAGMA synchronous = NORMAL;');
-
+    $db->busyTimeout(5000); // warte wenn busy in millisekunden
     $db->exec(" UPDATE meshdash
                           SET ack = $ackId
                         WHERE ackReq = $ackId
                     ");
 
-    if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
     {
-        echo "<br>setParamData";
+        echo "<br>updateAckId";
         echo "<br>ErrMsg:" . $db->lastErrorMsg();
         echo "<br>ErrNum:" . $db->lastErrorCode();
     }
@@ -179,9 +179,11 @@ function checkMheard($msgId, $msg, $src, $dst, $callSign, $loraIp, $mhTargetFlag
 function sendMheard($msgId, $src)
 {
     #Prüfe ob Logging aktiv ist
-    $doLogEnable   = getParamData('doLogEnable');
-    $sendQueueMode = getParamData('sendQueueMode');
-    $sendQueueMode = $sendQueueMode == '' ? 0 : $sendQueueMode;
+    $doLogEnable      = getParamData('doLogEnable');
+    $sendQueueMode    = getParamData('sendQueueMode');
+    $sendQueueMode    = $sendQueueMode == '' ? 0 : $sendQueueMode;
+    $mhTxQueueLogFile = 'log/send_queue_mheard_' . date('Ymd') . '.log';
+    $mhTxLogFile      = 'log/send_mheard_' . date('Ymd') . '.log';
     #$mheardTarget = getParamData('mheardTarget'); // 0=Gruppe / 1=Call (derzeit ungenutzt)
 
     $db = new SQLite3('database/mheard.db', SQLITE3_OPEN_READONLY);
@@ -248,12 +250,12 @@ function sendMheard($msgId, $src)
                 if ($doLogEnable === 1 && $sendQueueMode == 1)
                 {
                     $logText = date('Y-m-d H:i:s') . " MHeard in Send-Queue gespeichert: Ziel: $src MHListe: $sendMheardList\n";
-                    file_put_contents('log/send_queue_mheard.log', $logText, FILE_APPEND);
+                    file_put_contents($mhTxQueueLogFile, $logText, FILE_APPEND);
                 }
                 else
                 {
                     $logText = date('Y-m-d H:i:s') . " MHeard gesendet: Ziel: $src MHListe: $sendMheardList\n";
-                    file_put_contents('log/send_mheard.log', $logText, FILE_APPEND);
+                    file_put_contents($mhTxLogFile, $logText, FILE_APPEND);
                 }
             }
         }

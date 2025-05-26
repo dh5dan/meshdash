@@ -20,7 +20,7 @@ function getParamData($key)
                               WHERE pa.param_key = '$key';
                     ");
 
-    if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
     {
         echo "<br>getParamData";
         echo "<br>ErrMsg:" . $db->lastErrorMsg();
@@ -39,7 +39,6 @@ function getParamData($key)
 
     return $paramValue;
 }
-
 function setParamData($key, $value, $mode = 'int'): bool
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
@@ -76,7 +75,7 @@ function setParamData($key, $value, $mode = 'int'): bool
                         );
                     ");
 
-    if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
     {
         echo "<br>setParamData";
         echo "<br>ErrMsg:" . $db->lastErrorMsg();
@@ -89,7 +88,6 @@ function setParamData($key, $value, $mode = 'int'): bool
 
     return true;
 }
-
 function setThTempData($arrayParam): bool
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
@@ -163,9 +161,9 @@ function setThTempData($arrayParam): bool
                         );
                     ");
 
-    if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
     {
-        echo "<br>setParamData";
+        echo "<br>setThTempData";
         echo "<br>ErrMsg:" . $db->lastErrorMsg();
         echo "<br>ErrNum:" . $db->lastErrorCode();
 
@@ -182,7 +180,6 @@ function setThTempData($arrayParam): bool
 
     return true;
 }
-
 function setThIna226Data($arrayParam): bool
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
@@ -299,9 +296,9 @@ function setThIna226Data($arrayParam): bool
                                );
                     ");
 
-    if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
     {
-        echo "<br>setParamData";
+        echo "<br>setThIna226Data";
         echo "<br>ErrMsg:" . $db->lastErrorMsg();
         echo "<br>ErrNum:" . $db->lastErrorCode();
 
@@ -318,7 +315,6 @@ function setThIna226Data($arrayParam): bool
 
     return true;
 }
-
 function disableAllIna226Sensors(): bool
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
@@ -351,9 +347,9 @@ function disableAllIna226Sensors(): bool
                                                );
                     ");
 
-    if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
     {
-        echo "<br>setParamData";
+        echo "<br>disableAllIna226Sensors";
         echo "<br>ErrMsg:" . $db->lastErrorMsg();
         echo "<br>ErrNum:" . $db->lastErrorCode();
 
@@ -370,7 +366,6 @@ function disableAllIna226Sensors(): bool
 
     return true;
 }
-
 function getThTempData()
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
@@ -391,9 +386,9 @@ function getThTempData()
                          LIMIT 1;
                     ");
 
-    if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
     {
-        echo "<br>setParamData";
+        echo "<br>getThTempData";
         echo "<br>ErrMsg:" . $db->lastErrorMsg();
         echo "<br>ErrNum:" . $db->lastErrorCode();
 
@@ -436,7 +431,6 @@ function getThTempData()
 
     return $arrayReturn;
 }
-
 function getThIna226Data()
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
@@ -456,9 +450,9 @@ function getThIna226Data()
                              LIMIT 1;
                     ");
 
-    if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
     {
-        echo "<br>setParamData";
+        echo "<br>getThIna226Data";
         echo "<br>ErrMsg:" . $db->lastErrorMsg();
         echo "<br>ErrNum:" . $db->lastErrorCode();
 
@@ -517,7 +511,6 @@ function getThIna226Data()
 
     return $arrayReturn;
 }
-
 function getKeywordsData($msgId)
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
@@ -535,19 +528,35 @@ function getKeywordsData($msgId)
     $db  = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
     $db->busyTimeout(5000); // warte wenn busy in millisekunden
     $res = $db->query("
-                        SELECT * FROM keywords AS kw 
+                        SELECT * 
+                          FROM keywords AS kw 
                          WHERE kw.msg_id = '$msgId';
                     ");
-    $dsData = $res->fetchArray();
+
+    #Gib Fehler zurück wenn Query fehlerhaft
+    if ($res === false)
+    {
+        $returnValue['errCode']  = 1;
+        $returnValue['executed'] = 1;
+
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+
+        return $returnValue;
+    }
+
+    #Leerer Datensatz ist erlaubt!
+    $dsData = $res->fetchArray(SQLITE3_ASSOC);
 
     $returnValue['msg_id']   = $dsData['msg_id'] ?? 0;
     $returnValue['executed'] = $dsData['executed'] ?? 0;
     $returnValue['errCode']  = $dsData['errCode'] ?? 0;
     $returnValue['errText']  = $dsData['errText'] ?? '';
 
-    if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
     {
-        echo "<br>getParamData";
+        echo "<br>getKeywordsData";
         echo "<br>ErrMsg:" . $db->lastErrorMsg();
         echo "<br>ErrNum:" . $db->lastErrorCode();
     }
@@ -558,7 +567,6 @@ function getKeywordsData($msgId)
 
     return $returnValue;
 }
-
 function setKeywordsData($msgId, $value, int $errCode, string $errText): bool
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
@@ -576,7 +584,7 @@ function setKeywordsData($msgId, $value, int $errCode, string $errText): bool
     $errText = SQLite3::escapeString($errText);
     $msgId   = trim($msgId);
 
-    $db->exec("
+    $res = $db->exec("
                         REPLACE INTO keywords (
                                                 msg_id, 
                                                 executed,
@@ -591,11 +599,26 @@ function setKeywordsData($msgId, $value, int $errCode, string $errText): bool
                                 );
                     ");
 
-    if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+    if ($res === false)
     {
-        echo "<br>setParamData";
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+
+        return false;
+    }
+
+    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
+    {
+        echo "<br>setKeywordsData";
         echo "<br>ErrMsg:" . $db->lastErrorMsg();
         echo "<br>ErrNum:" . $db->lastErrorCode();
+
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+
+        return false;
     }
 
     #Close and write Back WAL
@@ -605,7 +628,7 @@ function setKeywordsData($msgId, $value, int $errCode, string $errText): bool
     return true;
 }
 
-function chkOsIssWindows(): bool
+function chkOsIsWindows(): bool
 {
     #Check what oS is running
     if (strtoupper(substr(php_uname('s'), 0, 3)) === 'WIN')
@@ -615,7 +638,6 @@ function chkOsIssWindows(): bool
 
     return false;
 }
-
 function setMheardData($heardData): bool
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
@@ -674,9 +696,9 @@ function setMheardData($heardData): bool
                     "
         );
 
-        if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+        if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
         {
-            echo "<br>setParamData";
+            echo "<br>setMheardData";
             echo "<br>ErrMsg:" . $db->lastErrorMsg();
             echo "<br>ErrNum:" . $db->lastErrorCode();
         }
@@ -688,7 +710,6 @@ function setMheardData($heardData): bool
 
     return true;
 }
-
 function setSensorData($sensorData): bool
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
@@ -764,9 +785,9 @@ function setSensorData($sensorData): bool
                     "
     );
 
-    if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
     {
-        echo "<br>setParamData";
+        echo "<br>setSensorData";
         echo "<br>ErrMsg:" . $db->lastErrorMsg();
         echo "<br>ErrNum:" . $db->lastErrorCode();
     }
@@ -778,7 +799,6 @@ function setSensorData($sensorData): bool
 
     return true;
 }
-
 function setSensorData2($sensorData): bool
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
@@ -854,9 +874,9 @@ function setSensorData2($sensorData): bool
                     "
     );
 
-    if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
     {
-        echo "<br>setParamData";
+        echo "<br>setSensorData2";
         echo "<br>ErrMsg:" . $db->lastErrorMsg();
         echo "<br>ErrNum:" . $db->lastErrorCode();
     }
@@ -868,7 +888,6 @@ function setSensorData2($sensorData): bool
 
     return true;
 }
-
 function updateMeshDashData($msgId, $key, $value, $doNothing = false): bool
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
@@ -884,18 +903,18 @@ function updateMeshDashData($msgId, $key, $value, $doNothing = false): bool
 
     $db = new SQLite3($dbFilename);
     $db->exec('PRAGMA synchronous = NORMAL;');
-
+    $db->busyTimeout(5000); // warte wenn busy in millisekunden
     #Escape Value
     $value = trim(SQLite3::escapeString($value));
 
     $db->exec(" UPDATE meshdash
-                          SET $key = $value
+                          SET $key = '$value'
                         WHERE msg_id = '$msgId';
                     ");
 
-    if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
     {
-        echo "<br>setParamData";
+        echo "<br>updateMeshDashData";
         echo "<br>ErrMsg:" . $db->lastErrorMsg();
         echo "<br>ErrNum:" . $db->lastErrorCode();
     }
@@ -906,14 +925,13 @@ function updateMeshDashData($msgId, $key, $value, $doNothing = false): bool
 
     return true;
 }
-
 function columnExists($database, $tabelle, $spalte): bool
 {
     // SQLite3-Datenbank öffnen
     $db = new SQLite3('database/' . $database . '.db');
     $db->busyTimeout(5000); // warte wenn busy in millisekunden
 
-    $query  = "PRAGMA table_info($tabelle)";
+    $query  = "PRAGMA table_info('$tabelle')";
     $result = $db->query($query);
 
     while ($row = $result->fetchArray(SQLITE3_ASSOC))
@@ -928,21 +946,20 @@ function columnExists($database, $tabelle, $spalte): bool
     $db->close();
     return false; // Spalte existiert nicht
 }
-
 function checkVersion($currentVersion, $targetVersion, $operator)
 {
     $currentVersion = preg_replace('/[^0-9.]/', '', $currentVersion);
     $targetVersion  = preg_replace('/[^0-9.]/', '', $targetVersion);
 
-    return version_compare($targetVersion, $currentVersion, $operator);
+    return version_compare($currentVersion, $targetVersion, $operator);
 }
-
 function checkDbUpgrade($database)
 {
-    $debugFlag = false;
+    $debugFlag          = false;
+    $doRestartBgProcess = false;
 
     #Update Datenbank meshdash mit Tabelle Firmware ab > V 1.10.02
-    if (checkVersion(VERSION,'1.10.02','<'))
+    if (checkVersion(VERSION,'1.10.02','>'))
     {
         if ($debugFlag === true)
         {
@@ -960,14 +977,7 @@ function checkDbUpgrade($database)
             // Spalte hinzufügen
             addColumn($database, 'meshdash', 'firmware');
 
-            ## Prozess neu laden damit Feld befüllt wird
-            # Stop BG-Process
-            $paramBgProcess['task'] = 'udp';
-            stopBgProcess($paramBgProcess);
-
-            ##start BG-Process
-            $paramStartBgProcess['task'] = 'udp';
-            startBgProcess($paramStartBgProcess);
+            $doRestartBgProcess = true;
         }
 
         if (!columnExists($database, 'meshdash', 'fw_sub') && $database === 'meshdash')
@@ -979,15 +989,7 @@ function checkDbUpgrade($database)
 
             // Spalte hinzufügen
             addColumn($database, 'meshdash', 'fw_sub');
-
-            ## Prozess neu laden damit Feld befüllt wird
-            # Stop BG-Process
-            $paramBgProcess['task'] = 'udp';
-            stopBgProcess($paramBgProcess);
-
-            ##start BG-Process
-            $paramStartBgProcess['task'] = 'udp';
-            startBgProcess($paramStartBgProcess);
+            $doRestartBgProcess = true;
         }
 
         if (!columnExists($database, 'sensordata', 'ina226vBus') && $database === 'sensordata')
@@ -1030,8 +1032,19 @@ function checkDbUpgrade($database)
             setParamData('bubbleStyleView', 1);
         }
     }
-}
 
+    if ($doRestartBgProcess === true)
+    {
+        ## Prozess neu laden damit Feld befüllt wird
+        # Stop BG-Process
+        $paramBgProcess['task'] = 'udp';
+        stopBgProcess($paramBgProcess);
+
+        ##start BG-Process
+        $paramStartBgProcess['task'] = 'udp';
+        startBgProcess($paramStartBgProcess);
+    }
+}
 function addColumn($database, $tabelle, $spalte, $typ = 'TEXT', $default = null)
 {
     // SQLite3-Datenbank öffnen
@@ -1048,7 +1061,8 @@ function addColumn($database, $tabelle, $spalte, $typ = 'TEXT', $default = null)
     $defaultSql = '';
     if ($default !== null)
     {
-        $defaultSql = " DEFAULT '$default'"; // Wenn ein Standardwert übergeben wurde, wird dieser hinzugefügt
+        // Wenn ein Standardwert übergeben wurde, wird dieser hinzugefügt
+        $defaultSql = " DEFAULT '" . SQLite3::escapeString($default) . "'";
     }
 
     // SQL Befehl zum Hinzufügen der Spalte mit Typ und optionalem Standardwert
@@ -1060,7 +1074,6 @@ function addColumn($database, $tabelle, $spalte, $typ = 'TEXT', $default = null)
 
     $db->close();
 }
-
 function addIndex($database, $tabelle, $IndexName, $indexField)
 {
     // SQLite3-Datenbank öffnen
@@ -1068,7 +1081,9 @@ function addIndex($database, $tabelle, $IndexName, $indexField)
     $db->busyTimeout(5000); // warte wenn busy in millisekunden
 
     // SQL Befehl zum Hinzufügen des Index
-    $query = "CREATE INDEX IF NOT EXISTS $IndexName ON $tabelle($indexField);";
+    $indexFields = implode(',', array_map('trim', explode(',', $indexField)));
+    $query = "CREATE INDEX IF NOT EXISTS $IndexName ON $tabelle($indexFields);";
+
     if (!$db->exec($query))
     {
         echo "<br>Fehler beim Hinzufügen des Index mit Idexname: $IndexName und IndexField: $indexField bei Datenbank $database.";
@@ -1076,11 +1091,10 @@ function addIndex($database, $tabelle, $IndexName, $indexField)
 
     $db->close();
 }
-
 function getTaskCmd($mode)
 {
     #Check what oS is running
-    $osIssWindows    = chkOsIssWindows();
+    $osIssWindows    = chkOsIsWindows();
     $udpReceiverPid  = getParamData('udpReceiverPid');
     $cronLoopPid     = getParamData('cronLoopPid');
     $cronLoopPidFile = 'log/' . CRON_PID_FILE;
@@ -1121,11 +1135,10 @@ function getTaskCmd($mode)
 
     return false;
 }
-
 function getTaskKillCmd($mode = 'udp')
 {
     #Check what oS is running
-    $osIssWindows    = chkOsIssWindows();
+    $osIssWindows    = chkOsIsWindows();
     $udpReceiverPid  = getParamData('udpReceiverPid');
     $cronLoopPid     = getParamData('cronLoopPid');
 
@@ -1159,8 +1172,7 @@ function getTaskKillCmd($mode = 'udp')
 
     return false;
 }
-
-function chronLog()
+function logRotate()
 {
     if ((int) getParamData('chronLogEnable') === 0)
     {
@@ -1172,7 +1184,20 @@ function chronLog()
     $logDir      = $rootDir . '/log'; // Verzeichnis mit den Logs
     $archiveDir  = $logDir . "/archive"; // Zielverzeichnis für Archive
     $zipName     = $archiveDir . "/logs_" . date("Ymd") . ".zip"; // ZIP-Dateiname mit aktuellem Datum
-    $prefixes    = ["msg_data_", "user_data_", "user_json_data_"]; // Präfixe der Log-Dateien
+    $prefixes    = [
+        "msg_data_",
+        "user_data_",
+        "user_json_data_",
+        "tx_json_data_",
+        "call_message_",
+        "tx_data_",
+        "tx_json_data_",
+        "tx_queue_json_data_",
+        "tx_queue_json_data_",
+        "udp_msg_data_",
+        "send_queue_mheard_",
+        "send_mheard_",
+    ]; // Präfixe der Log-Dateien
 
     $retentionDays = getParamData('retentionDays') ?? 7;
     $retentionDays = $retentionDays == '' ? 7 : $retentionDays; // Wie viele Tage die Logs behalten werden sollen
@@ -1189,7 +1214,8 @@ function chronLog()
 
     if ($chronMode === "zip" && $zip->open($zipName, ZipArchive::CREATE) !== true)
     {
-        die("Konnte ZIP-Archiv nicht erstellen!");
+        echo '<span class="failureHint">Konnte ZIP-Archiv nicht erstellen!</span>';
+        return false;
     }
 
     $now           = time();
@@ -1241,10 +1267,11 @@ function chronLog()
     {
         $zip->close(); // ZIP-Archiv schließen, bevor Dateien gelöscht werden
 
-        // Jetzt die Dateien aus dem Archiv löschen
+        //Fallback
+        //Dateien aus dem Archiv löschen, wenn nicht schon vorher gelöscht
         foreach ($toDelete as $file)
         {
-            unlink($file);
+            @unlink($file);
         }
     }
 
@@ -1253,13 +1280,11 @@ function chronLog()
 
     return $returnArray;
 }
-
 function isMobile(): bool
 {
     return (bool) preg_match('/(android|iphone|ipad|ipod|blackberry|windows phone)/i', $_SERVER['HTTP_USER_AGENT']);
 }
-
-function setCronSensorInterval($intervallInMinuten, $deleteFlag): bool
+function setCronSensorIntervalX($intervallInMinuten, $deleteFlag): bool
 {
     $delete    = $deleteFlag == 1;
     $debugFlag = false;
@@ -1366,17 +1391,88 @@ function setCronSensorInterval($intervallInMinuten, $deleteFlag): bool
 
     return true;
 }
+function setCronSensorInterval($intervallInMinuten, $deleteFlag): bool
+{
+    $delete    = $deleteFlag == 1;
+    $debugFlag = false;
 
+    $skriptPfad = '/usr/bin/wget -q -O /dev/null http://localhost/5d/get_sensor_data.php';
+
+    $cronJobsNeu = [];
+
+    if ($intervallInMinuten < 1) {
+        if ($debugFlag) echo "Intervall muss >= 1 sein.\n";
+        return false;
+    }
+
+    if ($intervallInMinuten < 60) {
+        // Einfache Minuten-Intervalle
+        $cronJobsNeu[] = "*/$intervallInMinuten * * * * $skriptPfad";
+    } else {
+        $gesamtMinuten = 24 * 60;
+        $anzahlAusführungen = intdiv($gesamtMinuten, $intervallInMinuten);
+        $rest = $gesamtMinuten % $intervallInMinuten;
+
+        if ($rest > 0 && $debugFlag) {
+            echo "⚠️ Achtung: Intervall von {$intervallInMinuten} Minuten passt nicht exakt in 24h.\n";
+            echo "Es verbleiben {$rest} Minuten Rest am Tagesende.\n";
+        }
+
+        $zeitpunkte = [];
+        for ($i = 0; $i < $anzahlAusführungen; $i++) {
+            $minuteTotal = $i * $intervallInMinuten;
+            $stunde = floor($minuteTotal / 60);
+            $minute = $minuteTotal % 60;
+
+            $zeitpunkte[] = ['hour' => $stunde, 'minute' => $minute];
+        }
+
+        // Gruppieren nach Minutenwert
+        $gruppen = [];
+        foreach ($zeitpunkte as $zeit) {
+            $gruppen[$zeit['minute']][] = $zeit['hour'];
+        }
+
+        foreach ($gruppen as $minute => $stundenArray) {
+            sort($stundenArray);
+            $stundenListe = implode(',', $stundenArray);
+            $cronJobsNeu[] = "$minute $stundenListe * * * $skriptPfad";
+        }
+    }
+
+    // Bestehende Crontab einlesen
+    exec('crontab -l 2>/dev/null', $cronJobsAlt);
+
+    // Löschen aller Jobs, die dieses Skript enthalten
+    $cronJobsAlt = array_filter($cronJobsAlt, function ($zeile) use ($skriptPfad) {
+        return strpos($zeile, $skriptPfad) === false;
+    });
+
+    if (!$delete) {
+        $cronJobsAlt = array_merge($cronJobsAlt, $cronJobsNeu);
+    }
+
+    file_put_contents('/tmp/crontab.txt', implode("\n", $cronJobsAlt) . "\n");
+    exec('crontab /tmp/crontab.txt');
+
+    if ($debugFlag) {
+        echo "<pre>";
+        echo "Generierte Cronjobs für Intervall: {$intervallInMinuten} Minuten\n";
+        print_r($cronJobsNeu);
+        echo "</pre>";
+    }
+
+    return true;
+}
 function checkCronLoopBgTask()
 {
     $taskCmdCron = getTaskCmd('cron');
 
     return shell_exec($taskCmdCron);
 }
-
 function deleteOldCron(): bool
 {
-    $osIssWindows  = chkOsIssWindows();
+    $osIssWindows  = chkOsIsWindows();
 
     #Prüfe ob Alter Cron noch existiert und lösche ihn
     if ($osIssWindows === false)
@@ -1408,7 +1504,6 @@ function deleteOldCron(): bool
 
     return true;
 }
-
 function setTxQueue($txQueueData): bool
 {
     $sendQueueMode = getParamData('sendQueueMode');
@@ -1436,6 +1531,25 @@ function setTxQueue($txQueueData): bool
         $arraySendUdp['type'] = trim($txQueueData['txType']);
         $arraySendUdp['dst']  = trim($txQueueData['txDst']);
         $arraySendUdp['msg']  = trim($msgText);
+
+        if ($arraySendUdp['type'] == '' && $arraySendUdp['dst'] == '' && $arraySendUdp['msg'] == '')
+        {
+            echo '<span class="failureHint">Es fehlen Daten im TX-Array bei Funktion: setTxQueue!</span>';
+
+            if ($doLogEnable == 1)
+            {
+                $messageRaw = trim($txQueueData['txType'])." ". trim($txQueueData['txDst'])." ". trim($msgText);
+
+                // Daten formatieren
+                $dataLogTx  = "Es fehlen Daten im TX-Array bei Funktion: setTxQueue!\n";
+                $dataLogTx .= date('Y-m-d H:i:s') . ': ' . "$messageRaw\n";
+
+                // Json-Daten in Datei speichern
+                file_put_contents($logfile, $dataLogTx, FILE_APPEND);
+            }
+
+            return false;
+        }
 
         if ($doLogEnable == 1)
         {
@@ -1476,12 +1590,8 @@ function setTxQueue($txQueueData): bool
             $data = date('Y-m-d H:i:s') . ': ' . "Kann Socket nicht erstellen. Abbruch!";
             file_put_contents($errorLogfile, $data, FILE_APPEND);
 
-            if ($debugFlag === true)
-            {
-                echo "<br>" . $data;
-            }
-
-            exit();
+            echo '<span class="failureHint">' . $data . '</span>';
+            return false;
         }
 
         return true;
@@ -1503,6 +1613,7 @@ function setTxQueue($txQueueData): bool
     $txQueueData['txMsg'] = str_replace('"', '``', $txQueueData['txMsg']); // tausche mit Accent-Aigu
 
     $db = new SQLite3($dbFilename);
+    $db->busyTimeout(5000); // warte wenn busy in millisekunden
     $db->exec('PRAGMA synchronous = NORMAL;');
 
     $txTimestamp     = '0000-00-00 00:00:00';
@@ -1532,9 +1643,9 @@ function setTxQueue($txQueueData): bool
                     "
     );
 
-    if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
     {
-        echo "<br>setParamData";
+        echo "<br>setTxQueue";
         echo "<br>ErrMsg:" . $db->lastErrorMsg();
         echo "<br>ErrNum:" . $db->lastErrorCode();
     }
@@ -1545,7 +1656,6 @@ function setTxQueue($txQueueData): bool
 
     return true;
 }
-
 function getTxQueue()
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
@@ -1593,9 +1703,9 @@ function getTxQueue()
                          LIMIT 1;
                ");
 
-    if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
     {
-        echo "<br>setParamData";
+        echo "<br>getTxQueue";
         echo "<br>ErrMsg:" . $db->lastErrorMsg();
         echo "<br>ErrNum:" . $db->lastErrorCode();
 
@@ -1606,13 +1716,13 @@ function getTxQueue()
         return false;
     }
 
-    $dsData = $resTxQueue->fetchArray();
+    $dsData = $resTxQueue->fetchArray(SQLITE3_ASSOC);
 
     if (!empty($dsData))
     {
         $returnValue['txQueueId'] = $dsData['txQueueId'] ?? 0;
-        $returnValue['txType']    = $dsData['txType'] ?? 0;
-        $returnValue['txDst']     = $dsData['txDst'] ?? 0;
+        $returnValue['txType']    = $dsData['txType'] ?? '';
+        $returnValue['txDst']     = $dsData['txDst'] ?? '';
         $returnValue['txMsg']     = $dsData['txMsg'] ?? '';
     }
     else
@@ -1626,7 +1736,6 @@ function getTxQueue()
 
     return $returnValue;
 }
-
 function updateTxQueue($txQueueId): bool
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
@@ -1637,17 +1746,20 @@ function updateTxQueue($txQueueId): bool
     $timeStamps     = date('Y-m-d H:i:s');
 
     $db = new SQLite3($dbFilename);
+    $db->busyTimeout(5000); // warte wenn busy in millisekunden
     $db->exec('PRAGMA synchronous = NORMAL;');
 
+    $txQueueId = SQLite3::escapeString($txQueueId);
+
     $db->exec(" UPDATE txQueue
-                        SET txFlag = 1,
-                            txTimestamp = '$timeStamps'
-                      WHERE txQueueId = '$txQueueId';
+                          SET txFlag = 1,
+                              txTimestamp = '$timeStamps'
+                        WHERE txQueueId = '$txQueueId';
                     ");
 
-    if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
     {
-        echo "<br>setParamData";
+        echo "<br>updateTxQueue";
         echo "<br>ErrMsg:" . $db->lastErrorMsg();
         echo "<br>ErrNum:" . $db->lastErrorCode();
     }
@@ -1658,7 +1770,6 @@ function updateTxQueue($txQueueId): bool
 
     return true;
 }
-
 function setSensorAlertCounter($sensor, $sensorType): bool
 {
     if ($sensor == 'temp')
@@ -1687,9 +1798,9 @@ function setSensorAlertCounter($sensor, $sensorType): bool
         
         $db->exec($queryTemp);
 
-        if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+        if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
         {
-            echo "<br>setParamData";
+            echo "<br>setSensorAlertCounter Sensor:$sensor Tpe:$sensorType";
             echo "<br>ErrMsg:" . $db->lastErrorMsg();
             echo "<br>ErrNum:" . $db->lastErrorCode();
 
@@ -1745,7 +1856,7 @@ function setSensorAlertCounter($sensor, $sensorType): bool
 
         $dbIna266->exec($queryIna226);
 
-        if ($dbIna266->lastErrorMsg() > 0 && $dbIna266->lastErrorMsg() < 100)
+        if ($dbIna266->lastErrorCode() > 0 && $dbIna266->lastErrorCode() < 100)
         {
             echo "<br>setParamData";
             echo "<br>ErrMsg:" . $dbIna266->lastErrorMsg();
@@ -1798,9 +1909,9 @@ function resetSensorAlertCounter($sensor, $sensorType): bool
 
         $db->exec($queryTemp);
 
-        if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+        if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
         {
-            echo "<br>setParamData";
+            echo "<br>resetSensorAlertCounter Sensor:$sensor Tpe:$sensorType";
             echo "<br>ErrMsg:" . $db->lastErrorMsg();
             echo "<br>ErrNum:" . $db->lastErrorCode();
 
@@ -1839,15 +1950,13 @@ function resetSensorAlertCounter($sensor, $sensorType): bool
                                                            sensorThIna226vShuntAlertTimestamp = '$timeStamps';
                          ";
         }
-
-        if ($sensorType == 'vCurrent')
+        else if ($sensorType == 'vCurrent')
         {
             $queryIna226vBus = " UPDATE sensorThIna226 SET sensorThIna226vCurrentAlertCount = 0,
                                                            sensorThIna226vCurrentAlertTimestamp = '$timeStamps';
                          ";
         }
-
-        if ($sensorType == 'vPower')
+        else if ($sensorType == 'vPower')
         {
             $queryIna226vBus = " UPDATE sensorThIna226 SET sensorThIna226vPowerAlertCount = 0,
                                                            sensorThIna226vPowerAlertTimestamp = '$timeStamps';
@@ -1856,9 +1965,9 @@ function resetSensorAlertCounter($sensor, $sensorType): bool
 
         $db->exec($queryIna226vBus);
 
-        if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+        if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
         {
-            echo "<br>setParamData";
+            echo "<br>resetSensorAlertCounter Sensor:$sensor Tpe:$sensorType";
             echo "<br>ErrMsg:" . $db->lastErrorMsg();
             echo "<br>ErrNum:" . $db->lastErrorCode();
 
@@ -1876,7 +1985,6 @@ function resetSensorAlertCounter($sensor, $sensorType): bool
 
     return true;
 }
-
 function getStatusIcon(string $status, bool $withLabel = false): string
 {
     # HTML-Entity-Format
@@ -1953,10 +2061,9 @@ function getStatusIcon(string $status, bool $withLabel = false): string
         ? $entry['symbol'] . ' ' . htmlspecialchars($entry['label'])
         : $entry['symbol'];
 }
-
 function stopBgProcess($paramBgProcess)
 {
-    $osIssWindows   = chkOsIssWindows();
+    $osIssWindows   = chkOsIsWindows();
     $taskBg         = $paramBgProcess['task'] ?? '';
     $taskBg         = $taskBg == '' ? 'udp' : $taskBg;
     $checkBgTaskCmd = getTaskCmd($taskBg);
@@ -2048,10 +2155,9 @@ function stopBgProcess($paramBgProcess)
 
     return true;
 }
-
 function startBgProcess($paramStartBgProcess)
 {
-    $osIsWindows = chkOsIssWindows();
+    $osIsWindows = chkOsIsWindows();
     $taskBg      = $paramStartBgProcess['task'] ?? 'udp';
     $bgProcFile  = $taskBg == 'udp' ? UDP_PROC_FILE : CRON_PROC_FILE;
     $taskCmd     = getTaskCmd($taskBg);
@@ -2108,7 +2214,6 @@ function startBgProcess($paramStartBgProcess)
 
     return $taskResult;
 }
-
 function callWindowsBackgroundTask($taskFile, $execDir = ''): bool
 {
     // Holt den Projekt-Root aus SCRIPT_NAME (NICHT SCRIPT_FILENAME!)
@@ -2166,7 +2271,6 @@ function callWindowsBackgroundTask($taskFile, $execDir = ''): bool
 
     return true;
 }
-
 function callMessagePage(): bool
 {
     $triggerLink = 'http://localhost/5d/message.php';
@@ -2224,7 +2328,6 @@ function callMessagePage(): bool
 
     return true;
 }
-
 function checkLoraNewGui(): bool
 {
     $loraIp      = getParamData('loraIp');
@@ -2233,8 +2336,16 @@ function checkLoraNewGui(): bool
 
     $ch = curl_init($triggerLink);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 3); // 3 Sekunden Timeout
     $response = curl_exec($ch);
     curl_close($ch);
+
+    if ($response === false)
+    {
+        // Curl Fehler, eventuell Log schreiben
+        echo '<br><span class="failureHint">Kann node zur Prüfung auf neue GUI nicht erreichen!</span>';
+        return false;
+    }
 
     $jsonContent = json_decode($response, true);
 

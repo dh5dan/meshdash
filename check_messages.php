@@ -18,8 +18,8 @@ if (!file_exists('database/parameter.db') || !file_exists('database/groups.db') 
     exit();
 }
 
-#Trigger Chron-Log
-chronLog();
+#Trigger LogRotate
+logRotate();
 
 // Verbindung zur ersten DB (groups)
 $db1 = new SQLite3('database/groups.db');

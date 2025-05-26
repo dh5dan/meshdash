@@ -1,5 +1,4 @@
 <?php
-
 function initDatabases()
 {
     if (!file_exists('database/meshdash.db'))
@@ -426,66 +425,64 @@ function showMenuIcons()
     echo '<div id="menu-icon" class="topMenu">&#9776;</div>';
     echo '<div id="menu">';
     echo '<ul>';
-    echo '<li class="menuitem">' . getStatusIcon('configuration', true) . ' ' . getStatusIcon('right_triangle');
-    echo '<ul class="submenuIcon">';
-    echo '<li class="menuitem" data-action="config_generally">' . getStatusIcon('generally', true) . '</li>';
-    echo '<li data-action="config_send_queue">' . getStatusIcon('interval', true) . '</li>';
-    echo '<li data-action="config_alerting">' . getStatusIcon('notification', true) . '</li>';
-    echo '<li data-action="config_keyword">' . getStatusIcon('keyword', true) . '</li>';
-    echo '<li data-action="config_update">' . getStatusIcon('update', true) . '</li>';
-    echo '<li data-action="config_restore">' . getStatusIcon('restore', true) . '</li>';
-    echo '<li data-action="lora_info">' . getStatusIcon('lora-info', true) . '</li>';
-    echo '<li data-action="config_data_purge">' . getStatusIcon('data-purge', true) . '</li>';
-    echo '<li data-action="config_ping_lora">' . getStatusIcon('ping-lora', true) . '</li>';
-    echo '<li data-action="debug_info">' . getStatusIcon('debug-info', true) . '</li>';
-    echo '</ul>';
-    echo '</li>';
+        echo '<li class="menuitem">' . getStatusIcon('configuration', true) . ' ' . getStatusIcon('right_triangle');
+            echo '<ul class="submenuIcon">';
+                echo '<li class="menuitem" data-action="config_generally">' . getStatusIcon('generally', true) . '</li>';
+                echo '<li data-action="config_send_queue">' . getStatusIcon('interval', true) . '</li>';
+                echo '<li data-action="config_alerting">' . getStatusIcon('notification', true) . '</li>';
+                echo '<li data-action="config_keyword">' . getStatusIcon('keyword', true) . '</li>';
+                echo '<li data-action="config_update">' . getStatusIcon('update', true) . '</li>';
+                echo '<li data-action="config_restore">' . getStatusIcon('restore', true) . '</li>';
+                echo '<li data-action="lora_info">' . getStatusIcon('lora-info', true) . '</li>';
+                echo '<li data-action="config_data_purge">' . getStatusIcon('data-purge', true) . '</li>';
+                echo '<li data-action="config_ping_lora">' . getStatusIcon('ping-lora', true) . '</li>';
+                echo '<li data-action="debug_info">' . getStatusIcon('debug-info', true) . '</li>';
+            echo '</ul>';
+        echo '</li>';
 
-    echo '<li class="menuitem">' . getStatusIcon('groups', true) . ' ' . getStatusIcon('right_triangle');
-    echo '<ul class="submenuIcon">';
-    echo '<li data-action="grp_definition">' . getStatusIcon('groups_define', true) . '</li>';
-    echo '</ul>';
-    echo '</li>';
+        echo '<li class="menuitem">' . getStatusIcon('groups', true) . ' ' . getStatusIcon('right_triangle');
+            echo '<ul class="submenuIcon">';
+                echo '<li data-action="grp_definition">' . getStatusIcon('groups_define', true) . '</li>';
+            echo '</ul>';
+        echo '</li>';
 
-    echo '<li class="menuitem">' . getStatusIcon('sensors', true) . ' ' . getStatusIcon('right_triangle');
-    echo '<ul class="submenuIcon">';
-    echo '<li data-action="sensor_data">' . getStatusIcon('sensordata', true) . '</li>';
-    echo '<li data-action="sensor_threshold">' . getStatusIcon('threshold', true) . '</li>';
-    echo '</ul>';
-    echo '</li>';
+        echo '<li class="menuitem">' . getStatusIcon('sensors', true) . ' ' . getStatusIcon('right_triangle');
+            echo '<ul class="submenuIcon">';
+                echo '<li data-action="sensor_data">' . getStatusIcon('sensordata', true) . '</li>';
+                echo '<li data-action="sensor_threshold">' . getStatusIcon('threshold', true) . '</li>';
+            echo '</ul>';
+        echo '</li>';
 
-    echo '<li class="menuitem" data-action="mHeard">' . getStatusIcon('mheard', true) . '</li>';
+        echo '<li class="menuitem" data-action="mHeard">' . getStatusIcon('mheard', true) . '</li>';
 
     if (function_exists('curl_version'))
     {
         echo '<li class="menuitem" data-action="send_command">' . getStatusIcon('send-cmd', true) . '</li>';
     }
 
-    echo '<li class="menuitem" data-action="message">' . getStatusIcon('message', true) . '</li>';
-    echo '<li class="menuitem" data-action="about">' . getStatusIcon('about', true) . '</li>';
+        echo '<li class="menuitem" data-action="message">' . getStatusIcon('message', true) . '</li>';
+        echo '<li class="menuitem" data-action="about">' . getStatusIcon('about', true) . '</li>';
     echo '</ul>';
     echo '</div>';
-
 }
 
 function initSetBaseParam()
 {
-    $loraIp   = trim($_REQUEST['paramSetLoraIp']);
-    $callSign = strtoupper(trim($_REQUEST['inputParamCallSign']));
+    $loraIp   = trim($_REQUEST['paramSetLoraIp'] ?? '0.0.0.0');
+    $callSign = strtoupper(trim($_REQUEST['inputParamCallSign'] ?? 'DB0ABC-99'));
 
-    echo '<span class="unsetDisplayFlex">';
-    echo "<br>";
-    echo '<br><b>Setze Ip des Lora Gerätes auf IP: <mark>' . $loraIp . '</mark>';
     setParamData('loraIp', $loraIp,'txt');
-    echo '<br><br>Setze Call in auf : <mark>' . $callSign . '</mark></b>';
     setParamData('callSign', $callSign,'txt');
-    echo "<br><br>";
-    echo '<form id="frmParamIp" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
-    echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
-    echo '<input type="button" class="submitParamLoraIp" id="btnParamReload" value="MeshDash jetzt einmal neu laden"  />';
-    echo '</form>';
 
-    echo '</span>';
+    echo '<span class="unsetDisplayFlex">'
+    . '<br><br><b>Setze Ip des Lora Gerätes auf IP: <mark>' . $loraIp . '</mark>'
+    . '<br><br>Setze Call in auf : <mark>' . $callSign . '</mark></b>'
+    . '<br><br>'
+    . '<form id="frmParamIp" method="post" action="' . $_SERVER['REQUEST_URI'] . '">'
+    . '<input type="hidden" name="sendData" id="sendData" value="0" />'
+    . '<input type="button" class="submitParamLoraIp" id="btnParamReload" value="MeshDash jetzt einmal neu laden"  />'
+    . '</form>'
+    . '</span>';
     exit();
 }
 
@@ -495,7 +492,7 @@ function checkBaseParam($param)
     $callSign  = getParamData('callSign');
     $debugFlag = $param['debugFlag'] ?? false;
 
-    if (trim($loraIP == '0.0.0.0') || trim($callSign == ''))
+    if (trim($loraIP) == '0.0.0.0' || trim($callSign) == '')
     {
         if ($debugFlag === true)
         {
@@ -540,10 +537,10 @@ function checkBaseParam($param)
 
 function checkExtension($param)
 {
-    $debugFlag     = $param['debugFlag'];
-    $chkExtension1 = $param['chkExtension1'];
-    $chkExtension2 = $param['chkExtension2'];
-    $osIssWindows  = $param['osIssWindows '] ;
+    $debugFlag     = $param['debugFlag'] ?? false;
+    $chkExtension1 = $param['chkExtension1'] ?? false;
+    $chkExtension2 = $param['chkExtension2'] ?? false;
+    $osIssWindows  = $param['osIssWindows'] ?? false;
 
     $phpIniPath = php_ini_loaded_file();
 
@@ -608,10 +605,11 @@ function checkExtension($param)
 
         foreach ($fileContent as $lineNumber => $lineContent)
         {
-            if ($lineContent == ";extension=sqlite3\n" || $lineContent == ";extension=php_sqlite3.dll\r\n")
+            $trimmedLine = trim($lineContent);
+
+            if ($trimmedLine == ";extension=sqlite3" || $trimmedLine == ";extension=php_sqlite3.dll")
             {
-                $fileContent[$lineNumber] = 'extension=sqlite3' . "\n";
-                echo '<br><b><mark>' . $lineContent . '</mark> gefunden in Zeile <mark>' . $lineNumber . '</mark>. Diesen bitte auskommentieren.</b>';
+                echo '<br><b><mark>' .  htmlspecialchars($lineContent) . '</mark> gefunden in Zeile <mark>' . $lineNumber . '</mark>. Diesen bitte auskommentieren.</b>';
 
                 if ($debugFlag === true)
                 {
@@ -619,9 +617,9 @@ function checkExtension($param)
                     file_put_contents('log/debug.log', $errorText, FILE_APPEND);
                 }
             }
-            else if ($lineContent == "extension=sqlite3\n" || $lineContent == "extension=php_sqlite3.dll\r\n")
+            else if ($trimmedLine == "extension=sqlite3" || $trimmedLine == "extension=php_sqlite3.dll")
             {
-                echo '<br><b><mark>' . $lineContent . '</mark> gefunden in Zeile <mark>' . $lineNumber . '</mark> keine &Auml;nderung n&ouml;tig.</b>';
+                echo '<br><b><mark>' .  htmlspecialchars($lineContent) . '</mark> gefunden in Zeile <mark>' . $lineNumber . '</mark> keine &Auml;nderung n&ouml;tig.</b>';
 
                 if ($debugFlag === true)
                 {
@@ -630,10 +628,9 @@ function checkExtension($param)
                 }
             }
 
-            if ($lineContent == ";extension=pdo_sqlite\n" || $lineContent == ";extension=php_pdo_sqlite.dll\r\n")
+            if ($trimmedLine == ";extension=pdo_sqlite" || $trimmedLine == ";extension=php_pdo_sqlite.dll")
             {
-                $fileContent[$lineNumber] = 'extension=pdo_sqlite' . "\n";
-                echo '<br><b><mark>' . $lineContent . '</mark> gefunden in Zeile <mark>' . $lineNumber . '</mark>. Diesen bitte auskommentieren.</b>';
+                echo '<br><b><mark>' .  htmlspecialchars($lineContent) . '</mark> gefunden in Zeile <mark>' . $lineNumber . '</mark>. Diesen bitte auskommentieren.</b>';
 
                 if ($debugFlag === true)
                 {
@@ -641,9 +638,9 @@ function checkExtension($param)
                     file_put_contents('log/debug.log', $errorText, FILE_APPEND);
                 }
             }
-            else if ($lineContent == "extension=pdo_sqlite\n" || $lineContent == "extension=php_pdo_sqlite.dll\r\n")
+            else if ($trimmedLine == "extension=pdo_sqlite" || $trimmedLine == "extension=php_pdo_sqlite.dll")
             {
-                echo '<br><b><mark>' . $lineContent . '</mark> gefunden in Zeile <mark>' . $lineNumber . '</mark> keine &Auml;nderung n&ouml;tig.</b>';
+                echo '<br><b><mark>' .  htmlspecialchars($lineContent) . '</mark> gefunden in Zeile <mark>' . $lineNumber . '</mark> keine &Auml;nderung n&ouml;tig.</b>';
 
                 if ($debugFlag === true)
                 {
@@ -661,8 +658,9 @@ function checkExtension($param)
 
 function setNewMsgBgColor()
 {
-    $newMsgBgColor     = getParamData('newMsgBgColor');
-    $newMsgBgColor = $newMsgBgColor == '' ? '#FFFFFF' : $newMsgBgColor;
+    $newMsgBgColor = getParamData('newMsgBgColor');
+    $newMsgBgColor = $newMsgBgColor === '' ? '#FFFFFF' : $newMsgBgColor;
+
     echo '<style>
             .new-message-indicator {
                 background-color: ' . $newMsgBgColor . ' !important;

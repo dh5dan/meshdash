@@ -364,14 +364,34 @@
                 }
             }
 
-            //////////////// Endprüfung
-            // Prüfen, ob die Eingabe EINE ganze Zahl und im Wertebereich >= 1 bis 1439 ist
+            //////////////// Finale
+            // Endprüfung: Ganze Zahl, Wertebereich 1–1439, muss 24h (1440 Minuten) ohne Rest teilen
             if ((!/^\d+$/.test(sensorThTempIntervallMin) || parseInt(sensorThTempIntervallMin, 10) <= 0 || parseInt(sensorThTempIntervallMin, 10) > 1439) &&
-                (sensorThTempEnabled === true || sensorThTempEnabled === true))
+                (1440 % parseInt(sensorThTempIntervallMin, 10) !== 0) &&
+                (sensorThTempEnabled === true || sensorThToutEnabled === true))
             {
                 width       = 600;
-                outputMsg = 'Der Abfrage-Intervallwert muss eine ganze Zahl >= 1 - 1439 min. sein.';
-                outputMsg += '<br><br>Bitte prüfen.';
+                outputMsg  = '<b>Ungültiger Intervallwert!</b><br><br>';
+                outputMsg += 'Der Abfrage-Intervallwert muss:<ul>';
+                outputMsg += '<li>eine ganze Zahl sein</li>';
+                outputMsg += '<li>zwischen <b>1 und 1439</b> Minuten liegen</li>';
+                outputMsg += '<li>sich <b>exakt ohne Rest</b> in 24 Stunden (1440 Minuten) teilen lassen</li>';
+                outputMsg += '</ul>';
+                outputMsg += '<br><b>Zulässige Beispielwerte:</b><br>';
+                outputMsg += '<table border="1" cellpadding="4" cellspacing="0" style="border-collapse: collapse; font-size: 13px;">';
+                outputMsg += '<thead><tr style="background-color: #f0f0f0;"><th>Minuten</th><th>Beschreibung</th></tr></thead>';
+                outputMsg += '<tbody>';
+                outputMsg += '<tr><td>5</td><td>Sehr häufig</td></tr>';
+                outputMsg += '<tr><td>15</td><td>Standard für viele Sensoren</td></tr>';
+                outputMsg += '<tr><td>30</td><td>Alle halbe Stunde</td></tr>';
+                outputMsg += '<tr><td>60</td><td>Stündlich</td></tr>';
+                outputMsg += '<tr><td>90</td><td>Alle 1,5 Stunden</td></tr>';
+                outputMsg += '<tr><td>120</td><td>Alle 2 Stunden</td></tr>';
+                outputMsg += '<tr><td>180</td><td>Alle 3 Stunden</td></tr>';
+                outputMsg += '<tr><td>240</td><td>Alle 4 Stunden</td></tr>';
+                outputMsg += '</tbody></table>';
+
+                outputMsg += '<br>Bitte gültigen Wert auswählen.';
 
                 dialog(outputMsg, titleMsg, width);
                 return false;

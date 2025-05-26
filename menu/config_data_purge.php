@@ -36,8 +36,11 @@ if ($sendData === '11')
 
     $db = new SQLite3('../database/meshdash.db');
     $db->busyTimeout(5000); // warte wenn busy in millisekunden
-    $res   = $db->query("SELECT count(*) as count FROM meshdash WHERE DATE(timestamps) < '$purgeDateNat';");
-    $rows  = $res->fetchArray();
+    $res   = $db->query("SELECT count(*) AS count 
+                                 FROM meshdash
+                                WHERE DATE(timestamps) < '$purgeDateNat';
+                              ");
+    $rows  = $res->fetchArray(SQLITE3_ASSOC);
     $count = $rows['count'];
 
     #Close and write Back WAL
@@ -54,9 +57,9 @@ if ($sendData === '11')
     {
         echo '&nbsp;&nbsp;&nbsp;<input type="button" class="submitParamLoraIp" id="btnPurgeDataNow" value="Nachrichtendaten jetzt löschen" />';
     }
+
     echo '<br><br><input type="button" class="submitParamLoraIp" id="btnPurgeNew" value="Daten mit neuem Datum ermitteln" />';
     echo '</form>';
-
 }
 elseif ($sendData === '13')
 {
@@ -64,10 +67,13 @@ elseif ($sendData === '13')
     $purgeDateNat = date( "Y-m-d", strtotime($purgeDateIso));
 
     $db = new SQLite3('../database/meshdash.db');
-    $db->exec("DELETE FROM meshdash WHERE DATE(timestamps) < '$purgeDateNat';");
+    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->exec("DELETE FROM meshdash 
+                            WHERE DATE(timestamps) < '$purgeDateNat';
+                     ");
     echo '<br>Es wurden ' . $db->changes() . ' Nachrichtendaten gelöscht.';
 
-    if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
     {
         echo "<br>purgeDateNow";
         echo "<br>ErrMsg:" . $db->lastErrorMsg();

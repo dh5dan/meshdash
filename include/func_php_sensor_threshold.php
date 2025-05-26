@@ -3,7 +3,7 @@
 function saveSensorThresholdSettings($hasIna226Sensor): bool
 {
     #Check what oS is running
-    $osIssWindows = chkOsIssWindows();
+    $osIssWindows = chkOsIsWindows();
     $returnFlag   = true;
 
     $sensorThIna226vBusEnabled     = 0;

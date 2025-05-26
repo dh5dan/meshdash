@@ -27,7 +27,7 @@ ini_set('display_errors',1);
 $sendData = $_REQUEST['sendData'] ?? 0;
 
 #Check what oS is running
-$osIssWindows = chkOsIssWindows();
+$osIssWindows = chkOsIsWindows();
 $osName       = $osIssWindows === true ? 'Windows' : 'Linux';
 
 $execDirLog = 'log';
@@ -37,7 +37,7 @@ $logDirRoot = $execDirLog;
 $logDir     = $basename == 'menu' ? $logDirSub : $logDirRoot;
 
 #Check what oS is running
-$osIssWindows            = chkOsIssWindows();
+$osIssWindows            = chkOsIsWindows();
 $sendQueueInterval       = getParamData('sendQueueInterval');
 $sendQueueMode           = getParamData('sendQueueMode');
 $sendQueueMode           = $sendQueueMode == '' || $sendQueueMode == 0 ? getStatusIcon('error') : getStatusIcon('ok');
@@ -52,22 +52,6 @@ $statusCronLoop       = $taskResultCronLoop != '' ? getStatusIcon('active') : ge
 
 $resExtensionPdoSqlite3  = extension_loaded('pdo_sqlite') == 1 ? getStatusIcon('active') : getStatusIcon('inactive');
 $resExtensionSqlite3     = extension_loaded('sqlite3') == 1 ? getStatusIcon('active') : getStatusIcon('inactive');
-
-if ($sendData === '1')
-{
-    $resSaveSendQueueSettings = saveDebugInfoSettings();
-
-    if ($resSaveSendQueueSettings)
-    {
-        echo '<span class="successHint">'.date('H:i:s').'-Settings wurden erfolgreich abgespeichert!</span>';
-
-        echo "<script>reloadBottomFrame();</script>";
-    }
-    else
-    {
-        echo '<span class="failureHint">Es gab einen Fehler beim Abspeichern der Settings!</span>';
-    }
-}
 
 #Delete Logfile
 if ($sendData === '3')

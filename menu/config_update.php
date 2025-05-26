@@ -44,7 +44,7 @@ if ($debugFlag === true)
 }
 
 #Check what oS is running
-$osIssWindows = chkOsIssWindows();
+$osIssWindows = chkOsIsWindows();
 $osName       = $osIssWindows === true ? 'Windows' : 'Linux';
 
 echo '<h2>MeshDash-SQL Update';
