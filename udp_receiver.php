@@ -29,7 +29,7 @@ ini_set('serialize_precision', 14); //Must set it's a Bug in PHP > 7.1.x
 ini_set('precision', 14);
 
 #Check what oS is running
-$osIssWindows = chkOsIssWindows();
+$osIssWindows = chkOsIsWindows();
 
 #Check what oS is running
 if (strtoupper(substr(php_uname('s'), 0, 3)) === 'WIN')
@@ -129,7 +129,7 @@ if (!($sock = socket_create(AF_INET, SOCK_DGRAM, 0)))
 #Reuse an existing Port SO_REUSEPort ->error
 #socket_set_option ($sock, SOL_SOCKET, 15, 1);
 
-// Bind the source address to Socket and listen on all Ip
+// Bind the source address to Socket and listen on all Ip at POrt 1799
 if (!@socket_bind($sock, "0.0.0.0", 1799))
 {
     $errorCode = socket_last_error();
@@ -192,6 +192,12 @@ while (true)
     $dst             = $dbArraySqliteJson['dst'] ?? ''; // 995 | call
     $firmware        = $dbArraySqliteJson['firmware'] ?? ''; // Firmware 4.34
     $fwSubVersion    = $dbArraySqliteJson['fw_sub'] ?? ''; // FirmwareSUb Version: v
+
+    #Wenn keine Daten vorhanden, dann nicht Speichern und auf nächste Msg warten
+    if ($msgId == '' && $src == '' && $type == '')
+    {
+        continue;
+    }
 
     #Open Database
     $db = new SQLite3('database/meshdash.db');

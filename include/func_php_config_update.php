@@ -1,5 +1,4 @@
 <?php
-
 function backupApp($sourceDir, $backupDir)
 {
     $zip                   = new ZipArchive();
@@ -73,7 +72,7 @@ function backupApp($sourceDir, $backupDir)
                 }
             }
 
-            // Falls Datei im "execute/"-Verzeichnis liegt, nur *.sh und *.py zulassen
+            // Falls Datei im "execute/"-Verzeichnis liegt, nur suffix aus dem AllowArray zulassen
             if (preg_match('/^' . preg_quote($executeDir, '/') . '/', $relativePath))
             {
                 $fileExtension = pathinfo($relativePath, PATHINFO_EXTENSION);
@@ -351,7 +350,7 @@ function checkValidUpdatePackage($uploadFile, $debugFlag)
     ];
 
     $zip = new ZipArchive();
-    if ($zip->open($_FILES['updateFile']['tmp_name']) === true)
+    if ($zip->open($uploadFile) === true)
     {
         // ZIP-Datei erfolgreich geöffnet
         $valid = true;
@@ -444,7 +443,6 @@ function getLatestRelease()
 function getLatestChangelog()
 {
     // get_latest_release.php
-
     $repoOwner   = 'dh5dan';  // Deinen GitHub-Nutzername
     $repoName    = 'meshdash';         // Repository-Name
     $apiUrl      = "https://api.github.com/repos/$repoOwner/$repoName/releases/latest";
@@ -486,11 +484,15 @@ function doDatabaseCopyForBackup(): bool
     $suffix        = '.db';
     $backupSuffix  = '.bak';
     $errorOccurred = false;
-    $osIssWindows  = chkOsIssWindows();
+    $osIssWindows  = chkOsIsWindows();
 
     if (!is_dir($dbDir))
     {
-        echo "Datenbankverzeichnis nicht gefunden: $dbDir\n";
+        $tt        = "Datenbankverzeichnis nicht gefunden: $dbDir\n";
+        $errorText = date('Y-m-d H:i:s') . ' result:' . $tt . "\n";
+
+        file_put_contents('../log/db_backup_error.log', $errorText, FILE_APPEND);
+        echo "<br>$tt";
 
         return false;
     }
@@ -512,10 +514,16 @@ function doDatabaseCopyForBackup(): bool
         if (file_exists($backupPath))
         {
             @unlink($backupPath);
+
             // Sicherheitscheck: Ist sie wirklich weg?
             if (file_exists($backupPath))
             {
-                echo "Konnte $backupPath nicht löschen (wird gesperrt?)\n";
+                $tt        = "Konnte $backupPath nicht löschen (wird gesperrt?)\n";
+                $errorText = date('Y-m-d H:i:s') . ' result:' . $tt . "\n";
+
+                file_put_contents('../log/db_backup_error.log', $errorText, FILE_APPEND);
+                echo "<br>$tt";
+
                 $errorOccurred = true;
                 continue;
             }
@@ -529,15 +537,39 @@ function doDatabaseCopyForBackup(): bool
 
             if (!$db->exec($query))
             {
-                echo "Fehler beim Backup von $dbPath: " . $db->lastErrorMsg() . "\n";
+                $tt        = "Fehler beim VACUUM DB-Backup von $dbPath: " . $db->lastErrorMsg() . "\n";
+                $errorText = date('Y-m-d H:i:s') . ' result:' . $tt . "\n";
+
+                file_put_contents('../log/db_backup_error.log', $errorText, FILE_APPEND);
+                echo "<br>$tt";
+
                 $errorOccurred = true;
             }
 
             $db->close();
+
+            // Plausibilitätsprüfung: Größe muss minimal > 1 KB sein
+            if (!file_exists($backupPath) || filesize($backupPath) < 1024)
+            {
+                $tt        = "Backup-Datei $backupPath ist verdächtig klein! Wird gelöscht.\n";
+                $errorText = date('Y-m-d H:i:s') . ' result:' . $tt . "\n";
+
+                file_put_contents('../log/db_backup_error.log', $errorText, FILE_APPEND);
+                echo "<br>$tt";
+
+                @unlink($backupPath);
+                $errorOccurred = true;
+            }
         }
         catch (Exception $e)
         {
-            echo "Fehler bei $dbName: " . $e->getMessage() . "\n";
+            $tt        = "Fehler bei $dbName: " . $e->getMessage() . "\n";
+            $errorText = date('Y-m-d H:i:s') . ' result:' . $tt . "\n";
+
+            file_put_contents('../log/db_backup_error.log', $errorText, FILE_APPEND);
+            echo "<br>$tt";
+
+            $errorOccurred = true;
         }
     }
 

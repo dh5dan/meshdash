@@ -1,9 +1,4 @@
 <?php
-function saveDebugInfoSettings(): bool
-{
-    return true;
-}
-
 function showLogFiles()
 {
     $execDirLog    = 'log';
@@ -12,8 +7,10 @@ function showLogFiles()
     $logDirRoot    = $execDirLog;
     $logDir        = $basename == 'menu' ? $logDirSub : $logDirRoot;
 
-    if (!is_dir($logDir)) {
+    if (!is_dir($logDir))
+    {
         echo "Log-Verzeichnis nicht gefunden.";
+
         return;
     }
 
@@ -50,7 +47,7 @@ function showLogFiles()
         $filename = basename($file);
         if (preg_match('/\.log/', $filename))
         {
-            $fileDateTime = filemtime($file);
+            $fileDateTime = is_readable($file) ? filemtime($file) : '0000-00-00 00:00:00'; // Prevents if File is locked
             $datum        = date('Y-m-d', $fileDateTime);
             $uhrzeit      = date('H:i:s', $fileDateTime);
 
@@ -69,7 +66,6 @@ function showLogFiles()
             {
                 $rowClass = 'log-yesterday';
             }
-
 
             echo '<tr>';
             echo '<td class="' . $rowClass . '">' . $datum . '</td>';
@@ -90,11 +86,6 @@ function showLogFiles()
     echo '</table>';
     echo '</div>';
 }
-
-#################
-
-// debug_info_modules.php
-
 function getCronEntries()
 {
     exec('crontab -l 2>/dev/null', $cronJobs);// Die Crontab auslesen
@@ -117,12 +108,10 @@ function getCronEntries()
         echo '</tr>';
     }
 }
-
 function getServerSoftware()
 {
     return $_SERVER['SERVER_SOFTWARE'] ?? 'Nicht verfügbar';
 }
-
 function getPhpConfig()
 {
     $phpIniArray = array (
@@ -191,12 +180,9 @@ function getPhpConfig()
         echo '</tr>';
     }
 }
-
-/**
- * Hilfsfunktion zur Umwandlung von ini-Werten wie 128M, 2G in Integer (Bytes)
- */
 function convertToInt($value)
 {
+    # Hilfsfunktion zur Umwandlung von ini-Werten wie 128M, 2G in Integer (Bytes)
     $value = trim($value);
 
     if (is_numeric($value)) {
@@ -306,7 +292,8 @@ function getSqliteDbSizes(): array
 
         if ($realDatabasePath && file_exists($realDatabasePath))
         {
-            $sizeKB     = round(filesize($realDatabasePath) / 1024, 1);
+            $dbFileSize = is_readable($realDatabasePath) ? filesize($realDatabasePath) : -1; // Prevents if File is locked
+            $sizeKB     = round($dbFileSize / 1024, 1);
             $lastAccess = date('d.m.Y H:i:s', fileatime($realDatabasePath));
 
             $result[$file] = [
@@ -362,13 +349,18 @@ function getSqliteDatabases(string $basePath = 'database'): array
     $allEntries = scandir($basePath);
     $databases = [];
 
-    foreach ($allEntries as $entry) {
-        if ($entry === '.' || $entry === '..') continue;
+    foreach ($allEntries as $entry)
+    {
+        if ($entry === '.' || $entry === '..')
+        {
+            continue;
+        }
 
         $fullPath = $basePath . DIRECTORY_SEPARATOR . $entry;
 
         // Überprüfe, ob es eine Datei ist und ob sie mit .sqlite oder .db endet
-        if (is_file($fullPath) && (substr($entry, -7) === '.sqlite' || substr($entry, -3) === '.db')) {
+        if (is_file($fullPath) && (substr($entry, -7) === '.sqlite' || substr($entry, -3) === '.db'))
+        {
             $databases[] = $entry;
         }
     }
@@ -399,7 +391,6 @@ function getSystemUptimeSeconds()
         return isset($parts[0]) ? (int) floatval($parts[0]) : false;
     }
 }
-
 function getLoadAverage()
 {
     if (strncasecmp(PHP_OS, 'WIN', 3) === 0)

@@ -1,5 +1,4 @@
 <?php
-
 function saveGroupsSettings(): bool
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
@@ -10,36 +9,23 @@ function saveGroupsSettings(): bool
 
     $updateArray = array();
 
-    $updateArray[1]['number'] = $_REQUEST['groupNumber1'] ?? 0;
-    $updateArray[2]['number'] = $_REQUEST['groupNumber2'] ?? 0;
-    $updateArray[3]['number'] = $_REQUEST['groupNumber3'] ?? 0;
-    $updateArray[4]['number'] = $_REQUEST['groupNumber4'] ?? 0;
-    $updateArray[5]['number'] = $_REQUEST['groupNumber5'] ?? 0;
-    $updateArray[6]['number'] = $_REQUEST['groupNumber6'] ?? 0;
+    #Maximal 6 Einträge
+    for ($i = 1; $i <= 6; $i++)
+    {
+        $updateArray[$i]['number']  = $_REQUEST["groupNumber{$i}"] ?? 0;
+        $updateArray[$i]['enabled'] = $_REQUEST["groupNumber{$i}Enabled"] ?? 0;
+        $updateArray[$i]['sound']   = $_REQUEST["groupSound{$i}Enabled"] ?? 0;
+    }
 
     $updateArray[-1]['number'] = 0; // Kein Filter
     $updateArray[-2]['number'] = 0; // Own Call
     $updateArray[-3]['number'] = -3; // Pos Filter
     $updateArray[-4]['number'] = -4; // Cet Filter
 
-    $updateArray[1]['enabled'] = $_REQUEST['groupNumber1Enabled'] ?? 0;
-    $updateArray[2]['enabled'] = $_REQUEST['groupNumber2Enabled'] ?? 0;
-    $updateArray[3]['enabled'] = $_REQUEST['groupNumber3Enabled'] ?? 0;
-    $updateArray[4]['enabled'] = $_REQUEST['groupNumber4Enabled'] ?? 0;
-    $updateArray[5]['enabled'] = $_REQUEST['groupNumber5Enabled'] ?? 0;
-    $updateArray[6]['enabled'] = $_REQUEST['groupNumber6Enabled'] ?? 0;
-
     $updateArray[-1]['enabled'] = 0;
     $updateArray[-2]['enabled'] = 0;
     $updateArray[-3]['enabled'] = $_REQUEST['groupPosEnabled'] ?? 0;
     $updateArray[-4]['enabled'] = $_REQUEST['groupCetEnabled'] ?? 0;
-
-    $updateArray[1]['sound'] = $_REQUEST['groupSound1Enabled'] ?? 0;
-    $updateArray[2]['sound'] = $_REQUEST['groupSound2Enabled'] ?? 0;
-    $updateArray[3]['sound'] = $_REQUEST['groupSound3Enabled'] ?? 0;
-    $updateArray[4]['sound'] = $_REQUEST['groupSound4Enabled'] ?? 0;
-    $updateArray[5]['sound'] = $_REQUEST['groupSound5Enabled'] ?? 0;
-    $updateArray[6]['sound'] = $_REQUEST['groupSound6Enabled'] ?? 0;
 
     $updateArray[-1]['sound'] = $_REQUEST['groupSoundNoFilterEnabled'] ?? 0;
     $updateArray[-2]['sound'] = $_REQUEST['groupSoundOwnCallEnabled'] ?? 0;
@@ -50,6 +36,7 @@ function saveGroupsSettings(): bool
     setParamData('groupSoundFile', $groupSoundFile, 'txt');
 
     $db = new SQLite3($dbFilename);
+    $db->busyTimeout(5000); // warte wenn busy in millisekunden
     $db->exec('PRAGMA synchronous = NORMAL;');
 
     for ($groupId = -4; $groupId <= 6; $groupId++)
@@ -59,9 +46,9 @@ function saveGroupsSettings(): bool
             continue;
         }
 
-        $groupNumber  = $updateArray[$groupId]['number'];
-        $groupEnabled = $updateArray[$groupId]['enabled'];
-        $groupSound   = $updateArray[$groupId]['sound'];
+        $groupNumber  = (int) $updateArray[$groupId]['number'];
+        $groupEnabled = (int) $updateArray[$groupId]['enabled'];
+        $groupSound   = (int) $updateArray[$groupId]['sound'];
 
         $db->exec("
                         REPLACE INTO groups (groupId, groupNumber, groupEnabled, groupSound)
@@ -74,9 +61,9 @@ function saveGroupsSettings(): bool
                     "
         );
 
-        if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
+        if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
         {
-            echo "<br>setParamData";
+            echo "<br>saveGroupsSettings";
             echo "<br>ErrMsg:" . $db->lastErrorMsg();
             echo "<br>ErrNum:" . $db->lastErrorCode();
         }
@@ -105,6 +92,20 @@ function getGroupParameter(int $mode = 0)
                           FROM groups
                       ORDER BY groupId;
                     ");
+
+    #Error-Handling SQL
+    if ($res === false)
+    {
+        if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
+        {
+            echo '<br>SQL-Fehler in getGroupParameter:';
+            echo "<br>ErrMsg:" . $db->lastErrorMsg();
+            echo "<br>ErrNum:" . $db->lastErrorCode();
+        }
+
+        return false;
+    }
+
     $rows = 0;
     while ($dsData = $res->fetchArray(SQLITE3_ASSOC))
     {
@@ -139,14 +140,8 @@ function getGroupParameter(int $mode = 0)
                     break;
                 case -4:
                     $returnValue[$groupId]['label'] = 'CET';
+                    break;
             }
-        }
-
-        if ($db->lastErrorMsg() > 0 && $db->lastErrorMsg() < 100)
-        {
-            echo "<br>getParamData";
-            echo "<br>ErrMsg:" . $db->lastErrorMsg();
-            echo "<br>ErrNum:" . $db->lastErrorCode();
         }
     }
 
@@ -181,6 +176,6 @@ function getGroupTabsJson()
         $tabs = array_merge($tabs, $resGetGroupParameter);
     }
 
-    return json_encode($tabs);
+    return json_encode($tabs, JSON_UNESCAPED_UNICODE);
 }
 

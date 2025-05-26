@@ -7,10 +7,12 @@ echo '<!DOCTYPE html>';
 echo '<html lang="de">';
 echo '<head><title>Nachrichten</title>';
 
-#Prevnts UTF8 Errors on misconfigured php.ini
+#Prevents UTF8 Errors on misconfigured php.ini
 ini_set( 'default_charset', 'UTF-8' );
 echo '<script type="text/javascript" src="jquery/jquery.min.js"></script>';
-echo '<link rel="stylesheet" href="css/message.css?' . microtime() . '">';
+
+$ts = filemtime('css/message.css');
+echo '<link rel="stylesheet" href="css/message.css?' . $ts . '">';
 
 echo '</head>';
 echo '<body>';
@@ -41,10 +43,10 @@ ini_set('display_errors', 1);
 $loraIp             = trim(getParamData('loraIp'));
 $noPosData          = (int) getParamData('noPosData');
 $noDmAlertGlobal    = (int) getParamData('noDmAlertGlobal');
-$posStatusValue     = (int) getParamData('noPosData');
 $noTimeSyncMsgValue = (int) getParamData('noTimeSyncMsg');
 $maxScrollBackRows  = (int) getParamData('maxScrollBackRows');
 $callSign           = trim(getParamData('callSign'));
+$posStatusValue     = $noPosData;
 
 $alertSoundFileSrc = getParamData('alertSoundFileSrc');
 $alertEnabledSrc   = getParamData('alertEnabledSrc');
@@ -65,7 +67,8 @@ $strictCallEnable = getParamData('strictCallEnable');
 
 $sqlAddon        = '';
 $sqlAddonSearch  = '';
-$group           = $_REQUEST['group'] ?? -1;
+$groupRequest    = $_REQUEST['group'] ?? -1;
+$group           = (int) $groupRequest;
 $callSignSql     = $callSign;
 $doSearchQuery   = false;
 $bubbleStyleView = getParamData('bubbleStyleView') == 1;

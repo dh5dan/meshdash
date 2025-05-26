@@ -28,7 +28,7 @@ $sendData    = $_REQUEST['sendData'] ?? 0;
 $sendCommand = $_REQUEST['sendCommand'] ?? '';
 
 #Check what oS is running
-$osIssWindows = chkOsIssWindows();
+$osIssWindows = chkOsIsWindows();
 $osName       = $osIssWindows === true ? 'Windows' : 'Linux';
 $loraIp       = getParamData('loraIp');
 

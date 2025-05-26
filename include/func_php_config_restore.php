@@ -10,10 +10,8 @@ function unzipRestore($zipFile, $tempDir): bool
 
         return true;
     }
-    else
-    {
-        return false;
-    }
+
+    return false;
 }
 
 function showBackups()
@@ -90,7 +88,7 @@ function showBackups()
     echo '</div>';
 }
 
-function checkValidRestorePackage($uploadFile, $debugFlag)
+function checkValidRestorePackage($uploadFile, $debugFlag): bool
 {
     $uploadFileFullPath = "../$uploadFile";
 
@@ -179,14 +177,14 @@ function checkValidRestorePackage($uploadFile, $debugFlag)
             $errorText = date('Y-m-d H:i:s') . ' filesArray:' . $tt . "\n";
             file_put_contents('../log/debug_restore.log', $errorText, FILE_APPEND);
         }
-        exit;
+
+        return false;
     }
 }
 
-function checkDatabaseRestore()
+function checkDatabaseRestore(): bool
 {
     $dir = '../database';
-    $debugFlag = false;
 
     if (!is_dir($dir))
     {
