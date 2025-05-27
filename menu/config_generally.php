@@ -88,6 +88,9 @@ $strictCallEnable  = getParamData('strictCallEnable'); // Strict Call Flag
 $selTzName         = getParamData('timeZone') ?? 'Europe/Berlin'; // ZeitZone
 $mheardGroup       = getParamData('mheardGroup') ?? 0; // 0= egal welche Gruppe
 $bubbleStyleView   = getParamData('bubbleStyleView') ?? 0; // 1= Bubble Style aktiv
+$bubbleMaxWidth    = getParamData('bubbleMaxWidth') ?? 40;
+$msgExportGroup    = getParamData('msgExportGroup') ?? '';
+$msgExportEnable   = getParamData('msgExportEnable') ?? 0;
 
 $openStreetTileServerUrl = trim(getParamData('openStreetTileServerUrl')) ?? 'tile.openstreetmap.org';
 $openStreetTileServerUrl = $openStreetTileServerUrl == '' ? 'tile.openstreetmap.org' : $openStreetTileServerUrl;
@@ -103,6 +106,8 @@ $chronLogEnableChecked    = $chronLogEnable == 1 ? 'checked' : '';
 $retentionDays            = $retentionDays == '' ? 7 : $retentionDays;
 $chronMode                = $chronMode == '' ? 'zip' : $chronMode;
 $strictCallEnableChecked  = $strictCallEnable == 1 ? 'checked' : '';
+$bubbleMaxWidth           = $bubbleMaxWidth == '' ? 40 : $bubbleMaxWidth;
+$msgExportEnableChecked   = $msgExportEnable == 1 ? 'checked' : '';
 
 $onClickChronModeCheckedZip    = $chronMode == 'zip' ? 'checked' : '';
 $onClickChronModeCheckedDelete = $chronMode == 'delete' ? 'checked' : '';
@@ -137,28 +142,39 @@ echo '<td colspan="2"><hr></td>';
 echo '</tr>';
 
 echo '<tr>';
-    echo '<td>POS-Meldungen AUS:</td>';
+    echo '<td>POS-Meldungen &#10140;[AUS]:</td>';
     echo '<td><input type="checkbox" name="noPosData" ' . $noPosDataChecked . ' id="noPosData" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-    echo '<td>DM-Alert global AUS:</td>';
+    echo '<td>DM-Alert global &#10140;[AUS]:</td>';
     echo '<td><input type="checkbox" name="noDmAlertGlobal" ' . $noDmAlertGlobalChecked . ' id="noDmAlertGlobal" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Time Sync-Meldung AUS:</td>';
+echo '<td>Time Sync-Meldung &#10140;[AUS]:</td>';
 echo '<td><input type="checkbox" name="noTimeSyncMsg" ' . $noTimeSyncMsgChecked . ' id="noTimeSyncMsg" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Kein DB-Backup:</td>';
+echo '<td>DB-Backup &#10140;[AUS]:</td>';
 echo '<td><input type="checkbox" name="doNotBackupDb" ' . $doNotBackupDbChecked . ' id="doNotBackupDb" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Bubble-Style View:</td>';
+echo '<td>Bubble-Style &#10140;[AN]:</td>';
 echo '<td><input type="checkbox" name="bubbleStyleView" ' . $bubbleStyleViewChecked . ' id="bubbleStyleView" value="1" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td>Bubble Max-Width (40-100%):</td>';
+echo '<td><input type="text" name="bubbleMaxWidth" id="bubbleMaxWidth" style="width: auto" size="2" maxlength="3" value="' . $bubbleMaxWidth . '" /> %</td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td>MSG-Export (Gruppe/&#10140;[AN]):</td>';
+echo '<td><input type="text" name="msgExportGroup" id="msgExportGroup" style="width: auto" size="6" maxlength="6" value="' . $msgExportGroup . '" />&nbsp;';
+echo '<input type="checkbox" name="msgExportEnable" ' . $msgExportEnableChecked . ' id="msgExportEnable" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
@@ -176,18 +192,18 @@ echo '<td colspan="2"><hr></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Logfile-Erstellung:</td>';
+echo '<td>Logfile-Erstellung &#10140;[AN]:</td>';
 echo '<td><input type="checkbox" name="doLogEnable" ' . $doLogEnableChecked . ' id="doLogEnable" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Log-Rotation aktivieren:</td>';
+echo '<td>Log-Rotation &#10140;[AN]:</td>';
 echo '<td><input type="checkbox" name="chronLogEnable" ' . $chronLogEnableChecked . ' id="chronLogEnable" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
 echo '<td>Aufbewahrungstage:</td>';
-echo '<td><input type="text" name="retentionDays" id="retentionDays" value="' . $retentionDays . '" /></td>';
+echo '<td><input type="text" name="retentionDays" id="retentionDays" style="width: auto" size="2" maxlength="3" value="' . $retentionDays . '" /></td>';
 echo '</tr>';
 
 echo '<tr>';
@@ -210,7 +226,7 @@ echo '<td colspan="2"><hr></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Filter mit Strict-Call:</td>';
+echo '<td>Filter Strict-Call &#10140;[AN]:</td>';
 echo '<td><input type="checkbox" name="strictCallEnable" ' . $strictCallEnableChecked . ' id="strictCallEnable" value="1" /></td>';
 echo '</tr>';
 
@@ -230,7 +246,7 @@ echo '<td><input type="radio" name="clickOnCall" ' . $onClickOnCallChecked1 . ' 
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>&nbsp;- Setzt Call in Msg-Feld:</td>';
+echo '<td>&nbsp;- Setzt @Call in Msg-Feld:</td>';
 echo '<td><input type="radio" name="clickOnCall" ' . $onClickOnCallChecked2 . ' id="clickOnCall2" value="2" /></td>';
 echo '</tr>';
 

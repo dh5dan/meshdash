@@ -14,7 +14,7 @@ function getParamData($key)
     }
 
     $db  = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
-    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
     $res = $db->query("SELECT * 
                                FROM parameter AS pa 
                               WHERE pa.param_key = '$key';
@@ -48,7 +48,7 @@ function setParamData($key, $value, $mode = 'int'): bool
     $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
 
     $db = new SQLite3($dbFilename);
-    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
     $db->exec('PRAGMA synchronous = NORMAL;');
 
     #Escape Value
@@ -98,7 +98,7 @@ function setThTempData($arrayParam): bool
     $timeStamps     = date('Y-m-d H:i:s');
 
     $db = new SQLite3($dbFilename);
-    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
     $db->exec('PRAGMA synchronous = NORMAL;');
 
     $sensorThTempIntervallMin = $arrayParam['sensorThTempIntervallMin'];
@@ -190,7 +190,7 @@ function setThIna226Data($arrayParam): bool
     $timeStamps     = date('Y-m-d H:i:s');
 
     $db = new SQLite3($dbFilename);
-    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
     $db->exec('PRAGMA synchronous = NORMAL;');
 
     $sensorThIna226IntervallMin = $arrayParam['sensorThIna226IntervallMin'] ?? 60;
@@ -325,7 +325,7 @@ function disableAllIna226Sensors(): bool
     $timeStamps     = date('Y-m-d H:i:s');
 
     $db = new SQLite3($dbFilename);
-    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
     $db->exec('PRAGMA synchronous = NORMAL;');
 
     $db->exec("
@@ -376,7 +376,7 @@ function getThTempData()
     $arrayReturn    = array();
 
     $db = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
-    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
     $db->exec('PRAGMA synchronous = NORMAL;');
 
     $result = $db->query("
@@ -441,7 +441,7 @@ function getThIna226Data()
     $arrayReturn    = array();
 
     $db = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
-    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
     $db->exec('PRAGMA synchronous = NORMAL;');
 
     $result = $db->query("
@@ -526,7 +526,7 @@ function getKeywordsData($msgId)
     }
 
     $db  = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
-    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
     $res = $db->query("
                         SELECT * 
                           FROM keywords AS kw 
@@ -903,7 +903,7 @@ function updateMeshDashData($msgId, $key, $value, $doNothing = false): bool
 
     $db = new SQLite3($dbFilename);
     $db->exec('PRAGMA synchronous = NORMAL;');
-    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
     #Escape Value
     $value = trim(SQLite3::escapeString($value));
 
@@ -929,7 +929,7 @@ function columnExists($database, $tabelle, $spalte): bool
 {
     // SQLite3-Datenbank öffnen
     $db = new SQLite3('database/' . $database . '.db');
-    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
     $query  = "PRAGMA table_info('$tabelle')";
     $result = $db->query($query);
@@ -1014,21 +1014,52 @@ function checkDbUpgrade($database)
         }
 
         #Setzte diverse Indizes auf den Datenbanken
+
         #Meshdash
-        addIndex('meshdash', 'meshdash','idx_timestamps', 'timestamps');
-        addIndex('meshdash', 'meshdash','idx_dst', 'dst');
-        addIndex('meshdash', 'meshdash','idx_type', 'type');
-        addIndex('meshdash', 'meshdash','idx_check_msg', 'type, dst, timestamps');
+        if ($database === 'meshdash')
+        {
+            #addIndex('meshdash', 'meshdash','idx_timestamps', 'timestamps'); // Wird nicht benötigt
+            delIndex('meshdash', 'idx_timestamps'); // lösche alten indizes
+
+            #addIndex('meshdash', 'meshdash','idx_dst', 'dst'); // wird nicht benötigt
+            delIndex('meshdash', 'idx_dst'); // lösche alten indizes
+
+            #addIndex('meshdash', 'meshdash','idx_type', 'type'); // Wird nicht benötigt
+            delIndex('meshdash', 'idx_type'); // lösche alten indizes
+
+            addIndex('meshdash', 'meshdash', 'idx_ack_type_ts', 'msgIsAck, type, timestamps DESC');
+            addIndex('meshdash', 'meshdash', 'idx_check_msg', 'type, dst, timestamps');
+            addIndex('meshdash', 'meshdash', 'idx_ack_ts', 'msgIsAck, timestamps DESC');
+            addIndex('meshdash', 'meshdash', 'idx_ack_dst_ts', 'msgIsAck, dst, timestamps DESC');
+        }
+
         #sensordata
-        addIndex('sensordata', 'sensordata','idx_timestamps', 'timestamps');
+        if ($database === 'sensordata')
+        {
+            #addIndex('sensordata', 'sensordata','idx_timestamps', 'timestamps'); // Kein Index nötig. SQL optimiert.
+            delIndex('sensordata', 'idx_timestamps'); // lösche alten indizes
+        }
+
         #mheard
-        addIndex('mheard', 'mheard','idx_timestamps', 'timestamps');
+        if ($database === 'mheard')
+        {
+            delIndex('mheard', 'idx_timestamps'); // Neuer Index ist optimiert
+            addIndex('mheard', 'mheard', 'idx_timestamps', 'timestamps, mhTime DESC');
+        }
+
+        if ($database === 'tx_queue')
+        {
+            #txQueue
+            delIndex('tx_queue', 'idx_txInsertTimestamp'); // Neuer Index ist optimiert
+            addIndex('tx_queue', 'txQueue', 'idx_txFlag_qid', 'txFlag, txQueueId');
+        }
     }
 
     if (checkVersion(VERSION,'1.10.40','>='))
     {
         // Enable bubble-style view if not specified. As of V1.10.40
-        if (getParamData('bubbleStyleView') === '') {
+        if (getParamData('bubbleStyleView') === '')
+        {
             setParamData('bubbleStyleView', 1);
         }
     }
@@ -1049,7 +1080,7 @@ function addColumn($database, $tabelle, $spalte, $typ = 'TEXT', $default = null)
 {
     // SQLite3-Datenbank öffnen
     $db = new SQLite3('database/' . $database . '.db');
-    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
     // Sicherstellen, dass der Typ gültig ist
     if (empty($typ))
@@ -1076,17 +1107,39 @@ function addColumn($database, $tabelle, $spalte, $typ = 'TEXT', $default = null)
 }
 function addIndex($database, $tabelle, $IndexName, $indexField)
 {
+    #echo "<br>#1097#AddIDX: $database tab: $tabelle indexName: $IndexName idxfield: $indexField";
+
     // SQLite3-Datenbank öffnen
     $db = new SQLite3('database/' . $database . '.db');
-    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
     // SQL Befehl zum Hinzufügen des Index
     $indexFields = implode(',', array_map('trim', explode(',', $indexField)));
-    $query = "CREATE INDEX IF NOT EXISTS $IndexName ON $tabelle($indexFields);";
+
+    $query = "CREATE INDEX IF NOT EXISTS '$IndexName' ON '$tabelle' ($indexFields);";
 
     if (!$db->exec($query))
     {
         echo "<br>Fehler beim Hinzufügen des Index mit Idexname: $IndexName und IndexField: $indexField bei Datenbank $database.";
+    }
+
+    $db->close();
+}
+
+function delIndex($database, $IndexName)
+{
+    #echo "<br>#1116#delIdc: $database indexName: $IndexName";
+
+    // SQLite3-Datenbank öffnen
+    $db = new SQLite3('database/' . $database . '.db');
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+
+    // SQL Befehl zum Löschen des Index
+    $query = "DROP INDEX IF EXISTS '$IndexName';";
+
+    if (!$db->exec($query))
+    {
+        echo "<br>Fehler beim Löschen des Index mit Idexname: $IndexName bei Datenbank $database.";
     }
 
     $db->close();
@@ -1613,7 +1666,7 @@ function setTxQueue($txQueueData): bool
     $txQueueData['txMsg'] = str_replace('"', '``', $txQueueData['txMsg']); // tausche mit Accent-Aigu
 
     $db = new SQLite3($dbFilename);
-    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
     $db->exec('PRAGMA synchronous = NORMAL;');
 
     $txTimestamp     = '0000-00-00 00:00:00';
@@ -1673,7 +1726,7 @@ function getTxQueue()
     }
 
     $db = new SQLite3($dbFilename);
-    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
     $resTxQueue = $db->query(
         "         SELECT * 
@@ -1746,7 +1799,7 @@ function updateTxQueue($txQueueId): bool
     $timeStamps     = date('Y-m-d H:i:s');
 
     $db = new SQLite3($dbFilename);
-    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
     $db->exec('PRAGMA synchronous = NORMAL;');
 
     $txQueueId = SQLite3::escapeString($txQueueId);
@@ -1782,7 +1835,7 @@ function setSensorAlertCounter($sensor, $sensorType): bool
         $timeStamps     = date('Y-m-d H:i:s');
 
         $db = new SQLite3($dbFilename);
-        $db->busyTimeout(5000); // warte wenn busy in millisekunden
+        $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
         $db->exec('PRAGMA synchronous = NORMAL;');
 
         $queryTemp = " UPDATE sensorThTemp SET sensorThTempAlertCount = sensorThTempAlertCount + 1,
@@ -1826,7 +1879,7 @@ function setSensorAlertCounter($sensor, $sensorType): bool
         $timeStampIna226      = date('Y-m-d H:i:s');
 
         $dbIna266 = new SQLite3($dbFilenameIna226);
-        $dbIna266->busyTimeout(5000); // warte wenn busy in millisekunden
+        $dbIna266->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
         $dbIna266->exec('PRAGMA synchronous = NORMAL;');
 
         $queryIna226 = " UPDATE sensorThIna226 SET sensorThIna226vBusAlertCount = sensorThIna226vBusAlertCount + 1,
@@ -1893,7 +1946,7 @@ function resetSensorAlertCounter($sensor, $sensorType): bool
         $timeStamps     = date('Y-m-d H:i:s');
 
         $db = new SQLite3($dbFilename);
-        $db->busyTimeout(5000); // warte wenn busy in millisekunden
+        $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
         $db->exec('PRAGMA synchronous = NORMAL;');
 
         $queryTemp = " UPDATE sensorThTemp SET sensorThTempAlertCount = 0,
@@ -1937,7 +1990,7 @@ function resetSensorAlertCounter($sensor, $sensorType): bool
         $timeStamps     = date('Y-m-d H:i:s');
 
         $db = new SQLite3($dbFilename);
-        $db->busyTimeout(5000); // warte wenn busy in millisekunden
+        $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
         $db->exec('PRAGMA synchronous = NORMAL;');
 
         $queryIna226vBus = " UPDATE sensorThIna226 SET sensorThIna226vBusAlertCount = 0,
@@ -2343,7 +2396,7 @@ function checkLoraNewGui(): bool
     if ($response === false)
     {
         // Curl Fehler, eventuell Log schreiben
-        echo '<br><span class="failureHint">Kann node zur Prüfung auf neue GUI nicht erreichen!</span>';
+        echo '<br><span class="failureHint">Kann Node mit IP: ' . $loraIp . ' zur Prüfung auf neue GUI nicht erreichen!</span>';
         return false;
     }
 

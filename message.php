@@ -11,8 +11,17 @@ echo '<head><title>Nachrichten</title>';
 ini_set( 'default_charset', 'UTF-8' );
 echo '<script type="text/javascript" src="jquery/jquery.min.js"></script>';
 
-$ts = filemtime('css/message.css');
-echo '<link rel="stylesheet" href="css/message.css?' . $ts . '">';
+#Wenn Snapshot Abfrage, dann CSS in HTML Inline einbetten und UTF-8 Charset Meta-Tag setzen
+if (isset($_GET['isSnapshot']) && $_GET['isSnapshot'] == 1)
+{
+    echo '<meta charset="UTF-8">';
+    echo "<style>" . file_get_contents(__DIR__ . "/css/message.css") . "</style>";
+}
+else
+{
+    $ts = filemtime('css/message.css');
+    echo '<link rel="stylesheet" href="css/message.css?' . $ts . '">';
+}
 
 echo '</head>';
 echo '<body>';
@@ -38,6 +47,7 @@ if(!file_exists('database/meshdash.db') ||
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+ini_set('max_execution_time', '300'); // Ausführungszeit auf 5min bei nicht performanten Geräten
 
 #Hole Parameter für NoPos und DMA-Alert aus Datenbank
 $loraIp             = trim(getParamData('loraIp'));
@@ -59,8 +69,16 @@ $clickOnCall       = getParamData('clickOnCall');
 $mheardGroup       = getParamData('mheardGroup');
 $mheardGroup       = $mheardGroup == '' ? 0 : $mheardGroup;
 
+$bubbleMaxWidth    = getParamData('bubbleMaxWidth') ?? 40;
+$bubbleMaxWidth    = $bubbleMaxWidth == '' ? 40 : $bubbleMaxWidth;
+
 #Prüfe ob Logging aktiv ist
 $doLogEnable = getParamData('doLogEnable');
+
+#Export Group to HTML:
+$msgExportEnable = getParamData('msgExportEnable') ?? 0;
+$msgExportEnable = $msgExportEnable === 1; // True/False
+$msgExportGroup  = getParamData('msgExportGroup') ?? '';
 
 #Prüfe, ob das reine Rufzeichen nur genommen werden soll ohne SSID
 $strictCallEnable = getParamData('strictCallEnable');
@@ -240,7 +258,7 @@ echo '<input type="hidden" id="posStatusValue" value="'. $posStatusValue . '" />
 echo '<input type="hidden" id="noTimeSyncMsgValue" value="'. $noTimeSyncMsgValue . '" />';
 
 $db = new SQLite3('database/meshdash.db', SQLITE3_OPEN_READONLY);
-$db->busyTimeout(5000); // warte wenn busy in millisekunden
+$db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
 if ($searchPage == '' && $doSearchQuery === true)
 {
@@ -530,7 +548,7 @@ if ($result !== false)
             {
                 echo '<div class="chat-container">';
                 echo '<div class="message-row incoming">';
-                echo '<div class="message-bubble">';
+                echo '<div class="message-bubble" style="max-width:' . $bubbleMaxWidth . '%">';
             }
 
             $parts     = explode(',', $src);
@@ -627,7 +645,7 @@ if ($result !== false)
                 #Bubble CSS-Container
                 echo '<div class="chat-container">';
                 echo '<div class="message-row ' . $cssInOutBubble . '">';
-                echo '<div class="message-bubble">';
+                echo '<div class="message-bubble" style="max-width:' . $bubbleMaxWidth . '%">';
             }
 
             echo '<h3 class="setFontMsgHeader ' . $bubbleFontMsgHeader . '">';
@@ -697,27 +715,31 @@ if ($result !== false)
 
             if ($clickOnCall == 0)
             {
-                $patternQrz    = '/\b([a-zA-Z0-9]+(?:-\d+)?)\b/';
-                $replaceQrz    = '<a href="#" onclick="sendToBottomFrame(\'$1\')">$0</a>';
-                $linkedTextQrz = preg_replace($patternQrz, $replaceQrz, $firstCall);
+                # Call in DM-Feld
+                $patternClickOnCall = '/\b([a-zA-Z0-9]+(?:-\d+)?)\b/';
+                $replaceClickOnCall    = '<span onclick="sendToBottomFrame(\'$1\')" style="cursor: pointer;color:#0000ee">$0</span>';
+                $linkedTextClickOnCall = preg_replace($patternClickOnCall, $replaceClickOnCall, $firstCall);
 
-                echo '<span class="' . $fromToSquare . '"><span class="' . $alertSrcCss . '">' . $linkedTextQrz. '</span> > ' . '<span class="' . $alertDstCss . '">' . $dstTxt . '</span> :</span> ' . $linkedText;
+                echo '<span class="' . $fromToSquare . '"><span class="' . $alertSrcCss . '">' . $linkedTextClickOnCall. '</span> > ' . '<span class="' . $alertDstCss . '">' . $dstTxt . '</span> :</span> ' . $linkedText;
             }
             else if ($clickOnCall == 1)
             {
-                $patternQrz    = '/\b([a-zA-Z0-9]+)(?:-\d+)?\b/';
-                $replaceQrz    = '<a href="https://qrz.com/db/$1" target="_blank">$0</a>';
-                $linkedTextQrz = preg_replace($patternQrz, $replaceQrz, $firstCall);
+                # Öffne QRZ.com
+                $patternClickOnCall    = '/\b([a-zA-Z0-9]+)(?:-\d+)?\b/';
+                $replaceClickOnCall    = '<a href="https://qrz.com/db/$1" target="_blank">$0</a>';
+                $linkedTextClickOnCall = preg_replace($patternClickOnCall, $replaceClickOnCall, $firstCall);
 
-                echo '<span class="' . $fromToSquare . '"><span class="' . $alertSrcCss . '">' . $linkedTextQrz . '</span>' . ' > ' . '<span class="' . $alertDstCss . '">' . $dstTxt . '</span> :</span> ' . $linkedText;
+                echo '<span class="' . $fromToSquare . '"><span class="' . $alertSrcCss . '">' . $linkedTextClickOnCall . '</span>' . ' > ' . '<span class="' . $alertDstCss . '">' . $dstTxt . '</span> :</span> ' . $linkedText;
             }
             else
             {
-                $patternQrz    = '/\b([a-zA-Z0-9]+(?:-\d+)?)\b/';
-                $replaceQrz    = '<a href="#" onclick="sendToBottomMsgFrame(\'$1\')">$0</a>';
-                $linkedTextQrz = preg_replace($patternQrz, $replaceQrz, $firstCall);
+                #Setze Call mit @ in MSG Feld ohne SSID
+                #$patternClickOnCall = '/\b([a-zA-Z0-9]+(?:-\d+)?)\b/';
+                $patternClickOnCall = '/\b([A-Za-z0-9]{3,})(?:-\d+)?\b/i';
+                $replaceClickOnCall    = '<span onclick="sendToBottomMsgFrame(\'$1\')" style="cursor: pointer;color:#0000ee">$0</span>';
+                $linkedTextClickOnCall = preg_replace($patternClickOnCall, $replaceClickOnCall, $firstCall);
 
-                echo '<span class="' . $fromToSquare . '"><span class="' . $alertSrcCss . '">' . $linkedTextQrz. '</span> > ' . '<span class="' . $alertDstCss . '">' . $dstTxt . '</span> :</span> ' . $linkedText;
+                echo '<span class="' . $fromToSquare . '"><span class="' . $alertSrcCss . '">' . $linkedTextClickOnCall. '</span> > ' . '<span class="' . $alertDstCss . '">' . $dstTxt . '</span> :</span> ' . $linkedText;
             }
 
             if ($mhSend == 1)
@@ -745,3 +767,12 @@ if ($result !== false)
 
 echo '</body>';
 echo '</html>';
+#SnapsHot Flag um Iterationsschleife zu vermeiden
+$isSnapshot = $_REQUEST['isSnapshot'] ?? 0;
+
+#Erzeuge html Ausgabe der Nachrichten, wenn aktiviert.
+if ($msgExportEnable === true && $msgExportGroup != '' && $isSnapshot == 0)
+{
+    $html = file_get_contents('http://localhost/5d/message.php?isSnapshot=1&group=' . $msgExportGroup);
+    file_put_contents($msgExportGroup.'.html', $html);
+}

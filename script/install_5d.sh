@@ -1,6 +1,6 @@
 #!/bin/bash
 clear
-echo "MeshDash Install-Script V 1.00.92"
+echo "MeshDash Install-Script V 1.00.94"
 echo
 echo "Installation von MeshDash-SQL"
 echo 
@@ -267,8 +267,8 @@ sudo cp script/checkmh.sh ../meshdash/
 echo
 echo "Aktiviere Systemdienst checkmh.service"
 sudo systemctl daemon-reload
-sudo systemctl enable checkmh.service
-sudo systemctl start checkmh.service
+#sudo systemctl enable checkmh.service
+#sudo systemctl start checkmh.service
 ###############################################
 #Räume auf
 echo "Prüfe ob noch im /home/pi"

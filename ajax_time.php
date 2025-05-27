@@ -1,4 +1,5 @@
 <?php
+require_once 'dbinc/param.php';
 require_once 'include/func_php_core.php';
 
 $selTzName = getParamData('timeZone') ?? 'Europe/Berlin'; // ZeitZone

@@ -23,7 +23,7 @@ logRotate();
 
 // Verbindung zur ersten DB (groups)
 $db1 = new SQLite3('database/groups.db');
-$db1->busyTimeout(5000); // warte wenn busy in millisekunden
+$db1->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 $callSign = SQLite3::escapeString(getParamData('callSign'));
 
 $result1 = $db1->query("
@@ -63,7 +63,7 @@ if ($debugFlag === true)
 
 // Verbindung zur zweiten DB (meshdash)
 $db2 = new SQLite3('database/meshdash.db');
-$db2->busyTimeout(5000); // warte wenn busy in millisekunden
+$db2->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
 // Zeitstempel des letzten Checks abrufen
 $lastChecked          = isset($_GET['lastChecked']) ? intval($_GET['lastChecked']) : 0;

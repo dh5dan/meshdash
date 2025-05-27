@@ -286,7 +286,7 @@ function getMheard2($loraIp)
 function showMheard($localCallSign)
 {
     $db = new SQLite3('database/mheard.db', SQLITE3_OPEN_READONLY);
-    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
     // Hole mir den Timestamp der letzten importierten Mheard Liste aus der Datenbank
     $result = $db->query("SELECT max(timestamps) as timestamps from mheard;");
@@ -398,7 +398,7 @@ function getOwnPosition($callSign)
     $debugFlag   = false;
 
     $dbMd = new SQLite3('database/meshdash.db', SQLITE3_OPEN_READONLY);
-    $dbMd->busyTimeout(5000); // warte wenn busy in millisekunden
+    $dbMd->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
     // Hole mir die pos-Daten aus der Datenbank
     $resultMdOwn    = $dbMd->query("SELECT latitude, longitude 

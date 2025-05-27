@@ -201,6 +201,7 @@ while (true)
 
     #Open Database
     $db = new SQLite3('database/meshdash.db');
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
     $db->exec('PRAGMA synchronous = NORMAL;');
 
     #Escape Msg
