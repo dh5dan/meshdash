@@ -216,8 +216,9 @@ echo
 hostIp=$(hostname -I | awk '{print $1}')
 echo
 if systemctl is-active --quiet checkmh.service; then
-  echo "Stoppe checkmh Service da neue Version ggf. kopiert wird"
+  echo "Stoppe und deaktiviere checkmh Service da nicht mehr benötigt"
   sudo systemctl stop checkmh.service
+  sudo systemctl disable checkmh.service
 fi
 echo
 echo "Prüfe ob im /home/pi"

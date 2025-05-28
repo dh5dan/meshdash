@@ -1,6 +1,6 @@
 #!/bin/bash
 clear
-echo "MeshDash Update-Script V 1.00.46"
+echo "MeshDash Update-Script V 1.00.48"
 echo
 echo "UPDATE einer bestehenden MeshDash SQL Installation."
 echo "Es wird nur das MeshDash installiert, kein PHP oder sonstige Tools."
@@ -161,8 +161,9 @@ fi
 sleep 3
 echo
 if systemctl is-active --quiet checkmh.service; then
-  echo "Stoppe checkmh Service da neue Version ggf. kopiert wird"
+  echo "Stoppe und deaktiviere checkmh Service da nicht mehr benötigt"
   sudo systemctl stop checkmh.service
+  sudo systemctl disable checkmh.service
 fi
 echo
 echo "Lösche meshdash Verzeichnis und erzeuge es neu"
