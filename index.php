@@ -29,6 +29,7 @@ echo '<body>';
 
 #Prevents UTF8 Errors on misconfigured php.ini
 ini_set( 'default_charset', 'UTF-8' );
+ini_set('max_execution_time', '300'); // Ausführungszeit auf 5min bei nicht performanten Geräten
 
 require_once 'dbinc/param.php';
 require_once 'include/func_php_index.php';

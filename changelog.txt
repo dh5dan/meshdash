@@ -1,3 +1,32 @@
+Version 1.10.44 SQL
+FEATURE: Sqlite3 busyTimeout auf 15sek erhöht.
+         - Vermeidet DB-Locked Fehler. Vornehmlich auf Pi-Zero/Zero2 Geräten.
+
+FEATURE: Optimierung der Indizes bei Sqlite3
+
+FEATURE: Verzeichnis "docs" aus Backup entfernt.
+
+FEATURE: "max_execution_time" auf 5min bei Update gesetzt.
+         - Verhindert vorzeitigen PHP-Timeout. Vornehmlich auf Pi-Zero/Zero2 Geräten.
+
+FEATURE: Individuelle Anpassung der maximalen Bubblebreite möglich
+
+FEATURE: Der Service "checkmh" ist in der install_5d.sh deaktiviert, da nicht mehr benötigt.
+
+FEATURE: Nachrichtenausgabe einer Gruppe nun als separate HTML-Datei exportierbar
+         - Kann z.B. per iFrame in anderen Anwendungen eingebunden werden.
+
+FEATURE: onClick auf Call mit SSID wird nun ohne SSID (nur Basis-Call) verarbeitet
+
+BUGFIX:  Seite springt bei onClick auf Call mit SSID '@' nicht mehr zum Seitenanfang
+
+BUGFIX:  Seite springt bei onClick auf Call mit DM nicht mehr zum Seitenanfang
+
+HINWEIS:
+Ab dieser Version sollten keine HTML-500 Fehler mehr auftreten.
+Bitte auf Pi-Zero/Zero2 Geräten einmalig ohne DB-Sicherung updaten.
+Anschließend manuelles Backup MIT DB zum Test ausführen.
+#################################################################
 Version 1.10.42 SQL
 BUGFIX: Fehlerprüfung bei SQL behoben.
 BUGFIX: Fehler im Array-Index behoben (index.php)
@@ -9,7 +38,6 @@ FEATURE: Prüfung auf PHP-Mindestversion >= 7.4
 FEATURE: Code-Refactoring auf Effizienz und Fehlerbehandlung
 FEATURE: Es wird nun bei einem DB-Backup Fehler eine "db_backup_error" angelegt.
          Dient zur Analyse bei Updatefehler mit HTML-500 Error.
-
 #################################################################
 Version 1.10.40 SQL
 FEATURE: Bubble-Darstellung der Nachrichten. Ansicht ist schaltbar.

@@ -36,7 +36,7 @@ function saveGroupsSettings(): bool
     setParamData('groupSoundFile', $groupSoundFile, 'txt');
 
     $db = new SQLite3($dbFilename);
-    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
     $db->exec('PRAGMA synchronous = NORMAL;');
 
     for ($groupId = -4; $groupId <= 6; $groupId++)
@@ -86,7 +86,7 @@ function getGroupParameter(int $mode = 0)
     $returnValue    = array();
 
     $db  = new SQLite3($dbFilename);
-    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
     $res = $db->query("
                         SELECT * 
                           FROM groups

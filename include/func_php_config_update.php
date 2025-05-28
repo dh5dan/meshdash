@@ -12,6 +12,7 @@ function backupApp($sourceDir, $backupDir)
         '.git/',     // komplettes Verzeichnis
         '.idea/',    // komplettes Verzeichnis
         'test/',     // komplettes Verzeichnis
+        'docs/',     // komplettes Verzeichnis
         '.gitignore' // einzelne Datei
     ];
 
@@ -532,7 +533,7 @@ function doDatabaseCopyForBackup(): bool
         try
         {
             $db = new SQLite3($dbPath, SQLITE3_OPEN_READONLY);
-            $db->busyTimeout(5000); // warte wenn busy in millisekunden
+            $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
             $query = "VACUUM main INTO '$backupPath'";
 
             if (!$db->exec($query))

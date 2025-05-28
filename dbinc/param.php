@@ -1,5 +1,5 @@
 <?php
-const VERSION = '1.10.42';
+const VERSION = '1.10.44';
 date_default_timezone_set('Europe/Berlin');
 
 const TRIGGER_LINK_SEND_QUEUE = 'http://localhost/5d/send_queue.php';
@@ -10,3 +10,4 @@ const CRON_PROC_FILE = 'cron_loop.php';
 const UPD_PID_FILE = 'udp.pid';
 const UPD_STOP_FILE = 'udp_stop';
 const UDP_PROC_FILE = 'udp_receiver.php';
+const SQLITE3_BUSY_TIMEOUT = 15000;  //Sqlite3 by

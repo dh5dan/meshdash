@@ -35,7 +35,7 @@ function updateAckReqId($msgId, $ackReqId): bool
 
     $db = new SQLite3($dbFilename);
     $db->exec('PRAGMA synchronous = NORMAL;');
-    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
     @$db->exec(" UPDATE meshdash
                           SET ackReq = $ackReqId
@@ -66,7 +66,7 @@ function updateAckId($ackId): bool
 
     $db = new SQLite3($dbFilename);
     $db->exec('PRAGMA synchronous = NORMAL;');
-    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
     $db->exec(" UPDATE meshdash
                           SET ack = $ackId
                         WHERE ackReq = $ackId
@@ -187,7 +187,7 @@ function sendMheard($msgId, $src)
     #$mheardTarget = getParamData('mheardTarget'); // 0=Gruppe / 1=Call (derzeit ungenutzt)
 
     $db = new SQLite3('database/mheard.db', SQLITE3_OPEN_READONLY);
-    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
     // Hole mir die letzten 30 Nachrichten aus der Datenbank
     $result = $db->query("SELECT timestamps 

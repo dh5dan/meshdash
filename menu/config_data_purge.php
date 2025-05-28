@@ -35,7 +35,7 @@ if ($sendData === '11')
     $purgeDateNat = date( "Y-m-d", strtotime($purgeDateIso));
 
     $db = new SQLite3('../database/meshdash.db');
-    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
     $res   = $db->query("SELECT count(*) AS count 
                                  FROM meshdash
                                 WHERE DATE(timestamps) < '$purgeDateNat';
@@ -67,7 +67,7 @@ elseif ($sendData === '13')
     $purgeDateNat = date( "Y-m-d", strtotime($purgeDateIso));
 
     $db = new SQLite3('../database/meshdash.db');
-    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
     $db->exec("DELETE FROM meshdash 
                             WHERE DATE(timestamps) < '$purgeDateNat';
                      ");

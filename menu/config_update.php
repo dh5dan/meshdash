@@ -28,6 +28,7 @@ ini_set('display_errors',1);
 ini_set('upload_max_filesize', '30M'); // Erhöht die maximale Upload-Dateigröße auf 20 MB (2M)
 ini_set('post_max_size', '30M'); // Erhöht die maximale POST-Daten-Größe auf 25 MB (8M)
 ini_set('memory_limit', '256M'); // Falls nötig das Speicherlimit erhöhen (128M)
+ini_set('max_execution_time', '300'); // Ausführungszeit auf 5min bei nicht performanten Geräten
 
 $sendData      = $_REQUEST['sendData'] ?? 0;
 $debugFlag     = false;

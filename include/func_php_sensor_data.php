@@ -171,7 +171,7 @@ function showSensorData()
 
 
     $db = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
-    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
     // Hole mir die letzten 30 Nachrichten aus der Datenbank
     $result = $db->query("SELECT * FROM sensordata
@@ -400,13 +400,13 @@ function checkSensor($resGetSensorData)
     $mxSendAlertMsg = 2;//Max. 2 Nachrichten in einer Stunde senden
 
     $db = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
-    $db->busyTimeout(5000); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
     // Hole mir die letzten 30 Nachrichten aus der Datenbank
     $result = $db->query("SELECT * 
                                   FROM sensordata 
-                              ORDER BY sensorDataId DESC
-                                 LIMIT 1;
+                                  WHERE sensorDataId = (SELECT MAX(sensorDataId) 
+                                                          FROM sensordata);
                         ");
 
     $dsData = $result->fetchArray(SQLITE3_ASSOC);
@@ -440,7 +440,7 @@ function checkSensor($resGetSensorData)
         $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
 
         $dbIna226 = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
-        $dbIna226->busyTimeout(5000); // warte wenn busy in millisekunden
+        $dbIna226->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
         $resultThSensor = $dbIna226->query("SELECT * FROM sensorThIna226;");
         $dsDataTh       = $resultThSensor->fetchArray(SQLITE3_ASSOC);
@@ -639,7 +639,7 @@ function checkSensor($resGetSensorData)
         $dbFilenameTemp     = $basenameTemp == 'menu' ? $dbFilenameSubTemp : $dbFilenameRootTemp;
 
         $dbTemp = new SQLite3($dbFilenameTemp, SQLITE3_OPEN_READONLY);
-        $dbTemp->busyTimeout(5000); // warte wenn busy in millisekunden
+        $dbTemp->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
         $resultThTempSensor = $dbTemp->query("SELECT * FROM sensorThTemp;");
         $dsDataThTemp       = $resultThTempSensor->fetchArray(SQLITE3_ASSOC);
@@ -787,7 +787,7 @@ function checkSensorAlertCount(): bool
     $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
 
     $dbIna226 = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
-    $dbIna226->busyTimeout(5000); // warte wenn busy in millisekunden
+    $dbIna226->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
     $queryIna226 = "SELECT strftime('%s', 'now', 
                                 CASE 
@@ -937,7 +937,7 @@ function checkSensorAlertCount(): bool
     $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
 
     $dbTemp = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
-    $dbTemp->busyTimeout(5000); // warte wenn busy in millisekunden
+    $dbTemp->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
     $queryTemp = "SELECT strftime('%s', 'now', 
                                 CASE 

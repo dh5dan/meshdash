@@ -14,7 +14,7 @@ $returnArray = array();
 $ownCallSign = getParamData('callSign');
 
 $db = new SQLite3('database/mheard.db', SQLITE3_OPEN_READONLY);
-$db->busyTimeout(5000); // warte wenn busy in millisekunden
+$db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
 // Hole mir die letzten 30 Nachrichten aus der Datenbank
 $result    = $db->query("SELECT max(timestamps) AS timestamps FROM mheard;");
@@ -54,7 +54,7 @@ if ($validData)
             $m        = $row['mhM'];
 
             $dbMd = new SQLite3('database/meshdash.db', SQLITE3_OPEN_READONLY);
-            $dbMd->busyTimeout(5000); // warte wenn busy in millisekunden
+            $dbMd->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
             // Hole mir die pos-Daten aus der Datenbank
             $resultMd    = $dbMd->query("SELECT * 
@@ -98,7 +98,7 @@ if ($validData)
     ########### Own Pos
 
     $dbMd = new SQLite3('database/meshdash.db', SQLITE3_OPEN_READONLY);
-    $dbMd->busyTimeout(5000); // warte wenn busy in millisekunden
+    $dbMd->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
     // Hole mir die pos-Daten aus der Datenbank
     $resultMdOwn    = $dbMd->query("SELECT * 

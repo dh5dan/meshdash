@@ -61,6 +61,10 @@ function initDatabases()
     {
         initSQLiteDatabase('tx_queue');
     }
+    else
+    {
+        checkDbUpgrade('tx_queue');
+    }
 }
 
 function initSQLiteDatabase($database): bool
@@ -104,13 +108,15 @@ function initSQLiteDatabase($database): bool
                                 )
                 ");
 
-        #Set Index
-        $db->exec("CREATE INDEX IF NOT EXISTS idx_timestamps ON meshdash(timestamps);");
-        $db->exec("CREATE INDEX IF NOT EXISTS idx_dst ON meshdash(dst);");
-
         #Close and write Back WAL
         $db->close();
         unset($db);
+
+        #Set Index
+        addIndex('meshdash', 'meshdash','idx_ack_type_ts', 'msgIsAck, type, timestamps DESC');
+        addIndex('meshdash', 'meshdash','idx_check_msg', 'type, dst, timestamps');
+        addIndex('meshdash', 'meshdash','idx_ack_ts', 'msgIsAck, timestamps DESC');
+        addIndex('meshdash', 'meshdash','idx_ack_dst_ts', 'msgIsAck, dst, timestamps DESC');
     }
     elseif ($database == 'parameter')
     {
@@ -173,7 +179,8 @@ function initSQLiteDatabase($database): bool
                                        ('soundFileNewMsg', '', 'new_message.wav'),
                                        ('mheardGroup', 0, ''),
                                        ('openStreeTileServerUrl', '', 'tile.openstreetmap.org'),
-                                       ('bubbleStyleView', 1, '')
+                                       ('bubbleStyleView', 1, ''),
+                                       ('bubbleMaxWidth', 40, '')
            ");
 
         #Close and write Back WAL
@@ -233,9 +240,6 @@ function initSQLiteDatabase($database): bool
                                   ina226vPower TEXT
                                 )
                 ");
-
-        #Set Index
-        $db->exec("CREATE INDEX IF NOT EXISTS idx_timestamps ON sensordata(timestamps);");
 
         #Close and write Back WAL
         $db->close();
@@ -353,12 +357,12 @@ function initSQLiteDatabase($database): bool
                                 )
                 ");
 
-        #Set Index
-        $db->exec("CREATE INDEX IF NOT EXISTS idx_timestamps ON mheard(timestamps);");
-
         #Close and write Back WAL
         $db->close();
         unset($db);
+
+        #Set Index
+        addIndex('mheard', 'mheard','idx_timestamps', 'timestamps, mhTime DESC');
     }
     elseif ($database == 'groups')
     {
@@ -409,12 +413,12 @@ function initSQLiteDatabase($database): bool
                                 )
                 ");
 
-        #Set Index
-        $db->exec("CREATE INDEX IF NOT EXISTS idx_txInsertTimestamp ON txQueue(insertTimestamp);");
-
         #Close and write Back WAL
         $db->close();
         unset($db);
+
+        #Set Index
+        addIndex('tx_queue', 'txQueue','idx_txFlag_qid', 'txFlag, txQueueId');
     }
 
     return true;
