@@ -16,26 +16,65 @@ $ownCallSign = getParamData('callSign');
 $db = new SQLite3('database/mheard.db', SQLITE3_OPEN_READONLY);
 $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
-// Hole mir die letzten 30 Nachrichten aus der Datenbank
-$result    = $db->query("SELECT max(timestamps) AS timestamps FROM mheard;");
-$dsData    = $result->fetchArray(SQLITE3_ASSOC);
-$validData = !empty($dsData);
+$sql = "SELECT max(timestamps) AS timestamps 
+          FROM mheard;
+       ";
 
-if ($validData)
+$logArray   = array();
+$logArray[] = "ajax_mheard_sql1: Database: database/mheard.db";
+$logArray[] = "ajax_mheard_sql1: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+$result = safeDbRun($db, $sql, 'query', $logArray);
+
+if ($result === false)
+{
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
+   exit();
+}
+
+$dsData = $result->fetchArray(SQLITE3_ASSOC);
+
+if (!empty($dsData) === true)
 {
     $timeStamp = $dsData['timestamps'];
+
+    $sqlMh = "SELECT *             
+                FROM mheard
+               WHERE timestamps = '$timeStamp'
+            ORDER BY mhTime DESC;
+                        ";
+
+    $logArray   = array();
+    $logArray[] = "ajax_mheard_sqlMh: Database: database/mheard.db";
+    $logArray[] = "ajax_mheard_sqlMh: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+    $resultMh = safeDbRun($db, $sqlMh, 'query', $logArray);
+
+    if ($resultMh === false)
+    {
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+
+        if ($debugFlag === true)
+        {
+            echo "<br>peng0";
+        }
+
+        exit();
+    }
 
     if ($debugFlag === true)
     {
         echo "<br>#74#resultMh Select 1#<br>";
         echo "<br>timeStamp:$timeStamp";
+        echo "<br>sqlMh:$sqlMh";
+        echo "<br>resultMh:";
+        var_dump($resultMh);
     }
-
-    $resultMh = $db->query("SELECT *             
-                                    FROM mheard
-                                   WHERE timestamps = '$timeStamp'
-                                ORDER BY mhTime DESC;
-                        ");
 
     if ($resultMh !== false)
     {
@@ -53,29 +92,57 @@ if ($validData)
             $pl       = $row['mhPl'];
             $m        = $row['mhM'];
 
-            $dbMd = new SQLite3('database/meshdash.db', SQLITE3_OPEN_READONLY);
-            $dbMd->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+            $dbMd1 = new SQLite3('database/meshdash.db', SQLITE3_OPEN_READONLY);
+            $dbMd1->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
             // Hole mir die pos-Daten aus der Datenbank
-            $resultMd    = $dbMd->query("SELECT * 
-                                                 FROM meshdash
-                                                WHERE src = '$callSign'
-                                                  AND type = 'pos'
-                                             ORDER BY timestamps DESC
-                                                LIMIT 1;
-                                                    ");
-            $dsDataMd    = $resultMd->fetchArray(SQLITE3_ASSOC);
-            $validDataMd = !empty($dsDataMd);
 
-            if ($validDataMd)
+            $sqlMd1 = "SELECT * 
+                         FROM meshdash
+                        WHERE src = '$callSign'
+                          AND type = 'pos'
+                     ORDER BY timestamps DESC
+                        LIMIT 1;
+                     ";
+
+            $logArray   = array();
+            $logArray[] = "ajax_mheard_sqlMd1: Database: database/mheard.db";
+            $logArray[] = "ajax_mheard_sqlMd1: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+            $resultMd1 = safeDbRun($dbMd1, $sqlMd1, 'query', $logArray);
+
+            if ($resultMd1 === false)
             {
-                $returnArray[$callSign]['timestamps'] = $dsDataMd['timestamps'];
-                $returnArray[$callSign]['latitude']   = substr($dsDataMd['latitude'],0,7);
-                $returnArray[$callSign]['longitude']  = substr($dsDataMd['longitude'],0,6);
-                $returnArray[$callSign]['altitude']   = number_format($dsDataMd['altitude'] * 0.3048); // Umrechnung Fuss -> Meter;
-                $returnArray[$callSign]['firmware']   = $dsDataMd['firmware'];
-                $returnArray[$callSign]['fw_sub']     = $dsDataMd['fw_sub'];
-                $returnArray[$callSign]['batt']       = $dsDataMd['batt'];
+                #Close and write Back WAL
+                $dbMd1->close();
+                unset($dbMd1);
+
+                if ($debugFlag === true)
+                {
+                    echo "<br>Peng! resultMd = false";
+                }
+
+                exit();
+            }
+
+            $dsDataMd1 = $resultMd1->fetchArray(SQLITE3_ASSOC);
+
+            if ($debugFlag === true)
+            {
+                echo "<br>sqlmd1: sqlMd1:<br>$sqlMd1";
+                echo "<br>dsDataMd1:";
+                var_dump($dsDataMd1);
+            }
+
+            if (!empty($dsDataMd1) === true)
+            {
+                $returnArray[$callSign]['timestamps'] = $dsDataMd1['timestamps'];
+                $returnArray[$callSign]['latitude']   = substr($dsDataMd1['latitude'],0,7);
+                $returnArray[$callSign]['longitude']  = substr($dsDataMd1['longitude'],0,6);
+                $returnArray[$callSign]['altitude']   = number_format($dsDataMd1['altitude'] * 0.3048); // Umrechnung Fuss -> Meter;
+                $returnArray[$callSign]['firmware']   = $dsDataMd1['firmware'];
+                $returnArray[$callSign]['fw_sub']     = $dsDataMd1['fw_sub'];
+                $returnArray[$callSign]['batt']       = $dsDataMd1['batt'];
                 $returnArray[$callSign]['dist']       = substr($dist,0,5);
                 $returnArray[$callSign]['callSign']   = $callSign;
                 $returnArray[$callSign]['hardware']   = $hardware;
@@ -92,26 +159,44 @@ if ($validData)
                     echo "<br>---------------------------";
                 }
             }
+
+            #Close and write Back WAL
+            $dbMd1->close();
+            unset($dbMd1);
         }
     }
 
     ########### Own Pos
 
-    $dbMd = new SQLite3('database/meshdash.db', SQLITE3_OPEN_READONLY);
-    $dbMd->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+    $dbMd2 = new SQLite3('database/meshdash.db', SQLITE3_OPEN_READONLY);
+    $dbMd2->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
-    // Hole mir die pos-Daten aus der Datenbank
-    $resultMdOwn    = $dbMd->query("SELECT * 
-                                         FROM meshdash
-                                        WHERE src = '$ownCallSign'
-                                          AND type = 'pos'
-                                     ORDER BY timestamps DESC
-                                        LIMIT 1;
-                                            ");
-    $dsDataMdOwn    = $resultMdOwn->fetchArray(SQLITE3_ASSOC);
-    $validDataMdOwn = !empty($dsDataMdOwn);
+    $sqlMd2 = "SELECT * 
+                 FROM meshdash
+                WHERE src = '$ownCallSign'
+                  AND type = 'pos'
+             ORDER BY timestamps DESC
+                LIMIT 1;
+                    ";
 
-    if ($validDataMdOwn)
+    $logArray   = array();
+    $logArray[] = "ajax_mheard_sqlMd2: Database: database/mheard.db";
+    $logArray[] = "ajax_mheard_sqlMd2: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+    $resultMdOwn = safeDbRun($dbMd2, $sqlMd2, 'query', $logArray);
+
+    if ($resultMdOwn === false)
+    {
+        #Close and write Back WAL
+        $dbMd2->close();
+        unset($dbMd2);
+
+        exit();
+    }
+
+    $dsDataMdOwn = $resultMdOwn->fetchArray(SQLITE3_ASSOC);
+
+    if (!empty($dsDataMdOwn) === true)
     {
         $returnArray[$ownCallSign]['timestamps'] = $dsDataMdOwn['timestamps'];
         $returnArray[$ownCallSign]['latitude']   = substr($dsDataMdOwn['latitude'],0,7);
@@ -134,7 +219,15 @@ if ($validData)
             echo "<br>---------------------------";
         }
     }
+
+    #Close and write Back WAL
+    $dbMd2->close();
+    unset($dbMd2);
 }
+
+#Close and write Back WAL
+$db->close();
+unset($db);
 
 if ($debugFlag === false)
 {
@@ -147,4 +240,3 @@ else
 }
 
 echo json_encode($returnArray);
-

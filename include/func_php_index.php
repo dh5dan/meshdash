@@ -87,7 +87,6 @@ function initDatabases()
         checkDbUpgrade('tx_queue');
     }
 }
-
 function initSQLiteDatabase($database): bool
 {
     if ($database == 'meshdash')
@@ -444,7 +443,6 @@ function initSQLiteDatabase($database): bool
 
     return true;
 }
-
 function showMenuIcons()
 {
     echo '<div id="menu-icon" class="topMenu">&#9776;</div>';
@@ -490,7 +488,6 @@ function showMenuIcons()
     echo '</ul>';
     echo '</div>';
 }
-
 function initSetBaseParam()
 {
     $loraIp   = trim($_REQUEST['paramSetLoraIp'] ?? '0.0.0.0');
@@ -510,7 +507,6 @@ function initSetBaseParam()
     . '</span>';
     exit();
 }
-
 function checkBaseParam($param)
 {
     $loraIP    = getParamData('loraIp');
@@ -559,7 +555,6 @@ function checkBaseParam($param)
         return false;
     }
 }
-
 function checkExtension($param)
 {
     $debugFlag     = $param['debugFlag'] ?? false;
@@ -680,7 +675,6 @@ function checkExtension($param)
 
     exit();
 }
-
 function setNewMsgBgColor()
 {
     $newMsgBgColor = getParamData('newMsgBgColor');
@@ -692,7 +686,6 @@ function setNewMsgBgColor()
             }
            </style>';
 }
-
 function setNewMsgAudioItems(): bool
 {
     $resGetGroupParameter = getGroupParameter();

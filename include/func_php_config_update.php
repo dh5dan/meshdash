@@ -537,18 +537,29 @@ function doDatabaseCopyForBackup(): bool
             $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
             $query = "VACUUM main INTO '$backupPath'";
 
-            if (!$db->exec($query))
+            $logArray   = array();
+            $logArray[] = "UpdateVacuumCpy: Database: $backupPath";
+            $logArray[] = "UpdateVacuumCpy: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+            $res = safeDbRun($db, $query, 'exec', $logArray);
+
+            if ($res === false)
             {
                 $tt        = "Fehler beim VACUUM DB-Backup von $dbPath: " . $db->lastErrorMsg() . "\n";
                 $errorText = date('Y-m-d H:i:s') . ' result:' . $tt . "\n";
 
                 file_put_contents('../log/db_backup_error.log', $errorText, FILE_APPEND);
-                echo "<br>$tt";
 
+                echo '<br><span class="failureHint">'
+                    . 'Fehler beim VACUUM DB-Backup von ' . $dbPath . ': '
+                    . $db->lastErrorMsg()
+                    . '</span>';
                 $errorOccurred = true;
             }
 
+            #Close and write Back WAL
             $db->close();
+            unset($db);
 
             // Plausibilitätsprüfung: Größe muss minimal > 1 KB sein
             if (!file_exists($backupPath) || filesize($backupPath) < 1024)

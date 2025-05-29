@@ -1,6 +1,27 @@
 <script>
     $(function ($) {
 
+        const $btnScrollToTop = $('#scrollTopBtn');
+        const showAfterScrollToTop = 150; // Pixel ab Scrollhöhe Button anzeigen
+
+        $(window).on('scroll', function()
+        {
+            if ($(this).scrollTop() > showAfterScrollToTop)
+            {
+                $btnScrollToTop.addClass('show');
+            }
+            else
+            {
+                $btnScrollToTop.removeClass('show');
+            }
+        });
+
+        $btnScrollToTop.on('click', function()
+        {
+            $('html, body').animate({scrollTop: 0}, 400); // smooth scroll in 400ms
+        });
+
+
         $(".btnPagePagination").on("click", function ()
         {
             let group           = $(this).data('group');
@@ -36,7 +57,6 @@
 
             return false;
         });
-
 
         let savedGroupId = sessionStorage.getItem('groupId');
         if (savedGroupId) {

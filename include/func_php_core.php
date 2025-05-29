@@ -15,16 +15,26 @@ function getParamData($key)
 
     $db  = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
     $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
-    $res = $db->query("SELECT * 
-                               FROM parameter AS pa 
-                              WHERE pa.param_key = '$key';
-                    ");
 
-    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
+    $sql = "SELECT * 
+              FROM parameter AS pa 
+             WHERE pa.param_key = '$key';
+           ";
+
+    $logArray   = array();
+    $logArray[] = "getParamData: Database: $dbFilename";
+    $logArray[] = "getParamData: key: $key";
+    $logArray[] = "getParamData: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+    $res = safeDbRun( $db,  $sql, 'query', $logArray);
+
+    if ($res === false)
     {
-        echo "<br>getParamData";
-        echo "<br>ErrMsg:" . $db->lastErrorMsg();
-        echo "<br>ErrNum:" . $db->lastErrorCode();
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+
+        return false;
     }
 
     $dsData = $res->fetchArray(SQLITE3_ASSOC);
@@ -63,28 +73,32 @@ function setParamData($key, $value, $mode = 'int'): bool
         $param_text  = '';
     }
 
-    $db->exec("
-                        REPLACE INTO parameter (
-                                                param_key, 
-                                                param_value, 
-                                                param_text)
-                        VALUES (
-                                '$key',
-                                '$param_value',
-                                '$param_text'
+    $sql = "REPLACE INTO parameter (param_key, 
+                                    param_value, 
+                                    param_text)
+                  VALUES ('$key',
+                          '$param_value',
+                          '$param_text'
                         );
-                    ");
+          ";
 
-    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
-    {
-        echo "<br>setParamData";
-        echo "<br>ErrMsg:" . $db->lastErrorMsg();
-        echo "<br>ErrNum:" . $db->lastErrorCode();
-    }
+    $logArray   = array();
+    $logArray[] = "setParamData: Database: $dbFilename";
+    $logArray[] = "setParamData: key: $key";
+    $logArray[] = "setParamData: param_value: $param_value";
+    $logArray[] = "setParamData: param_text: $param_text";
+    $logArray[] = "setParamData: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+    $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
     #Close and write Back WAL
     $db->close();
     unset($db);
+
+    if ($res === false)
+    {
+        return false;
+    }
 
     return true;
 }
@@ -130,53 +144,49 @@ function setThTempData($arrayParam): bool
     $sensorThToutAlertMsg = SQLite3::escapeString($sensorThToutAlertMsg);
     $sensorThToutDmGrpId  = SQLite3::escapeString($sensorThToutDmGrpId);
 
-    $db->exec("
-                        REPLACE INTO sensorThTemp (sensorThTempId,
-                                                   timestamps, 
-                                                   sensorThTempIntervallMin,
-                                                   sensorThTempEnabled, 
-                                                   sensorThTempMinValue, 
-                                                   sensorThTempMaxValue, 
-                                                   sensorThTempAlertMsg, 
-                                                   sensorThTempDmGrpId, 
-                                                   sensorThToutEnabled, 
-                                                   sensorThToutMinValue, 
-                                                   sensorThToutMaxValue, 
-                                                   sensorThToutAlertMsg, 
-                                                   sensorThToutDmGrpId)
-                        VALUES (
-                                '1',
-                                '$timeStamps',
-                                '$sensorThTempIntervallMin',
-                                '$sensorThTempEnabled',
-                                '$sensorThTempMinValue',
-                                '$sensorThTempMaxValue',
-                                '$sensorThTempAlertMsg',
-                                '$sensorThTempDmGrpId',
-                                '$sensorThToutEnabled',
-                                '$sensorThToutMinValue',
-                                '$sensorThToutMaxValue',
-                                '$sensorThToutAlertMsg',
-                                '$sensorThToutDmGrpId'
-                        );
-                    ");
+    $sqlTemp = "REPLACE INTO sensorThTemp (sensorThTempId,
+                                           timestamps, 
+                                           sensorThTempIntervallMin,
+                                           sensorThTempEnabled, 
+                                           sensorThTempMinValue, 
+                                           sensorThTempMaxValue, 
+                                           sensorThTempAlertMsg, 
+                                           sensorThTempDmGrpId, 
+                                           sensorThToutEnabled, 
+                                           sensorThToutMinValue, 
+                                           sensorThToutMaxValue, 
+                                           sensorThToutAlertMsg, 
+                                           sensorThToutDmGrpId)
+                     VALUES ('1',
+                             '$timeStamps',
+                             '$sensorThTempIntervallMin',
+                             '$sensorThTempEnabled',
+                             '$sensorThTempMinValue',
+                             '$sensorThTempMaxValue',
+                             '$sensorThTempAlertMsg',
+                             '$sensorThTempDmGrpId',
+                             '$sensorThToutEnabled',
+                             '$sensorThToutMinValue',
+                             '$sensorThToutMaxValue',
+                             '$sensorThToutAlertMsg',
+                             '$sensorThToutDmGrpId'
+                           );
+                    ";
 
-    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
-    {
-        echo "<br>setThTempData";
-        echo "<br>ErrMsg:" . $db->lastErrorMsg();
-        echo "<br>ErrNum:" . $db->lastErrorCode();
+    $logArray   = array();
+    $logArray[] = "setThTempData: Database: $dbFilename";
+    $logArray[] = "setThTempData: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
-        #Close and write Back WAL
-        $db->close();
-        unset($db);
-
-        return false;
-    }
+    $res = safeDbRun( $db,  $sqlTemp, 'exec', $logArray);
 
     #Close and write Back WAL
     $db->close();
     unset($db);
+
+    if ($res === false)
+    {
+        return false;
+    }
 
     return true;
 }
@@ -244,74 +254,69 @@ function setThIna226Data($arrayParam): bool
     $sensorThIna226vPowerAlertMsg = SQLite3::escapeString($sensorThIna226vPowerAlertMsg);
     $sensorThIna226vPowerDmGrpId  = SQLite3::escapeString($sensorThIna226vPowerDmGrpId);
 
-    $db->exec("
-                        REPLACE INTO sensorThIna226 (
-                                                     sensorThIna226Id,
-                                                     timestamps, 
-                                                     sensorThIna226IntervallMin,
-                                                     sensorThIna226vBusEnabled, 
-                                                     sensorThIna226vBusMinValue, 
-                                                     sensorThIna226vBusMaxValue, 
-                                                     sensorThIna226vBusAlertMsg, 
-                                                     sensorThIna226vBusDmGrpId, 
-                                                     sensorThIna226vShuntEnabled, 
-                                                     sensorThIna226vShuntMinValue, 
-                                                     sensorThIna226vShuntMaxValue, 
-                                                     sensorThIna226vShuntAlertMsg, 
-                                                     sensorThIna226vShuntDmGrpId, 
-                                                     sensorThIna226vCurrentEnabled, 
-                                                     sensorThIna226vCurrentMinValue, 
-                                                     sensorThIna226vCurrentMaxValue, 
-                                                     sensorThIna226vCurrentAlertMsg, 
-                                                     sensorThIna226vCurrentDmGrpId, 
-                                                     sensorThIna226vPowerEnabled, 
-                                                     sensorThIna226vPowerMinValue, 
-                                                     sensorThIna226vPowerMaxValue, 
-                                                     sensorThIna226vPowerAlertMsg, 
-                                                     sensorThIna226vPowerDmGrpId)
-                        VALUES (
-                                     '1',
-                                     '$timeStamps',
-                                     '$sensorThIna226IntervallMin',
-                                     '$sensorThIna226vBusEnabled', 
-                                     '$sensorThIna226vBusMinValue', 
-                                     '$sensorThIna226vBusMaxValue', 
-                                     '$sensorThIna226vBusAlertMsg', 
-                                     '$sensorThIna226vBusDmGrpId', 
-                                     '$sensorThIna226vShuntEnabled', 
-                                     '$sensorThIna226vShuntMinValue', 
-                                     '$sensorThIna226vShuntMaxValue', 
-                                     '$sensorThIna226vShuntAlertMsg', 
-                                     '$sensorThIna226vShuntDmGrpId', 
-                                     '$sensorThIna226vCurrentEnabled', 
-                                     '$sensorThIna226vCurrentMinValue', 
-                                     '$sensorThIna226vCurrentMaxValue', 
-                                     '$sensorThIna226vCurrentAlertMsg', 
-                                     '$sensorThIna226vCurrentDmGrpId', 
-                                     '$sensorThIna226vPowerEnabled', 
-                                     '$sensorThIna226vPowerMinValue', 
-                                     '$sensorThIna226vPowerMaxValue', 
-                                     '$sensorThIna226vPowerAlertMsg', 
-                                     '$sensorThIna226vPowerDmGrpId'
-                               );
-                    ");
+    $sql = "REPLACE INTO sensorThIna226 (sensorThIna226Id,
+                                         timestamps, 
+                                         sensorThIna226IntervallMin,
+                                         sensorThIna226vBusEnabled, 
+                                         sensorThIna226vBusMinValue, 
+                                         sensorThIna226vBusMaxValue, 
+                                         sensorThIna226vBusAlertMsg, 
+                                         sensorThIna226vBusDmGrpId, 
+                                         sensorThIna226vShuntEnabled, 
+                                         sensorThIna226vShuntMinValue, 
+                                         sensorThIna226vShuntMaxValue, 
+                                         sensorThIna226vShuntAlertMsg, 
+                                         sensorThIna226vShuntDmGrpId, 
+                                         sensorThIna226vCurrentEnabled, 
+                                         sensorThIna226vCurrentMinValue, 
+                                         sensorThIna226vCurrentMaxValue, 
+                                         sensorThIna226vCurrentAlertMsg, 
+                                         sensorThIna226vCurrentDmGrpId, 
+                                         sensorThIna226vPowerEnabled, 
+                                         sensorThIna226vPowerMinValue, 
+                                         sensorThIna226vPowerMaxValue, 
+                                         sensorThIna226vPowerAlertMsg, 
+                                         sensorThIna226vPowerDmGrpId)
+               VALUES ('1',
+                       '$timeStamps',
+                       '$sensorThIna226IntervallMin',
+                       '$sensorThIna226vBusEnabled', 
+                       '$sensorThIna226vBusMinValue', 
+                       '$sensorThIna226vBusMaxValue', 
+                       '$sensorThIna226vBusAlertMsg', 
+                       '$sensorThIna226vBusDmGrpId', 
+                       '$sensorThIna226vShuntEnabled', 
+                       '$sensorThIna226vShuntMinValue', 
+                       '$sensorThIna226vShuntMaxValue', 
+                       '$sensorThIna226vShuntAlertMsg', 
+                       '$sensorThIna226vShuntDmGrpId', 
+                       '$sensorThIna226vCurrentEnabled', 
+                       '$sensorThIna226vCurrentMinValue', 
+                       '$sensorThIna226vCurrentMaxValue', 
+                       '$sensorThIna226vCurrentAlertMsg', 
+                       '$sensorThIna226vCurrentDmGrpId', 
+                       '$sensorThIna226vPowerEnabled', 
+                       '$sensorThIna226vPowerMinValue', 
+                       '$sensorThIna226vPowerMaxValue', 
+                       '$sensorThIna226vPowerAlertMsg', 
+                       '$sensorThIna226vPowerDmGrpId'
+                     );
+         ";
 
-    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
-    {
-        echo "<br>setThIna226Data";
-        echo "<br>ErrMsg:" . $db->lastErrorMsg();
-        echo "<br>ErrNum:" . $db->lastErrorCode();
+    $logArray   = array();
+    $logArray[] = "setThIna226Data: Database: $dbFilename";
+    $logArray[] = "setThIna226Data: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
-        #Close and write Back WAL
-        $db->close();
-        unset($db);
-
-        return false;
-    }
+    $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
     #Close and write Back WAL
     $db->close();
     unset($db);
+
+    if ($res === false)
+    {
+        return false;
+    }
 
     return true;
 }
@@ -328,41 +333,36 @@ function disableAllIna226Sensors(): bool
     $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
     $db->exec('PRAGMA synchronous = NORMAL;');
 
-    $db->exec("
-                        REPLACE INTO sensorThIna226 (
-                                                     sensorThIna226Id,
-                                                     timeStamps,
-                                                     sensorThIna226vBusEnabled, 
-                                                     sensorThIna226vShuntEnabled, 
-                                                     sensorThIna226vCurrentEnabled, 
-                                                     sensorThIna226vPowerEnabled
-                                                    )
-                                        VALUES (
-                                                     '1',
-                                                     '$timeStamps',
-                                                     '0',
-                                                     '0',
-                                                     '0', 
-                                                     '0'
-                                               );
-                    ");
+    $sql = "REPLACE INTO sensorThIna226 (sensorThIna226Id,
+                                         timeStamps,
+                                         sensorThIna226vBusEnabled, 
+                                         sensorThIna226vShuntEnabled, 
+                                         sensorThIna226vCurrentEnabled, 
+                                         sensorThIna226vPowerEnabled
+                                        )
+                                 VALUES ('1',
+                                         '$timeStamps',
+                                         '0',
+                                         '0',
+                                         '0', 
+                                         '0'
+                                         );
+                    ";
 
-    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
-    {
-        echo "<br>disableAllIna226Sensors";
-        echo "<br>ErrMsg:" . $db->lastErrorMsg();
-        echo "<br>ErrNum:" . $db->lastErrorCode();
+    $logArray = array();
+    $logArray[] = "disableAllIna226Sensors: Database: $dbFilename";
+    $logArray[] = "disableAllIna226Sensors: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
-        #Close and write Back WAL
-        $db->close();
-        unset($db);
-
-        return false;
-    }
+    $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
     #Close and write Back WAL
     $db->close();
     unset($db);
+
+    if ($res === false)
+    {
+        return false;
+    }
 
     return true;
 }
@@ -379,19 +379,20 @@ function getThTempData()
     $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
     $db->exec('PRAGMA synchronous = NORMAL;');
 
-    $result = $db->query("
-                        SELECT * 
-                          FROM sensorThTemp 
-                      ORDER BY timestamps DESC
-                         LIMIT 1;
-                    ");
+    $sql = "SELECT * 
+              FROM sensorThTemp 
+          ORDER BY timestamps DESC
+             LIMIT 1;
+           ";
 
-    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
+    $logArray   = array();
+    $logArray[] = "getThTempData: Database: $dbFilename";
+    $logArray[] = "getThTempData: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+    $result = safeDbRun( $db,  $sql, 'query', $logArray);
+
+    if ($result === false)
     {
-        echo "<br>getThTempData";
-        echo "<br>ErrMsg:" . $db->lastErrorMsg();
-        echo "<br>ErrNum:" . $db->lastErrorCode();
-
         #Close and write Back WAL
         $db->close();
         unset($db);
@@ -399,7 +400,7 @@ function getThTempData()
         return false;
     }
 
-    if ($db !== false)
+    if ($result !== false)
     {
         while ($row = $result->fetchArray(SQLITE3_ASSOC))
         {
@@ -444,18 +445,20 @@ function getThIna226Data()
     $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
     $db->exec('PRAGMA synchronous = NORMAL;');
 
-    $result = $db->query("
-                        SELECT * FROM sensorThIna226 
-                                 ORDER BY timestamps DESC
-                             LIMIT 1;
-                    ");
+    $sql = "SELECT * 
+             FROM sensorThIna226 
+         ORDER BY timestamps DESC
+            LIMIT 1;
+           ";
 
-    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
+    $logArray   = array();
+    $logArray[] = "getThIna226Data: Database: $dbFilename";
+    $logArray[] = "getThIna226Data: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+    $result = safeDbRun( $db,  $sql, 'query', $logArray);
+
+    if ($result === false)
     {
-        echo "<br>getThIna226Data";
-        echo "<br>ErrMsg:" . $db->lastErrorMsg();
-        echo "<br>ErrNum:" . $db->lastErrorCode();
-
         #Close and write Back WAL
         $db->close();
         unset($db);
@@ -463,7 +466,7 @@ function getThIna226Data()
         return false;
     }
 
-    if ($db !== false)
+    if ($result !== false)
     {
         while ($row = $result->fetchArray(SQLITE3_ASSOC))
         {
@@ -527,13 +530,18 @@ function getKeywordsData($msgId)
 
     $db  = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
     $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
-    $res = $db->query("
-                        SELECT * 
-                          FROM keywords AS kw 
-                         WHERE kw.msg_id = '$msgId';
-                    ");
 
-    #Gib Fehler zurück wenn Query fehlerhaft
+    $sql = "SELECT * 
+              FROM keywords AS kw 
+             WHERE kw.msg_id = '$msgId';
+          ";
+
+    $logArray   = array();
+    $logArray[] = "getThIna226Data: Database: $dbFilename";
+    $logArray[] = "getThIna226Data: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+    $res = safeDbRun( $db,  $sql, 'query', $logArray);
+
     if ($res === false)
     {
         $returnValue['errCode']  = 1;
@@ -553,13 +561,6 @@ function getKeywordsData($msgId)
     $returnValue['executed'] = $dsData['executed'] ?? 0;
     $returnValue['errCode']  = $dsData['errCode'] ?? 0;
     $returnValue['errText']  = $dsData['errText'] ?? '';
-
-    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
-    {
-        echo "<br>getKeywordsData";
-        echo "<br>ErrMsg:" . $db->lastErrorMsg();
-        echo "<br>ErrNum:" . $db->lastErrorCode();
-    }
 
     #Close and write Back WAL
     $db->close();
@@ -584,46 +585,36 @@ function setKeywordsData($msgId, $value, int $errCode, string $errText): bool
     $errText = SQLite3::escapeString($errText);
     $msgId   = trim($msgId);
 
-    $res = $db->exec("
-                        REPLACE INTO keywords (
-                                                msg_id, 
-                                                executed,
-                                                errCode,
-                                                errText
-                                              )
-                                VALUES (
-                                        '$msgId',
-                                        '$value',
-                                        '$errCode',
-                                        '$errText'
-                                );
-                    ");
+    $sql = "REPLACE INTO keywords (msg_id, 
+                                   executed,
+                                   errCode,
+                                   errText
+                                  )
+                           VALUES ('$msgId',
+                                   '$value',
+                                   '$errCode',
+                                   '$errText'
+                                  );
+                    ";
 
-    if ($res === false)
-    {
-        #Close and write Back WAL
-        $db->close();
-        unset($db);
+    $logArray = array();
+    $logArray[] = "setKeywordsData: msgId: $msgId";
+    $logArray[] = "setKeywordsData: value: $value";
+    $logArray[] = "setKeywordsData: errCode: $errCode";
+    $logArray[] = "setKeywordsData: errText: $errText";
+    $logArray[] = "setKeywordsData: Database: $dbFilename";
+    $logArray[] = "setKeywordsData: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
-        return false;
-    }
-
-    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
-    {
-        echo "<br>setKeywordsData";
-        echo "<br>ErrMsg:" . $db->lastErrorMsg();
-        echo "<br>ErrNum:" . $db->lastErrorCode();
-
-        #Close and write Back WAL
-        $db->close();
-        unset($db);
-
-        return false;
-    }
+    $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
     #Close and write Back WAL
     $db->close();
     unset($db);
+
+    if ($res === false)
+    {
+        return false;
+    }
 
     return true;
 }
@@ -664,43 +655,47 @@ function setMheardData($heardData): bool
         $pl       = SQLite3::escapeString($key['pl'] ?? '');
         $m        = SQLite3::escapeString($key['m'] ?? '');
 
-        $db->exec(
-            "
-                        REPLACE INTO mheard (
-                                             timestamps, 
-                                             mhCallSign, 
-                                             mhDate, 
-                                             mhTime, 
-                                             mhType,
-                                             mhHardware, 
-                                             mhMod, 
-                                             mhRssi, 
-                                             mhSnr, 
-                                             mhDist, 
-                                             mhPl, 
-                                             mhM)
-                                VALUES (
-                                        '$mhTimeStamps',
-                                        '$callSign',
-                                        '$date',
-                                        '$time',
-                                        '$mhType',
-                                        '$hardware',
-                                        '$mod',
-                                        '$rssi',
-                                        '$snr',
-                                        '$dist',
-                                        '$pl',
-                                        '$m'
-                                );
-                    "
-        );
+        $sql = "REPLACE INTO mheard (timestamps, 
+                                     mhCallSign, 
+                                     mhDate, 
+                                     mhTime, 
+                                     mhType,
+                                     mhHardware, 
+                                     mhMod, 
+                                     mhRssi, 
+                                     mhSnr, 
+                                     mhDist, 
+                                     mhPl, 
+                                     mhM
+                                    )
+                             VALUES ('$mhTimeStamps',
+                                     '$callSign',
+                                     '$date',
+                                     '$time',
+                                     '$mhType',
+                                     '$hardware',
+                                     '$mod',
+                                     '$rssi',
+                                     '$snr',
+                                     '$dist',
+                                     '$pl',
+                                     '$m'
+                                    );
+                    ";
 
-        if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
+        $logArray   = array();
+        $logArray[] = "setMheardData: Database: $dbFilename";
+        $logArray[] = "setMheardData: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+        $res = safeDbRun( $db,  $sql, 'exec', $logArray);
+
+        if ($res === false)
         {
-            echo "<br>setMheardData";
-            echo "<br>ErrMsg:" . $db->lastErrorMsg();
-            echo "<br>ErrNum:" . $db->lastErrorCode();
+            #Close and write Back WAL
+            $db->close();
+            unset($db);
+
+            return false;
         }
     }
 
@@ -740,62 +735,60 @@ function setSensorData($sensorData): bool
     $ina226vCurrent = SQLite3::escapeString($sensorData['vCURRENT'] ?? '');
     $ina226vPower   = SQLite3::escapeString($sensorData['vPOWER'] ?? '');
 
-    $db->exec(
-        "
-                        REPLACE INTO sensordata (
-                                                 timestamps,
-                                                 bme280,
-                                                 bme680,
-                                                 mcu811,
-                                                 lsp33,
-                                                 oneWire,
-                                                 temp,
-                                                 tout,
-                                                 hum,
-                                                 qfe,
-                                                 qnh,
-                                                 altAsl,
-                                                 gas,
-                                                 eCo2,
-                                                 ina226vBus,
-                                                 ina226vShunt,
-                                                 ina226vCurrent,
-                                                 ina226vPower
-                                                 )
-                                VALUES (
-                                        '$timeStamps',
-                                        '$bme280',
-                                        '$bme680',
-                                        '$mcu811',
-                                        '$lsp33',
-                                        '$oneWire',
-                                        '$temp',
-                                        '$tout',
-                                        '$hum',
-                                        '$qfe',
-                                        '$qnh',
-                                        '$altAsl',
-                                        '$gas',
-                                        '$eCo2',
-                                        '$ina226vBus',
-                                        '$ina226vShunt',
-                                        '$ina226vCurrent',
-                                        '$ina226vPower'
-                                );
-                    "
-    );
+    $sql = "REPLACE INTO sensordata (timestamps,
+                                     bme280,
+                                     bme680,
+                                     mcu811,
+                                     lsp33,
+                                     oneWire,
+                                     temp,
+                                     tout,
+                                     hum,
+                                     qfe,
+                                     qnh,
+                                     altAsl,
+                                     gas,
+                                     eCo2,
+                                     ina226vBus,
+                                     ina226vShunt,
+                                     ina226vCurrent,
+                                     ina226vPower
+                                    )
+                             VALUES ('$timeStamps',
+                                     '$bme280',
+                                     '$bme680',
+                                     '$mcu811',
+                                     '$lsp33',
+                                     '$oneWire',
+                                     '$temp',
+                                     '$tout',
+                                     '$hum',
+                                     '$qfe',
+                                     '$qnh',
+                                     '$altAsl',
+                                     '$gas',
+                                     '$eCo2',
+                                     '$ina226vBus',
+                                     '$ina226vShunt',
+                                     '$ina226vCurrent',
+                                     '$ina226vPower'
+                                    );
+                    ";
 
-    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
-    {
-        echo "<br>setSensorData";
-        echo "<br>ErrMsg:" . $db->lastErrorMsg();
-        echo "<br>ErrNum:" . $db->lastErrorCode();
-    }
+    $logArray   = array();
+    $logArray[] = "setSensorData: Database: $dbFilename";
+    $logArray[] = "setSensorData: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
+    $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
     #Close and write Back WAL
     $db->close();
     unset($db);
+
+    if ($res === false)
+    {
+        return false;
+    }
 
     return true;
 }
@@ -829,62 +822,60 @@ function setSensorData2($sensorData): bool
     $ina226vCurrent = SQLite3::escapeString($sensorData['vCURRENT'] ?? '');
     $ina226vPower   = SQLite3::escapeString($sensorData['vPOWER'] ?? '');
 
-    $db->exec(
-        "
-                        REPLACE INTO sensordata (
-                                                 timestamps,
-                                                 bme280,
-                                                 bme680,
-                                                 mcu811,
-                                                 lsp33,
-                                                 oneWire,
-                                                 temp,
-                                                 tout,
-                                                 hum,
-                                                 qfe,
-                                                 qnh,
-                                                 altAsl,
-                                                 gas,
-                                                 eCo2,
-                                                 ina226vBus,
-                                                 ina226vShunt,
-                                                 ina226vCurrent,
-                                                 ina226vPower
-                                                 )
-                                VALUES (
-                                        '$timeStamps',
-                                        '$bme280',
-                                        '$bme680',
-                                        '$mcu811',
-                                        '$lsp33',
-                                        '$oneWire',
-                                        '$temp',
-                                        '$tout',
-                                        '$hum',
-                                        '$qfe',
-                                        '$qnh',
-                                        '$altAsl',
-                                        '$gas',
-                                        '$eCo2',
-                                        '$ina226vBus',
-                                        '$ina226vShunt',
-                                        '$ina226vCurrent',
-                                        '$ina226vPower'
-                                );
-                    "
-    );
+    $sql = "REPLACE INTO sensordata (timestamps,
+                                     bme280,
+                                     bme680,
+                                     mcu811,
+                                     lsp33,
+                                     oneWire,
+                                     temp,
+                                     tout,
+                                     hum,
+                                     qfe,
+                                     qnh,
+                                     altAsl,
+                                     gas,
+                                     eCo2,
+                                     ina226vBus,
+                                     ina226vShunt,
+                                     ina226vCurrent,
+                                     ina226vPower
+                                    )
+                             VALUES ('$timeStamps',
+                                     '$bme280',
+                                     '$bme680',
+                                     '$mcu811',
+                                     '$lsp33',
+                                     '$oneWire',
+                                     '$temp',
+                                     '$tout',
+                                     '$hum',
+                                     '$qfe',
+                                     '$qnh',
+                                     '$altAsl',
+                                     '$gas',
+                                     '$eCo2',
+                                     '$ina226vBus',
+                                     '$ina226vShunt',
+                                     '$ina226vCurrent',
+                                     '$ina226vPower'
+                                    );
+                    ";
 
-    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
-    {
-        echo "<br>setSensorData2";
-        echo "<br>ErrMsg:" . $db->lastErrorMsg();
-        echo "<br>ErrNum:" . $db->lastErrorCode();
-    }
+    $logArray   = array();
+    $logArray[] = "setSensorData2: Database: $dbFilename";
+    $logArray[] = "setSensorData2: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
+    $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
     #Close and write Back WAL
     $db->close();
     unset($db);
+
+    if ($res === false)
+    {
+        return false;
+    }
 
     return true;
 }
@@ -907,21 +898,28 @@ function updateMeshDashData($msgId, $key, $value, $doNothing = false): bool
     #Escape Value
     $value = trim(SQLite3::escapeString($value));
 
-    $db->exec(" UPDATE meshdash
-                          SET $key = '$value'
-                        WHERE msg_id = '$msgId';
-                    ");
+    $sql = " UPDATE meshdash
+                SET $key = '$value'
+              WHERE msg_id = '$msgId';
+           ";
 
-    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
-    {
-        echo "<br>updateMeshDashData";
-        echo "<br>ErrMsg:" . $db->lastErrorMsg();
-        echo "<br>ErrNum:" . $db->lastErrorCode();
-    }
+    $logArray   = array();
+    $logArray[] = "updateMeshDashData: key: $key";
+    $logArray[] = "updateMeshDashData: value: $value";
+    $logArray[] = "updateMeshDashData: msgId: $msgId";
+    $logArray[] = "updateMeshDashData: Database: $dbFilename";
+    $logArray[] = "updateMeshDashData: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+    $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
     #Close and write Back WAL
     $db->close();
     unset($db);
+
+    if ($res === false)
+    {
+        return false;
+    }
 
     return true;
 }
@@ -932,18 +930,37 @@ function columnExists($database, $tabelle, $spalte): bool
     $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
     $query  = "PRAGMA table_info('$tabelle')";
-    $result = $db->query($query);
+
+    $logArray   = array();
+    $logArray[] = "columnExists: Database: $database";
+    $logArray[] = "columnExists: tabelle: $tabelle";
+    $logArray[] = "columnExists: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+    $result = safeDbRun( $db,  $query, 'query', $logArray);
+
+    if ($result === false)
+    {
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+
+        return false;
+    }
 
     while ($row = $result->fetchArray(SQLITE3_ASSOC))
     {
         if ($row['name'] === $spalte)
         {
             $db->close();
+            unset($db);
             return true; // Spalte existiert
         }
     }
 
+    #Close and write Back WAL
     $db->close();
+    unset($db);
+
     return false; // Spalte existiert nicht
 }
 function checkVersion($currentVersion, $targetVersion, $operator)
@@ -1076,8 +1093,11 @@ function checkDbUpgrade($database)
         startBgProcess($paramStartBgProcess);
     }
 }
-function addColumn($database, $tabelle, $spalte, $typ = 'TEXT', $default = null)
+function addColumn($database, $tabelle, $spalte, $typ = 'TEXT', $default = null): bool
 {
+    // Den Standardwert hinzufügen, wenn er angegeben wurde
+    $defaultSql = '';
+
     // SQLite3-Datenbank öffnen
     $db = new SQLite3('database/' . $database . '.db');
     $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
@@ -1088,8 +1108,6 @@ function addColumn($database, $tabelle, $spalte, $typ = 'TEXT', $default = null)
         $typ = 'TEXT';  // Standardwert verwenden, wenn kein Typ angegeben ist
     }
 
-    // Den Standardwert hinzufügen, wenn er angegeben wurde
-    $defaultSql = '';
     if ($default !== null)
     {
         // Wenn ein Standardwert übergeben wurde, wird dieser hinzugefügt
@@ -1098,17 +1116,28 @@ function addColumn($database, $tabelle, $spalte, $typ = 'TEXT', $default = null)
 
     // SQL Befehl zum Hinzufügen der Spalte mit Typ und optionalem Standardwert
     $query = "ALTER TABLE $tabelle ADD COLUMN $spalte $typ" . $defaultSql;
-    if (!$db->exec($query))
+
+    $logArray   = array();
+    $logArray[] = "addColumn: database: $database";
+    $logArray[] = "addColumn: spalte: $spalte";
+    $logArray[] = "addColumn: tabelle: $tabelle";
+    $logArray[] = "addColumn: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+    $res = safeDbRun( $db,  $query, 'exec', $logArray);
+
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
+    if ($res === false)
     {
-        echo "<br>Fehler beim Hinzufügen der Spalte: $spalte in Tabelle $tabelle bei Datenbank $database.";
+        return false;
     }
 
-    $db->close();
+    return true;
 }
-function addIndex($database, $tabelle, $IndexName, $indexField)
+function addIndex($database, $tabelle, $IndexName, $indexField): bool
 {
-    #echo "<br>#1097#AddIDX: $database tab: $tabelle indexName: $IndexName idxfield: $indexField";
-
     // SQLite3-Datenbank öffnen
     $db = new SQLite3('database/' . $database . '.db');
     $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
@@ -1118,17 +1147,27 @@ function addIndex($database, $tabelle, $IndexName, $indexField)
 
     $query = "CREATE INDEX IF NOT EXISTS '$IndexName' ON '$tabelle' ($indexFields);";
 
-    if (!$db->exec($query))
+    $logArray   = array();
+    $logArray[] = "addColumn: database: $database";
+    $logArray[] = "addColumn: IndexName: $IndexName";
+    $logArray[] = "addColumn: indexField: $indexField";
+    $logArray[] = "addColumn: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+    $res = safeDbRun( $db,  $query, 'exec', $logArray);
+
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
+    if ($res === false)
     {
-        echo "<br>Fehler beim Hinzufügen des Index mit Idexname: $IndexName und IndexField: $indexField bei Datenbank $database.";
+        return false;
     }
 
-    $db->close();
+    return true;
 }
-function delIndex($database, $IndexName)
+function delIndex($database, $IndexName): bool
 {
-    #echo "<br>#1116#delIdc: $database indexName: $IndexName";
-
     // SQLite3-Datenbank öffnen
     $db = new SQLite3('database/' . $database . '.db');
     $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
@@ -1136,12 +1175,23 @@ function delIndex($database, $IndexName)
     // SQL Befehl zum Löschen des Index
     $query = "DROP INDEX IF EXISTS '$IndexName';";
 
-    if (!$db->exec($query))
+    $logArray   = array();
+    $logArray[] = "addColumn: database: $database";
+    $logArray[] = "addColumn: IndexName: $IndexName";
+    $logArray[] = "addColumn: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+    $res = safeDbRun( $db,  $query, 'exec', $logArray);
+
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
+    if ($res === false)
     {
-        echo "<br>Fehler beim Löschen des Index mit Idexname: $IndexName bei Datenbank $database.";
+        return false;
     }
 
-    $db->close();
+    return true;
 }
 function getTaskCmd($mode)
 {
@@ -1458,37 +1508,44 @@ function setCronSensorInterval($intervallInMinuten, $deleteFlag): bool
         return false;
     }
 
-    if ($intervallInMinuten < 60) {
+    if ($intervallInMinuten < 60)
+    {
         // Einfache Minuten-Intervalle
         $cronJobsNeu[] = "*/$intervallInMinuten * * * * $skriptPfad";
-    } else {
+    }
+    else
+    {
         $gesamtMinuten = 24 * 60;
-        $anzahlAusführungen = intdiv($gesamtMinuten, $intervallInMinuten);
-        $rest = $gesamtMinuten % $intervallInMinuten;
+        $countItems    = intdiv($gesamtMinuten, $intervallInMinuten);
+        $rest          = $gesamtMinuten % $intervallInMinuten;
 
-        if ($rest > 0 && $debugFlag) {
+        if ($rest > 0 && $debugFlag)
+        {
             echo "⚠️ Achtung: Intervall von {$intervallInMinuten} Minuten passt nicht exakt in 24h.\n";
             echo "Es verbleiben {$rest} Minuten Rest am Tagesende.\n";
         }
 
         $zeitpunkte = [];
-        for ($i = 0; $i < $anzahlAusführungen; $i++) {
+        for ($i = 0; $i < $countItems; $i++)
+        {
             $minuteTotal = $i * $intervallInMinuten;
-            $stunde = floor($minuteTotal / 60);
-            $minute = $minuteTotal % 60;
+            $stunde      = floor($minuteTotal / 60);
+            $minute      = $minuteTotal % 60;
 
             $zeitpunkte[] = ['hour' => $stunde, 'minute' => $minute];
         }
 
         // Gruppieren nach Minutenwert
         $gruppen = [];
-        foreach ($zeitpunkte as $zeit) {
+        foreach ($zeitpunkte as $zeit)
+        {
             $gruppen[$zeit['minute']][] = $zeit['hour'];
         }
 
-        foreach ($gruppen as $minute => $stundenArray) {
+        foreach ($gruppen as $minute => $stundenArray)
+        {
             sort($stundenArray);
-            $stundenListe = implode(',', $stundenArray);
+            $stundenListe  = implode(',', $stundenArray);
             $cronJobsNeu[] = "$minute $stundenListe * * * $skriptPfad";
         }
     }
@@ -1501,14 +1558,16 @@ function setCronSensorInterval($intervallInMinuten, $deleteFlag): bool
         return strpos($zeile, $skriptPfad) === false;
     });
 
-    if (!$delete) {
+    if (!$delete)
+    {
         $cronJobsAlt = array_merge($cronJobsAlt, $cronJobsNeu);
     }
 
     file_put_contents('/tmp/crontab.txt', implode("\n", $cronJobsAlt) . "\n");
     exec('crontab /tmp/crontab.txt');
 
-    if ($debugFlag) {
+    if ($debugFlag)
+    {
         echo "<pre>";
         echo "Generierte Cronjobs für Intervall: {$intervallInMinuten} Minuten\n";
         print_r($cronJobsNeu);
@@ -1675,37 +1734,42 @@ function setTxQueue($txQueueData): bool
     $txMsg           = SQLite3::escapeString($txQueueData['txMsg'] ?? '');
     $txFlag          = 0;
 
-    $db->exec(
-        "
-                        REPLACE INTO txQueue (
-                                              insertTimestamp,
-                                              txTimestamp, 
-                                              txType, 
-                                              txDst, 
-                                              txMsg, 
-                                              txFlag
-                                                 )
-                                VALUES (
-                                        '$insertTimestamp',
-                                        '$txTimestamp',
-                                        '$txType',
-                                        '$txDst',
-                                        '$txMsg',
-                                        '$txFlag'
-                                );
-                    "
-    );
+    $sql = "REPLACE INTO txQueue (insertTimestamp,
+                                  txTimestamp, 
+                                  txType, 
+                                  txDst, 
+                                  txMsg, 
+                                  txFlag
+                                 )
+                          VALUES ('$insertTimestamp',
+                                  '$txTimestamp',
+                                  '$txType',
+                                  '$txDst',
+                                  '$txMsg',
+                                  '$txFlag'
+                                 );
+                    ";
 
-    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
-    {
-        echo "<br>setTxQueue";
-        echo "<br>ErrMsg:" . $db->lastErrorMsg();
-        echo "<br>ErrNum:" . $db->lastErrorCode();
-    }
+    $logArray   = array();
+    $logArray[] = "setTxQueue: Database: $dbFilename";
+    $logArray[] = "setTxQueue: insertTimestamp: $insertTimestamp";
+    $logArray[] = "setTxQueue: txTimestamp: $txTimestamp";
+    $logArray[] = "setTxQueue: txType: $txType";
+    $logArray[] = "setTxQueue: txDst: $txDst";
+    $logArray[] = "setTxQueue: txMsg: $txMsg";
+    $logArray[] = "setTxQueue: txFlag: $txFlag";
+    $logArray[] = "setTxQueue: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+    $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
     #Close and write Back WAL
     $db->close();
     unset($db);
+
+    if ($res === false)
+    {
+        return false;
+    }
 
     return true;
 }
@@ -1725,43 +1789,45 @@ function getTxQueue()
         return false;
     }
 
-    $db = new SQLite3($dbFilename);
+    $db = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
     $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
-    $resTxQueue = $db->query(
-        "         SELECT * 
-                          FROM txQueue AS tx
-                         WHERE tx.txFlag = 0
-                           AND strftime('%s', 'now', 
-                                CASE 
-                                    -- Sommerzeit (letzter Sonntag im März bis letzter Sonntag im Oktober)
-                                    WHEN (
-                                        -- Berechnung für Sommerzeitbeginn: letzter Sonntag im März
-                                        (strftime('%m', 'now') = '03' 
-                                         AND strftime('%d', 'now') >= strftime('%d', 'now', 'start of month', '+1 month', '-7 days', 'weekday 0') 
-                                         AND strftime('%H:%M', 'now') >= '02:00') 
-                                        OR 
-                                        -- Sommerzeit: Monate April bis September
-                                        (strftime('%m', 'now') IN ('04', '05', '06', '07', '08', '09'))
-                                        OR 
-                                        -- Berechnung für Sommerzeitende: letzter Sonntag im Oktober
-                                        (strftime('%m', 'now') = '10' 
-                                         AND strftime('%d', 'now') < strftime('%d', 'now', 'start of month', '+1 month', '-7 days', 'weekday 0'))
-                                        ) 
-                                        THEN '+2 hours'  -- UTC → MESZ (+2h)
-                                        ELSE '+1 hours'  -- UTC → MEZ (+1h)
-                                END
-                                ) - strftime('%s', insertTimestamp) <= $minSecondsLastMsg
-                      ORDER BY tx.txQueueId
-                         LIMIT 1;
-               ");
+    $sql = "SELECT * 
+              FROM txQueue AS tx
+             WHERE tx.txFlag = 0
+               AND strftime('%s', 'now', 
+                    CASE 
+                        -- Sommerzeit (letzter Sonntag im März bis letzter Sonntag im Oktober)
+                        WHEN (
+                            -- Berechnung für Sommerzeitbeginn: letzter Sonntag im März
+                            (strftime('%m', 'now') = '03' 
+                             AND strftime('%d', 'now') >= strftime('%d', 'now', 'start of month', '+1 month', '-7 days', 'weekday 0') 
+                             AND strftime('%H:%M', 'now') >= '02:00') 
+                            OR 
+                            -- Sommerzeit: Monate April bis September
+                            (strftime('%m', 'now') IN ('04', '05', '06', '07', '08', '09'))
+                            OR 
+                            -- Berechnung für Sommerzeitende: letzter Sonntag im Oktober
+                            (strftime('%m', 'now') = '10' 
+                             AND strftime('%d', 'now') < strftime('%d', 'now', 'start of month', '+1 month', '-7 days', 'weekday 0'))
+                            ) 
+                            THEN '+2 hours'  -- UTC → MESZ (+2h)
+                            ELSE '+1 hours'  -- UTC → MEZ (+1h)
+                    END
+                    ) - strftime('%s', insertTimestamp) <= $minSecondsLastMsg
+          ORDER BY tx.txQueueId
+             LIMIT 1;
+       ";
 
-    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
+    $logArray   = array();
+    $logArray[] = "getTxQueue: Database: $dbFilename";
+    $logArray[] = "getTxQueue: minSecondsLastMsg: $minSecondsLastMsg";
+    $logArray[] = "getTxQueue: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+    $resTxQueue = safeDbRun( $db,  $sql, 'query', $logArray);
+
+    if ($resTxQueue === false)
     {
-        echo "<br>getTxQueue";
-        echo "<br>ErrMsg:" . $db->lastErrorMsg();
-        echo "<br>ErrNum:" . $db->lastErrorCode();
-
         #Close and write Back WAL
         $db->close();
         unset($db);
@@ -1804,22 +1870,28 @@ function updateTxQueue($txQueueId): bool
 
     $txQueueId = SQLite3::escapeString($txQueueId);
 
-    $db->exec(" UPDATE txQueue
-                          SET txFlag = 1,
-                              txTimestamp = '$timeStamps'
-                        WHERE txQueueId = '$txQueueId';
-                    ");
+    $sql = "UPDATE txQueue
+               SET txFlag = 1,
+                   txTimestamp = '$timeStamps'
+             WHERE txQueueId = '$txQueueId';
+          ";
 
-    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
-    {
-        echo "<br>updateTxQueue";
-        echo "<br>ErrMsg:" . $db->lastErrorMsg();
-        echo "<br>ErrNum:" . $db->lastErrorCode();
-    }
+    $logArray   = array();
+    $logArray[] = "updateTxQueue: Database: $dbFilename";
+    $logArray[] = "updateTxQueue: timeStamps: $timeStamps";
+    $logArray[] = "updateTxQueue: txQueueId: $txQueueId";
+    $logArray[] = "updateTxQueue: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+    $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
     #Close and write Back WAL
     $db->close();
     unset($db);
+
+    if ($res === false)
+    {
+        return false;
+    }
 
     return true;
 }
@@ -1848,25 +1920,24 @@ function setSensorAlertCounter($sensor, $sensorType): bool
                                                    sensorThToutAlertTimestamp = '$timeStamps';
                          ";
         }
-        
-        $db->exec($queryTemp);
 
-        if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
-        {
-            echo "<br>setSensorAlertCounter Sensor:$sensor Tpe:$sensorType";
-            echo "<br>ErrMsg:" . $db->lastErrorMsg();
-            echo "<br>ErrNum:" . $db->lastErrorCode();
+        $logArray = array();
+        $logArray[] = "setSensorAlertCounter_temp: Database: $dbFilename";
+        $logArray[] = "setSensorAlertCounter_temp: sensor: $sensor";
+        $logArray[] = "setSensorAlertCounter_temp: sensorType: $sensorType";
+        $logArray[] = "setSensorAlertCounter_temp: timeStamps: $timeStamps";
+        $logArray[] = "setSensorAlertCounter_temp: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
-            #Close and write Back WAL
-            $db->close();
-            unset($db);
-
-            return false;
-        }
+        $res = safeDbRun( $db,  $queryTemp, 'exec', $logArray);
 
         #Close and write Back WAL
         $db->close();
         unset($db);
+
+        if ($res === false)
+        {
+            return false;
+        }
     }
 
     if ($sensor == 'ina226')
@@ -1907,24 +1978,23 @@ function setSensorAlertCounter($sensor, $sensorType): bool
                          ";
         }
 
-        $dbIna266->exec($queryIna226);
+        $logArray = array();
+        $logArray[] = "setSensorAlertCounter_ina266: Database: $dbFilenameIna226";
+        $logArray[] = "setSensorAlertCounter_ina266: sensor: $sensor";
+        $logArray[] = "setSensorAlertCounter_ina266: sensorType: $sensorType";
+        $logArray[] = "setSensorAlertCounter_ina266: timeStamps: $timeStampIna226";
+        $logArray[] = "setSensorAlertCounter_ina266: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
-        if ($dbIna266->lastErrorCode() > 0 && $dbIna266->lastErrorCode() < 100)
-        {
-            echo "<br>setParamData";
-            echo "<br>ErrMsg:" . $dbIna266->lastErrorMsg();
-            echo "<br>ErrNum:" . $dbIna266->lastErrorCode();
-
-            #Close and write Back WAL
-            $dbIna266->close();
-            unset($dbIna266);
-
-            return false;
-        }
+        $resIna266 = safeDbRun( $dbIna266,  $queryIna226, 'exec', $logArray);
 
         #Close and write Back WAL
         $dbIna266->close();
         unset($dbIna266);
+
+        if ($resIna266 === false)
+        {
+            return false;
+        }
     }
 
     return true;
@@ -1960,24 +2030,23 @@ function resetSensorAlertCounter($sensor, $sensorType): bool
                          ";
         }
 
-        $db->exec($queryTemp);
+        $logArray   = array();
+        $logArray[] = "resetSensorAlertCounter_temp: Database: $dbFilename";
+        $logArray[] = "setSensorAlertCounter_temp: sensor: $sensor";
+        $logArray[] = "setSensorAlertCounter_temp: sensorType: $sensorType";
+        $logArray[] = "setSensorAlertCounter_temp: timeStamps: $timeStamps";
+        $logArray[] = "resetSensorAlertCounter_temp: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
-        if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
-        {
-            echo "<br>resetSensorAlertCounter Sensor:$sensor Tpe:$sensorType";
-            echo "<br>ErrMsg:" . $db->lastErrorMsg();
-            echo "<br>ErrNum:" . $db->lastErrorCode();
-
-            #Close and write Back WAL
-            $db->close();
-            unset($db);
-
-            return false;
-        }
+        $res = safeDbRun( $db,  $queryTemp, 'exec', $logArray);
 
         #Close and write Back WAL
         $db->close();
         unset($db);
+
+        if ($res === false)
+        {
+            return false;
+        }
     }
 
     if ($sensor == 'ina226')
@@ -1989,9 +2058,9 @@ function resetSensorAlertCounter($sensor, $sensorType): bool
         $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
         $timeStamps     = date('Y-m-d H:i:s');
 
-        $db = new SQLite3($dbFilename);
-        $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
-        $db->exec('PRAGMA synchronous = NORMAL;');
+        $dbIna226 = new SQLite3($dbFilename);
+        $dbIna226->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+        $dbIna226->exec('PRAGMA synchronous = NORMAL;');
 
         $queryIna226vBus = " UPDATE sensorThIna226 SET sensorThIna226vBusAlertCount = 0,
                                                        sensorThIna226vBusAlertTimestamp = '$timeStamps';
@@ -2016,24 +2085,23 @@ function resetSensorAlertCounter($sensor, $sensorType): bool
                          ";
         }
 
-        $db->exec($queryIna226vBus);
+        $logArray   = array();
+        $logArray[] = "resetSensorAlertCounterIna226: Database: $dbFilename";
+        $logArray[] = "setSensorAlertCounter_temp: sensor: $sensor";
+        $logArray[] = "setSensorAlertCounter_temp: sensorType: $sensorType";
+        $logArray[] = "setSensorAlertCounter_temp: timeStamps: $timeStamps";
+        $logArray[] = "resetSensorAlertCounterIna226: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
-        if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
-        {
-            echo "<br>resetSensorAlertCounter Sensor:$sensor Tpe:$sensorType";
-            echo "<br>ErrMsg:" . $db->lastErrorMsg();
-            echo "<br>ErrNum:" . $db->lastErrorCode();
-
-            #Close and write Back WAL
-            $db->close();
-            unset($db);
-
-            return false;
-        }
+        $resIna226 = safeDbRun( $dbIna226,  $queryIna226vBus, 'exec', $logArray);
 
         #Close and write Back WAL
-        $db->close();
-        unset($db);
+        $dbIna226->close();
+        unset($dbIna226);
+
+        if ($resIna226 === false)
+        {
+            return false;
+        }
     }
 
     return true;
@@ -2389,7 +2457,7 @@ function checkLoraNewGui(): bool
 
     $ch = curl_init($triggerLink);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 3); // 3 Sekunden Timeout
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10); // 10 Sekunden Timeout da bei 3 oft Fehler
     $response = curl_exec($ch);
     curl_close($ch);
 
@@ -2430,3 +2498,87 @@ function checkDbIntegrity($database)
         file_put_contents($fileDbIntegrityLog, $errorText, FILE_APPEND);
     }
 }
+function debugLog($logArray): bool
+{
+    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    $basename        = pathinfo(getcwd())['basename'];
+    $logFilenameSub  = '../log/debug_log';
+    $logFilenameRoot = 'log/debug_log';
+    $logFilename     = $basename == 'menu' ? $logFilenameSub : $logFilenameRoot;
+
+    $now         = DateTime::createFromFormat('U.u', microtime(true));
+    $dts         = $now->format("Ymd_His_v");
+    $logFilename = $logFilename . '_' . $dts . '.log';
+
+    if (!is_array($logArray) || empty($logArray) || count($logArray) == 0)
+    {
+        return false;
+    }
+
+    foreach ($logArray as $logItem)
+    {
+        $data = $dts . ': ' . $logItem . "\n";
+        file_put_contents($logFilename, $data, FILE_APPEND);
+    }
+
+    return true;
+}
+function safeDbRun(SQLite3 $db, string $sql, string $method = 'exec', array $logArray = [], int $retries = 5, int $waitMs = 100)
+{
+    $method = strtolower($method);
+
+    if (!$db instanceof SQLite3) {
+        throw new InvalidArgumentException('Ungültiges SQLite3-Objekt übergeben!');
+    }
+
+    if (!is_string($sql) || trim($sql) === '') {
+        throw new InvalidArgumentException('SQL-Statement darf nicht leer sein!');
+    }
+
+    if ($method !== 'exec' && $method !== 'query') {
+        throw new InvalidArgumentException("Methode muss 'exec' oder 'query' sein!");
+    }
+
+    for ($i = 0; $i < $retries; $i++)
+    {
+        if ($method === 'exec')
+        {
+            $result = $db->exec($sql);
+
+            if ($result === true)
+            {
+                return true;
+            }
+        }
+        elseif ($method === 'query')
+        {
+            $result = $db->query($sql);
+
+            if ($result instanceof SQLite3Result)
+            {
+                return $result;
+            }
+        }
+
+        if (strpos($db->lastErrorMsg(), 'locked') !== false)
+        {
+            usleep($waitMs * 1000);
+            continue;
+        }
+
+        break; // anderer Fehler
+    }
+
+    $logArray[] = "safeDbRun: sql: $sql";
+    $logArray[] = "safeDbRun: method: $method";
+    $logArray[] = "safeDbRun: Error at: " . date('Y-m-d H:i:s');
+    $logArray[] = "safeDbRun ErrMsg: " . $db->lastErrorMsg();
+    $logArray[] = "safeDbRun ErrNum: " . $db->lastErrorCode();
+    $logArray[] = "-----------------------------------------";
+    $logArray[] = "LOCK/SQL-Fehler: " . $db->lastErrorMsg();
+    debugLog($logArray);
+
+    return false;
+}
+
+

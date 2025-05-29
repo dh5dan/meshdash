@@ -1,7 +1,7 @@
 <?php
 echo '<!DOCTYPE html>';
 echo '<html lang="de">';
-echo '<head><title>Einstellungen</title>';
+echo '<head><title>Keywords</title>';
 
 #Prevnts UTF8 Errors on misconfigured php.ini
 ini_set( 'default_charset', 'UTF-8' );
@@ -79,7 +79,7 @@ $keyword2EnabledChecked = $keyword2Enabled == 1 ? 'checked' : '';
 $keyword1DmGrpId = $keyword1DmGrpId == '' ? '*' : $keyword1DmGrpId;
 $keyword2DmGrpId = $keyword2DmGrpId == '' ? '*' : $keyword2DmGrpId;
 
-echo '<h2>Keyword-Definition zur Ausführung <span class="lineBreak">von Kommandos</span>';
+echo '<h2>Keyword-Definition</span>';
 echo '<span class="hintText"><br>(Dateien müssen im Execute-Verzeichnis <span class="lineBreak">vorhanden und ausführbar sein)</span></span>';
 echo '</h2>';
 

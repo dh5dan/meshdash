@@ -1,9 +1,33 @@
-Version 1.10.46 SQL
+Version 1.10.48 SQL
 
+FEATURE: Timeout zur GUI-Erkennung von 3 auf 10 Sekunden erhöht.
+         → Verhindert Warnmeldungen im Header, wenn ein Node träge reagiert.
+
+FEATURE: Debuglog-Protokollierung für fehlgeschlagene SQLite3-Statements aktiviert.
+         → Beispiel: SQLite3::query() unable to prepare statement: 15 locking (getParamData)
+
+FEATURE: Retry-Logik für SQLite3-Queries implementiert
+         → Führt Anfragen erneut aus, wenn die Datenbank gerade im Locked-Modus ist.
+
+FEATURE: "Scroll to Top" im Nachrichtenfenster implementiert.
+
+FEATURE: Debug-Info um Os-Version und Architektur erweitert.
+
+FEATURE: Überarbeitung der MeshDash Anleitung (V1.10.48)
+
+BUGFIX: Fehlendes DB-Close() in bestimmten Fehlerbehandlungsroutinen korrigiert.
+INFO:   checkmh.sh ist nur noch ein leeres Sh-Skript. Aufruf wird nicht mehr benötigt.
+
+Hinweis:
+"Kann Node mit IP: x.x.x.x zur Prüfung auf neue GUI nicht erreichen!".
+Hier prüfen, ob mit Ping der Node erreichbar ist.
+Die Prüfung erfolgt beim Aufruf oder bei einem Refresh (F5) von MeshDash.
+####################################
+Version 1.10.46 SQL
 FEATURE: Nachrichtenausgabe der Gruppe ALL/Own-Call kann nun als separate HTML-Datei exportiert werden.
-FEATURE: Die Einstellung für den HTML-Export der Nachrichtenausgabe befindet sich nun direkt unter Gruppen.
+FEATURE: Die Einstellung für den HTML-Export der Nachrichtenausgabe befindet sich direkt unter Gruppen.
 FEATURE: HTML-Export wird jetzt im Verzeichnis /export/ gespeichert statt im Web-Root.
-FEATURE:In den Debug-Infos werden 0-Byte-Datenbanken nun mit einem Warnsymbol hervorgehoben.
+FEATURE:In den Debug-Infos werden 0-Byte-Datenbanken mit einem Warnsymbol hervorgehoben.
 BUGFIX: Automatische Wiederherstellung defekter Datenbanken bei 0 Byte implementiert.
          – Behebt u.a. den Fehler: SQLITE3::exec() no such table:
 BUGFIX: Der Wert für Last-Access wurde unter Linux falsch dargestellt.

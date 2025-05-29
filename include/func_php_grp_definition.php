@@ -50,22 +50,35 @@ function saveGroupsSettings(): bool
         $groupEnabled = (int) $updateArray[$groupId]['enabled'];
         $groupSound   = (int) $updateArray[$groupId]['sound'];
 
-        $db->exec("
-                        REPLACE INTO groups (groupId, groupNumber, groupEnabled, groupSound)
-                        VALUES (
-                                '$groupId',
-                                '$groupNumber',
-                                '$groupEnabled',
-                                '$groupSound'
-                        );
-                    "
-        );
+        $sql = "REPLACE INTO groups (groupId, 
+                                     groupNumber, 
+                                     groupEnabled, 
+                                     groupSound
+                                    )
+                             VALUES ('$groupId',
+                                     '$groupNumber',
+                                     '$groupEnabled',
+                                     '$groupSound'
+                                    );
+                    ";
 
-        if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
+        $logArray   = array();
+        $logArray[] = "saveGroupsSettings: Database: $dbFilename";
+        $logArray[] = "saveGroupsSettings: groupId: $groupId";
+        $logArray[] = "saveGroupsSettings: groupNumber: $groupNumber";
+        $logArray[] = "saveGroupsSettings: groupEnabled: $groupEnabled";
+        $logArray[] = "saveGroupsSettings: groupSound: $groupSound";
+        $logArray[] = "saveGroupsSettings: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+        $res = safeDbRun( $db,  $sql, 'exec', $logArray);
+
+        if ($res === false)
         {
-            echo "<br>saveGroupsSettings";
-            echo "<br>ErrMsg:" . $db->lastErrorMsg();
-            echo "<br>ErrNum:" . $db->lastErrorCode();
+            #Close and write Back WAL
+            $db->close();
+            unset($db);
+
+            return false;
         }
     }
 
@@ -93,23 +106,25 @@ function getGroupParameter(int $mode = 0)
     $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
     $returnValue    = array();
 
-    $db  = new SQLite3($dbFilename);
+    $db  = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
     $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
-    $res = $db->query("
-                        SELECT * 
-                          FROM groups
-                      ORDER BY groupId;
-                    ");
 
-    #Error-Handling SQL
+    $sql = "SELECT * 
+              FROM groups
+          ORDER BY groupId;
+         ";
+
+    $logArray   = array();
+    $logArray[] = "getGroupParameter: Database: $dbFilename";
+    $logArray[] = "getGroupParameter: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+    $res = safeDbRun( $db,  $sql, 'query', $logArray);
+
     if ($res === false)
     {
-        if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
-        {
-            echo '<br>SQL-Fehler in getGroupParameter:';
-            echo "<br>ErrMsg:" . $db->lastErrorMsg();
-            echo "<br>ErrNum:" . $db->lastErrorCode();
-        }
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
 
         return false;
     }

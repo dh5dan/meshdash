@@ -30,21 +30,34 @@ $sendData = $_REQUEST['sendData'] ?? 0;
 $osIssWindows = chkOsIsWindows();
 $osName       = $osIssWindows === true ? 'Windows' : 'Linux';
 $hardware     = '';
+$architecture = php_uname('m');
 
 if ($osIssWindows === false)
 {
     $cpuInfo      = file_get_contents('/proc/cpuinfo');
-    $architecture = php_uname('m');
+    $hardware     = "Kein Raspberry Pi";
+
+    if (file_exists('/sys/class/dmi/id/product_name'))
+    {
+        $prodName     = file_get_contents('/sys/class/dmi/id/product_name');
+        $hardware     = $prodName;
+    }
 
     if ((strpos($cpuInfo, 'Raspberry Pi') !== false || strpos($cpuInfo, 'BCM') !== false) &&
         ($architecture === 'armv7l' || $architecture === 'aarch64'))
     {
-        $hardware = "Raspberry Pi.";
+        $hardware = "Raspberry Pi";
     }
-    else
-    {
-        $hardware = "Kein Raspberry Pi.";
-    }
+
+    $osRelease = exec('lsb_release -a');
+    $osRelease = $osRelease != '' ? ucfirst(trim(explode(':', $osRelease)[1])) : ''; // ohne "Codename:"
+
+    $osName .= ' ' . php_uname('v');
+}
+else
+{
+    $osBuild = explode(' ', php_uname('v')); //Build Version
+    $osName .= ' ' . (int) php_uname('r') . ' (' . $osBuild[0] . ' ' . $osBuild[1] . ')';
 }
 
 $execDirLog = 'log';
@@ -54,6 +67,8 @@ $logDirRoot = $execDirLog;
 $logDir     = $basename == 'menu' ? $logDirSub : $logDirRoot;
 
 $sendQueueInterval       = getParamData('sendQueueInterval');
+$sendQueueInterval       = $sendQueueInterval == '' ? 'nicht gespeichert' : $sendQueueInterval;
+
 $sendQueueMode           = getParamData('sendQueueMode');
 $sendQueueMode           = $sendQueueMode == '' || $sendQueueMode == 0 ? getStatusIcon('error') : getStatusIcon('ok');
 
@@ -103,6 +118,19 @@ echo '<td>OS :</td>';
 echo '<td>'. $osName .'</td>';
 echo '</tr>';
 
+echo '<tr>';
+echo '<td>Architektur :</td>';
+echo '<td>'. $architecture .'</td>';
+echo '</tr>';
+
+if ($osIssWindows === false)
+{
+    echo '<tr>';
+    echo '<td>Release :</td>';
+    echo '<td>'. $osRelease .'</td>';
+    echo '</tr>';
+}
+
 if ($hardware != '')
 {
     echo '<tr>';
@@ -112,14 +140,14 @@ if ($hardware != '')
 }
 
 echo '<tr>';
-echo '<td>Sendeintervall :</td>';
+echo '<td>Sendeintervall (Sek.) :</td>';
 echo '<td>';
 echo  $sendQueueInterval;
 echo '</td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Send-Queue enabled:</td>';
+echo '<td>Send-Queue Status:</td>';
 echo '<td>';
 echo  $sendQueueMode;
 echo '</td>';
@@ -176,7 +204,7 @@ if (getParamData('isNewMeshGui') == 1)
 }
 else
 {
-    echo "<br> FW < v4.34x.05.18 mit alter GUI erkannt";
+    echo "<br> FW mit alter GUI erkannt";
 }
 echo '</td>';
 echo '</tr>';

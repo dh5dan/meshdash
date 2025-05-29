@@ -166,7 +166,6 @@ body {
 .bubbleFontMsgHeaderOutgoing {
     font-size: 18px;
     color: #242424 !important;
-
 }
 
 .bubbleFontMsgOutgoing {
@@ -176,6 +175,52 @@ body {
 .bubbleFontMsgIncoming {
 
 }
+
+/* Scroll To Top*/
+#scrollTopBtn2
+{
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 16px;
+    display: none; /* versteckt initial */
+    z-index: 9999;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    transition: opacity 0.3s ease;
+}
+
+/* Picture only */
+#scrollTopBtn
+{
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: transparent; /* kein Hintergrund */
+    border: none;                  /* keine Umrandung */
+    padding: 0;                   /* kein Innenabstand */
+    cursor: pointer;
+    display: none;                /* versteckt initial */
+    z-index: 9999;
+    box-shadow: none;             /* kein Schatten */
+    transition: opacity 0.3s ease;
+}
+
+.pictureScrollToTop {
+    max-width: 36px;
+}
+
+#scrollTopBtn.show
+{
+    display: block;
+    opacity: 1;
+}
+
 
 /* Media Query für Smartphones */
 @media (max-width: 768px) {

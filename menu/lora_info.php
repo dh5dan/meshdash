@@ -1,7 +1,7 @@
 <?php
 echo '<!DOCTYPE html>';
 echo '<html lang="de">';
-echo '<head><title>Lora Info</title>';
+echo '<head><title>Lora-Info</title>';
 
 #Prevnts UTF8 Errors on misconfigured php.ini
 ini_set( 'default_charset', 'UTF-8' );
