@@ -13,7 +13,8 @@ function backupApp($sourceDir, $backupDir)
         '.idea/',    // komplettes Verzeichnis
         'test/',     // komplettes Verzeichnis
         'docs/',     // komplettes Verzeichnis
-        '.gitignore' // einzelne Datei
+        'export/',     // komplettes Verzeichnis
+        '.gitignore', // einzelne Datei
     ];
 
     // Nur diese Dateitypen in "execute/" sichern

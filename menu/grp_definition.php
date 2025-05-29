@@ -31,6 +31,9 @@ $hardware = '';
 $osIssWindows = chkOsIsWindows();
 $osName       = $osIssWindows === true ? 'Windows' : 'Linux';
 
+$callSign = getParamData('callSign');
+$ownCall  = explode('-', $callSign)[0];
+
 if ($sendData === '1')
 {
     $resSaveGroupsSetting = saveGroupsSettings();
@@ -98,8 +101,12 @@ $groupNumber6 = $resGetGroupParameter[6]['groupNumber'] ?? 0; // Notfall gruppe
 $groupSoundFile = getParamData('groupSoundFile');
 $groupSoundFile = $groupSoundFile == '' ? 'new_message.wav' : $groupSoundFile;
 
-echo '<h2>Gruppen-Definition zur Filterung<span class="lineBreak">der Nachrichten</span>';
-echo '<br><span class="hintText failureHint">Hinweis: Die Änderung wird erst nach einem Reload der Seite sichtbar!</span></h2>';
+$msgExportGroup    = getParamData('msgExportGroup') ?? '';
+$msgExportEnable   = getParamData('msgExportEnable') ?? 0;
+$msgExportEnableChecked   = $msgExportEnable == 1 ? 'checked' : '';
+
+echo '<h2>Gruppen-Definition';
+echo '<br><span class="hintText failureHint">Hinweis: Reload nötig für Anzeige!</span></h2>';
 
 echo '<form id="frmGrpDefinition" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
@@ -188,6 +195,16 @@ echo '<td>Notfall-Gruppe :</td>';
 echo '<td class="tdCenter"><input type="text" class="groupIdField" name="groupNumber6" id="groupNumber6" value="' . $groupNumber6 . '" placeholder="1-99999"  /></td>';
 echo '<td class="tdCenter"><input type="checkbox" name="groupNumber6Enabled" ' . $groupNumber6EnabledChecked . ' id="groupNumber6Enabled" value="1" /></td>';
 echo '<td class="tdCenter"><input type="checkbox" name="groupSound6Enabled" ' . $groupSound6EnabledChecked . ' id="groupSound6Enabled" value="1" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td>HTML-Export :</td>';
+echo '<td class="tdCenter"><input type="text" name="msgExportGroup" id="msgExportGroup" class="groupExportField" value="' . $msgExportGroup . '" /></td>';
+echo '<td class="tdCenter"><input type="checkbox" name="msgExportEnable" ' . $msgExportEnableChecked . ' id="msgExportEnable" value="1" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td colspan="3" class="tdCenter smallHintText">* = all, Own-Call = ' . $ownCall . '</td>';
 echo '</tr>';
 
 echo '<tr>';

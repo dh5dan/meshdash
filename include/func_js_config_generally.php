@@ -12,8 +12,6 @@
             let maxScrollBackRows = $("#maxScrollBackRows").val().trim();
             let retentionDays     = $("#retentionDays").val().trim();
             let bubbleMaxWidth    = $("#bubbleMaxWidth").val().trim();
-            let msgExportGroup    = $("#msgExportGroup").val().trim();
-            let msgExportEnable   = $("#msgExportEnable").is(":checked");
 
             let ipv4Pattern     = /^(\d{1,3}\.){3}\d{1,3}$/;
             let callSignPattern = /^[A-Z0-9]{1,2}[0-9][A-Z0-9]{1,4}-(?:[1-9][0-9]?)$/i
@@ -93,21 +91,6 @@
             {
                 width = 600;
                 outputMsg = 'Der Wertebereich ist hier 40-100 für die max. Bubblebreite';
-                dialog(outputMsg, titleMsg, width);
-                return false;
-            }
-
-            if (msgExportEnable === true && !numberPattern.test(msgExportGroup))
-            {
-                width = 600;
-                outputMsg = 'Der eingegebene Wert für die Export-Gruppe ist keine Zahl oder leer.';
-                dialog(outputMsg, titleMsg, width);
-                return false;
-            }
-            else if (msgExportEnable === true && msgExportGroup === 0)
-            {
-                width = 600;
-                outputMsg = 'Der Werte 0 für eine Gruppe ist nicht zulässig.';
                 dialog(outputMsg, titleMsg, width);
                 return false;
             }

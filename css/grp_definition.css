@@ -19,6 +19,11 @@ body {
     font-weight: bold;
 }
 
+.smallHintText {
+    font-size: 14px;
+    font-weight: bold;
+}
+
 .lineBreak {
     display: block;
 }
@@ -36,6 +41,10 @@ body {
 
 .groupIdField {
     max-width: 50px;
+}
+
+.groupExportField {
+    max-width: 55px;
 }
 
 .tdCenter {

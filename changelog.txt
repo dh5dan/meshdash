@@ -1,3 +1,14 @@
+Version 1.10.46 SQL
+
+FEATURE: Nachrichtenausgabe der Gruppe ALL/Own-Call kann nun als separate HTML-Datei exportiert werden.
+FEATURE: Die Einstellung für den HTML-Export der Nachrichtenausgabe befindet sich nun direkt unter Gruppen.
+FEATURE: HTML-Export wird jetzt im Verzeichnis /export/ gespeichert statt im Web-Root.
+FEATURE:In den Debug-Infos werden 0-Byte-Datenbanken nun mit einem Warnsymbol hervorgehoben.
+BUGFIX: Automatische Wiederherstellung defekter Datenbanken bei 0 Byte implementiert.
+         – Behebt u.a. den Fehler: SQLITE3::exec() no such table:
+BUGFIX: Der Wert für Last-Access wurde unter Linux falsch dargestellt.
+BUGFIX: Das Log-Datum im udp_receiver war nicht aktuell.
+####################################
 Version 1.10.44 SQL
 FEATURE: Sqlite3 busyTimeout auf 15sek erhöht.
          - Vermeidet DB-Locked Fehler. Vornehmlich auf Pi-Zero/Zero2 Geräten.

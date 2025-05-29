@@ -773,6 +773,15 @@ $isSnapshot = $_REQUEST['isSnapshot'] ?? 0;
 #Erzeuge html Ausgabe der Nachrichten, wenn aktiviert.
 if ($msgExportEnable === true && $msgExportGroup != '' && $isSnapshot == 0)
 {
+    $ownCall        = strtolower(explode('-', $callSign)[0]);
+    $msgExportGroup = strtolower($msgExportGroup);
+
+    $msgExportGroupFile = $msgExportGroup == '*' ? 'all' : $msgExportGroup; // Wenn ALL
+    $msgExportGroupFile = $msgExportGroup == $ownCall ? $ownCall : $msgExportGroupFile; // Wenn Own-Call
+
+    $msgExportGroup = $msgExportGroup == '*' ? -1 : $msgExportGroup; // Wenn ALL
+    $msgExportGroup = $msgExportGroup == $ownCall ? -2 : $msgExportGroup; // Wenn Own-Call
+
     $html = file_get_contents('http://localhost/5d/message.php?isSnapshot=1&group=' . $msgExportGroup);
-    file_put_contents($msgExportGroup.'.html', $html);
+    file_put_contents('export/'.$msgExportGroupFile.'.html', $html);
 }

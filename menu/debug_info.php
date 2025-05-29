@@ -29,6 +29,23 @@ $sendData = $_REQUEST['sendData'] ?? 0;
 #Check what oS is running
 $osIssWindows = chkOsIsWindows();
 $osName       = $osIssWindows === true ? 'Windows' : 'Linux';
+$hardware     = '';
+
+if ($osIssWindows === false)
+{
+    $cpuInfo      = file_get_contents('/proc/cpuinfo');
+    $architecture = php_uname('m');
+
+    if ((strpos($cpuInfo, 'Raspberry Pi') !== false || strpos($cpuInfo, 'BCM') !== false) &&
+        ($architecture === 'armv7l' || $architecture === 'aarch64'))
+    {
+        $hardware = "Raspberry Pi.";
+    }
+    else
+    {
+        $hardware = "Kein Raspberry Pi.";
+    }
+}
 
 $execDirLog = 'log';
 $basename   = pathinfo(getcwd())['basename'];
@@ -36,8 +53,6 @@ $logDirSub  = '../' . $execDirLog;
 $logDirRoot = $execDirLog;
 $logDir     = $basename == 'menu' ? $logDirSub : $logDirRoot;
 
-#Check what oS is running
-$osIssWindows            = chkOsIsWindows();
 $sendQueueInterval       = getParamData('sendQueueInterval');
 $sendQueueMode           = getParamData('sendQueueMode');
 $sendQueueMode           = $sendQueueMode == '' || $sendQueueMode == 0 ? getStatusIcon('error') : getStatusIcon('ok');
@@ -82,6 +97,19 @@ echo '<form id="frmDebugInfo" method="post" action="' . $_SERVER['REQUEST_URI'] 
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
 echo '<input type="hidden" name="deleteFileImage" id="deleteFileImage" value="" />';
 echo '<table>';
+
+echo '<tr>';
+echo '<td>OS :</td>';
+echo '<td>'. $osName .'</td>';
+echo '</tr>';
+
+if ($hardware != '')
+{
+    echo '<tr>';
+    echo '<td>Hardware :</td>';
+    echo '<td>' . $hardware . '</td>';
+    echo '</tr>';
+}
 
 echo '<tr>';
 echo '<td>Sendeintervall :</td>';
@@ -202,8 +230,6 @@ echo '<td>';
 echo  getParamData('cronLoopTs');
 echo '</td>';
 echo '</tr>';
-
-
 
 echo '<tr>';
 echo '<td colspan="2"><hr></td>';

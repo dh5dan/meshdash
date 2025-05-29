@@ -149,8 +149,11 @@ setParamData('udpReceiverTs', date('Y-m-d H:i:s'),'txt');
 //Infinite Iteration to Receive UDP Data from Bind Port
 while (true)
 {
-    $bufJson   = '';
-    $r         = socket_recvfrom($sock, $bufJson, 512, 0, $remote_ip, $remote_port);
+    $file           = 'log/udp_msg_data_' . date('Ymd') . '.log';
+    $errorFile      = 'log/udp_receiver_error_' . date('Ymd') . '.log';
+    $callMsgLogFile = 'log/call_message_' . date('Ymd') . '.log';
+    $bufJson        = '';
+    $r              = socket_recvfrom($sock, $bufJson, 512, 0, $remote_ip, $remote_port);
 
     if ($r === false)
     {

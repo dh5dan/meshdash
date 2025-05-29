@@ -24,9 +24,6 @@ function saveGenerallySettings(): bool
     $bubbleStyleView         = $_REQUEST['bubbleStyleView'] ?? 0;
     $bubbleMaxWidth          = trim($_REQUEST['bubbleMaxWidth']) ?? 40;
     $bubbleMaxWidth          = $bubbleMaxWidth == '' ? 40 : $bubbleMaxWidth;
-    $msgExportGroup          = trim($_REQUEST['msgExportGroup']) ?? '';
-    $msgExportEnable         = $_REQUEST['msgExportEnable'] ?? '';
-    $msgExportEnable         = $msgExportEnable == '' ? 0 : $msgExportEnable;
 
     setParamData('noPosData', $noPosData);
     setParamData('noDmAlertGlobal', $noDmAlertGlobal);
@@ -47,8 +44,6 @@ function saveGenerallySettings(): bool
     setParamData('openStreetTileServerUrl', $openStreetTileServerUrl, 'txt');
     setParamData('bubbleStyleView', $bubbleStyleView);
     setParamData('bubbleMaxWidth', $bubbleMaxWidth);
-    setParamData('msgExportGroup', $msgExportGroup);
-    setParamData('msgExportEnable', $msgExportEnable);
 
     return true;
 }

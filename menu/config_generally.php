@@ -89,8 +89,6 @@ $selTzName         = getParamData('timeZone') ?? 'Europe/Berlin'; // ZeitZone
 $mheardGroup       = getParamData('mheardGroup') ?? 0; // 0= egal welche Gruppe
 $bubbleStyleView   = getParamData('bubbleStyleView') ?? 0; // 1= Bubble Style aktiv
 $bubbleMaxWidth    = getParamData('bubbleMaxWidth') ?? 40;
-$msgExportGroup    = getParamData('msgExportGroup') ?? '';
-$msgExportEnable   = getParamData('msgExportEnable') ?? 0;
 
 $openStreetTileServerUrl = trim(getParamData('openStreetTileServerUrl')) ?? 'tile.openstreetmap.org';
 $openStreetTileServerUrl = $openStreetTileServerUrl == '' ? 'tile.openstreetmap.org' : $openStreetTileServerUrl;
@@ -107,7 +105,6 @@ $retentionDays            = $retentionDays == '' ? 7 : $retentionDays;
 $chronMode                = $chronMode == '' ? 'zip' : $chronMode;
 $strictCallEnableChecked  = $strictCallEnable == 1 ? 'checked' : '';
 $bubbleMaxWidth           = $bubbleMaxWidth == '' ? 40 : $bubbleMaxWidth;
-$msgExportEnableChecked   = $msgExportEnable == 1 ? 'checked' : '';
 
 $onClickChronModeCheckedZip    = $chronMode == 'zip' ? 'checked' : '';
 $onClickChronModeCheckedDelete = $chronMode == 'delete' ? 'checked' : '';
@@ -120,7 +117,7 @@ $newMsgBgColor = $newMsgBgColor == '' ? '#FFFFFF' : $newMsgBgColor;
 
 $mheardGroup = $mheardGroup == 0 ? '' : $mheardGroup;
 
-echo "<h2>Basiseinstellungen von MeshDash-SQL</h2>";
+echo "<h2>Basiseinstellungen</h2>";
 
 echo '<form id="frmConfigGenerally" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
@@ -169,12 +166,6 @@ echo '</tr>';
 echo '<tr>';
 echo '<td>Bubble Max-Width (40-100%):</td>';
 echo '<td><input type="text" name="bubbleMaxWidth" id="bubbleMaxWidth" style="width: auto" size="2" maxlength="3" value="' . $bubbleMaxWidth . '" /> %</td>';
-echo '</tr>';
-
-echo '<tr>';
-echo '<td>MSG-Export (Gruppe/&#10140;[AN]):</td>';
-echo '<td><input type="text" name="msgExportGroup" id="msgExportGroup" style="width: auto" size="6" maxlength="6" value="' . $msgExportGroup . '" />&nbsp;';
-echo '<input type="checkbox" name="msgExportEnable" ' . $msgExportEnableChecked . ' id="msgExportEnable" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';

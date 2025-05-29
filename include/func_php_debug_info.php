@@ -17,7 +17,12 @@ function showLogFiles()
     $files = glob($logDir . '/*.log');
     if (!$files)
     {
-        echo "Keine Logs vorhanden.";
+        echo '<div class="scrollable-container">';
+        echo '<table class="logTable">';
+        echo '<tr>';
+        echo '<td>Keine Logs zur Anzeige vorhanden.</td>';
+        echo'</tr>';
+        echo '</table>';
         return;
     }
 
@@ -114,13 +119,13 @@ function getServerSoftware()
 }
 function getPhpConfig()
 {
-    $phpIniArray = array (
-        'memory_limit'       => ini_get('memory_limit'),
-        'max_execution_time' => ini_get('max_execution_time'),
-        'upload_max_filesize'    => ini_get('upload_max_filesize'),
-        'post_max_size'          => ini_get('post_max_size'),
-        'max_input_vars'         => ini_get('max_input_vars'),
-        'file_uploads'           => ini_get('file_uploads'),
+    $phpIniArray = array(
+        'memory_limit'        => ini_get('memory_limit'),
+        'max_execution_time'  => ini_get('max_execution_time'),
+        'upload_max_filesize' => ini_get('upload_max_filesize'),
+        'post_max_size'       => ini_get('post_max_size'),
+        'max_input_vars'      => ini_get('max_input_vars'),
+        'file_uploads'        => ini_get('file_uploads'),
     );
 
     // Min-Werte für jede Konfiguration
@@ -281,6 +286,7 @@ function getSqliteDbSizes(): array
     $basename             = pathinfo(getcwd(), PATHINFO_BASENAME);
     $relativeDatabasePath = ($basename === 'menu') ? '../database' : 'database';
     $databaseFileArray    = getSqliteDatabases($relativeDatabasePath);
+    $isWindows = chkOsIsWindows();
 
     $maxLenName = 0;
     $maxLenSize = 0;
@@ -294,11 +300,24 @@ function getSqliteDbSizes(): array
         {
             $dbFileSize = is_readable($realDatabasePath) ? filesize($realDatabasePath) : -1; // Prevents if File is locked
             $sizeKB     = round($dbFileSize / 1024, 1);
-            $lastAccess = date('d.m.Y H:i:s', fileatime($realDatabasePath));
+
+            if ($isWindows === true)
+            {
+                $lastAccess = date('d.m.Y H:i:s', fileatime($realDatabasePath));
+            }
+            else
+            {
+                $lastAccess = date('d.m.Y H:i:s', filemtime($realDatabasePath));
+            }
+
+            // Wenn ok, 'OK' als Status setzen
+            $status = $sizeKB > 0 ? 'ok' : 'warning';
+
 
             $result[$file] = [
                 'size'  => "$sizeKB KB",
-                'atime' => $lastAccess
+                'atime' => $lastAccess,
+                'status' => $status,
             ];
 
             $maxLenName = max($maxLenName, strlen($file));
@@ -308,7 +327,8 @@ function getSqliteDbSizes(): array
         {
             $result[$file] = [
                 'size'  => 'nicht vorhanden oder leer',
-                'atime' => '-'
+                'atime' => '-',
+                'status' => 'warning',
             ];
 
             $maxLenName = max($maxLenName, strlen($file));
@@ -320,6 +340,8 @@ function getSqliteDbSizes(): array
     echo '<tr>';
     if (!empty($result))
     {
+
+
         echo '<td style="vertical-align: top;">Datenbanken:</td>';
         echo '<td><pre style="margin:0; font-family: monospace;">';
 
@@ -328,6 +350,8 @@ function getSqliteDbSizes(): array
             $line = str_pad($file, $maxLenName)
                 . ' => '
                 . str_pad($data['size'], $maxLenSize)
+                . str_repeat(html_entity_decode('&nbsp;'), 2)
+                . html_entity_decode(getStatusIcon($data['status']))
                 . '   [Letzter Zugriff: ' . $data['atime'] . ']';
 
             echo htmlspecialchars($line) . "\n";

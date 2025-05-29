@@ -73,6 +73,14 @@ function saveGroupsSettings(): bool
     $db->close();
     unset($db);
 
+    #Save HTML-Export
+    $msgExportGroup  = trim($_REQUEST['msgExportGroup']) ?? '';
+    $msgExportEnable = $_REQUEST['msgExportEnable'] ?? '';
+    $msgExportEnable = $msgExportEnable == '' ? 0 : $msgExportEnable;
+
+    setParamData('msgExportGroup', $msgExportGroup,'txt');
+    setParamData('msgExportEnable', $msgExportEnable);
+
     return true;
 }
 
