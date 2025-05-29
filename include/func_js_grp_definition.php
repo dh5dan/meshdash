@@ -25,6 +25,8 @@
             let width       = 500;
             let sendData    = 1;
             let pattern     = /^(?:[1-9][0-9]{0,4})$/;
+            let numberPattern   = /^\d+$/;
+            let callSignPattern = /^[A-Z0-9]{1,2}[0-9][A-Z0-9]{1,4}$/i
 
             if (!pattern.test(groupNumber1) && groupNumber1Enabled === true)
             {
@@ -81,12 +83,32 @@
                 dialog(outputMsg, titleMsg, width);
                 return false;
             }
-            else if (msgExportEnable === true && msgExportGroup === 0)
+            else if (msgExportEnable === true && msgExportGroup === '0')
             {
                 width = 600;
                 outputMsg = 'Der Werte 0 für eine Gruppe ist nicht zulässig.';
                 dialog(outputMsg, titleMsg, width);
                 return false;
+            }
+            else if (msgExportEnable === true && !numberPattern.test(msgExportGroup))
+            {
+                if (!callSignPattern.test(msgExportGroup))
+                {
+                    if (msgExportGroup !== '*')
+                    {
+                        width = 600;
+                        outputMsg = 'Der Werte ist weder ein Rufzeichen noch ein * für die ALL-Gruppe.';
+                        dialog(outputMsg, titleMsg, width);
+                        return false;
+                    }
+                }
+                else if (callSignPattern.test(msgExportGroup) && msgExportGroup.length > 6)
+                {
+                    width = 600;
+                    outputMsg = 'Der Werte ist ein Rufzeichen aber es darf keine SSID angeben werden.';
+                    dialog(outputMsg, titleMsg, width);
+                    return false;
+                }
             }
 
             $("#sendData").val(sendData);
