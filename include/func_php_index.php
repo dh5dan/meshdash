@@ -7,6 +7,7 @@ function initDatabases()
     }
     else
     {
+        checkDbIntegrity('parameter');
         checkDbUpgrade('meshdash');
     }
 
@@ -14,10 +15,18 @@ function initDatabases()
     {
         initSQLiteDatabase('parameter');
     }
+    else
+    {
+        checkDbIntegrity('parameter');
+    }
 
     if (!file_exists('database/keywords.db'))
     {
         initSQLiteDatabase('keywords');
+    }
+    else
+    {
+        checkDbIntegrity('keywords');
     }
 
     if (!file_exists('database/sensordata.db'))
@@ -26,6 +35,7 @@ function initDatabases()
     }
     else
     {
+        checkDbIntegrity('sensordata');
         checkDbUpgrade('sensordata');
     }
 
@@ -33,10 +43,18 @@ function initDatabases()
     {
         initSQLiteDatabase('sensor_th_temp');
     }
+    else
+    {
+        checkDbIntegrity('sensor_th_temp');
+    }
 
     if (!file_exists('database/sensor_th_ina226.db'))
     {
         initSQLiteDatabase('sensor_th_ina226');
+    }
+    else
+    {
+        checkDbIntegrity('sensor_th_ina226');
     }
 
     if (!file_exists('database/mheard.db'))
@@ -45,6 +63,7 @@ function initDatabases()
     }
     else
     {
+        checkDbIntegrity('mheard');
         checkDbUpgrade('mheard');
     }
 
@@ -54,6 +73,7 @@ function initDatabases()
     }
     else
     {
+        checkDbIntegrity('groups');
         checkDbUpgrade('groups');
     }
 
@@ -63,6 +83,7 @@ function initDatabases()
     }
     else
     {
+        checkDbIntegrity('tx_queue');
         checkDbUpgrade('tx_queue');
     }
 }

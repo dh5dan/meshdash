@@ -17,6 +17,9 @@
             let groupNumber5Enabled = $("#groupNumber5Enabled").is(":checked");
             let groupNumber9Enabled = $("#groupNumber9Enabled").is(":checked");
 
+            let msgExportGroup    = $("#msgExportGroup").val().trim();
+            let msgExportEnable   = $("#msgExportEnable").is(":checked");
+
             let titleMsg    = 'Hinweis';
             let outputMsg   = 'Jetzt alle Settings speichern?';
             let width       = 500;
@@ -68,6 +71,21 @@
                 outputMsg = 'Der Wert bei Notfall-Gruppe ist keine Ganze Zahl oder'
                 outputMsg += '<br>liegt nicht im Gültigkeitsbereich 1-99999';
                 dialog(outputMsg, titleMsg, width)
+                return false;
+            }
+
+            if (msgExportEnable === true && msgExportGroup === '')
+            {
+                width = 600;
+                outputMsg = 'Der eingegebene Wert für die Export-Gruppe ist leer.';
+                dialog(outputMsg, titleMsg, width);
+                return false;
+            }
+            else if (msgExportEnable === true && msgExportGroup === 0)
+            {
+                width = 600;
+                outputMsg = 'Der Werte 0 für eine Gruppe ist nicht zulässig.';
+                dialog(outputMsg, titleMsg, width);
                 return false;
             }
 

@@ -1125,7 +1125,6 @@ function addIndex($database, $tabelle, $IndexName, $indexField)
 
     $db->close();
 }
-
 function delIndex($database, $IndexName)
 {
     #echo "<br>#1116#delIdc: $database indexName: $IndexName";
@@ -1250,6 +1249,7 @@ function logRotate()
         "udp_msg_data_",
         "send_queue_mheard_",
         "send_mheard_",
+        "db_integrity_",
     ]; // Präfixe der Log-Dateien
 
     $retentionDays = getParamData('retentionDays') ?? 7;
@@ -2412,4 +2412,21 @@ function checkLoraNewGui(): bool
     #Neue GUI erkannt
     setParamData('isNewMeshGui',1);
     return true;
+}
+function checkDbIntegrity($database)
+{
+    $realDatabasePath   = 'database/' . $database . '.db';
+    $fileDbIntegrityLog = 'log/db_integrity_error_' . date('Ymd') . '.log';
+
+    $dbFileSize = is_readable($realDatabasePath) ? filesize($realDatabasePath) : -1; // Prevents if File is locked
+    $sizeKB     = round($dbFileSize / 1024, 1);
+
+    if ($sizeKB == 0)
+    {
+        @unlink($realDatabasePath);
+        initSQLiteDatabase('tx_queue');
+
+        $errorText = date('Y-m-d H:i:s') . ' Database: ' . $database . ' faulty integration. Reinitialize' . "\n";
+        file_put_contents($fileDbIntegrityLog, $errorText, FILE_APPEND);
+    }
 }
