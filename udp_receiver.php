@@ -211,46 +211,51 @@ while (true)
     $msg = SQLite3::escapeString($msg);
 
     #Store in SQLite DB
-    $db->exec("REPLACE INTO meshdash (
-                                          msg_id, 
-                                          timestamps, 
-                                          msg, 
-                                          src_type, 
-                                          type, 
-                                          src, 
-                                          latitude, 
-                                          lat_dir, 
-                                          longitude, 
-                                          long_dir, 
-                                          aprs_symbol, 
-                                          aprs_symbol_group, 
-                                          hw_id, 
-                                          altitude,
-                                          batt,
-                                          dst,
-                                          firmware,
-                                          fw_sub  
-                                       ) VALUES (
-                                         '$msgId', 
-                                         '$timestamp',
-                                         '$msg',
-                                         '$srcType',
-                                         '$type', 
-                                         '$src',
-                                         '$latitude',
-                                         '$latDir',                                                 
-                                         '$longitude', 
-                                         '$longDir',
-                                         '$aprsSymbol',
-                                         '$aprsSymbolGroup',
-                                         '$hwId', 
-                                         '$altitude',
-                                         '$battery',
-                                         '$dst',
-                                         '$firmware',
-                                         '$fwSubVersion'        
-                                       )
-           ");
+    $sql = "REPLACE INTO meshdash (msg_id, 
+                                   timestamps, 
+                                   msg, 
+                                   src_type, 
+                                   type, 
+                                   src, 
+                                   latitude, 
+                                   lat_dir, 
+                                   longitude, 
+                                   long_dir, 
+                                   aprs_symbol, 
+                                   aprs_symbol_group, 
+                                   hw_id, 
+                                   altitude,
+                                   batt,
+                                   dst,
+                                   firmware,
+                                   fw_sub  
+                                  ) 
+                           VALUES ('$msgId', 
+                                   '$timestamp',
+                                   '$msg',
+                                   '$srcType',
+                                   '$type', 
+                                   '$src',
+                                   '$latitude',
+                                   '$latDir',                                                 
+                                   '$longitude', 
+                                   '$longDir',
+                                   '$aprsSymbol',
+                                   '$aprsSymbolGroup',
+                                   '$hwId', 
+                                   '$altitude',
+                                   '$battery',
+                                   '$dst',
+                                   '$firmware',
+                                   '$fwSubVersion'        
+                                  )
+           ";
+
+    $logArray   = array();
+    $logArray[] = "udpReceiver: Database: database/meshdash.db";
+    $logArray[] = "udpReceiver: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+    $res = safeDbRun($db, $sql, 'query', $logArray);
 
     #Close Database connection
     $db->close();

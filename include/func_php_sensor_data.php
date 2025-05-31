@@ -1,5 +1,4 @@
 <?php
-
 function getSensorData($loraIp, int $mode = 0)
 {
 
@@ -71,7 +70,6 @@ function getSensorData($loraIp, int $mode = 0)
 
     return true;
 }
-
 function getSensorData2($loraIp, int $mode = 0)
 {
     $url       = 'http://' . $loraIp . '/?page=wx';
@@ -158,7 +156,6 @@ function getSensorData2($loraIp, int $mode = 0)
 
     return true;
 }
-
 function showSensorData()
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
@@ -166,18 +163,31 @@ function showSensorData()
     $dbFilenameSub  = '../database/sensordata.db';
     $dbFilenameRoot = 'database/sensordata.db';
     $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
-
     $deviceIsMobile = isMobile();
-
 
     $db = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
     $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
-    // Hole mir die letzten 30 Nachrichten aus der Datenbank
-    $result = $db->query("SELECT * FROM sensordata
-                               ORDER BY sensorDataId DESC
-                                  LIMIT 1;
-                        ");
+    $sql = "SELECT * 
+              FROM sensordata
+          ORDER BY sensorDataId DESC
+             LIMIT 1;
+          ";
+
+    $logArray   = array();
+    $logArray[] = "showSensorData: Database: $dbFilename";
+    $logArray[] = "showSensorData: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+    $result = safeDbRun($db, $sql, 'query', $logArray);
+
+    if ($result === false)
+    {
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+
+        return false;
+    }
 
     $dsData = $result->fetchArray(SQLITE3_ASSOC);
 
@@ -375,12 +385,11 @@ function showSensorData()
     $db->close();
     unset($db);
 }
-
-function checkSensor($resGetSensorData)
+function checkSensor($resGetSensorData): bool
 {
     #Check what oS is running
     $osIssWindows = chkOsIsWindows();
-    $debugFlag    = true;
+    $debugFlag    = false;
 
     #Setze AlertCount zurück
     checkSensorAlertCount();
@@ -402,12 +411,27 @@ function checkSensor($resGetSensorData)
     $db = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
     $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
-    // Hole mir die letzten 30 Nachrichten aus der Datenbank
-    $result = $db->query("SELECT * 
-                                  FROM sensordata 
-                                  WHERE sensorDataId = (SELECT MAX(sensorDataId) 
-                                                          FROM sensordata);
-                        ");
+    $sql = "SELECT * 
+             FROM sensordata 
+             WHERE sensorDataId = (SELECT MAX(sensorDataId) 
+                                     FROM sensordata
+                                  );
+                        ";
+
+    $logArray   = array();
+    $logArray[] = "checkSensor: Database: $dbFilename";
+    $logArray[] = "checkSensor: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+    $result = safeDbRun($db, $sql, 'query', $logArray);
+
+    if ($result === false)
+    {
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+
+        return false;
+    }
 
     $dsData = $result->fetchArray(SQLITE3_ASSOC);
 
@@ -434,34 +458,57 @@ function checkSensor($resGetSensorData)
         ######### Check INA226
         #########################################
         #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
-        $basename       = pathinfo(getcwd())['basename'];
-        $dbFilenameSub  = '../database/sensor_th_ina226.db';
-        $dbFilenameRoot = 'database/sensor_th_ina226.db';
-        $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+        $basenameIna226       = pathinfo(getcwd())['basename'];
+        $dbFilenameSubIna226  = '../database/sensor_th_ina226.db';
+        $dbFilenameRootIna226 = 'database/sensor_th_ina226.db';
+        $dbFilenameIna226     = $basenameIna226 == 'menu' ? $dbFilenameSubIna226 : $dbFilenameRootIna226;
 
-        $dbIna226 = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
+        $dbIna226 = new SQLite3($dbFilenameIna226, SQLITE3_OPEN_READONLY);
         $dbIna226->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
-        $resultThSensor = $dbIna226->query("SELECT * FROM sensorThIna226;");
-        $dsDataTh       = $resultThSensor->fetchArray(SQLITE3_ASSOC);
+        $sqlIna226 = "SELECT * 
+                        FROM sensorThIna226;
+                     ";
+
+        $logArray   = array();
+        $logArray[] = "checkSensor_ina226: Database: $dbFilenameIna226";
+        $logArray[] = "checkSensor_ina226: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+        $resultThSensor = safeDbRun($dbIna226, $sqlIna226, 'query', $logArray);
+
+        if ($resultThSensor === false)
+        {
+            #Close and write Back WAL
+            $dbIna226->close();
+            unset($dbIna226);
+
+            return false;
+        }
+
+        $dsDataIna226 = $resultThSensor->fetchArray(SQLITE3_ASSOC);
 
         if ($debugFlag === true)
         {
             echo "<br>INA226-Data<br><pre>";
-            print_r($dsDataTh);
+            print_r($dsDataIna226);
             echo "</pre>";
         }
 
-        if (!empty($dsDataTh))
+        if (!empty($dsDataIna226) === true)
         {
             $resGetThIna226Data = getThIna226Data();
 
-            if ($dsDataTh["sensorThIna226vBusEnabled"] == 1)
+            if ($resGetThIna226Data === false)
             {
-                $sensorThIna226vBusMinValue = $dsDataTh["sensorThIna226vBusMinValue"];
-                $sensorThIna226vBusMaxValue = $dsDataTh["sensorThIna226vBusMaxValue"];
-                $sensorThIna226vBusAlertMsg = $dsDataTh["sensorThIna226vBusAlertMsg"];
-                $sensorThIna226vBusDmGrpId  = $dsDataTh["sensorThIna226vBusDmGrpId"];
+                return false;
+            }
+
+            if ($dsDataIna226["sensorThIna226vBusEnabled"] == 1)
+            {
+                $sensorThIna226vBusMinValue = $dsDataIna226["sensorThIna226vBusMinValue"];
+                $sensorThIna226vBusMaxValue = $dsDataIna226["sensorThIna226vBusMaxValue"];
+                $sensorThIna226vBusAlertMsg = $dsDataIna226["sensorThIna226vBusAlertMsg"];
+                $sensorThIna226vBusDmGrpId  = $dsDataIna226["sensorThIna226vBusDmGrpId"];
                 $anyIna226SensorActive      = true;
 
                 if ($ina226vBus < $sensorThIna226vBusMinValue && $sensorThIna226vBusMinValue != '')
@@ -499,12 +546,12 @@ function checkSensor($resGetSensorData)
                 }
             }
 
-            if ($dsDataTh["sensorThIna226vShuntEnabled"] == 1)
+            if ($dsDataIna226["sensorThIna226vShuntEnabled"] == 1)
             {
-                $sensorThIna226vShuntMinValue = $dsDataTh["sensorThIna226vShuntMinValue"];
-                $sensorThIna226vShuntMaxValue = $dsDataTh["sensorThIna226vShuntMaxValue"];
-                $sensorThIna226vShuntAlertMsg = $dsDataTh["sensorThIna226vShuntAlertMsg"];
-                $sensorThIna226vShuntDmGrpId  = $dsDataTh["sensorThIna226vShuntDmGrpId"];
+                $sensorThIna226vShuntMinValue = $dsDataIna226["sensorThIna226vShuntMinValue"];
+                $sensorThIna226vShuntMaxValue = $dsDataIna226["sensorThIna226vShuntMaxValue"];
+                $sensorThIna226vShuntAlertMsg = $dsDataIna226["sensorThIna226vShuntAlertMsg"];
+                $sensorThIna226vShuntDmGrpId  = $dsDataIna226["sensorThIna226vShuntDmGrpId"];
                 $anyIna226SensorActive        = true;
 
                 if ($ina226vShunt < $sensorThIna226vShuntMinValue && $sensorThIna226vShuntMinValue != '')
@@ -542,12 +589,12 @@ function checkSensor($resGetSensorData)
                 }
             }
 
-            if ($dsDataTh["sensorThIna226vCurrentEnabled"] == 1)
+            if ($dsDataIna226["sensorThIna226vCurrentEnabled"] == 1)
             {
-                $sensorThIna226vCurrentMinValue = $dsDataTh["sensorThIna226vCurrentMinValue"];
-                $sensorThIna226vCurrentMaxValue = $dsDataTh["sensorThIna226vCurrentMaxValue"];
-                $sensorThIna226vCurrentAlertMsg = $dsDataTh["sensorThIna226vCurrentAlertMsg"];
-                $sensorThIna226vCurrentDmGrpId  = $dsDataTh["sensorThIna226vCurrentDmGrpId"];
+                $sensorThIna226vCurrentMinValue = $dsDataIna226["sensorThIna226vCurrentMinValue"];
+                $sensorThIna226vCurrentMaxValue = $dsDataIna226["sensorThIna226vCurrentMaxValue"];
+                $sensorThIna226vCurrentAlertMsg = $dsDataIna226["sensorThIna226vCurrentAlertMsg"];
+                $sensorThIna226vCurrentDmGrpId  = $dsDataIna226["sensorThIna226vCurrentDmGrpId"];
                 $anyIna226SensorActive          = true;
 
                 if ($ina226vCurrent < $sensorThIna226vCurrentMinValue && $sensorThIna226vCurrentMinValue != '')
@@ -585,12 +632,12 @@ function checkSensor($resGetSensorData)
                 }
             }
 
-            if ($dsDataTh["sensorThIna226vPowerEnabled"] == 1)
+            if ($dsDataIna226["sensorThIna226vPowerEnabled"] == 1)
             {
-                $sensorThIna226vPowerMinValue = $dsDataTh["sensorThIna226vPowerMinValue"];
-                $sensorThIna226vPowerMaxValue = $dsDataTh["sensorThIna226vPowerMaxValue"];
-                $sensorThIna226vPowerAlertMsg = $dsDataTh["sensorThIna226vPowerAlertMsg"];
-                $sensorThIna226vPowerDmGrpId  = $dsDataTh["sensorThIna226vPowerDmGrpId"];
+                $sensorThIna226vPowerMinValue = $dsDataIna226["sensorThIna226vPowerMinValue"];
+                $sensorThIna226vPowerMaxValue = $dsDataIna226["sensorThIna226vPowerMaxValue"];
+                $sensorThIna226vPowerAlertMsg = $dsDataIna226["sensorThIna226vPowerAlertMsg"];
+                $sensorThIna226vPowerDmGrpId  = $dsDataIna226["sensorThIna226vPowerDmGrpId"];
                 $anyIna226SensorActive        = true;
 
                 if ($ina226vPower < $sensorThIna226vPowerMinValue && $sensorThIna226vPowerMinValue != '')
@@ -641,8 +688,26 @@ function checkSensor($resGetSensorData)
         $dbTemp = new SQLite3($dbFilenameTemp, SQLITE3_OPEN_READONLY);
         $dbTemp->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
-        $resultThTempSensor = $dbTemp->query("SELECT * FROM sensorThTemp;");
-        $dsDataThTemp       = $resultThTempSensor->fetchArray(SQLITE3_ASSOC);
+        $sqlTemp = "SELECT * 
+                      FROM sensorThTemp;
+                   ";
+
+        $logArray   = array();
+        $logArray[] = "checkSensor_Temp: Database: $dbFilenameTemp";
+        $logArray[] = "checkSensor_Temp: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+        $resultThTempSensor = safeDbRun($dbTemp, $sqlTemp, 'query', $logArray);
+
+        if ($resultThTempSensor === false)
+        {
+            #Close and write Back WAL
+            $db->close();
+            unset($db);
+
+            return false;
+        }
+
+        $dsDataThTemp = $resultThTempSensor->fetchArray(SQLITE3_ASSOC);
 
         if ($debugFlag === true)
         {
@@ -658,6 +723,11 @@ function checkSensor($resGetSensorData)
         if (!empty($dsDataThTemp))
         {
             $resGetThTempData = getThTempData();
+
+            if ($resGetThTempData === false)
+            {
+                return false;
+            }
 
             if ($dsDataThTemp["sensorThTempEnabled"] == 1)
             {
@@ -746,14 +816,17 @@ function checkSensor($resGetSensorData)
             }
         }
 
-        echo "<br>hasIna226:";
-        var_dump($hasIna226);
+        if ($debugFlag === true)
+        {
+            echo "<br>hasIna226:";
+            var_dump($hasIna226);
 
-        echo "<br>anyIna226SensorActive:";
-        var_dump($anyIna226SensorActive);
+            echo "<br>anyIna226SensorActive:";
+            var_dump($anyIna226SensorActive);
 
-        echo "<br>anyTemSensorAktive:";
-        var_dump($anyTemSensorAktive);
+            echo "<br>anyTemSensorAktive:";
+            var_dump($anyTemSensorAktive);
+        }
 
         # Wenn kein Ina226 vorhanden aber InaSensor aktiv dann alle abschalten
         if ($hasIna226 === false && $anyIna226SensorActive === true)
@@ -776,17 +849,19 @@ function checkSensor($resGetSensorData)
             }
         }
     }
+
+    return true;
 }
 
 function checkSensorAlertCount(): bool
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
-    $basename       = pathinfo(getcwd())['basename'];
-    $dbFilenameSub  = '../database/sensor_th_ina226.db';
-    $dbFilenameRoot = 'database/sensor_th_ina226.db';
-    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+    $basenameIna226       = pathinfo(getcwd())['basename'];
+    $dbFilenameSubIna226  = '../database/sensor_th_ina226.db';
+    $dbFilenameRootIna226 = 'database/sensor_th_ina226.db';
+    $dbFilenameIna226     = $basenameIna226 == 'menu' ? $dbFilenameSubIna226 : $dbFilenameRootIna226;
 
-    $dbIna226 = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
+    $dbIna226 = new SQLite3($dbFilenameIna226, SQLITE3_OPEN_READONLY);
     $dbIna226->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
     $queryIna226 = "SELECT strftime('%s', 'now', 
@@ -874,16 +949,16 @@ function checkSensorAlertCount(): bool
                                  ) - strftime('%s', sensorThIna226vPowerAlertTimestamp) AS Ina226vPowerTimeDiff,
                                                     sensorThIna226vPowerAlertCount
                     FROM sensorThIna226;
-";
+    ";
 
-    $resultIna226 = $dbIna226->query($queryIna226);
+    $logArray   = array();
+    $logArray[] = "checkSensorAlertCount (INA226): Database: $dbFilenameIna226";
+    $logArray[] = "checkSensorAlertCount (INA226): SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
-    if ($dbIna226->lastErrorMsg() > 0 && $dbIna226->lastErrorMsg() < 100)
+    $resultIna226 = safeDbRun($dbIna226, $queryIna226, 'query', $logArray);
+
+    if ($resultIna226 === false)
     {
-        echo "<br>checkSensorAlertCount (ina226)";
-        echo "<br>ErrMsg:" . $dbIna226->lastErrorMsg();
-        echo "<br>ErrNum:" . $dbIna226->lastErrorCode();
-
         #Close and write Back WAL
         $dbIna226->close();
         unset($dbIna226);
@@ -891,7 +966,7 @@ function checkSensorAlertCount(): bool
         return false;
     }
 
-    $dsDataTh     = $resultIna226->fetchArray(SQLITE3_ASSOC);
+    $dsDataTh = $resultIna226->fetchArray(SQLITE3_ASSOC);
 
     $Ina226vBusTimeDiff           = $dsDataTh['Ina226vBusTimeDiff'];
     $sensorThIna226vBusAlertCount = $dsDataTh['sensorThIna226vBusAlertCount'];
@@ -982,16 +1057,16 @@ function checkSensorAlertCount(): bool
                                 ) - strftime('%s', sensorThToutAlertTimestamp) AS toutTimeDiff,
                                                    sensorThToutAlertCount
                     FROM sensorThTemp;
-";
+    ";
 
-    $resultTemp = $dbTemp->query($queryTemp);
+    $logArray   = array();
+    $logArray[] = "checkSensorAlertCount (Temp): Database: $dbFilenameIna226";
+    $logArray[] = "checkSensorAlertCount (Temp): SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
-    if ($dbTemp->lastErrorMsg() > 0 && $dbTemp->lastErrorMsg() < 100)
+    $resultTemp = safeDbRun($dbTemp, $queryTemp, 'query', $logArray);
+
+    if ($resultTemp === false)
     {
-        echo "<br>checkSensorAlertCount (Temp)";
-        echo "<br>ErrMsg:" . $dbTemp->lastErrorMsg();
-        echo "<br>ErrNum:" . $dbTemp->lastErrorCode();
-
         #Close and write Back WAL
         $dbTemp->close();
         unset($dbTemp);
@@ -999,7 +1074,7 @@ function checkSensorAlertCount(): bool
         return false;
     }
 
-    $dsDataTemp     = $resultTemp->fetchArray(SQLITE3_ASSOC);
+    $dsDataTemp = $resultTemp->fetchArray(SQLITE3_ASSOC);
 
     $tempTimeDiff           = $dsDataTemp['tempTimeDiff'];
     $sensorThTempAlertCount = $dsDataTemp['sensorThTempAlertCount'];

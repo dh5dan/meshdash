@@ -1,5 +1,4 @@
 <?php
-
 function execScriptCurl($keywordCmd): bool
 {
     $osIssWindows = chkOsIsWindows();
@@ -37,21 +36,27 @@ function updateAckReqId($msgId, $ackReqId): bool
     $db->exec('PRAGMA synchronous = NORMAL;');
     $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
-    @$db->exec(" UPDATE meshdash
-                          SET ackReq = $ackReqId
-                        WHERE msg_id = '$msgId'
-                    ");
+    $sql = "UPDATE meshdash
+               SET ackReq = $ackReqId
+             WHERE msg_id = '$msgId'
+           ";
 
-    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
-    {
-        echo "<br>updateAckReqId";
-        echo "<br>ErrMsg:" . $db->lastErrorMsg();
-        echo "<br>ErrNum:" . $db->lastErrorCode();
-    }
+    $logArray   = array();
+    $logArray[] = "updateAckReqId: Database: $dbFilename";
+    $logArray[] = "updateAckReqId: ackReqId: $ackReqId";
+    $logArray[] = "updateAckReqId: msgId: $msgId";
+    $logArray[] = "updateAckReqId: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+    $res = safeDbRun( $db, $sql,'exec', $logArray);
 
     #Close and write Back WAL
     $db->close();
     unset($db);
+
+    if ($res === false)
+    {
+        return false;
+    }
 
     return true;
 }
@@ -67,21 +72,28 @@ function updateAckId($ackId): bool
     $db = new SQLite3($dbFilename);
     $db->exec('PRAGMA synchronous = NORMAL;');
     $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
-    $db->exec(" UPDATE meshdash
-                          SET ack = $ackId
-                        WHERE ackReq = $ackId
-                    ");
 
-    if ($db->lastErrorCode() > 0 && $db->lastErrorCode() < 100)
-    {
-        echo "<br>updateAckId";
-        echo "<br>ErrMsg:" . $db->lastErrorMsg();
-        echo "<br>ErrNum:" . $db->lastErrorCode();
-    }
+    $sql = "UPDATE meshdash
+               SET ack = $ackId
+             WHERE ackReq = $ackId
+          ";
+
+    $logArray   = array();
+    $logArray[] = "updateAckId: Database: $dbFilename";
+    $logArray[] = "updateAckId: ackId: $ackId";
+    $logArray[] = "updateAckId: ackId: $ackId";
+    $logArray[] = "updateAckId: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+    $res = safeDbRun($db, $sql, 'exec', $logArray);
 
     #Close and write Back WAL
     $db->close();
     unset($db);
+
+    if ($res === false)
+    {
+        return false;
+    }
 
     return true;
 }
@@ -176,7 +188,7 @@ function checkMheard($msgId, $msg, $src, $dst, $callSign, $loraIp, $mhTargetFlag
     }
 }
 
-function sendMheard($msgId, $src)
+function sendMheard($msgId, $src): bool
 {
     #Prüfe ob Logging aktiv ist
     $doLogEnable      = getParamData('doLogEnable');
@@ -189,27 +201,58 @@ function sendMheard($msgId, $src)
     $db = new SQLite3('database/mheard.db', SQLITE3_OPEN_READONLY);
     $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
-    // Hole mir die letzten 30 Nachrichten aus der Datenbank
-    $result = $db->query("SELECT timestamps 
-                                   FROM mheard
-                               GROUP BY timestamps
-                               ORDER BY timestamps DESC
-                                  LIMIT 1;
-                        ");
+
+    $sql = "SELECT timestamps 
+              FROM mheard
+          GROUP BY timestamps
+          ORDER BY timestamps DESC
+             LIMIT 1;
+         ";
+
+    $logArray   = array();
+    $logArray[] = "sendMheard: Database: database/mheard.db";
+    $logArray[] = "sendMheard: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+    $logArray[] = "sendMheard: msgId:" . $msgId;
+    $logArray[] = "sendMheard: src:" . $src;
+
+    $result = safeDbRun($db, $sql, 'query', $logArray);
+
+    if ($result === false)
+    {
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+
+        return false;
+    }
 
     $dsData = $result->fetchArray(SQLITE3_ASSOC);
 
-    $validData = !empty($dsData);
-
-    if ($validData)
+    if (!empty($dsData) === true)
     {
         $timeStamp = $dsData['timestamps'];
 
-        $resultMh = $db->query("SELECT * 
-                                        FROM mheard
-                                       WHERE timestamps = '$timeStamp'
-                                    ORDER BY timestamps DESC;
-                        ");
+        $sqlMh = "SELECT * 
+                    FROM mheard
+                   WHERE timestamps = '$timeStamp'
+                ORDER BY timestamps DESC;
+              ";
+
+        $logArray   = array();
+        $logArray[] = "sendMheard_TS: Database: database/mheard.db";
+        $logArray[] = "sendMheard_TS: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+        $logArray[] = "sendMheard_TS: timeStamp:" . $timeStamp;
+
+        $resultMh = safeDbRun($db, $sqlMh, 'query', $logArray);
+
+        if ($resultMh === false)
+        {
+            #Close and write Back WAL
+            $db->close();
+            unset($db);
+
+            return false;
+        }
 
         if ($resultMh !== false)
         {
@@ -235,7 +278,6 @@ function sendMheard($msgId, $src)
 
             #Letztes Zeichen entfernen und auch 160 Zeichen begrenzen
             $sendMheardList = substr(rtrim($sendMheardList, "|"), 0, 160);
-
             $sendMheardList = $sendMheardList == '' ? 'Keine MH-Liste vorhanden.' : $sendMheardList;
 
             $arraySend['txType'] = 'msg';
@@ -249,7 +291,9 @@ function sendMheard($msgId, $src)
 
                 if ($doLogEnable === 1 && $sendQueueMode == 1)
                 {
-                    $logText = date('Y-m-d H:i:s') . " MHeard in Send-Queue gespeichert: Ziel: $src MHListe: $sendMheardList\n";
+                    $logText = date(
+                            'Y-m-d H:i:s'
+                        ) . " MHeard in Send-Queue gespeichert: Ziel: $src MHListe: $sendMheardList\n";
                     file_put_contents($mhTxQueueLogFile, $logText, FILE_APPEND);
                 }
                 else
@@ -260,12 +304,10 @@ function sendMheard($msgId, $src)
             }
         }
     }
-    else
-    {
-        echo "<h3>Keine gespeicherten MH-Heard Daten zum Senden vorhanden.</h3>";
-    }
 
     #Close and write Back WAL
     $db->close();
     unset($db);
+
+    return true;
 }

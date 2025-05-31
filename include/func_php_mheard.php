@@ -1,6 +1,5 @@
 <?php
-
-function getMheard($loraIp)
+function getMheard($loraIp): bool
 {
     // Array, um die Daten zu speichern
     $heardData = [];
@@ -124,8 +123,7 @@ function getMheard($loraIp)
 
     return true;
 }
-
-function getMheard2($loraIp)
+function getMheard2($loraIp): bool
 {
     // Array, um die Daten zu speichern
     $heardData = [];
@@ -140,7 +138,7 @@ function getMheard2($loraIp)
     if ($htmlContent === false)
     {
         echo '<br><span class="failureHint">Keine Daten zu finden unter der Url: ' . $url . '</span>';
-        exit();
+       return false;
     }
 
     // Initialisieren des DOMDocuments
@@ -153,18 +151,23 @@ function getMheard2($loraIp)
     $cards = $doc->getElementsByTagName('div');
     $mheardValueIsValid = false;
 
-    foreach ($cards as $card) {
-        if ($card->getAttribute('class') === 'cardlayout') {
+    foreach ($cards as $card)
+    {
+        if ($card->getAttribute('class') === 'cardlayout')
+        {
 
             $label = $card->getElementsByTagName('label')->item(0);
-            if (!$label) continue;
+            if (!$label)
+            {
+                continue;
+            }
 
             // Rufzeichen aus dem <a>-Element
-            $a = $label->getElementsByTagName('a')->item(0);
+            $a        = $label->getElementsByTagName('a')->item(0);
             $callSign = $a ? trim($a->nodeValue) : '';
 
             // Zeitstempel aus dem <span class="font-small">
-            $span = $label->getElementsByTagName('span')->item(0);
+            $span     = $label->getElementsByTagName('span')->item(0);
             $datetime = $span ? trim($span->nodeValue) : '';
 
             // Datum & Zeit extrahieren
@@ -187,11 +190,13 @@ function getMheard2($loraIp)
             // Jetzt: Suche rekursiv alle <span class="font-bold"> im cardlayout-Block
             $spans = $card->getElementsByTagName('span');
 
-            for ($i = 0; $i < $spans->length; $i++) {
-                $span = $spans->item($i);
+            for ($i = 0; $i < $spans->length; $i++)
+            {
+                $span  = $spans->item($i);
                 $class = $span->getAttribute('class');
 
-                if (strpos($class, 'font-bold') !== false) {
+                if (strpos($class, 'font-bold') !== false)
+                {
                     $key = trim(str_replace(':', '', $span->nodeValue));
 
                     // Eltern-<div> ermitteln
@@ -199,17 +204,33 @@ function getMheard2($loraIp)
 
                     // Zwei <span> in dem Block (key und value)
                     $innerSpans = $parentDiv->getElementsByTagName('span');
-                    if ($innerSpans->length < 2) continue;
+                    if ($innerSpans->length < 2)
+                    {
+                        continue;
+                    }
 
                     $val = trim($innerSpans->item(1)->nodeValue);
 
-                    switch (strtolower($key)) {
-                        case 'type':     $entry['mhType']   = $val; break;
-                        case 'hardware': $entry['hardware'] = $val; break;
-                        case 'mod':      $entry['mod']      = $val; break;
-                        case 'rssi':     $entry['rssi']     = $val; break;
-                        case 'snr':      $entry['snr']      = $val; break;
-                        case 'dist':     $entry['dist']     = $val; break;
+                    switch (strtolower($key))
+                    {
+                        case 'type':
+                            $entry['mhType'] = $val;
+                            break;
+                        case 'hardware':
+                            $entry['hardware'] = $val;
+                            break;
+                        case 'mod':
+                            $entry['mod'] = $val;
+                            break;
+                        case 'rssi':
+                            $entry['rssi'] = $val;
+                            break;
+                        case 'snr':
+                            $entry['snr'] = $val;
+                            break;
+                        case 'dist':
+                            $entry['dist'] = $val;
+                            break;
                     }
                 }
             }
@@ -282,28 +303,58 @@ function getMheard2($loraIp)
 
     return true;
 }
-
-function showMheard($localCallSign)
+function showMheard($localCallSign): bool
 {
     $db = new SQLite3('database/mheard.db', SQLITE3_OPEN_READONLY);
     $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
     // Hole mir den Timestamp der letzten importierten Mheard Liste aus der Datenbank
-    $result = $db->query("SELECT max(timestamps) as timestamps from mheard;");
+    $sql = "SELECT max(timestamps) AS timestamps 
+              FROM mheard;
+           ";
+
+    $logArray   = array();
+    $logArray[] = "showMheard: Database: database/mheard.db";
+    $logArray[] = "showMheard: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+    $logArray[] = "showMheard: Error at:" . date('Y-m-d H:i:s');
+
+    $result = safeDbRun($db, $sql, 'query', $logArray);
+
+    if ($result === false)
+    {
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+
+        return false;
+    }
 
     $dsData = $result->fetchArray(SQLITE3_ASSOC);
 
-    $validData = !empty($dsData);
-
-    if ($validData)
+    if (!empty($dsData))
     {
         $timeStamp = $dsData['timestamps'];
 
-        $resultMh = $db->query("SELECT * 
-                                        FROM mheard
-                                       WHERE timestamps = '$timeStamp'
-                                    ORDER BY mhTime DESC;
-                        ");
+        $sqlMh = "SELECT * 
+                    FROM mheard
+                   WHERE timestamps = '$timeStamp'
+                ORDER BY mhTime DESC;
+                        ";
+
+        $logArray[] = "showMheard_ts: Database: database/mheard.db";
+        $logArray[] = "showMheard_ts: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+        $logArray[] = "showMheard_ts: Error at:" . date('Y-m-d H:i:s');
+
+        $resultMh = safeDbRun($db, $sqlMh, 'query', $logArray);
+
+        if ($resultMh === false)
+        {
+            #Close and write Back WAL
+            $db->close();
+            unset($db);
+
+            return false;
+        }
 
         if ($resultMh !== false)
         {
@@ -390,8 +441,9 @@ function showMheard($localCallSign)
     #Close and write Back WAL
     $db->close();
     unset($db);
-}
 
+    return true;
+}
 function getOwnPosition($callSign)
 {
     $returnArray = array();
@@ -401,17 +453,38 @@ function getOwnPosition($callSign)
     $dbMd->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
     // Hole mir die pos-Daten aus der Datenbank
-    $resultMdOwn    = $dbMd->query("SELECT latitude, longitude 
-                                         FROM meshdash
-                                        WHERE src = '$callSign'
-                                          AND type = 'pos'
-                                     ORDER BY timestamps DESC
-                                        LIMIT 1;
-                                            ");
-    $dsDataMdOwn    = $resultMdOwn->fetchArray(SQLITE3_ASSOC);
-    $validDataMdOwn = !empty($dsDataMdOwn);
+    $sqlMd = "SELECT latitude, longitude 
+                FROM meshdash
+               WHERE src = '$callSign'
+                 AND type = 'pos'
+            ORDER BY timestamps DESC
+               LIMIT 1;
+            ";
 
-    if ($validDataMdOwn)
+    $logArray   = array();
+    $logArray[] = "getOwnPosition: Database: database/meshdash.db";
+    $logArray[] = "getOwnPosition: callSign: $callSign";
+    $logArray[] = "getOwnPosition: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+    $logArray[] = "getOwnPosition: Error at:" . date('Y-m-d H:i:s');
+
+    $resultMdOwn = safeDbRun($dbMd, $sqlMd, 'query', $logArray);
+
+    if ($resultMdOwn === false)
+    {
+        #Close and write Back WAL
+        $dbMd->close();
+        unset($dbMd);
+
+        return false;
+    }
+
+    $dsDataMdOwn = $resultMdOwn->fetchArray(SQLITE3_ASSOC);
+
+    #Close and write Back WAL
+    $dbMd->close();
+    unset($dbMd);
+
+    if (!empty($dsDataMdOwn) === true)
     {
         $returnArray['latitude']   = substr($dsDataMdOwn['latitude'],0,7);
         $returnArray['longitude']  = substr($dsDataMdOwn['longitude'],0,6);
@@ -428,7 +501,6 @@ function getOwnPosition($callSign)
 
     return false;
 }
-
 function validateMheardValue(string $value, string $type): bool
 {
     switch ($type)

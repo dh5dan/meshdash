@@ -24,7 +24,6 @@ function sendCommand($loraCmd, $loraIp): bool
     #Starte Trigger
     $ch = curl_init();
 
-
     #Check new GUI
     if (getParamData('isNewMeshGui') == 1)
     {

@@ -36,6 +36,47 @@ $loraIp       = getParamData('loraIp');
 #Check ob INA226 Sensoren vorhanden sind
 $hasIna226Sensor = false;
 $arrayGetLoraInfo = getLoraInfo($loraIp);
+
+#Init Temp
+$sensorThTempEnabled      = '';
+$sensorThTempMinValue     = '';
+$sensorThTempMaxValue     = '';
+$sensorThTempAlertMsg     = '';
+$sensorThTempDmGrpId      = '';
+$sensorThTempIntervallMin =  1;
+
+$sensorThToutEnabled  = '';
+$sensorThToutMinValue = '';
+$sensorThToutMaxValue = '';
+$sensorThToutAlertMsg = '';
+$sensorThToutDmGrpId  = 999;
+
+
+#Init Ina 226
+$sensorThIna226vBusEnabled  = '';
+$sensorThIna226vBusMinValue = '';
+$sensorThIna226vBusMaxValue = '';
+$sensorThIna226vBusAlertMsg = '';
+$sensorThIna226vBusDmGrpId  = 999;
+
+$sensorThIna226vShuntEnabled  = '';
+$sensorThIna226vShuntMinValue = '';
+$sensorThIna226vShuntMaxValue = '';
+$sensorThIna226vShuntAlertMsg = '';
+$sensorThIna226vShuntDmGrpId  = 999;
+
+$sensorThIna226vCurrentEnabled  = '';
+$sensorThIna226vCurrentMinValue = '';
+$sensorThIna226vCurrentMaxValue = '';
+$sensorThIna226vCurrentAlertMsg = '';
+$sensorThIna226vCurrentDmGrpId  = 999;
+
+$sensorThIna226vPowerEnabled  = '';
+$sensorThIna226vPowerMinValue = '';
+$sensorThIna226vPowerMaxValue = '';
+$sensorThIna226vPowerAlertMsg = '';
+$sensorThIna226vPowerDmGrpId  = 999;
+
 if (isset($arrayGetLoraInfo['INA226']))
 {
     $hasIna226Sensor = true;
@@ -57,12 +98,19 @@ if ($sendData === '1')
 
 $resGetThTempData = getThTempData();
 
-$sensorThTempEnabled      = $resGetThTempData['sensorThTempEnabled'] ?? '';
-$sensorThTempMinValue     = $resGetThTempData['sensorThTempMinValue'] ?? '';
-$sensorThTempMaxValue     = $resGetThTempData['sensorThTempMaxValue'] ?? '';
-$sensorThTempAlertMsg     = $resGetThTempData['sensorThTempAlertMsg'] ?? '';
-$sensorThTempDmGrpId      = $resGetThTempData['sensorThTempDmGrpId'] ?? '';
-$sensorThTempIntervallMin = $resGetThTempData['sensorThTempIntervallMin'] ?? 1;
+if ($resGetThTempData !== false)
+{
+    $sensorThTempEnabled      = $resGetThTempData['sensorThTempEnabled'] ?? '';
+    $sensorThTempMinValue     = $resGetThTempData['sensorThTempMinValue'] ?? '';
+    $sensorThTempMaxValue     = $resGetThTempData['sensorThTempMaxValue'] ?? '';
+    $sensorThTempAlertMsg     = $resGetThTempData['sensorThTempAlertMsg'] ?? '';
+    $sensorThTempDmGrpId      = $resGetThTempData['sensorThTempDmGrpId'] ?? '';
+    $sensorThTempIntervallMin = $resGetThTempData['sensorThTempIntervallMin'] ?? 1;
+}
+else
+{
+    echo '<span class="failureHint">Es gab einen Fehler bei der Abfrage der Daten!</span>';
+}
 
 $sensorThTempEnabledChecked = $sensorThTempEnabled == 1 ? 'checked' : '';
 $sensorThTempDmGrpId        = $sensorThTempDmGrpId == '' ? '999' : $sensorThTempDmGrpId;
@@ -115,11 +163,18 @@ echo '<tr>';
 echo '<td colspan="2"><hr></td>';
 echo '</tr>';
 
-$sensorThToutEnabled  = $resGetThTempData['sensorThToutEnabled'] ?? '';
-$sensorThToutMinValue = $resGetThTempData['sensorThToutMinValue'] ?? '';
-$sensorThToutMaxValue = $resGetThTempData['sensorThToutMaxValue'] ?? '';
-$sensorThToutAlertMsg = $resGetThTempData['sensorThToutAlertMsg'] ?? '';
-$sensorThToutDmGrpId  = $resGetThTempData['sensorThToutDmGrpId'] ?? 999;
+if ($resGetThTempData !== false)
+{
+    $sensorThToutEnabled  = $resGetThTempData['sensorThToutEnabled'] ?? '';
+    $sensorThToutMinValue = $resGetThTempData['sensorThToutMinValue'] ?? '';
+    $sensorThToutMaxValue = $resGetThTempData['sensorThToutMaxValue'] ?? '';
+    $sensorThToutAlertMsg = $resGetThTempData['sensorThToutAlertMsg'] ?? '';
+    $sensorThToutDmGrpId  = $resGetThTempData['sensorThToutDmGrpId'] ?? 999;
+}
+else
+{
+    echo '<span class="failureHint">Es gab einen Fehler bei der Abfrage der Daten!</span>';
+}
 
 $sensorThToutEnabledChecked = $sensorThToutEnabled == 1 ? 'checked' : '';
 $sensorThToutDmGrpId        = $sensorThToutDmGrpId == '' ? '999' : $sensorThToutDmGrpId;
@@ -157,12 +212,16 @@ echo '</tr>';
 
 if ($hasIna226Sensor === true)
 {
-    $resGetThIna226Data         = getThIna226Data();
-    $sensorThIna226vBusEnabled  = $resGetThIna226Data['sensorThIna226vBusEnabled'] ?? '';
-    $sensorThIna226vBusMinValue = $resGetThIna226Data['sensorThIna226vBusMinValue'] ?? '';
-    $sensorThIna226vBusMaxValue = $resGetThIna226Data['sensorThIna226vBusMaxValue'] ?? '';
-    $sensorThIna226vBusAlertMsg = $resGetThIna226Data['sensorThIna226vBusAlertMsg'] ?? '';
-    $sensorThIna226vBusDmGrpId  = $resGetThIna226Data['sensorThIna226vBusDmGrpId'] ?? 999;
+    $resGetThIna226Data = getThIna226Data();
+
+    if ($resGetThIna226Data !== false)
+    {
+        $sensorThIna226vBusEnabled  = $resGetThIna226Data['sensorThIna226vBusEnabled'] ?? '';
+        $sensorThIna226vBusMinValue = $resGetThIna226Data['sensorThIna226vBusMinValue'] ?? '';
+        $sensorThIna226vBusMaxValue = $resGetThIna226Data['sensorThIna226vBusMaxValue'] ?? '';
+        $sensorThIna226vBusAlertMsg = $resGetThIna226Data['sensorThIna226vBusAlertMsg'] ?? '';
+        $sensorThIna226vBusDmGrpId  = $resGetThIna226Data['sensorThIna226vBusDmGrpId'] ?? 999;
+    }
 
     $sensorThIna226vBusEnabledChecked = $sensorThIna226vBusEnabled == 1 ? 'checked' : '';
     $sensorThIna226vBusDmGrpId        = $sensorThIna226vBusDmGrpId == '' ? '999' : $sensorThIna226vBusDmGrpId;
@@ -199,11 +258,14 @@ if ($hasIna226Sensor === true)
     echo '<td colspan="2"><hr></td>';
     echo '</tr>';
 
-    $sensorThIna226vShuntEnabled  = $resGetThIna226Data['sensorThIna226vShuntEnabled'] ?? '';
-    $sensorThIna226vShuntMinValue = $resGetThIna226Data['sensorThIna226vShuntMinValue'] ?? '';
-    $sensorThIna226vShuntMaxValue = $resGetThIna226Data['sensorThIna226vShuntMaxValue'] ?? '';
-    $sensorThIna226vShuntAlertMsg = $resGetThIna226Data['sensorThIna226vShuntAlertMsg'] ?? '';
-    $sensorThIna226vShuntDmGrpId  = $resGetThIna226Data['sensorThIna226vShuntDmGrpId'] ?? 999;
+    if ($resGetThIna226Data !== false)
+    {
+        $sensorThIna226vShuntEnabled  = $resGetThIna226Data['sensorThIna226vShuntEnabled'] ?? '';
+        $sensorThIna226vShuntMinValue = $resGetThIna226Data['sensorThIna226vShuntMinValue'] ?? '';
+        $sensorThIna226vShuntMaxValue = $resGetThIna226Data['sensorThIna226vShuntMaxValue'] ?? '';
+        $sensorThIna226vShuntAlertMsg = $resGetThIna226Data['sensorThIna226vShuntAlertMsg'] ?? '';
+        $sensorThIna226vShuntDmGrpId  = $resGetThIna226Data['sensorThIna226vShuntDmGrpId'] ?? 999;
+    }
 
     $sensorThIna226vShuntEnabledChecked = $sensorThIna226vShuntEnabled == 1 ? 'checked' : '';
     $sensorThIna226vShuntDmGrpId        = $sensorThIna226vShuntDmGrpId == '' ? '999' : $sensorThIna226vShuntDmGrpId;
@@ -235,11 +297,14 @@ if ($hasIna226Sensor === true)
     echo '<td colspan="2"><hr></td>';
     echo '</tr>';
 
-    $sensorThIna226vCurrentEnabled  = $resGetThIna226Data['sensorThIna226vCurrentEnabled'] ?? '';
-    $sensorThIna226vCurrentMinValue = $resGetThIna226Data['sensorThIna226vCurrentMinValue'] ?? '';
-    $sensorThIna226vCurrentMaxValue = $resGetThIna226Data['sensorThIna226vCurrentMaxValue'] ?? '';
-    $sensorThIna226vCurrentAlertMsg = $resGetThIna226Data['sensorThIna226vCurrentAlertMsg'] ?? '';
-    $sensorThIna226vCurrentDmGrpId  = $resGetThIna226Data['sensorThIna226vCurrentDmGrpId'] ?? 999;
+    if ($resGetThIna226Data !== false)
+    {
+        $sensorThIna226vCurrentEnabled  = $resGetThIna226Data['sensorThIna226vCurrentEnabled'] ?? '';
+        $sensorThIna226vCurrentMinValue = $resGetThIna226Data['sensorThIna226vCurrentMinValue'] ?? '';
+        $sensorThIna226vCurrentMaxValue = $resGetThIna226Data['sensorThIna226vCurrentMaxValue'] ?? '';
+        $sensorThIna226vCurrentAlertMsg = $resGetThIna226Data['sensorThIna226vCurrentAlertMsg'] ?? '';
+        $sensorThIna226vCurrentDmGrpId  = $resGetThIna226Data['sensorThIna226vCurrentDmGrpId'] ?? 999;
+    }
 
     $sensorThIna226vCurrentEnabledChecked = $sensorThIna226vCurrentEnabled == 1 ? 'checked' : '';
     $sensorThIna226vCurrentDmGrpId        = $sensorThIna226vCurrentDmGrpId == '' ? '999' : $sensorThIna226vCurrentDmGrpId;
@@ -271,11 +336,14 @@ if ($hasIna226Sensor === true)
     echo '<td colspan="2"><hr></td>';
     echo '</tr>';
 
-    $sensorThIna226vPowerEnabled  = $resGetThIna226Data['sensorThIna226vPowerEnabled'] ?? '';
-    $sensorThIna226vPowerMinValue = $resGetThIna226Data['sensorThIna226vPowerMinValue'] ?? '';
-    $sensorThIna226vPowerMaxValue = $resGetThIna226Data['sensorThIna226vPowerMaxValue'] ?? '';
-    $sensorThIna226vPowerAlertMsg = $resGetThIna226Data['sensorThIna226vPowerAlertMsg'] ?? '';
-    $sensorThIna226vPowerDmGrpId  = $resGetThIna226Data['sensorThIna226vPowerDmGrpId'] ?? 999;
+    if ($resGetThIna226Data !== false)
+    {
+        $sensorThIna226vPowerEnabled  = $resGetThIna226Data['sensorThIna226vPowerEnabled'] ?? '';
+        $sensorThIna226vPowerMinValue = $resGetThIna226Data['sensorThIna226vPowerMinValue'] ?? '';
+        $sensorThIna226vPowerMaxValue = $resGetThIna226Data['sensorThIna226vPowerMaxValue'] ?? '';
+        $sensorThIna226vPowerAlertMsg = $resGetThIna226Data['sensorThIna226vPowerAlertMsg'] ?? '';
+        $sensorThIna226vPowerDmGrpId  = $resGetThIna226Data['sensorThIna226vPowerDmGrpId'] ?? 999;
+    }
 
     $sensorThIna226vPowerEnabledChecked = $sensorThIna226vPowerEnabled == 1 ? 'checked' : '';
     $sensorThIna226vPowerDmGrpId        = $sensorThIna226vPowerDmGrpId == '' ? '999' : $sensorThIna226vPowerDmGrpId;

@@ -12,6 +12,18 @@ body {
     border-radius: 5px;
 }
 
+.successHint {
+    background-color: darkgreen;
+    color: whitesmoke;
+    font-weight: bold;
+}
+
+.failureHint {
+    background-color: crimson;
+    color: whitesmoke;
+    font-weight: bold;
+}
+
 @media only screen and (max-width: 600px) {
     .ui-dialog {
         width: 90% !important;

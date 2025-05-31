@@ -263,10 +263,23 @@ $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 if ($searchPage == '' && $doSearchQuery === true)
 {
     // Für Pagination: Gesamtanzahl holen (ohne LIMIT)
-    $countQuery  = "SELECT COUNT(*) AS total FROM meshdash $sqlAddonSearch";
-    $countResult = $db->query($countQuery);
-    $totalRows   = $countResult->fetchArray(SQLITE3_ASSOC)['total'];
-    $totalPages  = ceil($totalRows / $perPage);
+    $totalRows   = 0;
+    $countQuery  = "SELECT COUNT(*) AS total 
+                      FROM meshdash $sqlAddonSearch;
+                   ";
+
+    $logArray   = array();
+    $logArray[] = "message_Pagination: Database: database/meshdash.db";
+    $logArray[] = "message_Pagination: sqlAddonSearch: $sqlAddonSearch";
+    $logArray[] = "message_Pagination: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+    $countResult = safeDbRun($db, $countQuery, 'query', $logArray);
+
+    if ($countResult !== false)
+    {
+        $totalRows  = $countResult->fetchArray(SQLITE3_ASSOC)['total'];
+        $totalPages = ceil($totalRows / $perPage);
+    }
 
     if ($totalRows == 0)
     {
@@ -334,18 +347,33 @@ if ($doSearchQuery === true)
                      LIMIT $perPage OFFSET $offset
                         ";
 
-    $result = $db->query($searchQuery);
+    $logArray   = array();
+    $logArray[] = "doSearchQuery_message_Pagination: Database: database/meshdash.db";
+    $logArray[] = "doSearchQuery_message_Pagination: sqlAddonSearch: $sqlAddonSearch";
+    $logArray[] = "doSearchQuery_message_Pagination: perPage: $perPage";
+    $logArray[] = "doSearchQuery_message_Pagination: offset: $offset";
+    $logArray[] = "doSearchQuery_message_Pagination: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+    $result = safeDbRun($db, $searchQuery, 'query', $logArray);
 }
 else
 {
     # Hole mir die letzten xx Nachrichten aus der Datenbank
     # Maybe False when Database is locked
-    $result = $db->query("SELECT * 
-                              FROM meshdash
-                             WHERE msgIsAck = 0
-                                   $sqlAddon
-                          ORDER BY timestamps DESC
-                             LIMIT $maxScrollBackRows");
+    $sql = "SELECT * 
+              FROM meshdash
+             WHERE msgIsAck = 0
+                   $sqlAddon
+          ORDER BY timestamps DESC
+             LIMIT $maxScrollBackRows";
+
+    $logArray   = array();
+    $logArray[] = "Message_Normal: Database: database/meshdash.db";
+    $logArray[] = "Message_Normal: sqlAddon: $sqlAddon";
+    $logArray[] = "Message_Normal: maxScrollBackRows: $maxScrollBackRows";
+    $logArray[] = "Message_Normal: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+    $result = safeDbRun($db, $sql, 'query', $logArray);
 }
 
 #Init Values
@@ -362,7 +390,7 @@ $keyword2DmGrpId   = '*';
 $debugFlag = false;
 
 #Check if Keyword1 is enabled
-if (getParamData('keyword1Enabled') == 1 || $debugFlag === true)
+if (getParamData('keyword1Enabled') == 1)
 {
     $keyword1Text           = getParamData('keyword1Text');
     $keyword1Cmd            = getParamData('keyword1Cmd');
@@ -371,7 +399,7 @@ if (getParamData('keyword1Enabled') == 1 || $debugFlag === true)
 }
 
 #Check if Keyword2 is enabled
-if (getParamData('keyword2Enabled') == 1 || $debugFlag === true)
+if (getParamData('keyword2Enabled') == 1)
 {
     $keyword2Text           = getParamData('keyword2Text');
     $keyword2Cmd            = getParamData('keyword2Cmd');
@@ -764,6 +792,13 @@ if ($result !== false)
         flush();
     }
 }
+
+#echo '<button id="scrollTopBtn" title="Nach oben scrollen">⬆️</button>';
+
+echo '<button id="scrollTopBtn" title="Nach oben">
+  <img src="image/scroll_to_top_md50.png" class="pictureScrollToTop" alt="Nach oben">
+</button>
+';
 
 echo '</body>';
 echo '</html>';

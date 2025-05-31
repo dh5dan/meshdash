@@ -19,9 +19,17 @@
         {
             let purgeDate      = $("#purgeDate").val();
             let titleMsg    = 'Hinweis';
-            let outputMsg = 'Anzahl der zu löschenden Nachrichtendaten ermitteln vor dem ' + purgeDate + '?';
+            let outputMsg = 'Anzahl der zu löschenden Nachrichtendaten ermitteln bis zum ' + purgeDate + '?';
             let width       = 700;
             let sendData    = 11;
+
+            if (purgeDate === '')
+            {
+                outputMsg = 'Bitte ein Datum angeben, bis zu dem Daten';
+                outputMsg += '<br>zur Löschung ermittelt werden sollen.';
+                dialog(outputMsg, titleMsg, width);
+                return false;
+            }
 
             dialogConfirm(outputMsg, titleMsg, width, sendData)
 

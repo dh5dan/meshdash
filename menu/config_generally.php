@@ -32,6 +32,7 @@ $lineBreak = '';
 $osIssWindows = chkOsIsWindows();
 $osName       = $osIssWindows === true ? 'Windows' : 'Linux';
 $isMobile     = isMobile();
+$architecture = php_uname('m');
 
 #Wenn Mobile, Linebreak zur besseren Lesbarkeit einfügen
 if ($isMobile === true)
@@ -58,17 +59,24 @@ if ($sendData === '1')
 if ($osIssWindows === false)
 {
     $cpuInfo      = file_get_contents('/proc/cpuinfo');
-    $architecture = php_uname('m');
+    $hardware     = "Kein Raspberry Pi";
+
+    if (file_exists('/sys/class/dmi/id/product_name'))
+    {
+        $prodName     = file_get_contents('/sys/class/dmi/id/product_name');
+        $hardware     = $prodName;
+    }
 
     if ((strpos($cpuInfo, 'Raspberry Pi') !== false || strpos($cpuInfo, 'BCM') !== false) &&
         ($architecture === 'armv7l' || $architecture === 'aarch64'))
     {
-        $hardware = "Raspberry Pi.";
+        $hardware = "Raspberry Pi";
     }
-    else
-    {
-        $hardware = "Kein Raspberry Pi.";
-    }
+}
+else
+{
+    $osBuild = explode(' ', php_uname('v')); //Build Version
+    $osName .= ' ' . (int) php_uname('r') . ' (' . $osBuild[0] . ' ' . $osBuild[1] . ')';
 }
 
 $noPosData         = getParamData('noPosData');
@@ -124,15 +132,22 @@ echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
 echo '<table>';
 
 echo '<tr>';
-    echo '<td>OS: '. $osName .'</td>';
+    echo '<td>OS :</td>';
+    echo '<td>'. $osName . '</td>';
 echo '</tr>';
 
 if ($hardware != '')
 {
     echo '<tr>';
-    echo '<td>Hardware: '. $hardware .'</td>';
+    echo '<td>Hardware :</td>';
+    echo '<td>' . $hardware . '</td>';
     echo '</tr>';
 }
+
+echo '<tr>';
+echo '<td>Architektur :</td>';
+echo '<td>' . $architecture . '</td>';
+echo '</tr>';
 
 echo '<tr>';
 echo '<td colspan="2"><hr></td>';

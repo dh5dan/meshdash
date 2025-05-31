@@ -22,17 +22,29 @@ if (!file_exists('database/parameter.db') || !file_exists('database/groups.db') 
 logRotate();
 
 // Verbindung zur ersten DB (groups)
-$db1 = new SQLite3('database/groups.db');
+$db1 = new SQLite3('database/groups.db', SQLITE3_OPEN_READONLY);
 $db1->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 $callSign = SQLite3::escapeString(getParamData('callSign'));
 
-$result1 = $db1->query("
-            SELECT groupNumber 
-              FROM groups
-             WHERE groupNumber != 0
-               AND groupEnabled = 1;
-        
-        ");
+$sql1 = "SELECT groupNumber 
+           FROM groups
+          WHERE groupNumber != 0
+            AND groupEnabled = 1;
+        ";
+
+$logArray   = array();
+$logArray[] = "checkMessages_sql1: Database: database/groups.db";
+$logArray[] = "checkMessages_sql1: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+$result1 = safeDbRun($db1, $sql1, 'query', $logArray);
+
+if ($result1 === false)
+{
+    #Close and write Back WAL
+    $db1->close();
+    unset($db1);
+    exit();
+}
 
 $groups = [];
 
@@ -40,6 +52,10 @@ while ($row = $result1->fetchArray(SQLITE3_ASSOC))
 {
     $groups[] = "'" . SQLite3::escapeString($row['groupNumber']) . "'";
 }
+
+#Close and write Back WAL
+$db1->close();
+unset($db1);
 
 $groupsSql  = implode(',', $groups);
 
@@ -62,26 +78,38 @@ if ($debugFlag === true)
 }
 
 // Verbindung zur zweiten DB (meshdash)
-$db2 = new SQLite3('database/meshdash.db');
+$db2 = new SQLite3('database/meshdash.db', SQLITE3_OPEN_READONLY);
 $db2->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
 // Zeitstempel des letzten Checks abrufen
 $lastChecked          = isset($_GET['lastChecked']) ? intval($_GET['lastChecked']) : 0;
 $lastCheckedFormatted = $lastChecked != '' ? date('Y-m-d H:i:s', $lastChecked) : '2000-01-01 00:00:00';
 
-$query = "SELECT DISTINCT dst
-            FROM meshdash 
-            WHERE timestamps > '$lastCheckedFormatted'
-            AND dst in ($groupsSql)
-            AND type = 'msg'
-            AND msg NOT LIKE '%{CET}%';
+$sql2 = "SELECT DISTINCT dst
+           FROM meshdash 
+           WHERE timestamps > '$lastCheckedFormatted'
+             AND dst in ($groupsSql)
+             AND type = 'msg'
+             AND msg NOT LIKE '%{CET}%';
         ";
 
-$result2 = $db2->query($query);
+$logArray   = array();
+$logArray[] = "checkMessages_sql2: Database: database/groups.db";
+$logArray[] = "checkMessages_sql2: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+$result2 = safeDbRun($db2, $sql2, 'query', $logArray);
+
+if ($result2 === false)
+{
+    #Close and write Back WAL
+    $db2->close();
+    unset($db2);
+    exit();
+}
 
 if ($debugFlag === true)
 {
-    echo "<br>" . $query;
+    echo "<br>" . $sql2;
 }
 
 $mergedData = [];
@@ -98,10 +126,10 @@ if ($result2 !== false)
         $mergedData[] = (int) $groupId;
     }
 }
-else
-{
-    exit();
-}
+
+#Close and write Back WAL
+$db2->close();
+unset($db2);
 
 if ($debugFlag === true)
 {

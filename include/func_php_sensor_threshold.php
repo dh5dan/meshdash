@@ -1,5 +1,4 @@
 <?php
-
 function saveSensorThresholdSettings($hasIna226Sensor): bool
 {
     #Check what oS is running
@@ -140,7 +139,6 @@ function saveSensorThresholdSettings($hasIna226Sensor): bool
             $sensorThIna226vCurrentEnabled == 0 &&
             $sensorThIna226vPowerEnabled == 0)
         {
-           # echo "<br>Set Cron temp disabled auf $sensorThTempIntervallMin";
             setCronSensorInterval($sensorThTempIntervallMin,1);
         }
     }

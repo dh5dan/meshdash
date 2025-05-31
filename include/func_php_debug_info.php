@@ -232,7 +232,7 @@ function getWritableStatus(): array
         }
         else
         {
-            $result[$dir] = is_writable($realPath) ? 'Schreibbar' : 'Nicht schreibbar';
+            $result[$dir] = is_writable($realPath) ? 'Beschreibbar ' . html_entity_decode(getStatusIcon('ok')) : 'Nur Lesend ' . html_entity_decode(getStatusIcon('warning'));
         }
 
         // Maximale Länge ermitteln
@@ -286,7 +286,7 @@ function getSqliteDbSizes(): array
     $basename             = pathinfo(getcwd(), PATHINFO_BASENAME);
     $relativeDatabasePath = ($basename === 'menu') ? '../database' : 'database';
     $databaseFileArray    = getSqliteDatabases($relativeDatabasePath);
-    $isWindows = chkOsIsWindows();
+    $isWindows            = chkOsIsWindows();
 
     $maxLenName = 0;
     $maxLenSize = 0;
