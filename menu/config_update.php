@@ -176,6 +176,31 @@ if ($sendData === '1')
 
                     // Aufräumen
                     cleanUp($tempDir);
+                    echo '<br><span class="successHint">Temp-Dateien gelöscht.</span>';
+
+                    //Prozess neu starten
+                    $sendQueueEnabled           = (int) getParamData('sendQueueMode');
+                    $paramUdpBgProcess['task']  = 'udp';
+                    $paramCronBgProcess['task'] = 'cron';
+
+                    #Stop udp
+                    stopBgProcess($paramUdpBgProcess);
+
+                    #Start Udp
+                    startBgProcess($paramUdpBgProcess);
+
+                    echo '<br><span class="successHint">UDP-Task neu gestartet.</span>';
+                    #Prüfe ob SendQueue Aktiv ist und starte Cron-loop
+                    if ($sendQueueEnabled == 1)
+                    {
+                        #Stop Cron
+                        stopBgProcess($paramCronBgProcess);
+
+                        #Start Cron
+                        startBgProcess($paramCronBgProcess);
+
+                        echo '<br><span class="successHint">CRON-Loop Task neu gestartet.</span>';
+                    }
 
                     echo '<br><span class="successHint">Update abgeschlossen!</span>';
 

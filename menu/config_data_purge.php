@@ -45,7 +45,6 @@ if ($sendData === '11')
     $logArray   = array();
     $logArray[] = "config_data_purge_cnt: Database: database/meshdash.db";
     $logArray[] = "config_data_purge_cnt: purgeDateNat: $purgeDateNat";
-    $logArray[] = "config_data_purge_cnt: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun($db, $sql, 'query', $logArray);
 
@@ -95,7 +94,6 @@ elseif ($sendData === '13')
     $logArray   = array();
     $logArray[] = "config_data_purge_del: Database: database/meshdash.db";
     $logArray[] = "config_data_purge_del: purgeDateNat: $purgeDateNat";
-    $logArray[] = "config_data_purge_del: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun($db, $sql, 'exec', $logArray);
 

@@ -9,10 +9,12 @@ $loraIp           = getParamData('loraIp');
 #Check new GUI
 if (getParamData('isNewMeshGui') == 1)
 {
+    echo "<br>new gui";
     $resGetSensorData = getSensorData2($loraIp, 1);
 }
 else
 {
+    echo "<br>old gui";
     $resGetSensorData = getSensorData($loraIp, 1);
 }
 

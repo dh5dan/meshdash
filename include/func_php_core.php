@@ -24,7 +24,6 @@ function getParamData($key)
     $logArray   = array();
     $logArray[] = "getParamData: Database: $dbFilename";
     $logArray[] = "getParamData: key: $key";
-    $logArray[] = "getParamData: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $sql, 'query', $logArray);
 
@@ -87,7 +86,6 @@ function setParamData($key, $value, $mode = 'int'): bool
     $logArray[] = "setParamData: key: $key";
     $logArray[] = "setParamData: param_value: $param_value";
     $logArray[] = "setParamData: param_text: $param_text";
-    $logArray[] = "setParamData: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
@@ -175,7 +173,6 @@ function setThTempData($arrayParam): bool
 
     $logArray   = array();
     $logArray[] = "setThTempData: Database: $dbFilename";
-    $logArray[] = "setThTempData: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $sqlTemp, 'exec', $logArray);
 
@@ -305,7 +302,6 @@ function setThIna226Data($arrayParam): bool
 
     $logArray   = array();
     $logArray[] = "setThIna226Data: Database: $dbFilename";
-    $logArray[] = "setThIna226Data: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
@@ -351,7 +347,6 @@ function disableAllIna226Sensors(): bool
 
     $logArray = array();
     $logArray[] = "disableAllIna226Sensors: Database: $dbFilename";
-    $logArray[] = "disableAllIna226Sensors: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
@@ -387,7 +382,6 @@ function getThTempData()
 
     $logArray   = array();
     $logArray[] = "getThTempData: Database: $dbFilename";
-    $logArray[] = "getThTempData: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $result = safeDbRun( $db,  $sql, 'query', $logArray);
 
@@ -453,7 +447,6 @@ function getThIna226Data()
 
     $logArray   = array();
     $logArray[] = "getThIna226Data: Database: $dbFilename";
-    $logArray[] = "getThIna226Data: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $result = safeDbRun( $db,  $sql, 'query', $logArray);
 
@@ -538,7 +531,6 @@ function getKeywordsData($msgId)
 
     $logArray   = array();
     $logArray[] = "getThIna226Data: Database: $dbFilename";
-    $logArray[] = "getThIna226Data: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $sql, 'query', $logArray);
 
@@ -603,7 +595,6 @@ function setKeywordsData($msgId, $value, int $errCode, string $errText): bool
     $logArray[] = "setKeywordsData: errCode: $errCode";
     $logArray[] = "setKeywordsData: errText: $errText";
     $logArray[] = "setKeywordsData: Database: $dbFilename";
-    $logArray[] = "setKeywordsData: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
@@ -685,7 +676,6 @@ function setMheardData($heardData): bool
 
         $logArray   = array();
         $logArray[] = "setMheardData: Database: $dbFilename";
-        $logArray[] = "setMheardData: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
         $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
@@ -777,7 +767,6 @@ function setSensorData($sensorData): bool
 
     $logArray   = array();
     $logArray[] = "setSensorData: Database: $dbFilename";
-    $logArray[] = "setSensorData: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
@@ -864,7 +853,6 @@ function setSensorData2($sensorData): bool
 
     $logArray   = array();
     $logArray[] = "setSensorData2: Database: $dbFilename";
-    $logArray[] = "setSensorData2: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
@@ -908,7 +896,6 @@ function updateMeshDashData($msgId, $key, $value, $doNothing = false): bool
     $logArray[] = "updateMeshDashData: value: $value";
     $logArray[] = "updateMeshDashData: msgId: $msgId";
     $logArray[] = "updateMeshDashData: Database: $dbFilename";
-    $logArray[] = "updateMeshDashData: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
@@ -934,7 +921,6 @@ function columnExists($database, $tabelle, $spalte): bool
     $logArray   = array();
     $logArray[] = "columnExists: Database: $database";
     $logArray[] = "columnExists: tabelle: $tabelle";
-    $logArray[] = "columnExists: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $result = safeDbRun( $db,  $query, 'query', $logArray);
 
@@ -1121,7 +1107,6 @@ function addColumn($database, $tabelle, $spalte, $typ = 'TEXT', $default = null)
     $logArray[] = "addColumn: database: $database";
     $logArray[] = "addColumn: spalte: $spalte";
     $logArray[] = "addColumn: tabelle: $tabelle";
-    $logArray[] = "addColumn: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $query, 'exec', $logArray);
 
@@ -1151,7 +1136,6 @@ function addIndex($database, $tabelle, $IndexName, $indexField): bool
     $logArray[] = "addColumn: database: $database";
     $logArray[] = "addColumn: IndexName: $IndexName";
     $logArray[] = "addColumn: indexField: $indexField";
-    $logArray[] = "addColumn: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $query, 'exec', $logArray);
 
@@ -1178,7 +1162,6 @@ function delIndex($database, $IndexName): bool
     $logArray   = array();
     $logArray[] = "addColumn: database: $database";
     $logArray[] = "addColumn: IndexName: $IndexName";
-    $logArray[] = "addColumn: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $query, 'exec', $logArray);
 
@@ -1400,7 +1383,7 @@ function setCronSensorIntervalX($intervallInMinuten, $deleteFlag): bool
     }
 
     // Eingabewerte
-    $skriptPfad = '/usr/bin/wget -q -O /dev/null http://localhost/5d/get_sensor_data.php';
+    $skriptPfad = '/usr/bin/wget -q -O /dev/null ' . BASE_PATH_URL . 'get_sensor_data.php';
 
     // Umrechnung von Minuten in Stunden und Minuten
     // Erstellen der Cron-Syntax im Schrittwert-Modus
@@ -1499,12 +1482,17 @@ function setCronSensorInterval($intervallInMinuten, $deleteFlag): bool
     $delete    = $deleteFlag == 1;
     $debugFlag = false;
 
-    $skriptPfad = '/usr/bin/wget -q -O /dev/null http://localhost/5d/get_sensor_data.php';
+    $skriptPfad = '/usr/bin/wget -q -O /dev/null ' . BASE_PATH_URL . 'get_sensor_data.php';
 
     $cronJobsNeu = [];
 
-    if ($intervallInMinuten < 1) {
-        if ($debugFlag) echo "Intervall muss >= 1 sein.\n";
+    if ($intervallInMinuten < 1)
+    {
+        if ($debugFlag)
+        {
+            echo "Intervall muss >= 1 sein.\n";
+        }
+
         return false;
     }
 
@@ -1590,7 +1578,7 @@ function deleteOldCron(): bool
     if ($osIssWindows === false)
     {
         // Eingabewerte
-        $skriptPfad = '/usr/bin/wget -q -O /dev/null http://localhost/5d/cron_loop.php';
+        $skriptPfad = '/usr/bin/wget -q -O /dev/null ' . BASE_PATH_URL . 'cron_loop.php';
 
         // Die Crontab auslesen
         exec('crontab -l 2>/dev/null', $cronJobs);
@@ -1758,7 +1746,6 @@ function setTxQueue($txQueueData): bool
     $logArray[] = "setTxQueue: txDst: $txDst";
     $logArray[] = "setTxQueue: txMsg: $txMsg";
     $logArray[] = "setTxQueue: txFlag: $txFlag";
-    $logArray[] = "setTxQueue: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
@@ -1822,7 +1809,6 @@ function getTxQueue()
     $logArray   = array();
     $logArray[] = "getTxQueue: Database: $dbFilename";
     $logArray[] = "getTxQueue: minSecondsLastMsg: $minSecondsLastMsg";
-    $logArray[] = "getTxQueue: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $resTxQueue = safeDbRun( $db,  $sql, 'query', $logArray);
 
@@ -1880,7 +1866,6 @@ function updateTxQueue($txQueueId): bool
     $logArray[] = "updateTxQueue: Database: $dbFilename";
     $logArray[] = "updateTxQueue: timeStamps: $timeStamps";
     $logArray[] = "updateTxQueue: txQueueId: $txQueueId";
-    $logArray[] = "updateTxQueue: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
@@ -1926,7 +1911,6 @@ function setSensorAlertCounter($sensor, $sensorType): bool
         $logArray[] = "setSensorAlertCounter_temp: sensor: $sensor";
         $logArray[] = "setSensorAlertCounter_temp: sensorType: $sensorType";
         $logArray[] = "setSensorAlertCounter_temp: timeStamps: $timeStamps";
-        $logArray[] = "setSensorAlertCounter_temp: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
         $res = safeDbRun( $db,  $queryTemp, 'exec', $logArray);
 
@@ -1983,7 +1967,6 @@ function setSensorAlertCounter($sensor, $sensorType): bool
         $logArray[] = "setSensorAlertCounter_ina266: sensor: $sensor";
         $logArray[] = "setSensorAlertCounter_ina266: sensorType: $sensorType";
         $logArray[] = "setSensorAlertCounter_ina266: timeStamps: $timeStampIna226";
-        $logArray[] = "setSensorAlertCounter_ina266: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
         $resIna266 = safeDbRun( $dbIna266,  $queryIna226, 'exec', $logArray);
 
@@ -2035,7 +2018,6 @@ function resetSensorAlertCounter($sensor, $sensorType): bool
         $logArray[] = "setSensorAlertCounter_temp: sensor: $sensor";
         $logArray[] = "setSensorAlertCounter_temp: sensorType: $sensorType";
         $logArray[] = "setSensorAlertCounter_temp: timeStamps: $timeStamps";
-        $logArray[] = "resetSensorAlertCounter_temp: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
         $res = safeDbRun( $db,  $queryTemp, 'exec', $logArray);
 
@@ -2090,7 +2072,6 @@ function resetSensorAlertCounter($sensor, $sensorType): bool
         $logArray[] = "setSensorAlertCounter_temp: sensor: $sensor";
         $logArray[] = "setSensorAlertCounter_temp: sensorType: $sensorType";
         $logArray[] = "setSensorAlertCounter_temp: timeStamps: $timeStamps";
-        $logArray[] = "resetSensorAlertCounterIna226: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
         $resIna226 = safeDbRun( $dbIna226,  $queryIna226vBus, 'exec', $logArray);
 
@@ -2394,7 +2375,7 @@ function callWindowsBackgroundTask($taskFile, $execDir = ''): bool
 }
 function callMessagePage(): bool
 {
-    $triggerLink = 'http://localhost/5d/message.php';
+    $triggerLink = BASE_PATH_URL . 'message.php';
 
     $debugFlag = false;
 
@@ -2523,7 +2504,8 @@ function debugLog($logArray): bool
 
     return true;
 }
-function safeDbRun(SQLite3 $db, string $sql, string $method = 'exec', array $logArray = [], int $retries = 5, int $waitMs = 100)
+
+function safeDbRun(SQLite3 $db, string $sql, string $method = 'exec', array $logArray = [], int $retries = SQLITE3_LOCK_RETRY_MAX_ATTEMPTS, int $waitMs = SQLITE3_LOCK_RETRY_DELAY_MS)
 {
     $method = strtolower($method);
 
@@ -2574,6 +2556,9 @@ function safeDbRun(SQLite3 $db, string $sql, string $method = 'exec', array $log
     $logArray[] = "safeDbRun: Error at: " . date('Y-m-d H:i:s');
     $logArray[] = "safeDbRun ErrMsg: " . $db->lastErrorMsg();
     $logArray[] = "safeDbRun ErrNum: " . $db->lastErrorCode();
+    $logArray[] = "safeDbRun: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+    $logArray[] = "safeDbRun: SQLITE3_LOCK_RETRY_MAX_ATTEMPTS:" . SQLITE3_LOCK_RETRY_MAX_ATTEMPTS;
+    $logArray[] = "safeDbRun: SQLITE3_LOCK_RETRY_DELAY_MS:" . SQLITE3_LOCK_RETRY_DELAY_MS;
     $logArray[] = "-----------------------------------------";
     $logArray[] = "LOCK/SQL-Fehler: " . $db->lastErrorMsg();
     debugLog($logArray);

@@ -253,7 +253,6 @@ while (true)
 
     $logArray   = array();
     $logArray[] = "udpReceiver: Database: database/meshdash.db";
-    $logArray[] = "udpReceiver: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun($db, $sql, 'query', $logArray);
 
@@ -269,11 +268,11 @@ while (true)
     {
         if ($resCallMessagePage === true)
         {
-            $callMsgText = "Message.php Triggered via Curl at " . date('Y-m-d H:i:s') . "\n";
+            $callMsgText = "Message.php Triggered via Curl:" . BASE_PATH_URL . " at " . date('Y-m-d H:i:s') . "\n";
         }
         else
         {
-            $callMsgText = "Error: Message.php NOT Triggered via Curl at " . date('Y-m-d H:i:s') . "\n";
+            $callMsgText = "Error: Message.php NOT Triggered via Curl:" . BASE_PATH_URL . " at " . date('Y-m-d H:i:s') . "\n";
         }
 
         file_put_contents($callMsgLogFile, $callMsgText, FILE_APPEND);

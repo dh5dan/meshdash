@@ -24,12 +24,25 @@ require_once '../include/func_php_config_alerting.php';
 error_reporting(E_ALL);
 ini_set('display_errors',1);
 
-$sendData = $_REQUEST['sendData'] ?? 0;
-$hardware = '';
+ini_set('upload_max_filesize', '30M'); // Erhöht die maximale Upload-Dateigröße auf 20 MB (2M)
+ini_set('post_max_size', '30M'); // Erhöht die maximale POST-Daten-Größe auf 25 MB (8M)
+ini_set('memory_limit', '256M'); // Falls nötig das Speicherlimit erhöhen (128M)
+ini_set('max_execution_time', '300'); // Ausführungszeit auf 5min bei nicht performanten Geräten
+
+
+$sendData       = $_REQUEST['sendData'] ?? 0;
+$sendDataUpload = $_REQUEST['sendDataUpload'] ?? 0;
+$hardware       = '';
 
 #Check what oS is running
 $osIssWindows = chkOsIsWindows();
 $osName       = $osIssWindows === true ? 'Windows' : 'Linux';
+$debugFlag    = false;
+
+$basename     = pathinfo(getcwd())['basename'];
+$soundDirSub  = '../sound/';
+$soundDirRoot = 'sound/';
+$soundDir     = $basename == 'menu' ? $soundDirSub : $soundDirRoot;
 
 if ($sendData === '1')
 {
@@ -45,7 +58,61 @@ if ($sendData === '1')
     }
 }
 
-$noDmAlertGlobal      = getParamData('noDmAlertGlobal');
+#Delete Soundfile
+if ($sendDataUpload === '3')
+{
+    $deleteFileImage         = trim($_POST['deleteFileImage']);
+    $deleteFileImageFullPath = $soundDir . $deleteFileImage;
+
+    if (file_exists($deleteFileImageFullPath))
+    {
+        if(unlink($deleteFileImageFullPath))
+        {
+            echo '<br><span class="successHint">' . $deleteFileImage . ' erfolgreich gelöscht.</span>';
+        }
+        else
+        {
+            echo '<br><span class="failureHint">Fehler beim Löschen von ' . $deleteFileImage . '</span>';
+        }
+    }
+    else
+    {
+        echo '<br><span class="failureHint">' . $deleteFileImage . ' nicht im Sound-Verzeichnis gefunden.</span>';
+    }
+}
+
+#Upload soundfile
+if ($sendDataUpload === '6')
+{
+    // Prüft, ob eine Datei hochgeladen wurde und ob sie eine ZIP-Datei ist
+    if (isset($_FILES['uploadSoundFile']) && $_FILES['uploadSoundFile']['error'] === UPLOAD_ERR_OK)
+    {
+        if (copy($_FILES['uploadSoundFile']['tmp_name'], $soundDir . $_FILES['uploadSoundFile']['name']))
+        {
+            unlink($_FILES['uploadSoundFile']['tmp_name']);
+
+            if ($osIssWindows === false)
+            {
+                exec('chmod 644 ' . $soundDir . $_FILES['uploadSoundFile']['name']);
+            }
+
+            echo '<span class="successHint">'.date('H:i:s').'-' . $_FILES['uploadSoundFile']['name'] . ' erfolgreich hochgeladen!</span>';
+        }
+        else
+        {
+            echo '<span class="failureHint">'.date('H:i:s').'-Fehler beim Hochladen von: ' . $_FILES['uploadSoundFile']['name'] . '!</span>';
+        }
+
+        if ($debugFlag === true)
+        {
+            echo "xxx<pre>";
+            print_r($_FILES);
+            echo "</pre>";
+        }
+    }
+}
+
+$noDmAlertGlobal   = getParamData('noDmAlertGlobal');
 
 $alertSoundFileSrc = getParamData('alertSoundFileSrc');
 $alertEnabledSrc   = getParamData('alertEnabledSrc');
@@ -106,6 +173,10 @@ echo '</tr>';
 
 echo '</table>';
 echo '</form>';
+echo '<br>';
 
+showAlertMediaFiles();
+
+echo '<div id="pageLoading" class="pageLoadingSub"></div>';
 echo '</body>';
 echo '</html>';

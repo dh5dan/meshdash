@@ -24,12 +24,19 @@ require_once '../include/func_php_config_keyword.php';
 error_reporting(E_ALL);
 ini_set('display_errors',1);
 
-$sendData = $_REQUEST['sendData'] ?? 0;
-$hardware = '';
+$sendData       = $_REQUEST['sendData'] ?? 0;
+$sendDataUpload = $_REQUEST['sendDataUpload'] ?? 0;
+$hardware       = '';
+$debugFlag      = false;
 
 #Check what oS is running
 $osIssWindows = chkOsIsWindows();
 $osName       = $osIssWindows === true ? 'Windows' : 'Linux';
+
+$basename      = pathinfo(getcwd())['basename'];
+$scriptDirSub  = '../execute/';
+$scriptDirRoot = 'execute/';
+$scriptDir     = $basename == 'menu' ? $scriptDirSub : $scriptDirRoot;
 
 if ($sendData === '1')
 {
@@ -42,6 +49,60 @@ if ($sendData === '1')
     else
     {
         echo '<span class="failureHint">Es gab einen Fehler beim Abspeichern der Settings!</span>';
+    }
+}
+
+#Delete Soundfile
+if ($sendDataUpload === '3')
+{
+    $deleteFileImage         = trim($_POST['deleteFileImage']);
+    $deleteFileImageFullPath = $scriptDir . $deleteFileImage;
+
+    if (file_exists($deleteFileImageFullPath))
+    {
+        if(unlink($deleteFileImageFullPath))
+        {
+            echo '<br><span class="successHint">' . $deleteFileImage . ' erfolgreich gelöscht.</span>';
+        }
+        else
+        {
+            echo '<br><span class="failureHint">Fehler beim Löschen von ' . $deleteFileImage . '</span>';
+        }
+    }
+    else
+    {
+        echo '<br><span class="failureHint">' . $deleteFileImage . ' nicht im Sound-Verzeichnis gefunden.</span>';
+    }
+}
+
+#Upload soundfile
+if ($sendDataUpload === '6')
+{
+    // Prüft, ob eine Datei hochgeladen wurde und ob sie eine ZIP-Datei ist
+    if (isset($_FILES['uploadScriptFile']) && $_FILES['uploadScriptFile']['error'] === UPLOAD_ERR_OK)
+    {
+        if (copy($_FILES['uploadScriptFile']['tmp_name'], $scriptDir . $_FILES['uploadScriptFile']['name']))
+        {
+            unlink($_FILES['uploadScriptFile']['tmp_name']);
+
+            if ($osIssWindows === false)
+            {
+                exec('chmod 644 ' . $scriptDir . $_FILES['uploadScriptFile']['name']);
+            }
+
+            echo '<span class="successHint">'.date('H:i:s').'-' . $_FILES['uploadScriptFile']['name'] . ' erfolgreich hochgeladen!</span>';
+        }
+        else
+        {
+            echo '<span class="failureHint">'.date('H:i:s').'-Fehler beim Hochladen von: ' . $_FILES['uploadScriptFile']['name'] . '!</span>';
+        }
+
+        if ($debugFlag === true)
+        {
+            echo "xxx<pre>";
+            print_r($_FILES);
+            echo "</pre>";
+        }
     }
 }
 
@@ -156,6 +217,11 @@ echo '</tr>';
 
 echo '</table>';
 echo '</form>';
+echo '<br>';
+
+showKeyScriptFiles();
+
+echo '<div id="pageLoading" class="pageLoadingSub"></div>';
 
 echo '</body>';
 echo '</html>';

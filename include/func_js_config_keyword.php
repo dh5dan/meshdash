@@ -115,6 +115,84 @@
             return false;
         });
 
+        $("#btnUploadScriptFile").on("click", function ()
+        {
+            let titleMsg  = 'Hinweis';
+            let width     = 750;
+            let sendData  = 6;
+            let fileInput = $('#uploadScriptFile');
+
+            // Extrahiere den Dateinamen (unter Windows ggf. den Pfad trennen)
+            let fileName = fileInput.val().split('\\').pop();
+
+            // Regex: Dateiname  ".mp3 | .wav" enden (case-insensitive)
+            let pattern = /^[a-zA-Z0-9_-]+\.(cmd|bat|exe|sh)$/i;
+
+            let outputMsg = 'Sound-File: ' + fileName + " hochladen?";
+
+            if (!fileInput.val())
+            {
+                width = 350;
+                outputMsg = 'Bitte wählen Sie eine Datei aus.';
+                dialog(outputMsg, titleMsg, width);
+                return false;
+            }
+
+            if (!pattern.test(fileName))
+            {
+                width = 650;
+                outputMsg = 'Die Datei darf ausser "_-" keine Sonder oder Leerzeichen enthalten.';
+                outputMsg += 'Es sind nur Dateien mit der Endung cmd, bat, exe oder sh erlaubt.';
+                dialog(outputMsg, titleMsg, width);
+                return false;
+            }
+
+            dialogConfirmUpload(outputMsg, titleMsg, width, sendData)
+
+            return false;
+        });
+
+        $(".imageDelete").on("click", function ()
+        {
+            let titleMsg   = 'Hinweis';
+            let outputMsg;
+            let width      = 750;
+            let sendData   = 3;
+            let scriptFile = $(this).data('delete');
+
+            $("#deleteFileImage").val(scriptFile);
+
+            outputMsg = 'Soll die Skript: ' + scriptFile + ' wirklich gelöscht werden?';
+
+            dialogConfirmUpload(outputMsg, titleMsg, width, sendData)
+
+            return false;
+        });
+
+        function dialogConfirmUpload(output_msg, title_msg, width, sendData) {
+            width      = !width ? 300 : width;
+            title_msg  = !title_msg ? '' : title_msg;
+            output_msg = !output_msg ? '' : output_msg;
+            sendData   = !sendData ? 0 : sendData;
+
+            $("<div></div>").html(output_msg).dialog({
+                title: title_msg,
+                resizable: true,
+                modal: true,
+                width: width,
+                buttons: {
+                    'OK': function () {
+                        $("#sendDataUpload").val(sendData);
+                        $("#frmUploadScriptFile").trigger('submit');
+                        $("#pageLoading").show();
+                        $(this).dialog('close');
+                    }, 'Abbruch': function () {
+                        $(this).dialog("close");
+                    }
+                }
+            }).prev(".ui-dialog-titlebar").css("background", "red");
+        }
+
         function dialogConfirm(output_msg, title_msg, width, sendData) {
             width      = !width ? 300 : width;
             title_msg  = !title_msg ? '' : title_msg;

@@ -19,7 +19,6 @@ if (isset($_POST['icon_index']))
 
     $logArray[] = "ajax_set_call_click: Database: database/parameter.db";
     $logArray[] = "ajax_set_call_click: index: $index";
-    $logArray[] = "ajax_set_call_click: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 

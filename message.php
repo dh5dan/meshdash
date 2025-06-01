@@ -271,7 +271,6 @@ if ($searchPage == '' && $doSearchQuery === true)
     $logArray   = array();
     $logArray[] = "message_Pagination: Database: database/meshdash.db";
     $logArray[] = "message_Pagination: sqlAddonSearch: $sqlAddonSearch";
-    $logArray[] = "message_Pagination: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $countResult = safeDbRun($db, $countQuery, 'query', $logArray);
 
@@ -352,7 +351,6 @@ if ($doSearchQuery === true)
     $logArray[] = "doSearchQuery_message_Pagination: sqlAddonSearch: $sqlAddonSearch";
     $logArray[] = "doSearchQuery_message_Pagination: perPage: $perPage";
     $logArray[] = "doSearchQuery_message_Pagination: offset: $offset";
-    $logArray[] = "doSearchQuery_message_Pagination: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $result = safeDbRun($db, $searchQuery, 'query', $logArray);
 }
@@ -371,7 +369,6 @@ else
     $logArray[] = "Message_Normal: Database: database/meshdash.db";
     $logArray[] = "Message_Normal: sqlAddon: $sqlAddon";
     $logArray[] = "Message_Normal: maxScrollBackRows: $maxScrollBackRows";
-    $logArray[] = "Message_Normal: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $result = safeDbRun($db, $sql, 'query', $logArray);
 }
@@ -817,6 +814,6 @@ if ($msgExportEnable === true && $msgExportGroup != '' && $isSnapshot == 0)
     $msgExportGroup = $msgExportGroup == '*' ? -1 : $msgExportGroup; // Wenn ALL
     $msgExportGroup = $msgExportGroup == $ownCall ? -2 : $msgExportGroup; // Wenn Own-Call
 
-    $html = file_get_contents('http://localhost/5d/message.php?isSnapshot=1&group=' . $msgExportGroup);
+    $html = file_get_contents(BASE_PATH_URL. 'message.php?isSnapshot=1&group=' . $msgExportGroup);
     file_put_contents('export/'.$msgExportGroupFile.'.html', $html);
 }

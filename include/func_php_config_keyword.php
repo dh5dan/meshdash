@@ -28,3 +28,102 @@ function saveKeywordSettings(): bool
 
     return true;
 }
+
+function showKeyScriptFiles()
+{
+    echo '<form id="frmUploadScriptFile" action="' . $_SERVER['REQUEST_URI'] . '" method="post" enctype="multipart/form-data">';
+    echo '<input type="hidden" name="sendDataUpload" id="sendDataUpload" value="0" />';
+    echo '<input type="hidden" name="deleteFileImage" id="deleteFileImage" value="" />';
+    echo '<input type="hidden" name="MAX_FILE_SIZE" value="30000000" />';
+    echo '<table>';
+
+    echo '<tr>';
+    echo '<td ><label for="uploadScriptFile">Skript hinzufügen:&nbsp;</label></td>';
+    echo '<td><input type="file" name="uploadScriptFile" id="uploadScriptFile" required></td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td ><label for="btnUploadScriptFile">Skript hochladen:&nbsp;</label></td>';
+    echo '<td><input type="button" class="btnUploadScriptFile" id="btnUploadScriptFile" value="Datei hochladen"></td>';
+    echo '</tr>';
+
+
+    echo '</table>';
+
+    $maxSoundFiles   = 10;
+    $maxFilesCount   = 0;
+
+    $executeDir = dirname(__DIR__) . '/execute';
+
+    if (!is_dir($executeDir))
+    {
+        echo "Execute-Verzeichnis nicht gefunden.";
+        return;
+    }
+
+    // WAV & MP3 kombinieren
+    $cmdFiles = glob($executeDir . '/*.cmd');
+    $shFiles  = glob($executeDir . '/*.sh');
+    $batFiles = glob($executeDir . '/*.bat');
+    $exeFiles = glob($executeDir . '/*.exe');
+    $files    = array_merge($cmdFiles ?: [], $shFiles ?: [], $batFiles ?: [], $exeFiles ?: []);
+
+    if (empty($files))
+    {
+        echo "Keine Script-Files vorhanden.";
+        return;
+    }
+
+    // Neueste zuerst
+    usort($files, function($a, $b) {
+        return filemtime($b) - filemtime($a);
+    });
+
+    // Basis-URL ermitteln
+    $scriptDir    = dirname($_SERVER['SCRIPT_NAME']);
+    $baseUrl      = dirname($scriptDir);
+    $downloadBase = $baseUrl . '/execute/';
+
+    echo '<div class="scrollable-container">';
+    echo '<table class="backupTable">';
+    echo '<tr>';
+    echo '<th>Datum</th>';
+    echo '<th>Uhrzeit</th>';
+    echo '<th>Script-Datei</th>';
+    echo '<th colspan="2">&nbsp;</th>';
+    echo '</tr>';
+
+    foreach ($files as $file)
+    {
+        ++$maxFilesCount;
+        if ($maxFilesCount > $maxSoundFiles)
+        {
+            break; // nur die neuesten X anzeigen
+        }
+
+        $filename    = basename($file);
+        $fileTime    = filemtime($file);
+        $datum       = date('d.m.Y', $fileTime);
+        $uhrzeit     = date('H:i:s', $fileTime);
+        $downloadUrl = $downloadBase . rawurlencode($filename);
+
+        echo '<tr>';
+        echo '<td>' . $datum . '</td>';
+        echo '<td>' . $uhrzeit . '</td>';
+        echo '<td>' . htmlspecialchars($filename) . '</td>';
+        echo '<td>';
+        echo '<a href="' . $downloadUrl . '">';
+        echo '<img src="../image/download_blk.png" class="imageDownload" alt="download">';
+        echo '</a>';
+        echo '</td>';
+        echo '<td>';
+        echo '<img src="../image/delete_blk.png" data-delete ="' . htmlspecialchars($filename) . '" class="imageDelete" alt="delete">';
+        echo '</td>';
+        echo '</tr>';
+    }
+
+    echo '</table>';
+    echo '</div>';
+
+    echo "</form>";
+}

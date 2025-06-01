@@ -539,7 +539,6 @@ function doDatabaseCopyForBackup(): bool
 
             $logArray   = array();
             $logArray[] = "UpdateVacuumCpy: Database: $backupPath";
-            $logArray[] = "UpdateVacuumCpy: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
             $res = safeDbRun($db, $query, 'exec', $logArray);
 
