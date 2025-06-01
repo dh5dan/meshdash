@@ -24,24 +24,110 @@ require_once '../include/func_php_config_keyword.php';
 error_reporting(E_ALL);
 ini_set('display_errors',1);
 
-$sendData = $_REQUEST['sendData'] ?? 0;
-$hardware = '';
+$sendData       = $_REQUEST['sendData'] ?? 0;
+$sendDataUpload = $_REQUEST['sendDataUpload'] ?? 0;
+$hardware       = '';
+$debugFlag      = false;
+
+#init
+$keyHookId             = 0;
+$keyHookTrigger        = '';
+$keyHookExecute        = '';
+$keyHookReturnMsg      = '';
+$keyHookDmGrpId        = 999;
+$keyHookEnabled        = 0;
 
 #Check what oS is running
 $osIssWindows = chkOsIsWindows();
-$osName       = $osIssWindows === true ? 'Windows' : 'Linux';
+$osName       = $osIssWindows === true ? 'Windows': 'Linux';
 
+$basename      = pathinfo(getcwd())['basename'];
+$scriptDirSub  = '../execute/';
+$scriptDirRoot = 'execute/';
+$scriptDir     = $basename == 'menu' ? $scriptDirSub: $scriptDirRoot;
+
+#Save KeyHooks
 if ($sendData === '1')
 {
-    $resSaveKeywordSetting = saveKeywordSettings();
+    $resSaveHookSetting = saveHookSettings();
 
-    if ($resSaveKeywordSetting)
+    if ($resSaveHookSetting)
     {
         echo '<span class="successHint">'.date('H:i:s').'-Settings erfolgreich abgespeichert!</span>';
     }
     else
     {
         echo '<span class="failureHint">Es gab einen Fehler beim Abspeichern der Settings!</span>';
+    }
+}
+
+#Delete Hook-Item
+if ($sendData === '2')
+{
+    $deleteHookItemId  = (int) $_REQUEST['deleteHookItemId'];
+    $resDeleteHookItem = deleteHookItem($deleteHookItemId);
+
+    if ($resDeleteHookItem === true)
+    {
+        echo '<br><span class="successHint">Eintrag: ' . $deleteHookItemId . ' erfolgreich gelöscht.</span>';
+    }
+    else
+    {
+        echo '<br><span class="failureHint">Fehler beim Löschen von Eintrag: ' . $deleteHookItemId . '</span>';
+    }
+}
+
+#Delete Soundfile
+if ($sendDataUpload === '3')
+{
+    $deleteFileImage         = trim($_POST['deleteFileImage']);
+    $deleteFileImageFullPath = $scriptDir . $deleteFileImage;
+
+    if (file_exists($deleteFileImageFullPath))
+    {
+        if(unlink($deleteFileImageFullPath))
+        {
+            echo '<br><span class="successHint">' . $deleteFileImage . ' erfolgreich gelöscht.</span>';
+        }
+        else
+        {
+            echo '<br><span class="failureHint">Fehler beim Löschen von ' . $deleteFileImage . '</span>';
+        }
+    }
+    else
+    {
+        echo '<br><span class="failureHint">' . $deleteFileImage . ' nicht im Sound-Verzeichnis gefunden.</span>';
+    }
+}
+
+#Upload soundfile
+if ($sendDataUpload === '6')
+{
+    // Prüft, ob eine Datei hochgeladen wurde
+    if (isset($_FILES['uploadScriptFile']) && $_FILES['uploadScriptFile']['error'] === UPLOAD_ERR_OK)
+    {
+        if (copy($_FILES['uploadScriptFile']['tmp_name'], $scriptDir . $_FILES['uploadScriptFile']['name']))
+        {
+            unlink($_FILES['uploadScriptFile']['tmp_name']);
+
+            if ($osIssWindows === false)
+            {
+                exec('chmod 755 ' . $scriptDir . $_FILES['uploadScriptFile']['name']);
+            }
+
+            echo '<span class="successHint">'.date('H:i:s').'-' . $_FILES['uploadScriptFile']['name'] . ' erfolgreich hochgeladen!</span>';
+        }
+        else
+        {
+            echo '<span class="failureHint">'.date('H:i:s').'-Fehler beim Hochladen von: ' . $_FILES['uploadScriptFile']['name'] . '!</span>';
+        }
+
+        if ($debugFlag === true)
+        {
+            echo "xxx<pre>";
+            print_r($_FILES);
+            echo "</pre>";
+        }
     }
 }
 
@@ -61,30 +147,19 @@ if ($osIssWindows === false)
     }
 }
 
-$keyword1Text           = getParamData('keyword1Text');
-$keyword1Cmd            = getParamData('keyword1Cmd');
-$keyword1Enabled        = getParamData('keyword1Enabled');
-$keyword1ReturnMsg      = getParamData('keyword1ReturnMsg');
-$keyword1DmGrpId        = getParamData('keyword1DmGrpId');
+$arrayKeywordHooks = getKeyWordHooks();
 
-$keyword2Text           = getParamData('keyword2Text');
-$keyword2Cmd            = getParamData('keyword2Cmd');
-$keyword2Enabled        = getParamData('keyword2Enabled');
-$keyword2ReturnMsg      = getParamData('keyword2ReturnMsg');
-$keyword2DmGrpId        = getParamData('keyword2DmGrpId');
+if ($arrayKeywordHooks === false)
+{
+    echo '<span class="failureHint">'.date('H:i:s').'-Fehler beim Abfragen der Datenbank!</span>';
+    exit();
+}
 
-$keyword1EnabledChecked = $keyword1Enabled == 1 ? 'checked' : '';
-$keyword2EnabledChecked = $keyword2Enabled == 1 ? 'checked' : '';
-
-$keyword1DmGrpId = $keyword1DmGrpId == '' ? '*' : $keyword1DmGrpId;
-$keyword2DmGrpId = $keyword2DmGrpId == '' ? '*' : $keyword2DmGrpId;
-
-echo '<h2>Keyword-Definition</span>';
-echo '<span class="hintText"><br>(Dateien müssen im Execute-Verzeichnis <span class="lineBreak">vorhanden und ausführbar sein)</span></span>';
-echo '</h2>';
+echo '<h2>Keyword-Definition</h2>';
 
 echo '<form id="frmConfigKeyword" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
+echo '<input type="hidden" name="deleteHookItemId" id="deleteHookItemId" value="0" />';
 echo '<table>';
 
 echo '<tr>';
@@ -100,51 +175,140 @@ if ($hardware != '')
     echo '</tr>';
 }
 
-echo '<tr>';
-echo '<td>KeyWord1 :</td>';
-echo '<td><input type="text" name="keyword1Text" id="keyword1Text" value="' . $keyword1Text . '" placeholder="Keyword"  /></td>';
-echo '<td><input type="checkbox" name="keyword1Enabled" ' . $keyword1EnabledChecked . ' id="keyword1Enabled" value="1" /></td>';
-echo '</tr>';
+foreach ($arrayKeywordHooks as $keyHookId => $value)
+{
+    $keyHookTrigger   = $value['keyHookTrigger'];
+    $keyHookExecute   = $value['keyHookExecute'];
+    $keyHookReturnMsg = $value['keyHookReturnMsg'];
+    $keyHookDmGrpId   = $value['keyHookDmGrpId'];
+    $keyHookEnabled   = $value['keyHookEnabled'];
 
-echo '<tr>';
-echo '<td>Startskript KeyWord1 :</td>';
-echo '<td><input type="text" name="keyword1Cmd" id="keyword1Cmd" value="' . $keyword1Cmd . '" placeholder="Command" /></td>';
-echo '</tr>';
+    $keyHookEnabledChecked = $keyHookEnabled == 1 ? 'checked': '';
+    $keyword1DmGrpId = $keyHookDmGrpId == '' ? '999': $keyHookDmGrpId;
 
-echo '<tr>';
-echo '<td>Statusrückmeldung KeyWord1 :</td>';
-echo '<td><input type="text" name="keyword1ReturnMsg" id="keyword1ReturnMsg" value="' . $keyword1ReturnMsg . '" placeholder="Return Msg" /></td>';
-echo '</tr>';
+    echo '<input type="hidden" name="keyHookId[' . $keyHookId . ']" id="keyHookId" value="' . $keyHookId . '" />';
 
-echo '<tr>';
-echo '<td>DM-Gruppe: RX/TX KeyWord1 :</td>';
-echo '<td><input type="text" name="keyword1DmGrpId" id="keyword1DmGrpId" value="' . $keyword1DmGrpId . '" placeholder="DM-Gruppe" /></td>';
-echo '</tr>';
+    echo '<tr>';
+    echo '<td>KeyWord:</td>';
+    echo '<td><input type="text" name="keyHookTrigger[' . $keyHookId . ']" id="keyHookTrigger_' . $keyHookId . '" value="' . $keyHookTrigger . '" placeholder="Keyword"  /></td>';
+    echo '<td></td>';
+    echo '</tr>';
 
-echo '<tr>';
-echo '<td colspan="2">&nbsp;</td>';
-echo '</tr>';
+    echo '<tr>';
+    echo '<td>Startskript:</td>';
+    echo '<td><select name="keyHookExecute[' . $keyHookId . ']" id="keyHookExecute_' . $keyHookId . '">';
+    selectScriptFile(showKeyScriptFiles(false), $keyHookExecute);
+    echo '</select>';
+    echo '</td>';
+    echo '</tr>';
 
-echo '<tr>';
-echo '<td>KeyWord2 :</td>';
-echo '<td><input type="text" name="keyword2Text" id="keyword2Text" value="' . $keyword2Text . '" placeholder="Keyword" /></td>';
-echo '<td><input type="checkbox" name="keyword2Enabled" ' . $keyword2EnabledChecked . ' id="keyword2Enabled" value="1" /></td>';
-echo '</tr>';
+    echo '<tr>';
+    echo '<td>Statusrückmeldung:</td>';
+    echo '<td><input type="text" name="keyHookReturnMsg[' . $keyHookId . ']" id="keyHookReturnMsg_' . $keyHookId . '" value="' . $keyHookReturnMsg . '" placeholder="Return Msg" /></td>';
+    echo '</tr>';
 
-echo '<tr>';
-echo '<td>Startskript KeyWord2 :</td>';
-echo '<td><input type="text" name="keyword2Cmd" name="keyword2Cmd" value="' . $keyword2Cmd . '" placeholder="Command" /></td>';
-echo '</tr>';
+    echo '<tr>';
+    echo '<td>DM-Gruppe: RX/TX:</td>';
+    echo '<td><input type="text" name="keyHookDmGrpId[' . $keyHookId . ']" id="keyHookDmGrpId_' . $keyHookId . '" size="8" value="' . $keyHookDmGrpId . '" placeholder="DM-Gruppe" />&nbsp;';
+    echo '<input type="checkbox" name="keyHookEnabled[' . $keyHookId . ']" ' . $keyHookEnabledChecked . ' id="keyHookEnabled_' . $keyHookId . '" value="1" />';
+    echo '<span data-hook_delete="'
+        . $keyHookId
+        . '" class="deleteHookItem"/>'
+        . html_entity_decode(getStatusIcon("error"))
+        . '</span>';
+    echo '</td>';
+    echo '</tr>';
 
-echo '<tr>';
-echo '<td>Statusrückmeldung KeyWord2 :</td>';
-echo '<td><input type="text" name="keyword2ReturnMsg" id="keyword2ReturnMsg" value="' . $keyword2ReturnMsg . '" placeholder="Return Msg" /></td>';
-echo '</tr>';
+    echo '<tr>';
+    echo '<td colspan="2">&nbsp;</td>';
+    echo '</tr>';
+}
 
-echo '<tr>';
-echo '<td>DM-Gruppe: RX/TX KeyWord2 :</td>';
-echo '<td><input type="text" name="keyword2DmGrpId" id="keyword2DmGrpId" value="' . $keyword2DmGrpId . '" placeholder="DM-Gruppe" /></td>';
-echo '</tr>';
+if (count($arrayKeywordHooks) > 0)
+{
+    ++$keyHookId;
+
+    $keyHookTrigger        = '';
+    $keyHookExecute        = '';
+    $keyHookReturnMsg      = '';
+    $keyHookDmGrpId        = 999;
+    $keyHookEnabled        = 0;
+    $keyHookEnabledChecked = '';
+
+    echo '<input type="hidden" name="keyHookId[' . $keyHookId . ']" id="keyHookId" value="' . $keyHookId . '"  />';
+
+    echo '<tr class="keyHookNewRow">';
+    echo '<td>KeyWord:</td>';
+    echo '<td><input type="text" name="keyHookTrigger[' . $keyHookId . ']" id="keyHookTrigger_' . $keyHookId . '" value="' . $keyHookTrigger . '" placeholder="Keyword" disabled /></td>';
+    echo '<td></td>';
+    echo '</tr>';
+
+    echo '<tr class="keyHookNewRow">';
+    echo '<td>Startskript:</td>';
+    echo '<td><select name="keyHookExecute[' . $keyHookId . ']" id="keyHookExecute_' . $keyHookId . '" disabled >';
+    selectScriptFile(showKeyScriptFiles(false), $keyHookExecute);
+    echo '</select>';
+    echo '</td>';
+    echo '</tr>';
+
+    echo '<tr class="keyHookNewRow">';
+    echo '<td>Statusrückmeldung:</td>';
+    echo '<td><input type="text" name="keyHookReturnMsg[' . $keyHookId . ']" id="keyHookReturnMsg_' . $keyHookId . '" value="' . $keyHookReturnMsg . '" placeholder="Return Msg" disabled /></td>';
+    echo '</tr>';
+
+    echo '<tr class="keyHookNewRow">';
+    echo '<td>DM-Gruppe: RX/TX:</td>';
+    echo '<td><input type="text" name="keyHookDmGrpId[' . $keyHookId . ']" id="keyHookDmGrpId_' . $keyHookId . '" size="8" value="' . $keyHookDmGrpId . '" placeholder="DM-Gruppe" disabled />&nbsp;';
+    echo '<input type="checkbox" name="keyHookEnabled[' . $keyHookId . ']" ' . $keyHookEnabledChecked . ' id="keyHookEnabled_' . $keyHookId . '" value="1" disabled />';
+
+    echo '</td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td colspan="3"><input type="button" class="btnSaveConfigKeyword" id="btnAddNewHookItem" value="Neuer Eintrag"  /></td>';
+    echo '</tr>';
+}
+
+if (count($arrayKeywordHooks) == 0)
+{
+    $keyHookId = 1;
+
+    $keyHookTrigger        = '';
+    $keyHookExecute        = '';
+    $keyHookReturnMsg      = '';
+    $keyHookDmGrpId        = 999;
+    $keyHookEnabled        = 0;
+    $keyHookEnabledChecked = '';
+
+    echo '<input type="hidden" name="keyHookId[' . $keyHookId . ']" id="keyHookId" value="' . $keyHookId . '" />';
+
+    echo '<tr>';
+    echo '<td>KeyWord:</td>';
+    echo '<td><input type="text" name="keyHookTrigger[' . $keyHookId . ']" id="keyHookTrigger_' . $keyHookId . '" value="' . $keyHookTrigger . '" placeholder="Keyword"  /></td>';
+    echo '<td></td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td>Startskript:</td>';
+    echo '<td><select name="keyHookExecute[' . $keyHookId . ']" id="keyHookExecute_' . $keyHookId . '"  >';
+    selectScriptFile(showKeyScriptFiles(false), $keyHookExecute);
+    echo '</select>';
+    echo '</td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td>Statusrückmeldung:</td>';
+    echo '<td><input type="text" name="keyHookReturnMsg[' . $keyHookId . ']" id="keyHookReturnMsg_' . $keyHookId . '" value="' . $keyHookReturnMsg . '" placeholder="Return Msg"  /></td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td>DM-Gruppe: RX/TX:</td>';
+    echo '<td><input type="text" name="keyHookDmGrpId[' . $keyHookId . ']" id="keyHookDmGrpId_' . $keyHookId . '" size="8" value="' . $keyHookDmGrpId . '" placeholder="DM-Gruppe"  />&nbsp;';
+    echo '<input type="checkbox" name="keyHookEnabled[' . $keyHookId . ']" ' . $keyHookEnabledChecked . ' id="keyHookEnabled_' . $keyHookId . '" value="1"  />';
+
+    echo '</td>';
+    echo '</tr>';
+}
 
 echo '<tr>';
 echo '<td colspan="2"><hr></td>';
@@ -156,6 +320,11 @@ echo '</tr>';
 
 echo '</table>';
 echo '</form>';
+echo '<br>';
+
+showKeyScriptFiles();
+
+echo '<div id="pageLoading" class="pageLoadingSub"></div>';
 
 echo '</body>';
 echo '</html>';

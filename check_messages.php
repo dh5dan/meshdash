@@ -34,7 +34,6 @@ $sql1 = "SELECT groupNumber
 
 $logArray   = array();
 $logArray[] = "checkMessages_sql1: Database: database/groups.db";
-$logArray[] = "checkMessages_sql1: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
 $result1 = safeDbRun($db1, $sql1, 'query', $logArray);
 
@@ -95,7 +94,6 @@ $sql2 = "SELECT DISTINCT dst
 
 $logArray   = array();
 $logArray[] = "checkMessages_sql2: Database: database/groups.db";
-$logArray[] = "checkMessages_sql2: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
 $result2 = safeDbRun($db2, $sql2, 'query', $logArray);
 

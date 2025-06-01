@@ -315,7 +315,6 @@ function showMheard($localCallSign): bool
 
     $logArray   = array();
     $logArray[] = "showMheard: Database: database/mheard.db";
-    $logArray[] = "showMheard: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
     $logArray[] = "showMheard: Error at:" . date('Y-m-d H:i:s');
 
     $result = safeDbRun($db, $sql, 'query', $logArray);
@@ -342,7 +341,6 @@ function showMheard($localCallSign): bool
                         ";
 
         $logArray[] = "showMheard_ts: Database: database/mheard.db";
-        $logArray[] = "showMheard_ts: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
         $logArray[] = "showMheard_ts: Error at:" . date('Y-m-d H:i:s');
 
         $resultMh = safeDbRun($db, $sqlMh, 'query', $logArray);
@@ -464,7 +462,6 @@ function getOwnPosition($callSign)
     $logArray   = array();
     $logArray[] = "getOwnPosition: Database: database/meshdash.db";
     $logArray[] = "getOwnPosition: callSign: $callSign";
-    $logArray[] = "getOwnPosition: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
     $logArray[] = "getOwnPosition: Error at:" . date('Y-m-d H:i:s');
 
     $resultMdOwn = safeDbRun($dbMd, $sqlMd, 'query', $logArray);

@@ -32,6 +32,7 @@ require_once 'include/func_js_message.php';
 require_once 'include/func_php_message.php';
 require_once 'include/func_php_index.php';
 require_once 'include/func_php_mheard.php';
+require_once 'include/func_php_config_alerting.php';
 
 if(!file_exists('database/meshdash.db') ||
     !file_exists('database/parameter.db') ||
@@ -65,6 +66,8 @@ $alertSoundCallSrc = getParamData('alertSoundCallSrc');
 $alertSoundFileDst = getParamData('alertSoundFileDst');
 $alertEnabledDst   = getParamData('alertEnabledDst');
 $alertSoundCallDst = getParamData('alertSoundCallDst');
+
+
 $clickOnCall       = getParamData('clickOnCall');
 $mheardGroup       = getParamData('mheardGroup');
 $mheardGroup       = $mheardGroup == '' ? 0 : $mheardGroup;
@@ -249,9 +252,23 @@ if ($group == -4)
     $noTimeSyncMsgValue = 0;
 }
 
-#Soundfiles Preload
-echo '<audio id="alertSoundSrc" src="sound\\' . $alertSoundFileSrc . '" preload="auto"></audio>';
-echo '<audio id="alertSoundDst" src="sound\\' . $alertSoundFileDst . '" preload="auto"></audio>';
+$arrayNotificationData = getNotificationData('active');
+
+if (empty($arrayNotificationData) === false)
+{
+    // Alle notifySoundFile Werte extrahieren
+    $arraySoundFiles = array_column($arrayNotificationData, 'notifySoundFile');
+
+    // Duplikate entfernen
+    $uniqueSoundFiles = array_unique($arraySoundFiles);
+
+    #Soundfiles Preload
+    foreach ($uniqueSoundFiles as $soundFile)
+    {
+        $soundFileId = str_replace('.', '_', $soundFile); // ergibt: z.B. callsign_dst_alert_wav
+        echo '<audio id="' . $soundFileId . '" src="sound\\' . $soundFile . '" preload="auto"></audio>';
+    }
+}
 
 #Werte für Jquery die dann im Bottom Frame abgebildet werden
 echo '<input type="hidden" id="posStatusValue" value="'. $posStatusValue . '" />';
@@ -271,7 +288,6 @@ if ($searchPage == '' && $doSearchQuery === true)
     $logArray   = array();
     $logArray[] = "message_Pagination: Database: database/meshdash.db";
     $logArray[] = "message_Pagination: sqlAddonSearch: $sqlAddonSearch";
-    $logArray[] = "message_Pagination: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $countResult = safeDbRun($db, $countQuery, 'query', $logArray);
 
@@ -352,7 +368,6 @@ if ($doSearchQuery === true)
     $logArray[] = "doSearchQuery_message_Pagination: sqlAddonSearch: $sqlAddonSearch";
     $logArray[] = "doSearchQuery_message_Pagination: perPage: $perPage";
     $logArray[] = "doSearchQuery_message_Pagination: offset: $offset";
-    $logArray[] = "doSearchQuery_message_Pagination: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $result = safeDbRun($db, $searchQuery, 'query', $logArray);
 }
@@ -371,7 +386,6 @@ else
     $logArray[] = "Message_Normal: Database: database/meshdash.db";
     $logArray[] = "Message_Normal: sqlAddon: $sqlAddon";
     $logArray[] = "Message_Normal: maxScrollBackRows: $maxScrollBackRows";
-    $logArray[] = "Message_Normal: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $result = safeDbRun($db, $sql, 'query', $logArray);
 }
@@ -696,24 +710,29 @@ if ($result !== false)
             #Source Call.
             #
             #Nur ausführen wenn:
-            #src call = AlertSrc Call.
+            #$firstCall/$dst = AlertSrc Call.
             #Der sound noch nicht ausgeführt wurde.
             #Global die alert Sounds nicht abgeschaltet sind.
-            #Der SrcAlert eingeschaltet ist
-            if (strcasecmp($firstCall, $alertSoundCallSrc) === 0 && $alertExecutedSrc == 0 && $noDmAlertGlobal == 0 && $alertEnabledSrc == 1)
+            #Der Alert eingeschaltet ist
+            if ($alertExecutedSrc == 0 && $noDmAlertGlobal == 0 && isset($arrayNotificationData[$firstCall]) &&
+                $arrayNotificationData[$firstCall]['notifySrcDst'] === 0)
             {
-                echo '<script>';
-                echo 'document.getElementById("alertSoundSrc").play();'; // Ton abspielen
-                echo '</script>';
+                $soundFileId = str_replace('.', '_', $arrayNotificationData[$firstCall]['notifySoundFile']);
 
+                echo '<script>';
+                echo 'document.getElementById("'.$soundFileId.'").play();'; // Ton abspielen
+                echo '</script>';
+                echo "<br>jupp call $firstCall sound alert SRC mit snd:$soundFileId";
                 updateMeshDashData($msgId,'alertExecutedSrc', 1, $doSearchQuery);
             }
 
             #DestinatationCall
-            if (strcasecmp($dst, $alertSoundCallDst) === 0 && $alertExecutedDst == 0 && $noDmAlertGlobal == 0 && $alertEnabledDst == 1)
+            if ($alertExecutedDst == 0 && $noDmAlertGlobal == 0 && isset($arrayNotificationData[$dst]) &&
+                $arrayNotificationData[$dst]['notifySrcDst'] === 1)
             {
+                $soundFileId = str_replace('.', '_', $arrayNotificationData[$dst]['notifySoundFile']);
                 echo '<script>';
-                echo 'document.getElementById("alertSoundDst").play();'; // Ton abspielen
+                echo 'document.getElementById("'.$soundFileId.'").play();'; // Ton abspielen
                 echo '</script>';
 
                 updateMeshDashData($msgId,'alertExecutedDst', 1, $doSearchQuery);
@@ -817,6 +836,6 @@ if ($msgExportEnable === true && $msgExportGroup != '' && $isSnapshot == 0)
     $msgExportGroup = $msgExportGroup == '*' ? -1 : $msgExportGroup; // Wenn ALL
     $msgExportGroup = $msgExportGroup == $ownCall ? -2 : $msgExportGroup; // Wenn Own-Call
 
-    $html = file_get_contents('http://localhost/5d/message.php?isSnapshot=1&group=' . $msgExportGroup);
+    $html = file_get_contents(BASE_PATH_URL. 'message.php?isSnapshot=1&group=' . $msgExportGroup);
     file_put_contents('export/'.$msgExportGroupFile.'.html', $html);
 }

@@ -1,3 +1,18 @@
+Version 1.10.50 SQL
+FEATURE: URL in den Modulen nun dynamisch zur Basis-Url
+FEATURE: SoundFile Upload/Anzeige bei Benachrichtigungen
+FEATURE: Script Upload/Anzeige bei Keyword-Definition
+FEATURE: Neustart aller Tasks nach Update.
+FEATURE: Dyn. hinzufügen von Call-Notification
+FEATURE: Dyn. hinzufügen von Keyword-Definition
+FEATURE: Update-Steps um Prozess-Start/CleanUp ergänzt.
+FEATURE: Befehls-Präfix # für Remote-Kommandos (#mheard)
+FEATURE: OpenStreetMap nun im Mheard-Submenü
+FEATURE: Intervall Bakensendung hinzugefügt, um Reichenweitentests zu ermöglichen.
+
+BUGFIX: Fehlender Type in Json bei Sensormeldungen
+BUGFIX: Fehlender DB-Close bei Sensordatenbank
+####################################
 Version 1.10.48 SQL
 
 FEATURE: Timeout zur GUI-Erkennung von 3 auf 10 Sekunden erhöht.

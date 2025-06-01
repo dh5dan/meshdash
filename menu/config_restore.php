@@ -295,8 +295,8 @@ else
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td ><label for="btnConfigRestoreReload" class="reloadMsg">MeshDash-Seite jetzt neu laden:&nbsp;</label></td>';
-    echo '<td><input type="button" id="btnConfigRestoreReload" value="MeshDash-Seite neu laden"/></td>';
+    echo '<td ><label for="btnConfigRestoreReload" class="reloadMsg failureHint">Wichtig!<br>MeshDash jetzt neu laden!</label>&nbsp;</td>';
+    echo '<td><input type="button" class="failureHint reloadButton" id="btnConfigRestoreReload" value="MeshDash hier neu laden!"/></td>';
     echo '</tr>';
 
     echo '<tr>';

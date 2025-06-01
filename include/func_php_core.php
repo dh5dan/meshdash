@@ -24,7 +24,6 @@ function getParamData($key)
     $logArray   = array();
     $logArray[] = "getParamData: Database: $dbFilename";
     $logArray[] = "getParamData: key: $key";
-    $logArray[] = "getParamData: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $sql, 'query', $logArray);
 
@@ -39,15 +38,14 @@ function getParamData($key)
 
     $dsData = $res->fetchArray(SQLITE3_ASSOC);
 
-    $paramValue = $dsData['param_value'] ?? '';
-    $paramText  = $dsData['param_text'] ?? '';
-    $paramValue = ($paramValue !== '' && $paramValue !== null) ? $paramValue : $paramText;
-
     #Close and write Back WAL
     $db->close();
     unset($db);
 
-    return $paramValue;
+    $paramValue = $dsData['param_value'] ?? '';
+    $paramText  = $dsData['param_text'] ?? '';
+
+    return ($paramValue !== '' && $paramValue !== null) ? $paramValue : $paramText;
 }
 function setParamData($key, $value, $mode = 'int'): bool
 {
@@ -87,7 +85,105 @@ function setParamData($key, $value, $mode = 'int'): bool
     $logArray[] = "setParamData: key: $key";
     $logArray[] = "setParamData: param_value: $param_value";
     $logArray[] = "setParamData: param_text: $param_text";
-    $logArray[] = "setParamData: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+
+    $res = safeDbRun( $db,  $sql, 'exec', $logArray);
+
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
+    if ($res === false)
+    {
+        return false;
+    }
+
+    return true;
+}
+function getBeaconData($key)
+{
+    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    $basename       = pathinfo(getcwd())['basename'];
+    $dbFilenameSub  = '../database/beacon.db';
+    $dbFilenameRoot = 'database/beacon.db';
+    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+
+    if ($key == '')
+    {
+        return false;
+    }
+
+    $db  = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+
+    $sql = "SELECT * 
+              FROM beacon AS pa 
+             WHERE pa.param_key = '$key';
+           ";
+
+    $logArray   = array();
+    $logArray[] = "getBeaconData: Database: $dbFilename";
+    $logArray[] = "getBeaconData: key: $key";
+
+    $res = safeDbRun( $db,  $sql, 'query', $logArray);
+
+    if ($res === false)
+    {
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+
+        return false;
+    }
+
+    $dsData = $res->fetchArray(SQLITE3_ASSOC);
+
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
+    $paramValue = $dsData['param_value'] ?? '';
+    $paramText  = $dsData['param_text'] ?? '';
+
+    return ($paramValue !== '' && $paramValue !== null) ? $paramValue : $paramText;
+}
+function setBeaconData($key, $value, $mode = 'int'): bool
+{
+    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    $basename       = pathinfo(getcwd())['basename'];
+    $dbFilenameSub  = '../database/beacon.db';
+    $dbFilenameRoot = 'database/beacon.db';
+    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+
+    $db = new SQLite3($dbFilename);
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+    $db->exec('PRAGMA synchronous = NORMAL;');
+
+    #Escape Value
+    $value = SQLite3::escapeString($value);
+
+    $param_value = '';
+    $param_text  = trim($value);
+
+    if ($mode === 'int')
+    {
+        $param_value = (int) $value;
+        $param_text  = '';
+    }
+
+    $sql = "REPLACE INTO beacon (param_key, 
+                                    param_value, 
+                                    param_text)
+                  VALUES ('$key',
+                          '$param_value',
+                          '$param_text'
+                        );
+          ";
+
+    $logArray   = array();
+    $logArray[] = "setBeaconData: Database: $dbFilename";
+    $logArray[] = "setBeaconData: key: $key";
+    $logArray[] = "setBeaconData: param_value: $param_value";
+    $logArray[] = "setBeaconData: param_text: $param_text";
 
     $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
@@ -175,7 +271,6 @@ function setThTempData($arrayParam): bool
 
     $logArray   = array();
     $logArray[] = "setThTempData: Database: $dbFilename";
-    $logArray[] = "setThTempData: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $sqlTemp, 'exec', $logArray);
 
@@ -305,7 +400,6 @@ function setThIna226Data($arrayParam): bool
 
     $logArray   = array();
     $logArray[] = "setThIna226Data: Database: $dbFilename";
-    $logArray[] = "setThIna226Data: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
@@ -351,7 +445,6 @@ function disableAllIna226Sensors(): bool
 
     $logArray = array();
     $logArray[] = "disableAllIna226Sensors: Database: $dbFilename";
-    $logArray[] = "disableAllIna226Sensors: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
@@ -387,7 +480,6 @@ function getThTempData()
 
     $logArray   = array();
     $logArray[] = "getThTempData: Database: $dbFilename";
-    $logArray[] = "getThTempData: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $result = safeDbRun( $db,  $sql, 'query', $logArray);
 
@@ -453,7 +545,6 @@ function getThIna226Data()
 
     $logArray   = array();
     $logArray[] = "getThIna226Data: Database: $dbFilename";
-    $logArray[] = "getThIna226Data: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $result = safeDbRun( $db,  $sql, 'query', $logArray);
 
@@ -538,7 +629,6 @@ function getKeywordsData($msgId)
 
     $logArray   = array();
     $logArray[] = "getThIna226Data: Database: $dbFilename";
-    $logArray[] = "getThIna226Data: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $sql, 'query', $logArray);
 
@@ -557,14 +647,14 @@ function getKeywordsData($msgId)
     #Leerer Datensatz ist erlaubt!
     $dsData = $res->fetchArray(SQLITE3_ASSOC);
 
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
     $returnValue['msg_id']   = $dsData['msg_id'] ?? 0;
     $returnValue['executed'] = $dsData['executed'] ?? 0;
     $returnValue['errCode']  = $dsData['errCode'] ?? 0;
     $returnValue['errText']  = $dsData['errText'] ?? '';
-
-    #Close and write Back WAL
-    $db->close();
-    unset($db);
 
     return $returnValue;
 }
@@ -597,13 +687,12 @@ function setKeywordsData($msgId, $value, int $errCode, string $errText): bool
                                   );
                     ";
 
-    $logArray = array();
+    $logArray   = array();
     $logArray[] = "setKeywordsData: msgId: $msgId";
     $logArray[] = "setKeywordsData: value: $value";
     $logArray[] = "setKeywordsData: errCode: $errCode";
     $logArray[] = "setKeywordsData: errText: $errText";
     $logArray[] = "setKeywordsData: Database: $dbFilename";
-    $logArray[] = "setKeywordsData: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
@@ -685,7 +774,6 @@ function setMheardData($heardData): bool
 
         $logArray   = array();
         $logArray[] = "setMheardData: Database: $dbFilename";
-        $logArray[] = "setMheardData: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
         $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
@@ -777,7 +865,6 @@ function setSensorData($sensorData): bool
 
     $logArray   = array();
     $logArray[] = "setSensorData: Database: $dbFilename";
-    $logArray[] = "setSensorData: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
@@ -864,7 +951,6 @@ function setSensorData2($sensorData): bool
 
     $logArray   = array();
     $logArray[] = "setSensorData2: Database: $dbFilename";
-    $logArray[] = "setSensorData2: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
@@ -908,7 +994,6 @@ function updateMeshDashData($msgId, $key, $value, $doNothing = false): bool
     $logArray[] = "updateMeshDashData: value: $value";
     $logArray[] = "updateMeshDashData: msgId: $msgId";
     $logArray[] = "updateMeshDashData: Database: $dbFilename";
-    $logArray[] = "updateMeshDashData: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
@@ -934,7 +1019,6 @@ function columnExists($database, $tabelle, $spalte): bool
     $logArray   = array();
     $logArray[] = "columnExists: Database: $database";
     $logArray[] = "columnExists: tabelle: $tabelle";
-    $logArray[] = "columnExists: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $result = safeDbRun( $db,  $query, 'query', $logArray);
 
@@ -970,6 +1054,7 @@ function checkVersion($currentVersion, $targetVersion, $operator)
 
     return version_compare($currentVersion, $targetVersion, $operator);
 }
+
 function checkDbUpgrade($database)
 {
     $debugFlag          = false;
@@ -1121,7 +1206,6 @@ function addColumn($database, $tabelle, $spalte, $typ = 'TEXT', $default = null)
     $logArray[] = "addColumn: database: $database";
     $logArray[] = "addColumn: spalte: $spalte";
     $logArray[] = "addColumn: tabelle: $tabelle";
-    $logArray[] = "addColumn: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $query, 'exec', $logArray);
 
@@ -1151,7 +1235,6 @@ function addIndex($database, $tabelle, $IndexName, $indexField): bool
     $logArray[] = "addColumn: database: $database";
     $logArray[] = "addColumn: IndexName: $IndexName";
     $logArray[] = "addColumn: indexField: $indexField";
-    $logArray[] = "addColumn: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $query, 'exec', $logArray);
 
@@ -1178,7 +1261,6 @@ function delIndex($database, $IndexName): bool
     $logArray   = array();
     $logArray[] = "addColumn: database: $database";
     $logArray[] = "addColumn: IndexName: $IndexName";
-    $logArray[] = "addColumn: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $query, 'exec', $logArray);
 
@@ -1274,6 +1356,7 @@ function getTaskKillCmd($mode = 'udp')
 
     return false;
 }
+
 function logRotate()
 {
     if ((int) getParamData('chronLogEnable') === 0)
@@ -1387,124 +1470,22 @@ function isMobile(): bool
 {
     return (bool) preg_match('/(android|iphone|ipad|ipod|blackberry|windows phone)/i', $_SERVER['HTTP_USER_AGENT']);
 }
-function setCronSensorIntervalX($intervallInMinuten, $deleteFlag): bool
-{
-    $delete    = $deleteFlag == 1;
-    $debugFlag = false;
-
-    if ($debugFlag === true)
-    {
-        echo "<br>intervallInMinuten : $intervallInMinuten";
-        echo "<br>deleteFlag : $deleteFlag -><br>";
-        var_dump($delete);
-    }
-
-    // Eingabewerte
-    $skriptPfad = '/usr/bin/wget -q -O /dev/null http://localhost/5d/get_sensor_data.php';
-
-    // Umrechnung von Minuten in Stunden und Minuten
-    // Erstellen der Cron-Syntax im Schrittwert-Modus
-    if ($intervallInMinuten >= 60)
-    {
-        $stunden = floor($intervallInMinuten / 60);
-        $minuten = $intervallInMinuten % 60;
-
-        if ($minuten > 0)
-        {
-            // Falls es sowohl einen Stunden- als auch Minutenanteil gibt
-            $cronIntervall = "*/$minuten */$stunden * * *";
-        }
-        else
-        {
-            // Falls nur ganze Stunden angegeben sind
-            $cronIntervall = "0 */$stunden * * *";
-        }
-    }
-    else
-    {
-        // Falls nur Minuten angegeben sind
-        $cronIntervall = "*/$intervallInMinuten * * * *";
-    }
-
-    // Cronjob suchen und prüfen
-    $cronJob = "$cronIntervall $skriptPfad";
-
-    if ($debugFlag === true)
-    {
-        echo "<br>cronJob : $cronJob";
-    }
-
-    // Die Crontab auslesen
-    exec('crontab -l 2>/dev/null', $cronJobs);
-
-    // Prüfen, ob der Cronjob bereits existiert
-    $found = false;
-    foreach ($cronJobs as $index => $existingJob)
-    {
-        if (strpos($existingJob, $skriptPfad) !== false)
-        {
-            $found = true;
-
-            // Wenn das Delete-Flag gesetzt ist, den Cronjob löschen
-            if ($delete === true)
-            {
-                unset($cronJobs[$index]);
-                // Crontab aktualisieren
-                file_put_contents('/tmp/crontab.txt', implode("\n", $cronJobs) . "\n");
-                exec('crontab /tmp/crontab.txt');
-                if ($debugFlag === true)
-                {
-                    echo "Cronjob wurde gelöscht.\n";
-                }
-
-                return true;
-            }
-
-            // Wenn das Intervall anders ist, den Job aktualisieren
-            if ($existingJob !== $cronJob)
-            {
-                $cronJobs[$index] = $cronJob;
-                // Crontab aktualisieren
-                file_put_contents('/tmp/crontab.txt', implode("\n", $cronJobs) . "\n");
-                exec('crontab /tmp/crontab.txt');
-                if ($debugFlag === true)
-                {
-                    echo "Cronjob wurde aktualisiert.\n";
-                }
-
-                return true;
-            }
-        }
-    }
-
-    // Wenn der Cronjob noch nicht existiert, hinzufügen
-    if (!$found && $delete === false)
-    {
-        // Cronjob zur Liste hinzufügen
-        $cronJobs[] = $cronJob;
-        // Crontab aktualisieren
-        file_put_contents('/tmp/crontab.txt', implode("\n", $cronJobs) . "\n");
-        exec('crontab /tmp/crontab.txt');
-
-        if ($debugFlag === true)
-        {
-            echo "Cronjob wurde hinzugefügt.\n";
-        }
-    }
-
-    return true;
-}
 function setCronSensorInterval($intervallInMinuten, $deleteFlag): bool
 {
     $delete    = $deleteFlag == 1;
     $debugFlag = false;
 
-    $skriptPfad = '/usr/bin/wget -q -O /dev/null http://localhost/5d/get_sensor_data.php';
+    $skriptPfad = '/usr/bin/wget -q -O /dev/null ' . BASE_PATH_URL . 'get_sensor_data.php';
 
     $cronJobsNeu = [];
 
-    if ($intervallInMinuten < 1) {
-        if ($debugFlag) echo "Intervall muss >= 1 sein.\n";
+    if ($intervallInMinuten < 1)
+    {
+        if ($debugFlag)
+        {
+            echo "Intervall muss >= 1 sein.\n";
+        }
+
         return false;
     }
 
@@ -1590,7 +1571,7 @@ function deleteOldCron(): bool
     if ($osIssWindows === false)
     {
         // Eingabewerte
-        $skriptPfad = '/usr/bin/wget -q -O /dev/null http://localhost/5d/cron_loop.php';
+        $skriptPfad = '/usr/bin/wget -q -O /dev/null ' . BASE_PATH_URL . 'cron_loop.php';
 
         // Die Crontab auslesen
         exec('crontab -l 2>/dev/null', $cronJobs);
@@ -1758,7 +1739,6 @@ function setTxQueue($txQueueData): bool
     $logArray[] = "setTxQueue: txDst: $txDst";
     $logArray[] = "setTxQueue: txMsg: $txMsg";
     $logArray[] = "setTxQueue: txFlag: $txFlag";
-    $logArray[] = "setTxQueue: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
@@ -1783,7 +1763,7 @@ function getTxQueue()
     $returnValue       = array();
     $minSecondsLastMsg = 600; //Suche rückwirkend max. 600 Sekunden (10min)
 
-    // Prüfen, ob bereits eine Instanz läuft
+    // Prüfen, ob Datenbank existiert
     if (!file_exists($dbFilename))
     {
         return false;
@@ -1822,7 +1802,6 @@ function getTxQueue()
     $logArray   = array();
     $logArray[] = "getTxQueue: Database: $dbFilename";
     $logArray[] = "getTxQueue: minSecondsLastMsg: $minSecondsLastMsg";
-    $logArray[] = "getTxQueue: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $resTxQueue = safeDbRun( $db,  $sql, 'query', $logArray);
 
@@ -1837,7 +1816,11 @@ function getTxQueue()
 
     $dsData = $resTxQueue->fetchArray(SQLITE3_ASSOC);
 
-    if (!empty($dsData))
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
+    if (empty($dsData) === false)
     {
         $returnValue['txQueueId'] = $dsData['txQueueId'] ?? 0;
         $returnValue['txType']    = $dsData['txType'] ?? '';
@@ -1848,10 +1831,6 @@ function getTxQueue()
     {
         return false;
     }
-
-    #Close and write Back WAL
-    $db->close();
-    unset($db);
 
     return $returnValue;
 }
@@ -1880,7 +1859,6 @@ function updateTxQueue($txQueueId): bool
     $logArray[] = "updateTxQueue: Database: $dbFilename";
     $logArray[] = "updateTxQueue: timeStamps: $timeStamps";
     $logArray[] = "updateTxQueue: txQueueId: $txQueueId";
-    $logArray[] = "updateTxQueue: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
@@ -1926,7 +1904,6 @@ function setSensorAlertCounter($sensor, $sensorType): bool
         $logArray[] = "setSensorAlertCounter_temp: sensor: $sensor";
         $logArray[] = "setSensorAlertCounter_temp: sensorType: $sensorType";
         $logArray[] = "setSensorAlertCounter_temp: timeStamps: $timeStamps";
-        $logArray[] = "setSensorAlertCounter_temp: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
         $res = safeDbRun( $db,  $queryTemp, 'exec', $logArray);
 
@@ -1983,7 +1960,6 @@ function setSensorAlertCounter($sensor, $sensorType): bool
         $logArray[] = "setSensorAlertCounter_ina266: sensor: $sensor";
         $logArray[] = "setSensorAlertCounter_ina266: sensorType: $sensorType";
         $logArray[] = "setSensorAlertCounter_ina266: timeStamps: $timeStampIna226";
-        $logArray[] = "setSensorAlertCounter_ina266: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
         $resIna266 = safeDbRun( $dbIna266,  $queryIna226, 'exec', $logArray);
 
@@ -2035,7 +2011,6 @@ function resetSensorAlertCounter($sensor, $sensorType): bool
         $logArray[] = "setSensorAlertCounter_temp: sensor: $sensor";
         $logArray[] = "setSensorAlertCounter_temp: sensorType: $sensorType";
         $logArray[] = "setSensorAlertCounter_temp: timeStamps: $timeStamps";
-        $logArray[] = "resetSensorAlertCounter_temp: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
         $res = safeDbRun( $db,  $queryTemp, 'exec', $logArray);
 
@@ -2090,7 +2065,6 @@ function resetSensorAlertCounter($sensor, $sensorType): bool
         $logArray[] = "setSensorAlertCounter_temp: sensor: $sensor";
         $logArray[] = "setSensorAlertCounter_temp: sensorType: $sensorType";
         $logArray[] = "setSensorAlertCounter_temp: timeStamps: $timeStamps";
-        $logArray[] = "resetSensorAlertCounterIna226: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
         $resIna226 = safeDbRun( $dbIna226,  $queryIna226vBus, 'exec', $logArray);
 
@@ -2143,8 +2117,8 @@ function getStatusIcon(string $status, bool $withLabel = false): string
         'generally3'     => ['symbol' => '&#128295;', 'label' => 'Allgemein'],             // 🔧
         'generally4'     => ['symbol' => '&#129535;', 'label' => 'Allgemein'],             // 🧿
         'generally'     => ['symbol' => '&#128261;', 'label' => 'Allgemein'],             // 🔅
-        'interval'      => ['symbol' => '&#9201;&#65039;', 'label' => 'Sende-Intervall'],       // ⏱️
-        'notification'  => ['symbol' => '&#128276;', 'label' => 'Benachrichtigung'],    // 🔔️
+        'interval'      => ['symbol' => '&#9201;&#65039;', 'label' => 'Send-Queue'],       // ⏱️
+        'notification'  => ['symbol' => '&#128276;', 'label' => 'Notification'],    // 🔔️
         'keyword'       => ['symbol' => '&#128278;', 'label' => 'Keyword'],             // 🏷️
         'update'        => ['symbol' => '&#128260;', 'label' => 'Update'],              // 🔄
         'lora-info'     => ['symbol' => '&#128225;&#65039;', 'label' => 'Lora-Info'],           // 📡
@@ -2159,28 +2133,34 @@ function getStatusIcon(string $status, bool $withLabel = false): string
         'sensordata'   => ['symbol' => '&#128202;', 'label' => 'Sensordaten'],  // 📊
         'threshold'   => ['symbol' => '&#129514;', 'label' => 'Schwellwerte'],  // 🧪
 
-        'mheard2'   => ['symbol' => '&#128225;&#65039;', 'label' => 'MHeard'],  // 📡
         'mheard'   => ['symbol' => '&#128066;&#65039;', 'label' => 'MHeard'],  // 👂
+        'mheard-page'   => ['symbol' => '&#x1F3A7;&#65039;', 'label' => 'MHeard-Lokal'],  // 🎧
+        'mheard-osm'   => ['symbol' => '&#x1F5FA;&#xFE0F;', 'label' => 'MHeard-Map'],  // 🗺️
 
+        'beacon'   => ['symbol' => ' &#x1F9ED;&#65039;', 'label' => 'Bake'],  // 🧭
         'send-cmd'   => ['symbol' => '&#128228;', 'label' => 'Sende Befehl'],  // 📤
-
         'message'   => ['symbol' => '&#128172;&#65039;', 'label' => 'Message'],  // 💬
-
         'about'   => ['symbol' => '&#8505;&#65039;', 'label' => 'About'],  // ℹ️
 
     ];
 
     $key = strtolower($status);
 
-    if (!isset($icons[$key])) {
+    if (!isset($icons[$key]))
+    {
         $key = 'unknown';
     }
 
     $entry = $icons[$key];
 
+//    return $withLabel
+//        ? $entry['symbol'] . ' ' . htmlspecialchars($entry['label'])
+//        : $entry['symbol'];
+
     return $withLabel
-        ? $entry['symbol'] . ' ' . htmlspecialchars($entry['label'])
-        : $entry['symbol'];
+        ? '<span class="menu-icon">' . $entry['symbol'] . '</span> ' . htmlspecialchars($entry['label'])
+        : '<span class="menu-icon">' . $entry['symbol'] . '</span>';
+
 }
 function stopBgProcess($paramBgProcess)
 {
@@ -2394,7 +2374,7 @@ function callWindowsBackgroundTask($taskFile, $execDir = ''): bool
 }
 function callMessagePage(): bool
 {
-    $triggerLink = 'http://localhost/5d/message.php';
+    $triggerLink = BASE_PATH_URL . 'message.php';
 
     $debugFlag = false;
 
@@ -2449,6 +2429,7 @@ function callMessagePage(): bool
 
     return true;
 }
+
 function checkLoraNewGui(): bool
 {
     $loraIp      = getParamData('loraIp');
@@ -2523,7 +2504,8 @@ function debugLog($logArray): bool
 
     return true;
 }
-function safeDbRun(SQLite3 $db, string $sql, string $method = 'exec', array $logArray = [], int $retries = 5, int $waitMs = 100)
+
+function safeDbRun(SQLite3 $db, string $sql, string $method = 'exec', array $logArray = [], int $retries = SQLITE3_LOCK_RETRY_MAX_ATTEMPTS, int $waitMs = SQLITE3_LOCK_RETRY_DELAY_MS)
 {
     $method = strtolower($method);
 
@@ -2574,11 +2556,103 @@ function safeDbRun(SQLite3 $db, string $sql, string $method = 'exec', array $log
     $logArray[] = "safeDbRun: Error at: " . date('Y-m-d H:i:s');
     $logArray[] = "safeDbRun ErrMsg: " . $db->lastErrorMsg();
     $logArray[] = "safeDbRun ErrNum: " . $db->lastErrorCode();
+    $logArray[] = "safeDbRun: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
+    $logArray[] = "safeDbRun: SQLITE3_LOCK_RETRY_MAX_ATTEMPTS:" . SQLITE3_LOCK_RETRY_MAX_ATTEMPTS;
+    $logArray[] = "safeDbRun: SQLITE3_LOCK_RETRY_DELAY_MS:" . SQLITE3_LOCK_RETRY_DELAY_MS;
     $logArray[] = "-----------------------------------------";
     $logArray[] = "LOCK/SQL-Fehler: " . $db->lastErrorMsg();
     debugLog($logArray);
 
     return false;
 }
+function showBackups()
+{
+    $maxBackups      = 5; //max. Anzahl Backups
+    $maxBackupsCount = 0; //Counter für Backups
 
+    $backupDir = dirname(__DIR__) . '/backup'; // Verzeichnis der Backups
 
+    if (!is_dir($backupDir)) {
+        echo "Backup-Verzeichnis nicht gefunden.";
+        return;
+    }
+
+    $files = glob($backupDir . '/backup_*.zip');
+    if (!$files) {
+        echo "Keine Backups vorhanden.";
+        return;
+    }
+
+    // Neueste Backups zuerst
+    rsort($files);
+
+    // Ermittele den Download-Pfad:
+    // Skript wird z.B. in /meshdash/menu ausgeführt, Backups liegen in /meshdash/backup.
+    // Wir nehmen dirname von SCRIPT_NAME, um den Root-Ordner zu erhalten
+    $scriptDir    = dirname($_SERVER['SCRIPT_NAME']); // z.B. "/meshdash/menu"
+    $baseUrl      = dirname($scriptDir);                // z.B. "/meshdash"
+    $downloadBase = $baseUrl . '/backup/';           // z.B. "/meshdash/backup/"
+
+    echo '<div class="scrollable-container">';
+    echo '<table class="backupTable">';
+    echo '<tr>';
+    echo '<th>Datum</th>';
+    echo '<th>Uhrzeit</th>';
+    echo '<th>Backup-Datei</th>';
+    echo '<th>Version</th>';
+    echo '<th colspan="2">&nbsp;</th>';
+    echo '</tr>';
+
+    foreach ($files as $file)
+    {
+        $filename = basename($file);
+        if (preg_match('/backup_(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})\.zip/', $filename, $matches))
+        {
+            ++$maxBackupsCount;
+
+            if ($maxBackupsCount > $maxBackups)
+            {
+                unlink('../backup/' . $filename);
+                continue;
+            }
+
+            $datum       = "$matches[3].$matches[2].$matches[1]";
+            $uhrzeit     = "$matches[4]:$matches[5]:$matches[6]";
+            $downloadUrl = $downloadBase . $filename;
+
+            // === Version aus ZIP lesen ===
+            $version = '-';
+            $zip = new ZipArchive();
+            if ($zip->open($file) === true)
+            {
+                $paramContent = $zip->getFromName('dbinc/param.php');
+                if ($paramContent !== false)
+                {
+                    if (preg_match("/const\s+VERSION\s*=\s*'([^']+)'/", $paramContent, $verMatch))
+                    {
+                        $version = $verMatch[1];
+                    }
+                }
+                $zip->close();
+            }
+
+            echo '<tr>';
+            echo '<td>' . $datum . '</td>';
+            echo '<td>' . $uhrzeit . '</td>';
+            echo '<td class="filename-cell">' . $filename . '</td>';
+            echo '<td class="version-cell">' . htmlspecialchars($version) . '</td>';
+            echo '<td>';
+            echo '<a href="' . $downloadUrl . '">';
+            echo '<img src="../image/download_blk.png" class="imageDownload" alt="download">';
+            echo '</a>';
+            echo '</td>';
+            echo '<td>';
+            echo '<img src="../image/delete_blk.png" data-delete ="' . $filename . '" class="imageDelete" alt="delete">';
+            echo '</td>';
+            echo '</tr>';
+        }
+    }
+
+    echo '</table>';
+    echo '</div>';
+}

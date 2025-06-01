@@ -39,6 +39,11 @@ $openStreetTileServerUrl = trim(getParamData('openStreetTileServerUrl')) ?? 'til
 $openStreetTileServerUrl = $openStreetTileServerUrl == '' ? 'tile.openstreetmap.org' : $openStreetTileServerUrl;
 $sendData                = $_REQUEST['sendData'] ?? 0;
 
+$showOsm = $_GET['osm'] ?? 0;
+$groupId = $_GET['group'] ?? -1;
+echo '<input type="hidden" id="showOsm" value="' . $showOsm . '" />';
+echo '<input type="hidden" id="group" value="' . $groupId . '" />';
+
 if ($resGetOwnPosition !== false)
 {
     $longitude = $resGetOwnPosition['longitude'] == '' ? 51.5 : $resGetOwnPosition['longitude'];
@@ -54,7 +59,10 @@ else
     echo '<input type="hidden" id="longitude" value="7.3" />';
 }
 
-echo '<h2>Lokale Mheard-Liste<span class="lineBreak">von '.$callSign .' mit Lora-IP: ' . $loraIp . '</span></h2>';
+if ($showOsm === 0)
+{
+    echo '<h2>Lokale Mheard-Liste<span class="lineBreak">von ' . $callSign . ' mit Lora-IP: ' . $loraIp . '</span></h2>';
+}
 
 echo '<form id="frmMheard" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
@@ -62,12 +70,19 @@ echo '<input type="hidden" id="ownCallSign" value="' . $callSign . '" />';
 echo '<input type="hidden" id="openStreetTileServerUrl" value="' . $openStreetTileServerUrl . '" />';
 echo '<table>';
 
-echo '<tr>';
-echo '<td colspan="2"><input type="button" class="btnGetMheard" id="btnGetMheard" value="Lokale Mheard-Liste abfragen"  /></td>';
-echo '</tr>';
-echo '<tr>';
-echo '<td colspan="2"><input type="button" class="btnGetMheard" id="btnGetMheardOpenStreet" value="Mheard-Nodes in OpenStreet anzeigen"  /></td>';
-echo '</tr>';
+if ($showOsm === 0)
+{
+    echo '<tr>';
+    echo '<td colspan="2"><input type="button" class="btnGetMheard" id="btnGetMheard" value="Lokale Mheard-Liste abfragen"  /></td>';
+    echo '</tr>';
+    echo '<tr>';
+    echo '<td colspan="2"><input type="button" class="btnGetMheard" id="btnGetMheardOpenStreet" value="Mheard-Nodes in OpenStreet anzeigen"  /></td>';
+    echo '</tr>';
+}
+else
+{
+    echo '<input type="button" style="display: none" id="btnGetMheardOpenStreet" />';
+}
 
 echo '</table>';
 echo '</form>';
@@ -82,7 +97,10 @@ if($sendData == 1)
     }
 }
 
-showMheard($callSign);
+if ($showOsm === 0)
+{
+    showMheard($callSign);
+}
 
 echo '<div id="pageLoading" class="pageLoadingSub"></div>';
 echo '</body>';

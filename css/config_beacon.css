@@ -13,14 +13,12 @@ body {
     background-color: crimson;
     color: whitesmoke;
     font-weight: bold;
-    display: block;
 }
 
-.infoImagePoint {
-    margin-right: 10px;
-    margin-bottom: -10px;
-    cursor: pointer;
-    width: 30px;
+table {
+    /*width: 100%;*/
+    border-collapse: collapse;
+    /*max-width: 350px;*/
 }
 
 td {
@@ -28,22 +26,24 @@ td {
     vertical-align: middle;
 }
 
+/*input[type="text"] {*/
+/*    width: 100%;*/
+/*    max-width: 90px;*/
+/*    padding: 5px;*/
+/*}*/
+
 input[type="checkbox"] {
     transform: scale(1.2);
 }
 
-.successHint, .failureHint {
+.failureHint {
+    display: block;
     padding: 10px;
     margin: 10px 0;
     text-align: center;
 }
 
-.indented  {
-    padding-left: 13px;
-    display: block; /* Wichtig für den Umbruch */
-}
-
-.btnSendCommand {
+.btnSaveConfigGenerally {
     font-size: 14px;
     padding: 8px 15px;
     border: none;
@@ -51,27 +51,16 @@ input[type="checkbox"] {
     color: white;
     cursor: pointer;
     border-radius: 5px;
+    width: 100%;
+}
+
+.cronStatusPoint {
+    margin-top: 7px;
+    cursor: pointer;
+    width: 30px;
 }
 
 @media (max-width: 600px) {
-
-    .indented  {
-        padding-left: 13px;
-        display: block; /* Wichtig für den Umbruch */
-    }
-
-    td:has(#infoImagePoint) {
-        display: flex;
-        align-items: center;
-    }
-
-    .infoImagePoint {
-        margin-right: 10px;
-        width: 30px;
-        cursor: pointer;
-        margin-bottom: 0;
-    }
-
 
     .successHint, .failureHint {
         display: block;
@@ -88,27 +77,15 @@ input[type="checkbox"] {
         white-space: nowrap;
     }
 
-    input[type="text"] {
-        max-width: 162px; /* Oder andere passende Breite */
+
+    input[type="text"], input[type="checkbox"] {
+        /*width: 100%;*/
     }
 
     input[type="button"] {
         width: 100%;
         padding: 10px;
-        font-size: smaller;
-    }
-
-    h2 {
-        font-size: medium;
-    }
-
-    input[type="button"] {
-        display: inline-block;
-        background: #0056b3;
-        color: white;
-        /*padding: 5px 10px;*/
-        border-radius: 5px;
-        cursor: pointer;
+        font-size: 16px;
     }
 
     .ui-dialog {
@@ -121,5 +98,22 @@ input[type="checkbox"] {
 
     .ui-dialog .ui-dialog-content {
         overflow-x: auto;
+    }
+}
+
+/* Media Query für Smartphones */
+@media (max-width: 768px) {
+
+    h2 {
+        font-size: medium;
+    }
+
+    input[type="button"] {
+        display: inline-block;
+        background: #0056b3;
+        color: white;
+        /*padding: 5px 10px;*/
+        border-radius: 5px;
+        cursor: pointer;
     }
 }

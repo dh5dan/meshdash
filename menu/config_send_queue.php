@@ -61,7 +61,7 @@ $sendQueueEnabledChecked = $sendQueueEnabled == 1 ? 'checked' : '';
 
 $resCheckCronLoopBgTask = checkCronLoopBgTask() == '' ? getStatusIcon('inactive') : getStatusIcon('active');
 
-echo "<h2>Send-Queue Einstellungen von MeshDash-SQL</h2>";
+echo "<h2>Send-Queue</h2>";
 
 echo '<form id="frmSendQueue" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';

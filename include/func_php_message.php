@@ -45,7 +45,6 @@ function updateAckReqId($msgId, $ackReqId): bool
     $logArray[] = "updateAckReqId: Database: $dbFilename";
     $logArray[] = "updateAckReqId: ackReqId: $ackReqId";
     $logArray[] = "updateAckReqId: msgId: $msgId";
-    $logArray[] = "updateAckReqId: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db, $sql,'exec', $logArray);
 
@@ -82,7 +81,6 @@ function updateAckId($ackId): bool
     $logArray[] = "updateAckId: Database: $dbFilename";
     $logArray[] = "updateAckId: ackId: $ackId";
     $logArray[] = "updateAckId: ackId: $ackId";
-    $logArray[] = "updateAckId: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun($db, $sql, 'exec', $logArray);
 
@@ -143,8 +141,8 @@ function checkMheard($msgId, $msg, $src, $dst, $callSign, $loraIp, $mhTargetFlag
         echo "<br>mhTarget:$mhTarget";
     }
 
-    // Regulärer Ausdruck für "mheard", gefolgt von einem Rufzeichen mit SSID (1-999)
-    $pattern = '/\bmheard\s+([A-Za-z0-9]+-\d{1,3})\b/i';
+    // Regulärer Ausdruck für "#mheard", gefolgt von einem Rufzeichen mit SSID (1-999)
+    $pattern = '/\b#mheard\s+([A-Za-z0-9]+-\d{1,3})\b/i';
 
     if (preg_match($pattern, $msg, $matches))
     {
@@ -211,7 +209,6 @@ function sendMheard($msgId, $src): bool
 
     $logArray   = array();
     $logArray[] = "sendMheard: Database: database/mheard.db";
-    $logArray[] = "sendMheard: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
     $logArray[] = "sendMheard: msgId:" . $msgId;
     $logArray[] = "sendMheard: src:" . $src;
 
@@ -240,7 +237,6 @@ function sendMheard($msgId, $src): bool
 
         $logArray   = array();
         $logArray[] = "sendMheard_TS: Database: database/mheard.db";
-        $logArray[] = "sendMheard_TS: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
         $logArray[] = "sendMheard_TS: timeStamp:" . $timeStamp;
 
         $resultMh = safeDbRun($db, $sqlMh, 'query', $logArray);

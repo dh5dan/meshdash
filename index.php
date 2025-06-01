@@ -24,11 +24,12 @@ echo '<head><title>MeshDash-SQL</title>';
 
   echo '<link rel="stylesheet" href="css/index.css?' . microtime() . '">';
   echo '<link rel="icon" type="image/png" sizes="16x16" href="favicon.png">';
+
 echo '</head>';
 echo '<body>';
 
 #Prevents UTF8 Errors on misconfigured php.ini
-ini_set( 'default_charset', 'UTF-8' );
+ini_set('default_charset', 'UTF-8' );
 ini_set('max_execution_time', '300'); // Ausführungszeit auf 5min bei nicht performanten Geräten
 
 require_once 'dbinc/param.php';
@@ -133,8 +134,10 @@ checkLoraNewGui();
 // Beispiel-Daten, die du aus der SQLite-Datenbank holen könntest
 $tabsJson = getGroupTabsJson();
 
+#Hidden Field damit Jquery die JSON-Daten der Tabs auswerten kann
 echo '<input type="hidden" id="tabConfig" value=\'' . $tabsJson . '\' />';
 
+#Starte Automatisch background Prozess
 if ($autostartBgProcess === true && $sendData !== '1')
 {
     $paramStartUdpBgProcess['task'] = 'udp';
@@ -158,11 +161,14 @@ if (empty($taskResultUdp))
     $taskStatusFlagUdp = 0;
 }
 
+#Setzte Farbe in Tab für neue Nachrichten, wenn gesetzt
 setNewMsgBgColor();
 
+#Beginn der Kopfzeile
 echo '<div class="top">';
 echo '<h1 class="topText">';
 
+#Zeichne Menü
 showMenuIcons();
 
 echo '<div class="topLeft">';

@@ -94,7 +94,6 @@ function showLogFiles()
 function getCronEntries()
 {
     exec('crontab -l 2>/dev/null', $cronJobs);// Die Crontab auslesen
-
     if (!empty($cronJobs))
     {
         foreach ($cronJobs as $index => $cronJob)
@@ -113,6 +112,7 @@ function getCronEntries()
         echo '</tr>';
     }
 }
+
 function getServerSoftware()
 {
     return $_SERVER['SERVER_SOFTWARE'] ?? 'Nicht verfügbar';
@@ -177,8 +177,11 @@ function getPhpConfig()
             $status = $isOk ? 'ok' : 'warning';
 
             // Padding auf gleiche Länge für Ausrichtung des Pfeils
-            $line = str_pad($checkPhpKey, $maxLen) . ' => ' . str_pad($phpKeyValue, $maxLenValue) . ' ' . html_entity_decode(getStatusIcon($status));
-            echo htmlspecialchars($line) . "\n";
+            $label    = str_pad($checkPhpKey, $maxLen) . ' => ' . str_pad($phpKeyValue, $maxLenValue);
+            $iconHtml = getStatusIcon($status);
+
+            echo htmlspecialchars($label) . ' ' . $iconHtml . "\n";
+
         }
 
         echo '</pre></td>';
@@ -249,8 +252,8 @@ function getWritableStatus(): array
         foreach ($result as $checkDir => $dirAccess)
         {
             // Padding auf gleiche Länge für Ausrichtung des Pfeils
-            $line = str_pad($checkDir, $maxLen) . ' => ' . $dirAccess;
-            echo htmlspecialchars($line) . "\n";
+            $label = str_pad($checkDir, $maxLen) . ' => ';
+            echo htmlspecialchars($label) . $dirAccess . "\n";
         }
 
         echo '</pre></td>';
@@ -340,21 +343,20 @@ function getSqliteDbSizes(): array
     echo '<tr>';
     if (!empty($result))
     {
-
-
         echo '<td style="vertical-align: top;">Datenbanken:</td>';
         echo '<td><pre style="margin:0; font-family: monospace;">';
 
         foreach ($result as $file => $data)
         {
-            $line = str_pad($file, $maxLenName)
+            $label = str_pad($file, $maxLenName)
                 . ' => '
                 . str_pad($data['size'], $maxLenSize)
-                . str_repeat(html_entity_decode('&nbsp;'), 2)
-                . html_entity_decode(getStatusIcon($data['status']))
-                . '   [Letzter Zugriff: ' . $data['atime'] . ']';
+                . str_repeat(' ', 2);
 
-            echo htmlspecialchars($line) . "\n";
+            $iconHtml = getStatusIcon($data['status']);
+            $accessInfo = '   [Letzter Zugriff: ' . $data['atime'] . ']';
+
+            echo htmlspecialchars($label) . $iconHtml . htmlspecialchars($accessInfo) . "\n";
         }
 
         echo '</pre></td>';

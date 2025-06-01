@@ -254,80 +254,6 @@ function cleanUp($tempDir)
     rmdir($tempDir); // Löscht das Update-Verzeichnis
 }
 
-function showBackups()
-{
-    $maxBackups      = 5; //max. Anzahl Backups
-    $maxBackupsCount = 0; //Counter für Backups
-
-    $backupDir = dirname(__DIR__) . '/backup'; // Verzeichnis der Backups
-
-    if (!is_dir($backupDir)) {
-        echo "Backup-Verzeichnis nicht gefunden.";
-        return;
-    }
-
-    $files = glob($backupDir . '/backup_*.zip');
-    if (!$files) {
-        echo "Keine Backups vorhanden.";
-        return;
-    }
-
-    // Neueste Backups zuerst
-    rsort($files);
-
-    // Ermittele den Download-Pfad:
-    // Skript wird z.B. in /meshdash/menu ausgeführt, Backups liegen in /meshdash/backup.
-    // Wir nehmen dirname von SCRIPT_NAME, um den Root-Ordner zu erhalten
-    $scriptDir    = dirname($_SERVER['SCRIPT_NAME']); // z.B. "/meshdash/menu"
-    $baseUrl      = dirname($scriptDir);                // z.B. "/meshdash"
-    $downloadBase = $baseUrl . '/backup/';           // z.B. "/meshdash/backup/"
-
-    echo '<div class="scrollable-container">';
-    echo '<table class="backupTable">';
-    echo '<tr>';
-        echo'<th>Datum</th>';
-        echo'<th>Uhrzeit</th>';
-        echo'<th>Backup-Datei</th>';
-        echo'<th colspan="2">&nbsp;</th>';
-    echo'</tr>';
-
-    foreach ($files as $file)
-    {
-        $filename = basename($file);
-        if (preg_match('/backup_(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})\.zip/', $filename, $matches))
-        {
-            ++$maxBackupsCount;
-
-            if ($maxBackupsCount > $maxBackups)
-            {
-                unlink('../backup/' . $filename);
-                continue;
-            }
-
-            $datum       = "$matches[3].$matches[2].$matches[1]";
-            $uhrzeit     = "$matches[4]:$matches[5]:$matches[6]";
-            $downloadUrl = $downloadBase . $filename;
-
-            echo '<tr>';
-            echo '<td>' . $datum . '</td>';
-            echo '<td>' . $uhrzeit . '</td>';
-            echo '<td>' . $filename . '</td>';
-            echo '<td>';
-            echo '<a href="' . $downloadUrl . '">';
-            echo '<img src="../image/download_blk.png" class="imageDownload" alt="download">';
-            echo '</a>';
-            echo '</td>';
-            echo '<td>';
-            echo '<img src="../image/delete_blk.png" data-delete ="' . $filename . '" class="imageDelete" alt="delete">';
-            echo '</td>';
-            echo '</tr>';
-        }
-    }
-
-    echo '</table>';
-    echo '</div>';
-}
-
 function checkValidUpdatePackage($uploadFile, $debugFlag)
 {
     $expectedFiles = [
@@ -539,7 +465,6 @@ function doDatabaseCopyForBackup(): bool
 
             $logArray   = array();
             $logArray[] = "UpdateVacuumCpy: Database: $backupPath";
-            $logArray[] = "UpdateVacuumCpy: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
             $res = safeDbRun($db, $query, 'exec', $logArray);
 
