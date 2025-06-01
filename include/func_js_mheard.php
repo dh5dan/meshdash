@@ -1,5 +1,4 @@
 <script>
-   // $(document).ready(function () {
    $(function ($) {
 
        let leafletMap;
@@ -161,6 +160,12 @@
 
                    // Dialog-Container komplett entfernen (vermeidet ID-Konflikte)
                    $(this).dialog("destroy").remove();
+
+                   // NEU: Falls showOsm = 1, dann message.php laden
+                   if ($("#showOsm").val() === '1')
+                   {
+                       window.location.href = 'message.php?group=' + $("#group").val();
+                   }
                },
                buttons: [
                    {
@@ -184,10 +189,15 @@
            });
        }
 
+       //Open OSM on Get Parameter only
+       if ($("#showOsm").val() === '1')
+       {
+           $("#btnGetMheardOpenStreet").click();
+       }
 
        ///////////// Dialog Section
 
-       function dialogConfirm(outputMsg, title_msg, width, sendData) {
+       function dialogConfirmMheard(outputMsg, title_msg, width, sendData) {
             width     = !width ? 300 : width;
             title_msg = !title_msg ? '' : title_msg;
             outputMsg = !outputMsg ? '' : outputMsg;
@@ -211,7 +221,7 @@
             }).prev(".ui-dialog-titlebar").css("background", "red");
         }
 
-       function dialog(outputMsg, titleMsg, width) {
+       function dialogMheard(outputMsg, titleMsg, width) {
            width     = !width ? 300 : width;
            titleMsg  = !titleMsg ? '' : titleMsg;
            outputMsg = !outputMsg ? '' : outputMsg;

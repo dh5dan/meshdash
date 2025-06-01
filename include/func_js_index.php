@@ -419,6 +419,16 @@
            let iframeSrc;
            isTabClick = true;
 
+           //Aktuellen aktiven Gruppentab ermitteln
+           let activeTab     = $('#top-tabs .tab.active');
+           let activeTabGroupId = activeTab.data('group');
+           let activeGroupId = '-1';
+
+           if (activeTabGroupId !== undefined && !isNaN(parseInt(activeTabGroupId)))
+           {
+               activeGroupId = activeTabGroupId;
+           }
+
            switch(action) {
                case 'config_generally':
                    iframeSrc = 'menu/config_generally.php';
@@ -464,6 +474,12 @@
                    break;
                case 'mHeard':
                    iframeSrc = 'mheard.php';
+                   break;
+               case 'mHeard-osm':
+                   iframeSrc = 'mheard.php?osm=1&group=' + activeGroupId;
+                   break;
+               case 'beacon':
+                   iframeSrc = 'menu/config_beacon.php';
                    break;
                case 'debug_info':
                    iframeSrc = 'menu/debug_info.php';

@@ -32,6 +32,8 @@ require_once 'include/func_js_message.php';
 require_once 'include/func_php_message.php';
 require_once 'include/func_php_index.php';
 require_once 'include/func_php_mheard.php';
+require_once 'include/func_php_config_alerting.php';
+require_once 'include/func_php_config_keyword.php';
 
 if(!file_exists('database/meshdash.db') ||
     !file_exists('database/parameter.db') ||
@@ -49,6 +51,8 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ini_set('max_execution_time', '300'); // Ausführungszeit auf 5min bei nicht performanten Geräten
 
+$debugFlag = false;
+
 #Hole Parameter für NoPos und DMA-Alert aus Datenbank
 $loraIp             = trim(getParamData('loraIp'));
 $noPosData          = (int) getParamData('noPosData');
@@ -65,6 +69,7 @@ $alertSoundCallSrc = getParamData('alertSoundCallSrc');
 $alertSoundFileDst = getParamData('alertSoundFileDst');
 $alertEnabledDst   = getParamData('alertEnabledDst');
 $alertSoundCallDst = getParamData('alertSoundCallDst');
+
 $clickOnCall       = getParamData('clickOnCall');
 $mheardGroup       = getParamData('mheardGroup');
 $mheardGroup       = $mheardGroup == '' ? 0 : $mheardGroup;
@@ -249,9 +254,23 @@ if ($group == -4)
     $noTimeSyncMsgValue = 0;
 }
 
-#Soundfiles Preload
-echo '<audio id="alertSoundSrc" src="sound\\' . $alertSoundFileSrc . '" preload="auto"></audio>';
-echo '<audio id="alertSoundDst" src="sound\\' . $alertSoundFileDst . '" preload="auto"></audio>';
+$arrayNotificationData = getNotificationData('active');
+
+if (empty($arrayNotificationData) === false)
+{
+    // Alle notifySoundFile Werte extrahieren
+    $arraySoundFiles = array_column($arrayNotificationData, 'notifySoundFile');
+
+    // Duplikate entfernen
+    $uniqueSoundFiles = array_unique($arraySoundFiles);
+
+    #Soundfiles Preload
+    foreach ($uniqueSoundFiles as $soundFile)
+    {
+        $soundFileId = str_replace('.', '_', $soundFile); // ergibt: z.B. callsign_dst_alert_wav
+        echo '<audio id="' . $soundFileId . '" src="sound\\' . $soundFile . '" preload="auto"></audio>';
+    }
+}
 
 #Werte für Jquery die dann im Bottom Frame abgebildet werden
 echo '<input type="hidden" id="posStatusValue" value="'. $posStatusValue . '" />';
@@ -271,7 +290,6 @@ if ($searchPage == '' && $doSearchQuery === true)
     $logArray   = array();
     $logArray[] = "message_Pagination: Database: database/meshdash.db";
     $logArray[] = "message_Pagination: sqlAddonSearch: $sqlAddonSearch";
-    $logArray[] = "message_Pagination: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $countResult = safeDbRun($db, $countQuery, 'query', $logArray);
 
@@ -352,7 +370,6 @@ if ($doSearchQuery === true)
     $logArray[] = "doSearchQuery_message_Pagination: sqlAddonSearch: $sqlAddonSearch";
     $logArray[] = "doSearchQuery_message_Pagination: perPage: $perPage";
     $logArray[] = "doSearchQuery_message_Pagination: offset: $offset";
-    $logArray[] = "doSearchQuery_message_Pagination: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $result = safeDbRun($db, $searchQuery, 'query', $logArray);
 }
@@ -371,55 +388,18 @@ else
     $logArray[] = "Message_Normal: Database: database/meshdash.db";
     $logArray[] = "Message_Normal: sqlAddon: $sqlAddon";
     $logArray[] = "Message_Normal: maxScrollBackRows: $maxScrollBackRows";
-    $logArray[] = "Message_Normal: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $result = safeDbRun($db, $sql, 'query', $logArray);
 }
 
-#Init Values
-$keyword1Text      = '';
-$keyword1Cmd       = '';
-$keyword1ReturnMsg = '';
-$keyword1DmGrpId   = '*';
-
-$keyword2Text      = '';
-$keyword2Cmd       = '';
-$keyword2ReturnMsg = '';
-$keyword2DmGrpId   = '*';
-
-$debugFlag = false;
-
-#Check if Keyword1 is enabled
-if (getParamData('keyword1Enabled') == 1)
-{
-    $keyword1Text           = getParamData('keyword1Text');
-    $keyword1Cmd            = getParamData('keyword1Cmd');
-    $keyword1ReturnMsg      = getParamData('keyword1ReturnMsg');
-    $keyword1DmGrpId        = getParamData('keyword1DmGrpId');
-}
-
-#Check if Keyword2 is enabled
-if (getParamData('keyword2Enabled') == 1)
-{
-    $keyword2Text           = getParamData('keyword2Text');
-    $keyword2Cmd            = getParamData('keyword2Cmd');
-    $keyword2ReturnMsg      = getParamData('keyword2ReturnMsg');
-    $keyword2DmGrpId        = getParamData('keyword2DmGrpId');
-}
+#Get Keywords
+$arrayKeyWords = getKeyWordHooks('aktive');
 
 if ($debugFlag === true)
 {
-    echo "<br>keyword1Enabled :<b>" .getParamData('keyword1Enabled').'</b>';
-    echo "<br>keyword1Text<b>:$keyword1Text".'</b>';
-    echo "<br>keyword1Cmd<b>:$keyword1Cmd".'</b>';
-    echo "<br>keyword1ReturnMsg<b>:$keyword1ReturnMsg".'</b>';
-    echo "<br>keyword1DmGrpId<b>:$keyword1DmGrpId".'</b>';
-    echo "<br>---------------------------";
-    echo "<br>keyword2Enabled:<b>" .getParamData('keyword2Enabled').'</b>';
-    echo "<br>keyword2Text:<b>$keyword2Text".'</b>';
-    echo "<br>keyword2Cmd:<b>$keyword2Cmd".'</b>';
-    echo "<br>keyword2ReturnMsg:<b>$keyword2ReturnMsg".'</b>';
-    echo "<br>keyword2DmGrpId:<b>$keyword2DmGrpId".'</b>';
+    echo "<pre>";
+    print_r($arrayKeyWords);
+    echo "</pre>";
 }
 
 #Prevents Error on fetch array
@@ -473,9 +453,11 @@ if ($result !== false)
         }
 
         #Prüfe auf Keyword Ergebnisdaten für msgID
-        $resGetKeywordsData = getKeywordsData($msgId);
-        $keywordExecuted    = $resGetKeywordsData['executed'];
-        $keywordErrorCode   = $resGetKeywordsData['errCode'];
+        $resGetKeywordsData   = getKeywordsData($msgId);
+        $keywordExecuted      = $resGetKeywordsData['executed'];
+        $keywordErrorCode     = $resGetKeywordsData['errCode'];
+        $keywordMsgSendFlag   = $resGetKeywordsData['execMsgSend'];
+        $keywordExecTimestamp = $resGetKeywordsData['execTimestamp'];
 
         if ($debugFlag === true)
         {
@@ -484,74 +466,59 @@ if ($result !== false)
             echo "</pre>";
         }
 
-        #Wenn es einen fehler mit dem Keyword gab dann Meldung hier ausgeben
-        if ($keywordExecuted == 1 && $keywordErrorCode > 0)
+//        #Wenn es einen fehler mit dem Keyword gab dann Meldung hier ausgeben
+//        if ($keywordExecuted == 1 && $keywordErrorCode > 0)
+//        {
+//            $keywordCmd = $keyword2Cmd;
+//            if (strpos($msg, $keyword1Text) !== false && $dst == $keyword1DmGrpId)
+//            {
+//                $keywordCmd = $keyword1Cmd;
+//            }
+//
+//            $msg .= '<br>';
+//            $msg .= '<span class="failureHint">';
+//            $msg .= 'Fehler bei Ausführung des CMD: ' . $keywordCmd;
+//            $msg .= '<br>ErrorCode: ' . $keywordErrorCode;
+//            $msg .= '<br>Error: ' . $resGetKeywordsData['errText'] . '</span>';
+//        }
+
+        foreach ($arrayKeyWords as $resKey => $resValue)
         {
-            $keywordCmd = $keyword2Cmd;
-            if (strpos($msg, $keyword1Text) !== false && $dst == $keyword1DmGrpId)
+            if ($resValue['keyHookTrigger'] != '' && $resValue['keyHookExecute'] != '' && $resValue['keyHookReturnMsg'] != '' && $keywordExecuted == 0)
             {
-                $keywordCmd = $keyword1Cmd;
-            }
-
-            $msg .= '<br>';
-            $msg .= '<span class="failureHint">';
-            $msg .= 'Fehler bei Ausführung des CMD: ' . $keywordCmd;
-            $msg .= '<br>ErrorCode: ' . $keywordErrorCode;
-            $msg .= '<br>Error: ' . $resGetKeywordsData['errText'] . '</span>';
-        }
-
-        if ($debugFlag === true)
-        {
-            echo "<br>msgid: $msgId exec:" . $keywordExecuted . " loraIp=$loraIp";
-        }
-
-        #Check auf Keyword1
-        if ($keyword1Text != '' && $keyword1Cmd != '' && $msg != '' && $keywordExecuted == 0)
-        {
-            if ($debugFlag === true)
-            {
-                echo "<br>dst:$dst";
-                echo "<br>keyword1DmGrpId:$keyword1DmGrpId";
-            }
-
-            if (strpos($msg, $keyword1Text) !== false && $dst == $keyword1DmGrpId)
-            {
-                execScriptCurl($keyword1Cmd);
-
-                $keyword1ErrorCode = 0; //debug
-                $keyword1ErrorText = '';
-
-                setKeywordsData($msgId, 1, $keyword1ErrorCode, $keyword1ErrorText);
-
-                #Sende nur, wenn kein Fehler aufgetreten ist
-                if ($keyword1ReturnMsg != '' && $keyword1ErrorCode == 0)
+                if (strpos($msg, $resValue['keyHookTrigger']) !== false && $dst == $resValue['keyHookDmGrpId'])
                 {
-                    $arraySend['txType'] = 'msg';
-                    $arraySend['txDst']  = $keyword1DmGrpId;
-                    $arraySend['txMsg']  = $keyword1ReturnMsg;
-                    $resSetTxQueue       = setTxQueue($arraySend);
+                    execScriptCurl($resValue['keyHookExecute']);
+
+                    $paramSetKeyword['msgId']         = $msgId;
+                    $paramSetKeyword['executed']      = 1;
+                    $paramSetKeyword['errCode']       = 0; //debug
+                    $paramSetKeyword['errText']       = ''; //debug
+                    $paramSetKeyword['execScript']    = $resValue['keyHookExecute'];
+                    $paramSetKeyword['execTimestamp'] = date('Y-m-d H:i:s');
+                    $paramSetKeyword['execTrigger']   = $resValue['keyHookTrigger'];
+                    $paramSetKeyword['execReturnMsg'] = $resValue['keyHookReturnMsg'];
+                    $paramSetKeyword['execGroup']     = $resValue['keyHookDmGrpId'];
+
+                    setKeywordsData($paramSetKeyword);
                 }
             }
-        }
 
-        #Check auf Keyword2
-        if ($keyword2Text != '' && $keyword2Cmd != '' && $msg != '' && $keywordExecuted == 0)
-        {
-            if (strpos($msg, $keyword2Text) !== false && $dst == $keyword2DmGrpId)
+            #Wenn Script ausgeführt und Return-Msg noch nicht gesendet nach OffsetTime, dann jetzt senden
+            if ($keywordExecuted == 1 && $keywordMsgSendFlag == 0 && strpos($msg, $resValue['keyHookTrigger']) !== false)
             {
-                execScriptCurl($keyword2Cmd);
+                $resHasKeywordTimePassed = hasKeywordTimePassed($keywordExecTimestamp, Date('Y-m-d H:i:s'), 10);
 
-                $keyword2ErrorCode = 0;
-                $keyword2ErrorText = '';
-
-                setKeywordsData($msgId, 1, $keyword2ErrorCode, $keyword2ErrorText);
-
-                if ($keyword2ReturnMsg != '' && $keyword2ErrorCode == 0)
+                #Sende nur, wenn kein Fehler aufgetreten ist
+                if ($resValue['keyHookReturnMsg'] != '' && $keywordErrorCode == 0 && $resHasKeywordTimePassed === true && $resValue['keyHookDmGrpId'] != '')
                 {
                     $arraySend['txType'] = 'msg';
-                    $arraySend['txDst']  = $keyword2DmGrpId;
-                    $arraySend['txMsg']  = $keyword2ReturnMsg;
+                    $arraySend['txDst']  = $resValue['keyHookDmGrpId'];
+                    $arraySend['txMsg']  = $resValue['keyHookReturnMsg'];
                     $resSetTxQueue       = setTxQueue($arraySend);
+
+                    #Setzte gesendet Flag mit Timestamp
+                    updateKeywordsData($msgId);
                 }
             }
         }
@@ -585,7 +552,6 @@ if ($result !== false)
 
             echo '<h3 class="setFontMsgHeader">';
             echo 'MsgId: ' . $msgId . ' (' . $srcType . ')<br>' . $timestamp . ' ';
-            #echo 'Quelle: ' . $src . ', Ziel: all</h3>';
 
             if ($restCalls != '')
             {
@@ -694,26 +660,31 @@ if ($result !== false)
             echo '<h3 class="setFontMsg ' . $bubbleFontMsg . '">';
 
             #Source Call.
-            #
+            # SRC = 0, DST = 1
             #Nur ausführen wenn:
-            #src call = AlertSrc Call.
-            #Der sound noch nicht ausgeführt wurde.
-            #Global die alert Sounds nicht abgeschaltet sind.
-            #Der SrcAlert eingeschaltet ist
-            if (strcasecmp($firstCall, $alertSoundCallSrc) === 0 && $alertExecutedSrc == 0 && $noDmAlertGlobal == 0 && $alertEnabledSrc == 1)
+            # - $firstCall/$dst = AlertSrc Call. Achtung Case Sensitive!
+            # - Der Sound noch nicht ausgeführt wurde.
+            # - Global die Alert-Sounds nicht abgeschaltet sind.
+            # - Der Alert eingeschaltet ist
+            if ($alertExecutedSrc == 0 && $noDmAlertGlobal == 0 && isset($arrayNotificationData[$firstCall]) &&
+                $arrayNotificationData[$firstCall]['notifySrcDst'] === 0)
             {
+                $soundFileId = str_replace('.', '_', $arrayNotificationData[$firstCall]['notifySoundFile']);
+
                 echo '<script>';
-                echo 'document.getElementById("alertSoundSrc").play();'; // Ton abspielen
+                echo 'document.getElementById("'.$soundFileId.'").play();'; // Ton abspielen
                 echo '</script>';
 
                 updateMeshDashData($msgId,'alertExecutedSrc', 1, $doSearchQuery);
             }
 
             #DestinatationCall
-            if (strcasecmp($dst, $alertSoundCallDst) === 0 && $alertExecutedDst == 0 && $noDmAlertGlobal == 0 && $alertEnabledDst == 1)
+            if ($alertExecutedDst == 0 && $noDmAlertGlobal == 0 && isset($arrayNotificationData[$dst]) &&
+                $arrayNotificationData[$dst]['notifySrcDst'] === 1)
             {
+                $soundFileId = str_replace('.', '_', $arrayNotificationData[$dst]['notifySoundFile']);
                 echo '<script>';
-                echo 'document.getElementById("alertSoundDst").play();'; // Ton abspielen
+                echo 'document.getElementById("'.$soundFileId.'").play();'; // Ton abspielen
                 echo '</script>';
 
                 updateMeshDashData($msgId,'alertExecutedDst', 1, $doSearchQuery);
@@ -721,7 +692,7 @@ if ($result !== false)
 
             $alertSrcCss = '';
 
-            if (strcasecmp($firstCall, $alertSoundCallSrc) === 0 && $alertEnabledSrc == 1)
+            if (isset($arrayNotificationData[$firstCall]) && $arrayNotificationData[$firstCall]['notifySrcDst'] === 0)
             {
                 $alertSrcCss = 'failureHint';
             }
@@ -729,7 +700,7 @@ if ($result !== false)
             $alertDstCss = '';
 
             #DestinatationCall
-            if (strcasecmp($dst, $alertSoundCallDst) === 0 && $alertEnabledDst == 1)
+            if (isset($arrayNotificationData[$dst]) && $arrayNotificationData[$dst]['notifySrcDst'] === 1)
             {
                 $alertDstCss = 'failureHint';
             }
@@ -744,30 +715,38 @@ if ($result !== false)
             if ($clickOnCall == 0)
             {
                 # Call in DM-Feld
-                $patternClickOnCall = '/\b([a-zA-Z0-9]+(?:-\d+)?)\b/';
-                $replaceClickOnCall    = '<span onclick="sendToBottomFrame(\'$1\')" style="cursor: pointer;color:#0000ee">$0</span>';
+                $patternClickOnCall    = '/\b([a-zA-Z0-9]+(?:-\d+)?)\b/';
+                $replaceClickOnCall    = '<span onclick="sendToBottomFrame(\'$1\')" style="cursor: pointer;color:#0000ee" class="' . $alertSrcCss . '" >$0</span>';
                 $linkedTextClickOnCall = preg_replace($patternClickOnCall, $replaceClickOnCall, $firstCall);
 
-                echo '<span class="' . $fromToSquare . '"><span class="' . $alertSrcCss . '">' . $linkedTextClickOnCall. '</span> > ' . '<span class="' . $alertDstCss . '">' . $dstTxt . '</span> :</span> ' . $linkedText;
+                echo '<span class="' . $fromToSquare . '">'
+                    . '<span class="' . $alertSrcCss . '">' . $linkedTextClickOnCall. '</span> > '
+                    . '<span class="' . $alertDstCss . '">' . $dstTxt
+                    . '</span> :</span> ' . $linkedText;
             }
             else if ($clickOnCall == 1)
             {
                 # Öffne QRZ.com
                 $patternClickOnCall    = '/\b([a-zA-Z0-9]+)(?:-\d+)?\b/';
-                $replaceClickOnCall    = '<a href="https://qrz.com/db/$1" target="_blank">$0</a>';
+                $replaceClickOnCall    = '<a href="https://qrz.com/db/$1" target="_blank" class="' . $alertSrcCss . '">$0</a>';
                 $linkedTextClickOnCall = preg_replace($patternClickOnCall, $replaceClickOnCall, $firstCall);
 
-                echo '<span class="' . $fromToSquare . '"><span class="' . $alertSrcCss . '">' . $linkedTextClickOnCall . '</span>' . ' > ' . '<span class="' . $alertDstCss . '">' . $dstTxt . '</span> :</span> ' . $linkedText;
+                echo '<span class="' . $fromToSquare . '">'
+                    . '<span class="' . $alertSrcCss . '">' . $linkedTextClickOnCall
+                    . '</span>' . ' > ' . '<span class="' . $alertDstCss . '">' . $dstTxt
+                    . '</span> :</span> ' . $linkedText;
             }
             else
             {
                 #Setze Call mit @ in MSG Feld ohne SSID
-                #$patternClickOnCall = '/\b([a-zA-Z0-9]+(?:-\d+)?)\b/';
-                $patternClickOnCall = '/\b([A-Za-z0-9]{3,})(?:-\d+)?\b/i';
-                $replaceClickOnCall    = '<span onclick="sendToBottomMsgFrame(\'$1\')" style="cursor: pointer;color:#0000ee">$0</span>';
+                $patternClickOnCall    = '/\b([A-Za-z0-9]{3,})(?:-\d+)?\b/i';
+                $replaceClickOnCall    = '<span onclick="sendToBottomMsgFrame(\'$1\')" style="cursor: pointer;color:#0000ee" class="' . $alertSrcCss . '">$0</span>';
                 $linkedTextClickOnCall = preg_replace($patternClickOnCall, $replaceClickOnCall, $firstCall);
 
-                echo '<span class="' . $fromToSquare . '"><span class="' . $alertSrcCss . '">' . $linkedTextClickOnCall. '</span> > ' . '<span class="' . $alertDstCss . '">' . $dstTxt . '</span> :</span> ' . $linkedText;
+                echo '<span class="' . $fromToSquare . '">'
+                    . '<span class="' . $alertSrcCss . '">' . $linkedTextClickOnCall. '</span> > '
+                    . '<span class="' . $alertDstCss . '">' . $dstTxt
+                    . '</span> :</span> ' . $linkedText;
             }
 
             if ($mhSend == 1)
@@ -793,12 +772,10 @@ if ($result !== false)
     }
 }
 
-#echo '<button id="scrollTopBtn" title="Nach oben scrollen">⬆️</button>';
-
 echo '<button id="scrollTopBtn" title="Nach oben">
-  <img src="image/scroll_to_top_md50.png" class="pictureScrollToTop" alt="Nach oben">
-</button>
-';
+        <img src="image/scroll_to_top_md50.png" class="pictureScrollToTop" alt="Nach oben">
+      </button>
+     ';
 
 echo '</body>';
 echo '</html>';
@@ -817,6 +794,6 @@ if ($msgExportEnable === true && $msgExportGroup != '' && $isSnapshot == 0)
     $msgExportGroup = $msgExportGroup == '*' ? -1 : $msgExportGroup; // Wenn ALL
     $msgExportGroup = $msgExportGroup == $ownCall ? -2 : $msgExportGroup; // Wenn Own-Call
 
-    $html = file_get_contents('http://localhost/5d/message.php?isSnapshot=1&group=' . $msgExportGroup);
+    $html = file_get_contents(BASE_PATH_URL. 'message.php?isSnapshot=1&group=' . $msgExportGroup);
     file_put_contents('export/'.$msgExportGroupFile.'.html', $html);
 }

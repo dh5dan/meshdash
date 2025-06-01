@@ -272,6 +272,35 @@ iframe {
     cursor: pointer;
 }
 
+/* Menü Icon Ausrichtung */
+.menu-icon
+{
+    display: inline-block;
+    width: 1.8em;         /* Einheitliche Breite für alle Icons */
+    text-align: center;   /* Icon wird mittig gerendert */
+    font-family: inherit; /* Wichtig, um Emoji-Verschiebung zu minimieren */
+}
+
+.menuitem.with-arrow
+{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.menu-left
+{
+    display: inline-block;
+}
+
+.menu-right
+{
+    display: inline-block;
+    padding-left: 10px; /* optional Abstand vom Text */
+}
+/* Menü Icon Ausrichtung ENDE */
+
+
 @media (max-width: 440px) {
 
     #message-frame {

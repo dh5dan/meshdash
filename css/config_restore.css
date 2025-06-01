@@ -21,7 +21,7 @@ body {
     overflow-y: auto;
     border: 1px solid #ddd;
     margin-bottom: 20px;
-    width: 496px;  /* Container-Breite anpassen */
+    width: 573px;  /* Container-Breite anpassen */
 
     -ms-overflow-style: none;  /* Für IE und Edge */
     scrollbar-width: none;     /* Für Firefox */
@@ -48,6 +48,8 @@ table.backupTable th {
     background-color: #4CAF50;
     color: white;
 }
+
+/* table Backup End */
 
 .imageDownload {
     width: 25px;
@@ -76,8 +78,22 @@ table.backupTable th {
     border-radius: 5px;
 }
 
+.reloadButton {
+    padding: 12px;
+}
+
 /* Media Query für Smartphones */
 @media (max-width: 768px) {
+
+    /* Umbruch des Dateinamens in mobiler Ansicht */
+    table.backupTable td.filename-cell {
+        word-break: break-all;
+        max-width: 120px;     /* maximale Breite begrenzen */
+    }
+
+    table.backupTable {
+        width: 55%;
+    }
 
     .hintText {
         font-size: 12px;
@@ -114,10 +130,10 @@ table.backupTable th {
     }
 
     input[type="file"]::before {
-        content: "Datei auswählen";
+        content: "Restore Datei auswählen";
         font-size: 14px;
         display: inline-block;
-        background: #007bff;
+        background: #0056b3;
         color: white;
         padding: 5px 10px;
         border-radius: 5px;
@@ -127,7 +143,7 @@ table.backupTable th {
     input[type="button"] {
         display: inline-block;
         font-size: 11px;
-        background: #007bff;
+        background: #0056b3;
         color: white;
         border-radius: 5px;
         cursor: pointer;

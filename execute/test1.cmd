@@ -1,2 +1,2 @@
 @echo off
-echo %time% Test1 OK >> test1.log
+echo %date% %time% Test1 Execute Scipt OK >> ../log/test1_execute.log

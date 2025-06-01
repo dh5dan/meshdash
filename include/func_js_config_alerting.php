@@ -5,107 +5,187 @@
         {
             let titleMsg          = 'Hinweis';
             let outputMsg         = 'Jetzt alle Settings speichern?';
-            let width             = 300;
+            let width             = 350;
             let sendData          = 1;
+            let callSignPattern   = /^[a-zA-Z0-9]{2}[0-9]{1}[a-zA-Z]{1,3}-([1-9][0-9]?)$/; // Mit SSID
 
-            let callSignPattern   = /^[a-zA-Z]{2}[0-9]{1}[a-zA-Z]{1,3}-([1-9][0-9]?)$/; // Mit SSID
-            //let callSignPattern = /^[a-zA-Z]{2}[0-9]{1}[a-zA-Z]{1,3}(-([1-9][0-9]?))?$/; // Prüft mit und ohne SSID
+            let callSignMap = {};
+            let hasError = false;
 
-            let alertSoundFileSrc = $("#alertSoundFileSrc").val();
-            let alertSoundCallSrc = $("#alertSoundCallSrc").val();
-            let alertEnabledSrc   = $("#alertEnabledSrc").is(":checked");
-
-            let alertSoundFileDst = $("#alertSoundFileDst").val();
-            let alertSoundCallDst = $("#alertSoundCallDst").val();
-            let alertEnabledDst   = $("#alertEnabledDst").is(":checked");
-
-            // Pattern für den Dateinamen ohne Sonderzeichen
-            let namePattern = /^[a-zA-Z0-9_-]+$/;
-
-            // Pattern für die Dateiendung (mp3 oder wav)
-            let extensionPattern = /\.(mp3|wav)$/i;
-
-            if (alertEnabledSrc === true)
+            // 1. CallSign validieren
+            $("input[name^='notifyCallSign']:enabled").each(function()
             {
-                width = 700;
+                let callSign = $(this).val().trim().toUpperCase();
+                let id       = $(this).attr("name").match(/\[(\d+)\]/)[1];
 
-                // Trennen des Dateinamens von der Erweiterung
-                let fileNameSrc = alertSoundFileSrc.split('.')[0];  // Vor dem Punkt
-
-                if (alertSoundFileSrc === '')
-                {   width = 700;
-                    outputMsg = 'Bitte das Src-Soundfile ohne Leerzeichen oder Sonderzeichen im Namen angeben.';
-                    outputMsg += '<br>Es sind derzeit (wav, mp3) erlaubt.';
-                    dialog(outputMsg, titleMsg, width);
-                    return false;
-                }
-                else if (!(namePattern.test(fileNameSrc) && extensionPattern.test(alertSoundFileSrc)))
+                if (callSign === "")
                 {
-                    outputMsg = 'Bitte das Src-Soundfile ohne Umlaute, Sonder-/Leerzeichen angeben.';
-                    outputMsg += '<br>Erlaubt sind derzeit nur wav oder mp3 Dateien.';
-                    outputMsg += '<br><br>Beispiel: DB0ABC-99_ping.mp3';
-                    dialog(outputMsg, titleMsg, width);
-                    return false;
-                }
-
-                if (alertSoundCallSrc === '')
-                {
-                    outputMsg = 'Bitte das Src-CallSign inkl. SSID angeben.';
+                    $(this).css("border", "2px solid red");
+                    width     = 650;
+                    outputMsg = 'Bitte das CallSign inkl. SSID angeben bei Eintrag:' + id + ' angeben.';
                     outputMsg += '<br><br>Beispiel:<br>DB0ABC-99 wobei die SSID 1-99 sein darf.';
                     dialog(outputMsg, titleMsg, width);
+                    hasError = true;
                     return false;
                 }
-                else if (callSignPattern.test(alertSoundCallSrc) === false) {
-                    width     = 600;
-                    outputMsg = 'Das Src-CallSign inkl. SSID hat nicht das gültige Format';
+                else if (callSignPattern.test(callSign) === false)
+                {
+                    width     = 650;
+                    outputMsg = 'Das CallSign inkl. SSID bei Eintrag:' + id + ' hat nicht das gültige Format';
                     outputMsg += '<br> oder die SSID ist > 99 oder ist 0.';
                     outputMsg += '<br><br>Bitte Prüfen.';
+                    $(this).css("border", "2px solid red");
                     dialog(outputMsg, titleMsg, width);
+                    hasError = true;
                     return false;
                 }
-            }
 
-            if (alertEnabledDst === true)
+                if (callSignMap[callSign])
+                {
+                    if (callSignMap[callSign])
+                    {
+                        $(this).css("border", "2px solid red");
+
+                        outputMsg = 'Doppeltes CallSign: ' + callSign + ' bei Eintrag:'+ id;
+                        dialog(outputMsg, titleMsg, width);
+                        hasError = true;
+                        return false;
+                    }
+                }
+                else
+                {
+                    callSignMap[callSign] = true;
+                    $(this).css("border", "");
+                }
+            });
+
+            if (hasError === true)
             {
-                width = 700;
-
-                // Trennen des Dateinamens von der Erweiterung
-                let fileNameDst = alertSoundFileDst.split('.')[0];  // Vor dem Punkt
-
-                if (alertSoundFileDst === '')
-                {
-                    width = 700;
-                    outputMsg = 'Bitte das Dst-Soundfile ohne Leerzeichen oder Sonderzeichen im Namen (wav, mp3) angeben.';
-                    dialog(outputMsg, titleMsg, width);
-                    return false;
-                }
-                else if (!(namePattern.test(fileNameDst) && extensionPattern.test(alertSoundFileDst)))
-                {
-                    outputMsg = 'Bitte das Dst-Soundfile ohne Umlaute, Sonder-/Leerzeichen angeben.';
-                    outputMsg += '<br>Erlaubt sind derzeit nur wav oder mp3 Dateien.';
-                    outputMsg += '<br><br>Beispiel:<br>DB0ABC-99_ping.mp3.';
-                    dialog(outputMsg, titleMsg, width);
-                    return false;
-                }
-
-                if (alertSoundCallDst === '')
-                {
-                    outputMsg = 'Bitte das Dst-CallSign inkl. SSID angeben.';
-                    outputMsg += '<br><br>Beispiel:<br>DB0ABC-99 wobei die SSID 1-99 sein darf.';
-                    dialog(outputMsg, titleMsg, width);
-                    return false;
-                }
-                else if (callSignPattern.test(alertSoundCallDst) === false) {
-                    width     = 600;
-                    outputMsg = 'Das Dst-CallSign inkl. SSID hat nicht das gültige Format';
-                    outputMsg += '<br> oder die SSID ist > 99 oder ist 0.';
-                    outputMsg += '<br><br>Bitte Prüfen.';
-                    dialog(outputMsg, titleMsg, width);
-                    return false;
-                }
+                return false;
             }
 
-            width = 300;
+            // 2. SoundFile validieren
+            $("select[name^='notifySoundFile']:enabled").each(function()
+            {
+                let selected = $(this).val().trim();
+                let id = $(this).attr("name").match(/\[(\d+)\]/)[1];
+
+                if (selected === "")
+                {
+                    $(this).css("border", "2px solid red");
+                    width     = 650;
+                    outputMsg = 'Kein Soundfile für Eintrag:' + id + " ausgewählt.";
+                    dialog(outputMsg, titleMsg, width);
+                    hasError = true;
+                    return false;
+                }
+                else
+                {
+                    $(this).css("border", "");
+                }
+            });
+
+            if (hasError === true)
+            {
+                return false;
+            }
+
+            // Wenn alles ok → abspeichern
+            dialogConfirm(outputMsg, titleMsg, width, sendData)
+
+            return false;
+        });
+
+        $("#btnAddNewItem").on("click", function()
+        {
+            $(".notifyNewRow").each(function()
+            {
+                const isHidden = $(this).is(":hidden");
+                if (isHidden)
+                {
+                    // sichtbar machen und inputs aktivieren
+                    $(this).show();
+                    $(this).find("input, select").prop("disabled", false);
+                    $("#btnAddNewItem").val('Eintrag verbergen');
+                }
+                else
+                {
+                    // verstecken und inputs deaktivieren
+                    $(this).hide();
+                    $(this).find("input, select").prop("disabled", true);
+                    $("#btnAddNewItem").val('Neuer Eintrag');
+                }
+            });
+        });
+
+        $("#btnUploadSoundFile").on("click", function ()
+        {
+            let titleMsg  = 'Hinweis';
+            let width     = 750;
+            let sendData  = 6;
+            let fileInput = $('#uploadSoundFile');
+
+            // Extrahiere den Dateinamen (unter Windows ggf. den Pfad trennen)
+            let fileName = fileInput.val().split('\\').pop();
+
+            // Regex: Dateiname  ".mp3 | .wav" enden (case-insensitive)
+            let pattern = /^[a-zA-Z0-9_-]+\.(wav|mp3)$/i;
+
+            let outputMsg = 'Sound-File: ' + fileName + " hochladen?";
+
+            if (!fileInput.val())
+            {
+                width = 350;
+                outputMsg = 'Bitte wählen Sie eine Datei aus.';
+                dialog(outputMsg, titleMsg, width);
+                return false;
+            }
+
+
+
+            if (!pattern.test(fileName))
+            {
+                width = 650;
+                outputMsg = 'Die Datei darf ausser "_-" keine Sonder oder Leerzeichen enthalten.';
+                outputMsg += 'Es sind nur Dateien mit der Endung wav oder mp3 erlaubt.';
+                dialog(outputMsg, titleMsg, width);
+                return false;
+            }
+
+            dialogConfirmUpload(outputMsg, titleMsg, width, sendData)
+
+            return false;
+        });
+
+        $(".imageDelete").on("click", function ()
+        {
+            let titleMsg  = 'Hinweis';
+            let outputMsg;
+            let width     = 750;
+            let sendData  = 3;
+            let soundFile = $(this).data('delete');
+
+            $("#deleteFileImage").val(soundFile);
+
+            outputMsg = 'Soll die Sound_Datei: ' + soundFile + ' wirklich gelöscht werden?';
+
+            dialogConfirmUpload(outputMsg, titleMsg, width, sendData)
+
+            return false;
+        });
+
+        $(".deleteNotifyItem").on("click", function ()
+        {
+            let titleMsg = 'Hinweis';
+            let outputMsg;
+            let width    = 750;
+            let sendData = 2;
+            let notifyId = $(this).data('notify_delete');
+            let callSign = $("#notifyCallSign_" + notifyId).val();
+            $("#deleteNotifyItemId").val(notifyId);
+
+            outputMsg = 'Soll der Eintrag: ' + notifyId + ' mit CallSign: ' + callSign + ' wirklich gelöscht werden?';
+
             dialogConfirm(outputMsg, titleMsg, width, sendData)
 
             return false;
@@ -126,6 +206,30 @@
                     'OK': function () {
                         $("#sendData").val(sendData);
                         $("#frmConfigAlerting").trigger('submit');
+                        $("#pageLoading").show();
+                        $(this).dialog('close');
+                    }, 'Abbruch': function () {
+                        $(this).dialog("close");
+                    }
+                }
+            }).prev(".ui-dialog-titlebar").css("background", "red");
+        }
+
+        function dialogConfirmUpload(output_msg, title_msg, width, sendData) {
+            width      = !width ? 300 : width;
+            title_msg  = !title_msg ? '' : title_msg;
+            output_msg = !output_msg ? '' : output_msg;
+            sendData   = !sendData ? 0 : sendData;
+
+            $("<div></div>").html(output_msg).dialog({
+                title: title_msg,
+                resizable: true,
+                modal: true,
+                width: width,
+                buttons: {
+                    'OK': function () {
+                        $("#sendDataUpload").val(sendData);
+                        $("#frmUploadSoundFile").trigger('submit');
                         $("#pageLoading").show();
                         $(this).dialog('close');
                     }, 'Abbruch': function () {

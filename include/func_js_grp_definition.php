@@ -123,6 +123,84 @@
             window.top.location.href = window.location.origin + window.location.pathname.replace(/\/[^\/]+\/[^\/]+\/?$/, '');
         });
 
+        $("#btnUploadSoundFile").on("click", function ()
+        {
+            let titleMsg  = 'Hinweis';
+            let width     = 750;
+            let sendData  = 6;
+            let fileInput = $('#uploadSoundFile');
+
+            // Extrahiere den Dateinamen (unter Windows ggf. den Pfad trennen)
+            let fileName = fileInput.val().split('\\').pop();
+
+            // Regex: Dateiname  ".mp3 | .wav" enden (case-insensitive)
+            let pattern = /^[a-zA-Z0-9_-]+\.(wav|mp3)$/i;
+
+            let outputMsg = 'Sound-File: ' + fileName + " hochladen?";
+
+            if (!fileInput.val())
+            {
+                width = 350;
+                outputMsg = 'Bitte wählen Sie eine Datei aus.';
+                dialog(outputMsg, titleMsg, width);
+                return false;
+            }
+
+            if (!pattern.test(fileName))
+            {
+                width = 650;
+                outputMsg = 'Die Datei darf ausser "_-" keine Sonder oder Leerzeichen enthalten.';
+                outputMsg += 'Es sind nur Dateien mit der Endung wav oder mp3 erlaubt.';
+                dialog(outputMsg, titleMsg, width);
+                return false;
+            }
+
+            dialogConfirmUpload(outputMsg, titleMsg, width, sendData)
+
+            return false;
+        });
+
+        $(".imageDelete").on("click", function ()
+        {
+            let titleMsg  = 'Hinweis';
+            let outputMsg;
+            let width     = 750;
+            let sendData  = 3;
+            let soundFile = $(this).data('delete');
+
+            $("#deleteFileImage").val(soundFile);
+
+            outputMsg = 'Soll die Sound_Datei: ' + soundFile + ' wirklich gelöscht werden?';
+
+            dialogConfirmUpload(outputMsg, titleMsg, width, sendData)
+
+            return false;
+        });
+
+        function dialogConfirmUpload(output_msg, title_msg, width, sendData) {
+            width      = !width ? 300 : width;
+            title_msg  = !title_msg ? '' : title_msg;
+            output_msg = !output_msg ? '' : output_msg;
+            sendData   = !sendData ? 0 : sendData;
+
+            $("<div></div>").html(output_msg).dialog({
+                title: title_msg,
+                resizable: true,
+                modal: true,
+                width: width,
+                buttons: {
+                    'OK': function () {
+                        $("#sendDataUpload").val(sendData);
+                        $("#frmUploadSoundFile").trigger('submit');
+                        $("#pageLoading").show();
+                        $(this).dialog('close');
+                    }, 'Abbruch': function () {
+                        $(this).dialog("close");
+                    }
+                }
+            }).prev(".ui-dialog-titlebar").css("background", "red");
+        }
+
         function dialogConfirm(output_msg, title_msg, width, sendData) {
             width      = !width ? 300 : width;
             title_msg  = !title_msg ? '' : title_msg;

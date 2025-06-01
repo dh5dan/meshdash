@@ -22,7 +22,6 @@ $sql = "SELECT max(timestamps) AS timestamps
 
 $logArray   = array();
 $logArray[] = "ajax_mheard_sql1: Database: database/mheard.db";
-$logArray[] = "ajax_mheard_sql1: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
 $result = safeDbRun($db, $sql, 'query', $logArray);
 
@@ -49,7 +48,6 @@ if (!empty($dsData) === true)
 
     $logArray   = array();
     $logArray[] = "ajax_mheard_sqlMh: Database: database/mheard.db";
-    $logArray[] = "ajax_mheard_sqlMh: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $resultMh = safeDbRun($db, $sqlMh, 'query', $logArray);
 
@@ -107,7 +105,6 @@ if (!empty($dsData) === true)
 
             $logArray   = array();
             $logArray[] = "ajax_mheard_sqlMd1: Database: database/mheard.db";
-            $logArray[] = "ajax_mheard_sqlMd1: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
             $resultMd1 = safeDbRun($dbMd1, $sqlMd1, 'query', $logArray);
 
@@ -181,7 +178,6 @@ if (!empty($dsData) === true)
 
     $logArray   = array();
     $logArray[] = "ajax_mheard_sqlMd2: Database: database/mheard.db";
-    $logArray[] = "ajax_mheard_sqlMd2: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $resultMdOwn = safeDbRun($dbMd2, $sqlMd2, 'query', $logArray);
 

@@ -22,7 +22,7 @@ body {
 
 .failureHint {
     background-color: crimson;
-    color: whitesmoke;
+    color: whitesmoke !important;
     font-weight: bold;
 }
 
@@ -182,7 +182,7 @@ body {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background-color: #007bff;
+    background-color: #0056b3;
     color: white;
     border: none;
     border-radius: 4px;
@@ -244,7 +244,7 @@ body {
 
     input[type="button"] {
         display: inline-block;
-        background: #007bff;
+        background: #0056b3;
         color: white;
         /*padding: 5px 10px;*/
         border-radius: 5px;

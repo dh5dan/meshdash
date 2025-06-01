@@ -45,7 +45,6 @@ if ($sendData === '11')
     $logArray   = array();
     $logArray[] = "config_data_purge_cnt: Database: database/meshdash.db";
     $logArray[] = "config_data_purge_cnt: purgeDateNat: $purgeDateNat";
-    $logArray[] = "config_data_purge_cnt: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun($db, $sql, 'query', $logArray);
 
@@ -95,7 +94,6 @@ elseif ($sendData === '13')
     $logArray   = array();
     $logArray[] = "config_data_purge_del: Database: database/meshdash.db";
     $logArray[] = "config_data_purge_del: purgeDateNat: $purgeDateNat";
-    $logArray[] = "config_data_purge_del: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun($db, $sql, 'exec', $logArray);
 
@@ -120,7 +118,7 @@ else
 {
     echo '<form id="frmPurgeData" method="post"  action="' . $_SERVER['REQUEST_URI'] . '">';
     echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
-    echo '<br><b>Ermittel Anzahl der Nachrichten die gelöscht werden bis zum gewählten Datum</b><br><br>';
+    echo '<br><b>Ermittel Anzahl der Nachrichten bis zum gewählten Datum</b><br><br>';
     echo '<input type="text" name="purgeDate" id="purgeDate" readonly value="" required placeholder="dd.mm.yyyy" />';
     echo '&nbsp;&nbsp;&nbsp;<input type="button" class="submitParamLoraIp" id="btnPurgeData" value="Anzahl Nachrichtendaten jetzt ermitteln"  />';
     echo '</form>';
