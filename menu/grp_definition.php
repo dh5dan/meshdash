@@ -19,13 +19,14 @@ require_once '../dbinc/param.php';
 require_once '../include/func_php_core.php';
 require_once '../include/func_js_grp_definition.php';
 require_once '../include/func_php_grp_definition.php';
+require_once '../include/func_php_config_alerting.php';
 
 #Show all Errors for debugging
 error_reporting(E_ALL);
 ini_set('display_errors',1);
 
-$sendData = $_REQUEST['sendData'] ?? 0;
-$hardware = '';
+$sendData       = $_REQUEST['sendData'] ?? 0;
+$sendDataUpload = $_REQUEST['sendDataUpload'] ?? 0;
 
 #Check what oS is running
 $osIssWindows = chkOsIsWindows();
@@ -34,17 +35,71 @@ $osName       = $osIssWindows === true ? 'Windows' : 'Linux';
 $callSign = getParamData('callSign');
 $ownCall  = explode('-', $callSign)[0];
 
+$basename     = pathinfo(getcwd())['basename'];
+$soundDirSub  = '../sound/';
+$soundDirRoot = 'sound/';
+$soundDir     = $basename == 'menu' ? $soundDirSub: $soundDirRoot;
+
 if ($sendData === '1')
 {
     $resSaveGroupsSetting = saveGroupsSettings();
 
     if ($resSaveGroupsSetting)
     {
-        echo '<span class="successHint">'.date('H:i:s').'-Settings erfolgreich abgespeichert!</span>';
+        echo '<span class="successHint">' . date('H:i:s') . '-Settings erfolgreich abgespeichert!</span>';
     }
     else
     {
-        echo '<span class="failureHint">Es gab einen Fehler beim Abspeichern der Settings!</span>';
+        echo '<span class="failureHint">' . date('H:i:s') . '-Es gab einen Fehler beim Abspeichern der Settings!</span>';
+    }
+}
+
+#Delete Soundfile
+if ($sendDataUpload === '3')
+{
+    $deleteFileImage         = trim($_POST['deleteFileImage']);
+    $deleteFileImageFullPath = $soundDir . $deleteFileImage;
+
+    if (file_exists($deleteFileImageFullPath))
+    {
+        if(unlink($deleteFileImageFullPath))
+        {
+            echo '<br><span class="successHint">' . date('H:i:s') . '-' . $deleteFileImage . ' erfolgreich gelöscht.</span>';
+        }
+        else
+        {
+            echo '<br><span class="failureHint">' . date('H:i:s') . '-Fehler beim Löschen von ' . $deleteFileImage . '</span>';
+        }
+    }
+    else
+    {
+        echo '<br><span class="failureHint">' . date('H:i:s') . '-' . $deleteFileImage . ' nicht im Sound-Verzeichnis gefunden.</span>';
+    }
+}
+
+#Upload soundfile
+if ($sendDataUpload === '6')
+{
+    // Prüft, ob eine Datei hochgeladen wurde und ob sie eine ZIP-Datei ist
+    if (isset($_FILES['uploadSoundFile']) && $_FILES['uploadSoundFile']['error'] === UPLOAD_ERR_OK)
+    {
+        if (copy($_FILES['uploadSoundFile']['tmp_name'], $soundDir . $_FILES['uploadSoundFile']['name']))
+        {
+            unlink($_FILES['uploadSoundFile']['tmp_name']);
+
+            if ($osIssWindows === false)
+            {
+                exec('chmod 644 ' . $soundDir . $_FILES['uploadSoundFile']['name']);
+            }
+
+            echo '<span class="successHint">' . date('H:i:s') . '-'
+                . $_FILES['uploadSoundFile']['name'] . ' erfolgreich hochgeladen!</span>';
+        }
+        else
+        {
+            echo '<span class="failureHint">' . date('H:i:s') . '-Fehler beim Hochladen von: '
+                . $_FILES['uploadSoundFile']['name'] . '!</span>';
+        }
     }
 }
 
@@ -213,7 +268,12 @@ echo '</tr>';
 
 echo '<tr>';
 echo '<td>Sound-File :</td>';
-echo '<td colspan="5"><input type="text" class="" name="groupSoundFile" id="groupSoundFile" value="' . $groupSoundFile . '" placeholder="Sound-File"  /></td>';
+#echo '<td colspan="5"><input type="text" class="" name="groupSoundFile" id="groupSoundFile" value="' . $groupSoundFile . '" placeholder="Sound-File"  /></td>';
+echo '<td colspan="5">';
+echo '<select name="groupSoundFile" id="groupSoundFile">';
+selectSoundFile(showAlertMediaFiles(false), $groupSoundFile);
+echo '</select>';
+echo '</td>';
 echo '</tr>';
 
 echo '<tr>';
@@ -236,5 +296,9 @@ echo '</tr>';
 echo '</table>';
 echo '</form>';
 
+echo '<br>';
+showAlertMediaFiles();
+
+echo '<div id="pageLoading" class="pageLoadingSub"></div>';
 echo '</body>';
 echo '</html>';

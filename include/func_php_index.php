@@ -27,6 +27,7 @@ function initDatabases()
     else
     {
         checkDbIntegrity('keywords');
+        checkDbUpgrade('keywords');
     }
 
     if (!file_exists('database/sensordata.db'))
@@ -86,9 +87,26 @@ function initDatabases()
         checkDbIntegrity('tx_queue');
         checkDbUpgrade('tx_queue');
     }
+
+    if (!file_exists('database/notification.db'))
+    {
+        initSQLiteDatabase('notification');
+    }
+
+    if (!file_exists('database/key_hooks.db'))
+    {
+        initSQLiteDatabase('key_hooks');
+    }
+
+    if (!file_exists('database/beacon.db'))
+    {
+        initSQLiteDatabase('beacon');
+    }
 }
 function initSQLiteDatabase($database): bool
 {
+    $osIsWindows = chkOsIsWindows();
+
     if ($database == 'meshdash')
     {
         #Open Database
@@ -153,8 +171,7 @@ function initSQLiteDatabase($database): bool
                                   param_text TEXT,
                                   PRIMARY KEY(param_key)
                                 )
-                "
-        );
+                        ");
 
         $version = VERSION;
         $db->exec("REPLACE INTO parameter (
@@ -167,24 +184,8 @@ function initSQLiteDatabase($database): bool
                                        ('callSign', '', ''),
                                        ('noPosData', '0', ''),
                                        ('noDmAlertGlobal', '0', ''),
-                                       ('keyword1Text', '', ''),      
-                                       ('keyword11Cmd', '0', ''),
-                                       ('keyword1Enabled', '0', ''),
-                                       ('keyword2Text', '', ''),      
-                                       ('keyword2Cmd', '0', ''),
-                                       ('keyword12Enabled', '0', ''),
-                                       ('keyword1ReturnMsg', '', ''),
-                                       ('keyword2ReturnMsg', '', ''),
-                                       ('keyword1DmGrpId', '', '*'),
-                                       ('keyword2DmGrpId', '', '*'),
                                        ('noTimeSyncMsg', 0 , ''),
                                        ('maxScrollBackRows', 60 , ''),
-                                       ('alertSoundFileSrc','' , 'callsign_src_alert.wav'),
-                                       ('alertEnabledSrc',0 , ''),
-                                       ('alertSoundCallSrc','' , ''),
-                                       ('alertSoundFileDst','' , 'callsign_dst_alert.wav'),
-                                       ('alertEnabledDst',0 , ''),
-                                       ('alertSoundCallDst','' , ''),
                                        ('doLogEnable',1 , ''),
                                        ('doNotBackupDb', 0, ''),
                                        ('clickOnCall', 0, ''),
@@ -221,6 +222,13 @@ function initSQLiteDatabase($database): bool
                                   executed INTEGER,
                                   errCode INTEGER,
                                   errText TEXT,
+                                  execScript TEXT,
+                                  execTimestamp TEXT,
+                                  execTrigger TEXT,
+                                  execReturnMsg TEXT,
+                                  execGroup INTEGER,
+                                  execMsgSend INTEGER DEFAULT 0,
+                                  execMsgSendTimestamp TEXT DEFAULT '0000-00-00 00:00:00',
                                   PRIMARY KEY(msg_id)
                                 )
                 ");
@@ -440,6 +448,111 @@ function initSQLiteDatabase($database): bool
         #Set Index
         addIndex('tx_queue', 'txQueue','idx_txFlag_qid', 'txFlag, txQueueId');
     }
+    elseif ($database == 'notification')
+    {
+        #Open Database
+        $db = new SQLite3('database/notification.db');
+        $db->exec('PRAGMA journal_mode = wal;');
+        $db->exec('PRAGMA synchronous = NORMAL;');
+
+        // Tabelle erstellen wenn nicht vorhanden
+        $db->exec("CREATE TABLE IF NOT EXISTS notification 
+                                (
+                                  notifyId INTEGER PRIMARY KEY AUTOINCREMENT,       
+                                  notifyCallSign TEXT,
+                                  notifySoundFile TEXT,
+                                  notifySrcDst INTEGER,
+                                  notifyEnabled INTEGER
+                                )
+                ");
+
+        $db->exec("INSERT INTO notification (
+                                          notifyCallSign, 
+                                          notifySoundFile, 
+                                          notifySrcDst,
+                                          notifyEnabled
+                                       ) VALUES 
+                                       ('DB0ABC-12', 'callsign_src_alert.wav', 0, 0),
+                                       ('DB0XYZ-11', 'callsign_dst_alert.wav', 1, 0);
+           ");
+
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+    }
+    elseif ($database == 'key_hooks')
+    {
+        #Open Database
+        $db = new SQLite3('database/key_hooks.db');
+        $db->exec('PRAGMA journal_mode = wal;');
+        $db->exec('PRAGMA synchronous = NORMAL;');
+
+        // Tabelle erstellen wenn nicht vorhanden
+        $db->exec("CREATE TABLE IF NOT EXISTS keyHooks 
+                                (
+                                  keyHookId INTEGER PRIMARY KEY AUTOINCREMENT,       
+                                  keyHookExecute TEXT,
+                                  keyHookTrigger TEXT,
+                                  keyHookReturnMsg TEXT,
+                                  keyHookDmGrpId TEXT,
+                                  keyHookEnabled INTEGER
+                                )
+                         ");
+
+        if ($osIsWindows === true)
+        {
+            $db->exec(
+                "INSERT INTO keyHooks (
+                                          keyHookExecute, 
+                                          keyHookTrigger, 
+                                          keyHookReturnMsg,
+                                          keyHookDmGrpId,
+                                          keyHookEnabled
+                                       ) VALUES 
+                                       ('test1.cmd', 'led-on', 'LED ist ON led AN', 999, 0),
+                                       ('test2.cmd', 'led-off', 'LED ist OFF led AUS', 999, 0);
+                      ");
+        }
+        else
+        {
+            $db->exec(
+                "INSERT INTO keyHooks (
+                                          keyHookExecute, 
+                                          keyHookTrigger, 
+                                          keyHookReturnMsg,
+                                          keyHookDmGrpId,
+                                          keyHookEnabled
+                                       ) VALUES 
+                                       ('led_on.sh', 'led-on', 'LED ist ON led AN', 999, 0),
+                                       ('led_off.sh', 'led-off', 'LED ist OFF led AUS', 999, 0);
+                      ");
+        }
+
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+    }
+    elseif ($database == 'beacon')
+    {
+        #Open Database
+        $db = new SQLite3('database/beacon.db');
+        $db->exec('PRAGMA journal_mode = wal;');
+        $db->exec('PRAGMA synchronous = NORMAL;');
+
+        // Tabelle erstellen wenn nicht vorhanden
+        $db->exec("CREATE TABLE IF NOT EXISTS beacon 
+                                (
+                                  param_key TEXT NOT NULL UNIQUE,              
+                                  param_value INTEGER,
+                                  param_text TEXT,
+                                  PRIMARY KEY(param_key)
+                                )
+                        ");
+
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+    }
 
     return true;
 }
@@ -448,8 +561,12 @@ function showMenuIcons()
     echo '<div id="menu-icon" class="topMenu">&#9776;</div>';
     echo '<div id="menu">';
     echo '<ul>';
-        echo '<li class="menuitem">' . getStatusIcon('configuration', true) . ' ' . getStatusIcon('right_triangle');
-            echo '<ul class="submenuIcon">';
+       # echo '<li class="menuitem">' . getStatusIcon('configuration', true) . ' ' . getStatusIcon('right_triangle');
+    echo '<li class="menuitem with-arrow">'
+         . '<span class="menu-left">' . getStatusIcon('configuration', true) . '</span>'
+         . '<span class="menu-right">' . getStatusIcon('right_triangle') . '</span>';
+
+         echo '<ul class="submenuIcon">';
                 echo '<li class="menuitem" data-action="config_generally">' . getStatusIcon('generally', true) . '</li>';
                 echo '<li data-action="config_send_queue">' . getStatusIcon('interval', true) . '</li>';
                 echo '<li data-action="config_alerting">' . getStatusIcon('notification', true) . '</li>';
@@ -461,22 +578,41 @@ function showMenuIcons()
                 echo '<li data-action="config_ping_lora">' . getStatusIcon('ping-lora', true) . '</li>';
                 echo '<li data-action="debug_info">' . getStatusIcon('debug-info', true) . '</li>';
             echo '</ul>';
-        echo '</li>';
+         echo '</li>';
 
-        echo '<li class="menuitem">' . getStatusIcon('groups', true) . ' ' . getStatusIcon('right_triangle');
+        #echo '<li class="menuitem">' . getStatusIcon('groups', true) . ' ' . getStatusIcon('right_triangle');
+        echo '<li class="menuitem with-arrow">'
+            . '<span class="menu-left">' . getStatusIcon('groups', true) . '</span>'
+            . '<span class="menu-right">' . getStatusIcon('right_triangle') . '</span>';
+
             echo '<ul class="submenuIcon">';
                 echo '<li data-action="grp_definition">' . getStatusIcon('groups_define', true) . '</li>';
             echo '</ul>';
         echo '</li>';
 
-        echo '<li class="menuitem">' . getStatusIcon('sensors', true) . ' ' . getStatusIcon('right_triangle');
+        #echo '<li class="menuitem">' . getStatusIcon('sensors', true) . ' ' . getStatusIcon('right_triangle');
+        echo '<li class="menuitem with-arrow">'
+            . '<span class="menu-left">' . getStatusIcon('sensors', true) . '</span>'
+            . '<span class="menu-right">' . getStatusIcon('right_triangle') . '</span>';
+
             echo '<ul class="submenuIcon">';
                 echo '<li data-action="sensor_data">' . getStatusIcon('sensordata', true) . '</li>';
                 echo '<li data-action="sensor_threshold">' . getStatusIcon('threshold', true) . '</li>';
             echo '</ul>';
         echo '</li>';
 
-        echo '<li class="menuitem" data-action="mHeard">' . getStatusIcon('mheard', true) . '</li>';
+        echo '<li class="menuitem with-arrow">'
+            . '<span class="menu-left">' . getStatusIcon('mheard', true) . '</span>'
+            . '<span class="menu-right">' . getStatusIcon('right_triangle') . '</span>';
+
+            echo '<ul class="submenuIcon">';
+                echo '<li class="menuitem" data-action="mHeard">' . getStatusIcon('mheard-page', true) . '</li>';
+                echo '<li data-action="mHeard-osm">' . getStatusIcon('mheard-osm', true) . '</li>';
+            echo '</ul>';
+        echo '</li>';
+
+        echo '<li class="menuitem" data-action="beacon">' . getStatusIcon('beacon', true) . '</li>';
+
 
     if (function_exists('curl_version'))
     {

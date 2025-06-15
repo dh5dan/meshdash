@@ -68,7 +68,6 @@ function saveGroupsSettings(): bool
         $logArray[] = "saveGroupsSettings: groupNumber: $groupNumber";
         $logArray[] = "saveGroupsSettings: groupEnabled: $groupEnabled";
         $logArray[] = "saveGroupsSettings: groupSound: $groupSound";
-        $logArray[] = "saveGroupsSettings: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
         $res = safeDbRun( $db,  $sql, 'exec', $logArray);
 
@@ -116,7 +115,6 @@ function getGroupParameter(int $mode = 0)
 
     $logArray   = array();
     $logArray[] = "getGroupParameter: Database: $dbFilename";
-    $logArray[] = "getGroupParameter: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $res = safeDbRun( $db,  $sql, 'query', $logArray);
 

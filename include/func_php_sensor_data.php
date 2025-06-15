@@ -176,7 +176,6 @@ function showSensorData()
 
     $logArray   = array();
     $logArray[] = "showSensorData: Database: $dbFilename";
-    $logArray[] = "showSensorData: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $result = safeDbRun($db, $sql, 'query', $logArray);
 
@@ -191,9 +190,11 @@ function showSensorData()
 
     $dsData = $result->fetchArray(SQLITE3_ASSOC);
 
-    $validData = !empty($dsData);
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
 
-    if ($validData)
+    if (empty($dsData) === false)
     {
         $timeStamp = $dsData['timestamps'];
 
@@ -381,9 +382,7 @@ function showSensorData()
         echo "<h3>Keine gespeicherten Daten vorhanden.";
     }
 
-    #Close and write Back WAL
-    $db->close();
-    unset($db);
+    return true;
 }
 function checkSensor($resGetSensorData): bool
 {
@@ -391,11 +390,11 @@ function checkSensor($resGetSensorData): bool
     $osIssWindows = chkOsIsWindows();
     $debugFlag    = false;
 
-    #Setze AlertCount zurück
+    #Setze AlertCount zurück wenn letzte Meldung > 1h
     checkSensorAlertCount();
 
     #Prüfe ob INA226 vorhanden ist
-    $hasIna226             = isset($resGetSensorData['vBUS']);
+    $hasIna226 = isset($resGetSensorData['vBUS']);
 
     #Prüfe, ob irgendein Sensor aus den Gruppen aktiv ist
     $anyTemSensorAktive    = false;
@@ -420,7 +419,6 @@ function checkSensor($resGetSensorData): bool
 
     $logArray   = array();
     $logArray[] = "checkSensor: Database: $dbFilename";
-    $logArray[] = "checkSensor: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $result = safeDbRun($db, $sql, 'query', $logArray);
 
@@ -435,9 +433,11 @@ function checkSensor($resGetSensorData): bool
 
     $dsData = $result->fetchArray(SQLITE3_ASSOC);
 
-    $validData = !empty($dsData);
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
 
-    if ($validData === true)
+    if (empty($dsData) === false)
     {
         if ($debugFlag === true)
         {
@@ -472,7 +472,6 @@ function checkSensor($resGetSensorData): bool
 
         $logArray   = array();
         $logArray[] = "checkSensor_ina226: Database: $dbFilenameIna226";
-        $logArray[] = "checkSensor_ina226: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
         $resultThSensor = safeDbRun($dbIna226, $sqlIna226, 'query', $logArray);
 
@@ -486,6 +485,10 @@ function checkSensor($resGetSensorData): bool
         }
 
         $dsDataIna226 = $resultThSensor->fetchArray(SQLITE3_ASSOC);
+
+        #Close and write Back WAL
+        $dbIna226->close();
+        unset($dbIna226);
 
         if ($debugFlag === true)
         {
@@ -516,8 +519,9 @@ function checkSensor($resGetSensorData): bool
                     if ($resGetThIna226Data['sensorThIna226vBusAlertCount'] < $mxSendAlertMsg)
                     {
                         setSensorAlertCounter('ina226','vBus');
-                        $txQueueData['txDst'] = $sensorThIna226vBusDmGrpId;
-                        $txQueueData['txMsg'] = 'Ina226[vBus]: (' . $ina226vBus . ' < ' . $sensorThIna226vBusMinValue .') ' . $sensorThIna226vBusAlertMsg;
+                        $txQueueData['txType'] = 'msg';
+                        $txQueueData['txDst']  = $sensorThIna226vBusDmGrpId;
+                        $txQueueData['txMsg']  = 'Ina226[vBus]: (' . $ina226vBus . ' < ' . $sensorThIna226vBusMinValue . ') ' . $sensorThIna226vBusAlertMsg;
                         setTxQueue($txQueueData);
                     }
 
@@ -533,8 +537,9 @@ function checkSensor($resGetSensorData): bool
                     if ($resGetThIna226Data['sensorThIna226vBusAlertCount'] < $mxSendAlertMsg)
                     {
                         setSensorAlertCounter('ina226','vBus');
-                        $txQueueData['txDst'] = $sensorThIna226vBusDmGrpId;
-                        $txQueueData['txMsg'] = 'Ina226[vBus]: (' . $ina226vBus . ' > ' . $sensorThIna226vBusMaxValue .') ' . $sensorThIna226vBusAlertMsg;
+                        $txQueueData['txType'] = 'msg';
+                        $txQueueData['txDst']  = $sensorThIna226vBusDmGrpId;
+                        $txQueueData['txMsg']  = 'Ina226[vBus]: (' . $ina226vBus . ' > ' . $sensorThIna226vBusMaxValue . ') ' . $sensorThIna226vBusAlertMsg;
                         setTxQueue($txQueueData);
                     }
 
@@ -559,8 +564,9 @@ function checkSensor($resGetSensorData): bool
                     if ($resGetThIna226Data['sensorThIna226vShuntAlertCount'] < $mxSendAlertMsg)
                     {
                         setSensorAlertCounter('ina226','vShunt');
-                        $txQueueData['txDst'] = $sensorThIna226vShuntDmGrpId;
-                        $txQueueData['txMsg'] = 'Ina226[vShunt]: (' . $ina226vShunt . ' < ' . $sensorThIna226vShuntMinValue .') ' . $sensorThIna226vShuntAlertMsg;
+                        $txQueueData['txType'] = 'msg';
+                        $txQueueData['txDst']  = $sensorThIna226vShuntDmGrpId;
+                        $txQueueData['txMsg']  = 'Ina226[vShunt]: (' . $ina226vShunt . ' < ' . $sensorThIna226vShuntMinValue . ') ' . $sensorThIna226vShuntAlertMsg;
                         setTxQueue($txQueueData);
                     }
 
@@ -576,8 +582,9 @@ function checkSensor($resGetSensorData): bool
                     if ($resGetThIna226Data['sensorThIna226vShuntAlertCount'] < $mxSendAlertMsg)
                     {
                         setSensorAlertCounter('ina226','vShunt');
-                        $txQueueData['txDst'] = $sensorThIna226vShuntDmGrpId;
-                        $txQueueData['txMsg'] = 'Ina226[vShunt]: (' . $ina226vShunt . ' > ' . $sensorThIna226vShuntMaxValue .') ' . $sensorThIna226vShuntAlertMsg;
+                        $txQueueData['txType'] = 'msg';
+                        $txQueueData['txDst']  = $sensorThIna226vShuntDmGrpId;
+                        $txQueueData['txMsg']  = 'Ina226[vShunt]: (' . $ina226vShunt . ' > ' . $sensorThIna226vShuntMaxValue . ') ' . $sensorThIna226vShuntAlertMsg;
                         setTxQueue($txQueueData);
                     }
 
@@ -602,8 +609,9 @@ function checkSensor($resGetSensorData): bool
                     if ($resGetThIna226Data['sensorThIna226vCurrentAlertCount'] < $mxSendAlertMsg)
                     {
                         setSensorAlertCounter('ina226','vCurrent');
-                        $txQueueData['txDst'] = $sensorThIna226vCurrentDmGrpId;
-                        $txQueueData['txMsg'] = 'Ina226[vCurrent]: (' . $ina226vCurrent . ' < ' . $sensorThIna226vCurrentMinValue .') ' . $sensorThIna226vCurrentAlertMsg;
+                        $txQueueData['txType'] = 'msg';
+                        $txQueueData['txDst']  = $sensorThIna226vCurrentDmGrpId;
+                        $txQueueData['txMsg']  = 'Ina226[vCurrent]: (' . $ina226vCurrent . ' < ' . $sensorThIna226vCurrentMinValue . ') ' . $sensorThIna226vCurrentAlertMsg;
                         setTxQueue($txQueueData);
                     }
 
@@ -619,8 +627,9 @@ function checkSensor($resGetSensorData): bool
                     if ($resGetThIna226Data['sensorThIna226vCurrentAlertCount'] < $mxSendAlertMsg)
                     {
                         setSensorAlertCounter('ina226','vCurrent');
-                        $txQueueData['txDst'] = $sensorThIna226vCurrentDmGrpId;
-                        $txQueueData['txMsg'] = 'Ina226[vCurrent]: (' . $ina226vCurrent . ' > ' . $sensorThIna226vCurrentMaxValue .') ' . $sensorThIna226vCurrentAlertMsg;
+                        $txQueueData['txType'] = 'msg';
+                        $txQueueData['txDst']  = $sensorThIna226vCurrentDmGrpId;
+                        $txQueueData['txMsg']  = 'Ina226[vCurrent]: (' . $ina226vCurrent . ' > ' . $sensorThIna226vCurrentMaxValue . ') ' . $sensorThIna226vCurrentAlertMsg;
                         setTxQueue($txQueueData);
                     }
 
@@ -645,8 +654,9 @@ function checkSensor($resGetSensorData): bool
                     if ($resGetThIna226Data['sensorThIna226vPowerAlertCount'] < $mxSendAlertMsg)
                     {
                         setSensorAlertCounter('ina226','vPower');
-                        $txQueueData['txDst'] = $sensorThIna226vPowerDmGrpId;
-                        $txQueueData['txMsg'] = 'Ina226[vPower]: (' . $ina226vPower . ' < ' . $sensorThIna226vPowerMinValue .') ' . $sensorThIna226vPowerAlertMsg;
+                        $txQueueData['txType'] = 'msg';
+                        $txQueueData['txDst']  = $sensorThIna226vPowerDmGrpId;
+                        $txQueueData['txMsg']  = 'Ina226[vPower]: (' . $ina226vPower . ' < ' . $sensorThIna226vPowerMinValue . ') ' . $sensorThIna226vPowerAlertMsg;
                         setTxQueue($txQueueData);
                     }
 
@@ -662,8 +672,9 @@ function checkSensor($resGetSensorData): bool
                     if ($resGetThIna226Data['sensorThIna226vPowerAlertCount'] < $mxSendAlertMsg)
                     {
                         setSensorAlertCounter('ina226','vPower');
-                        $txQueueData['txDst'] = $sensorThIna226vPowerDmGrpId;
-                        $txQueueData['txMsg'] = 'Ina226[vPower]: (' . $ina226vPower . ' > ' . $sensorThIna226vPowerMaxValue .') ' . $sensorThIna226vPowerAlertMsg;
+                        $txQueueData['txType'] = 'msg';
+                        $txQueueData['txDst']  = $sensorThIna226vPowerDmGrpId;
+                        $txQueueData['txMsg']  = 'Ina226[vPower]: (' . $ina226vPower . ' > ' . $sensorThIna226vPowerMaxValue . ') ' . $sensorThIna226vPowerAlertMsg;
                         setTxQueue($txQueueData);
                     }
 
@@ -694,20 +705,23 @@ function checkSensor($resGetSensorData): bool
 
         $logArray   = array();
         $logArray[] = "checkSensor_Temp: Database: $dbFilenameTemp";
-        $logArray[] = "checkSensor_Temp: SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
         $resultThTempSensor = safeDbRun($dbTemp, $sqlTemp, 'query', $logArray);
 
         if ($resultThTempSensor === false)
         {
             #Close and write Back WAL
-            $db->close();
-            unset($db);
+            $dbTemp->close();
+            unset($dbTemp);
 
             return false;
         }
 
         $dsDataThTemp = $resultThTempSensor->fetchArray(SQLITE3_ASSOC);
+
+        #Close and write Back WAL
+        $dbTemp->close();
+        unset($dbTemp);
 
         if ($debugFlag === true)
         {
@@ -742,8 +756,9 @@ function checkSensor($resGetSensorData): bool
                     if ($resGetThTempData['sensorThTempAlertCount'] < $mxSendAlertMsg)
                     {
                         setSensorAlertCounter('temp','Temp');
-                        $txQueueData['txDst'] = $sensorThTempDmGrpId;
-                        $txQueueData['txMsg'] = '[Temp]: (' . $tempValue . ' < ' . $sensorThTempMinValue .') ' . $sensorThTempAlertMsg;
+                        $txQueueData['txType'] = 'msg';
+                        $txQueueData['txDst']  = $sensorThTempDmGrpId;
+                        $txQueueData['txMsg']  = '[Temp]: (' . $tempValue . ' < ' . $sensorThTempMinValue . ') ' . $sensorThTempAlertMsg;
                         setTxQueue($txQueueData);
                     }
 
@@ -759,8 +774,9 @@ function checkSensor($resGetSensorData): bool
                     if ($resGetThTempData['sensorThTempAlertCount'] < $mxSendAlertMsg)
                     {
                         setSensorAlertCounter('temp','Temp');
-                        $txQueueData['txDst'] = $sensorThTempDmGrpId;
-                        $txQueueData['txMsg'] = '[Temp]: (' . $tempValue . ' > ' . $sensorThTempMaxValue .') ' . $sensorThTempAlertMsg;
+                        $txQueueData['txType'] = 'msg';
+                        $txQueueData['txDst']  = $sensorThTempDmGrpId;
+                        $txQueueData['txMsg']  = '[Temp]: (' . $tempValue . ' > ' . $sensorThTempMaxValue . ') ' . $sensorThTempAlertMsg;
                         setTxQueue($txQueueData);
                     }
 
@@ -785,8 +801,9 @@ function checkSensor($resGetSensorData): bool
                     if ($resGetThTempData['sensorThToutAlertCount'] < $mxSendAlertMsg)
                     {
                         setSensorAlertCounter('temp','Tout');
-                        $txQueueData['txDst'] = $sensorThToutDmGrpId;
-                        $txQueueData['txMsg'] = '[Tout]: (' . $toutValue . ' < ' . $sensorThToutMinValue .') ' . $sensorThToutAlertMsg;
+                        $txQueueData['txType'] = 'msg';
+                        $txQueueData['txDst']  = $sensorThToutDmGrpId;
+                        $txQueueData['txMsg']  = '[Tout]: (' . $toutValue . ' < ' . $sensorThToutMinValue . ') ' . $sensorThToutAlertMsg;
                         setTxQueue($txQueueData);
                     }
 
@@ -802,8 +819,9 @@ function checkSensor($resGetSensorData): bool
                     if ($resGetThTempData['sensorThToutAlertCount'] < $mxSendAlertMsg)
                     {
                         setSensorAlertCounter('temp','Tout');
-                        $txQueueData['txDst'] = $sensorThToutDmGrpId;
-                        $txQueueData['txMsg'] = '[Tout]: (' . $toutValue . ' > ' . $sensorThToutMaxValue .') ' . $sensorThToutAlertMsg;
+                        $txQueueData['txType'] = 'msg';
+                        $txQueueData['txDst']  = $sensorThToutDmGrpId;
+                        $txQueueData['txMsg']  = '[Tout]: (' . $toutValue . ' > ' . $sensorThToutMaxValue . ') ' . $sensorThToutAlertMsg;
                         setTxQueue($txQueueData);
                     }
 
@@ -953,7 +971,6 @@ function checkSensorAlertCount(): bool
 
     $logArray   = array();
     $logArray[] = "checkSensorAlertCount (INA226): Database: $dbFilenameIna226";
-    $logArray[] = "checkSensorAlertCount (INA226): SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $resultIna226 = safeDbRun($dbIna226, $queryIna226, 'query', $logArray);
 
@@ -966,43 +983,45 @@ function checkSensorAlertCount(): bool
         return false;
     }
 
-    $dsDataTh = $resultIna226->fetchArray(SQLITE3_ASSOC);
+    $dsDataIna226 = $resultIna226->fetchArray(SQLITE3_ASSOC);
 
-    $Ina226vBusTimeDiff           = $dsDataTh['Ina226vBusTimeDiff'];
-    $sensorThIna226vBusAlertCount = $dsDataTh['sensorThIna226vBusAlertCount'];
+    #Close and write Back WAL
+    $dbIna226->close();
+    unset($dbIna226);
+
+    $Ina226vBusTimeDiff           = $dsDataIna226['Ina226vBusTimeDiff'];
+    $sensorThIna226vBusAlertCount = $dsDataIna226['sensorThIna226vBusAlertCount'];
 
     if ($sensorThIna226vBusAlertCount > 0 && $Ina226vBusTimeDiff >= 3600)
     {
         resetSensorAlertCounter('ina226', 'vBus');
     }
 
-    $Ina226vShuntTimeDiff           = $dsDataTh['Ina226vShuntTimeDiff'];
-    $sensorThIna226vShuntAlertCount = $dsDataTh['sensorThIna226vShuntAlertCount'];
+    $Ina226vShuntTimeDiff           = $dsDataIna226['Ina226vShuntTimeDiff'];
+    $sensorThIna226vShuntAlertCount = $dsDataIna226['sensorThIna226vShuntAlertCount'];
 
     if ($sensorThIna226vShuntAlertCount > 0 && $Ina226vShuntTimeDiff >= 3600)
     {
         resetSensorAlertCounter('ina226', 'vShunt');
     }
 
-    $Ina226vCurrentTimeDiff           = $dsDataTh['Ina226vCurrentTimeDiff'];
-    $sensorThIna226vCurrentAlertCount = $dsDataTh['sensorThIna226vCurrentAlertCount'];
+    $Ina226vCurrentTimeDiff           = $dsDataIna226['Ina226vCurrentTimeDiff'];
+    $sensorThIna226vCurrentAlertCount = $dsDataIna226['sensorThIna226vCurrentAlertCount'];
 
     if ($sensorThIna226vCurrentAlertCount > 0 && $Ina226vCurrentTimeDiff >= 3600)
     {
         resetSensorAlertCounter('ina226', 'vCurrent');
     }
 
-    $Ina226vPowerTimeDiff           = $dsDataTh['Ina226vPowerTimeDiff'];
-    $sensorThIna226vPowerAlertCount = $dsDataTh['sensorThIna226vPowerAlertCount'];
+    $Ina226vPowerTimeDiff           = $dsDataIna226['Ina226vPowerTimeDiff'];
+    $sensorThIna226vPowerAlertCount = $dsDataIna226['sensorThIna226vPowerAlertCount'];
 
     if ($sensorThIna226vPowerAlertCount > 0 && $Ina226vPowerTimeDiff >= 3600)
     {
         resetSensorAlertCounter('ina226', 'vPower');
     }
 
-    #Close and write Back WAL
-    $dbIna226->close();
-    unset($dbIna226);
+
 
     ################ Temp
 
@@ -1061,7 +1080,6 @@ function checkSensorAlertCount(): bool
 
     $logArray   = array();
     $logArray[] = "checkSensorAlertCount (Temp): Database: $dbFilenameIna226";
-    $logArray[] = "checkSensorAlertCount (Temp): SQLITE3_BUSY_TIMEOUT:" . SQLITE3_BUSY_TIMEOUT;
 
     $resultTemp = safeDbRun($dbTemp, $queryTemp, 'query', $logArray);
 
@@ -1075,6 +1093,10 @@ function checkSensorAlertCount(): bool
     }
 
     $dsDataTemp = $resultTemp->fetchArray(SQLITE3_ASSOC);
+
+    #Close and write Back WAL
+    $dbTemp->close();
+    unset($dbTemp);
 
     $tempTimeDiff           = $dsDataTemp['tempTimeDiff'];
     $sensorThTempAlertCount = $dsDataTemp['sensorThTempAlertCount'];
@@ -1092,9 +1114,7 @@ function checkSensorAlertCount(): bool
         resetSensorAlertCounter('temp', 'Tout');
     }
 
-    #Close and write Back WAL
-    $dbTemp->close();
-    unset($dbTemp);
+
 
     return true;
 }

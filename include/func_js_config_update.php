@@ -16,7 +16,7 @@
                 width = 350;
                 outputMsg = 'Bitte wählen Sie eine Datei aus.';
                 dialog(outputMsg, titleMsg, width);
-                return;
+                return false;
             }
 
             // Extrahiere den Dateinamen (unter Windows ggf. den Pfad trennen)
@@ -30,7 +30,7 @@
                 width = 650;
                 outputMsg = 'Die Datei muss mit <b>meshdash-sql</b> beginnen und die Endung <b>.zip</b> haben.';
                 dialog(outputMsg, titleMsg, width);
-                return;
+                return false;
             }
 
             dialogConfirm(outputMsg, titleMsg, width, sendData)
@@ -72,21 +72,7 @@
         $("#btnConfigUpdateReload").on("click", function ()
         {
             // Ermittelt die Base-URL dynamisch
-            let baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]+\/[^\/]+\/?$/, '');
-            window.top.location.href = baseUrl;
-
-            // //Rufe die Basis URL neu auf und verhinder, dass diese synchron ausgeführt wird
-            // // das verhindert ein NS_BINDING_ABORTED
-            // setTimeout(function() {
-            //     // Dynamische Base-URL ermitteln
-            //     let baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]+\/[^\/]+\/?$/, '');
-            //
-            //     // URL ohne Neuladen der Seite ändern
-            //     history.pushState(null, null, baseUrl);
-            //
-            //     // Dann das vollständige Neuladen durchführen
-            //     location.reload();
-            // }, 100);
+            window.top.location.href = window.location.origin + window.location.pathname.replace(/\/[^\/]+\/[^\/]+\/?$/, '');
         });
 
         $(".imageDelete").on("click", function ()

@@ -1,3 +1,51 @@
+Version 1.10.50 SQL
+
+Neue Funktionen (FEATURES)
+--------------------------
+Basis-URL-Erkennung:
+ - Alle internen Modul-URLs basieren jetzt automatisch auf der dynamisch ermittelten Basis-URL.
+
+Benachrichtigungen:
+ - Upload und Anzeige von Sounddateien für Benachrichtigungen integriert.
+ - Upload und Anzeige von Sounddateien für Gruppen-Definitionen möglich.
+ - Upload und Anzeige von Skripten für Keyword-Definitionen möglich.
+
+Task-Verwaltung:
+ - Nach einem Update werden alle laufenden Tasks automatisch neu gestartet.
+
+Call Notifications & Keyword-Definitionen:
+ - Einträge können nun dynamisch erweitert werden – es gibt keine Begrenzung mehr auf 2 Felder.
+ - Ermöglicht eine flexiblere Konfiguration im Webinterface.
+
+Update-Handling:
+ - Die Update-Prozedur wurde erweitert um Start- und CleanUp-Prozesse vor und nach dem eigentlichen Update.
+
+Remote-Kommandos:
+ - Einführung des Befehlspräfixes # für entfernte Kommandos (z.B. #mheard).
+
+Mheard-Modul:
+ - OpenStreetMap-Kartenansicht ist jetzt auch im Mheard-Untermenü verfügbar.
+
+HF-Reichweitentest:
+ - Neue Funktion zur HF-Reichweitenmessung hinzugefügt.
+
+Visuelle Rückmeldung:
+ - Nach Update oder Wiederherstellung wird ein notwendiger Reload nun optisch hervorgehoben.
+
+Keyword-Auslösung:
+ - 10Sekunden Verzögerung bei der Aussendung von Nachrichten nach Keyword-Auslösung,
+   um Verluste durch Gateways zu minimieren.
+
+
+Fehlerbehebungen (BUGFIXES)
+---------------------------
+Sensormeldungen:
+ - Fehlender Typ in JSON-Ausgabe führte dazu, dass keine Nachricht ausgesendet wurde – wurde behoben.
+
+Sensordatenbank:
+ - Ein fehlender db->close() führte unter Umständen zu einem Locking-Problem – ist jetzt behoben.
+
+####################################
 Version 1.10.48 SQL
 
 FEATURE: Timeout zur GUI-Erkennung von 3 auf 10 Sekunden erhöht.

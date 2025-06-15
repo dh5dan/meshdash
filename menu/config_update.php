@@ -176,6 +176,31 @@ if ($sendData === '1')
 
                     // Aufräumen
                     cleanUp($tempDir);
+                    echo '<br><span class="successHint">Temp-Dateien gelöscht.</span>';
+
+                    //Prozess neu starten
+                    $sendQueueEnabled           = (int) getParamData('sendQueueMode');
+                    $paramUdpBgProcess['task']  = 'udp';
+                    $paramCronBgProcess['task'] = 'cron';
+
+                    #Stop udp
+                    stopBgProcess($paramUdpBgProcess);
+
+                    #Start Udp
+                    startBgProcess($paramUdpBgProcess);
+
+                    echo '<br><span class="successHint">UDP-Task neu gestartet.</span>';
+                    #Prüfe ob SendQueue Aktiv ist und starte Cron-loop
+                    if ($sendQueueEnabled == 1)
+                    {
+                        #Stop Cron
+                        stopBgProcess($paramCronBgProcess);
+
+                        #Start Cron
+                        startBgProcess($paramCronBgProcess);
+
+                        echo '<br><span class="successHint">CRON-Loop Task neu gestartet.</span>';
+                    }
 
                     echo '<br><span class="successHint">Update abgeschlossen!</span>';
 
@@ -340,8 +365,8 @@ else
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td ><label for="btnConfigUpdateReload" class="reloadMsg">MeshDash-Seite jetzt neu laden:&nbsp;</label></td>';
-    echo '<td><input type="button" id="btnConfigUpdateReload" value="MeshDash-Seite neu laden"/></td>';
+    echo '<td ><label for="btnConfigUpdateReload" class="reloadMsg failureHint">Wichtig!<br>MeshDash jetzt neu laden!</label>&nbsp;</td>';
+    echo '<td><input type="button" class="failureHint reloadButton" id="btnConfigUpdateReload" value="MeshDash hier neu laden!"/></td>';
     echo '</tr>';
 
     echo '<tr>';
