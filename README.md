@@ -41,6 +41,8 @@ Eine Umstellung auf **PHP >= 8.x** ist daher empfohlen.
 - Suchfunktion nach Auswahlkriterien über die gesamte Nachrichtendatenbank möglich.
 - Restore-Funktion eines zuvor gesicherten Backups
 - Darstellung der Nachrichten im Bubble-Style
+- Upload und Anzeige von Sound-/Skriptdateien
+- Integration eines HF-Reichweitentests
 
 Das Projekt ist inzwischen aus der Beta-Phase, kann aber weiterhin Fehler enthalten.  
 Wenn Probleme auftreten, bitte im GitHub-Issue-Bereich melden – falls das Problem  
@@ -149,6 +151,13 @@ Ein Klick auf ein Datumsfeld öffnet einen Datums- und Zeit-Dialog zur einfachen
 ### Tab-Benachrichtigungen bei neuen Nachrichten.
 Die Hintergrundfarbe der Tabs sowie Soundbenachrichtigungen lassen sich individuell pro Tab-Gruppe einstellen.
 ![FILES](/docs/60_desktop_tab_alert.jpg)
+
+### HF-Reichenweitentestst via Intervall-Baken.
+Wir können über Intervall-Baken nun auch HF-Reichweitentests Ausführen.  
+Einstellbar sind Intervallzeiten/Stop-Count sowie ein Freitext.  
+Gesendet wird im Präfix der Counter wie auch die eingestellte Intervallzeit.
+![FILES](/docs/set_Beacon.jpg)
+![FILES](/docs/msg_Beacon.jpg)
 
 ### Mobile Ansicht auf einem Smartphone 
 ![FILES](/docs/61_handy_Tab_alert.jpg)
