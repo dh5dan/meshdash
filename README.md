@@ -14,8 +14,7 @@ auf eine webbasierte Plattform bringen soll.
 ![RELEASE](/docs/front_menu.jpg)
 
 MeshDash-SQL wurde primär für den Einsatz auf einem Raspberry Pi mit Linux entwickelt.  
-Ein Betrieb unter Windows ist jedoch ebenfalls möglich – vorausgesetzt,  
-Apache2 und PHP (mindestens Version 7.4) sind installiert.  
+PHP (mindestens Version 7.4) ist nötig.  
 Benötigt werden u.a. die PHP-Module sqlite3, curl, zip und unzip.
 
 ### ⚠️ Hinweis
