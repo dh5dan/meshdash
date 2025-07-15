@@ -7,7 +7,7 @@
             let outputMsg         = 'Jetzt alle Settings speichern?';
             let width             = 350;
             let sendData          = 1;
-            let callSignPattern   = /^[a-zA-Z0-9]{2}[0-9]{1}[a-zA-Z]{1,3}-([1-9][0-9]?)$/; // Mit SSID
+            let callSignPattern   = /^[a-zA-Z0-9]{1,2}[0-9][a-zA-Z]{1,3}-([1-9][0-9]?)$/; // Mit SSID
 
             let callSignMap = {};
             let hasError = false;
