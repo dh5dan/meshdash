@@ -1,3 +1,6 @@
+Version 1.10.52 SQL
+BUGFIX Benachrichtigungen Rufzeichen mit einstelligem Präfix wie F1ABC wurden nicht akzeptiert
+####################################
 Version 1.10.50 SQL
 
 Neue Funktionen (FEATURES)
