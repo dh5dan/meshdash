@@ -213,9 +213,10 @@ function getLoraInfo2($loraIp): array
     libxml_clear_errors();
     libxml_use_internal_errors(false);
 
-
     $xpath = new DOMXPath($doc);
-    $rows  = $xpath->query('//table[@class="table"]//tr');
+
+    #Anpassung an V 4.35c. Trigger auf Css Klasse hat sich geändert.
+    $rows  = $xpath->query('//table[contains(concat(" ", normalize-space(@class), " "), " table ")]//tr');
 
     foreach ($rows as $row) {
         $tds = $row->getElementsByTagName('td');
@@ -295,6 +296,7 @@ function showLoraInfo($localInfoArray)
 {
     if (count($localInfoArray) == 0)
     {
+        echo "<br>Keine Infodaten empfangen.";
         return false;
     }
 
@@ -440,6 +442,7 @@ function showLoraInfo2($localInfoArray)
 {
     if (count($localInfoArray) == 0)
     {
+        echo "<br>Keine Infodaten empfangen.";
         return false;
     }
 
@@ -488,7 +491,7 @@ function showLoraInfo2($localInfoArray)
         {
             echo '<tr>';
             echo '<td>&nbsp;</td>';
-            echo '<td>' . $key . '</td>';
+            echo '<td>' . ucfirst($key) . '</td>';
             echo '<td>' . $value . '</td>';
             echo '</tr>';
         }
@@ -510,7 +513,7 @@ function showLoraInfo2($localInfoArray)
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td>COUNTRY:</td>';
+    echo '<td>Country:</td>';
     echo '<td colspan="2">' . ($localInfoArray['country'] ?? '') . '</td>';
     echo '</tr>';
 
@@ -525,12 +528,12 @@ function showLoraInfo2($localInfoArray)
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td>Spread-Factor::</td>';
+    echo '<td>Spread-Factor (SF):</td>';
     echo '<td colspan="2">' . ($localInfoArray['spreading_factor__sf_'] ?? '') . '</td>';
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td>Coding-Rate:</td>';
+    echo '<td>Coding-Rate (CR):</td>';
     echo '<td colspan="2">' . ($localInfoArray['coding_rate__cr_'] ?? '') . '</td>';
     echo '</tr>';
 
@@ -540,7 +543,7 @@ function showLoraInfo2($localInfoArray)
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td>SSID:</td>';
+    echo '<td>WIFI-SSID:</td>';
     echo '<td colspan="2">' . ($localInfoArray['wifi_ssid'] ?? '') . '</td>';
     echo '</tr>';
 

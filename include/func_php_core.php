@@ -2222,6 +2222,9 @@ function getStatusIcon(string $status, bool $withLabel = false): string
         'message'   => ['symbol' => '&#128172;&#65039;', 'label' => 'Message'],  // 💬
         'about'   => ['symbol' => '&#8505;&#65039;', 'label' => 'About'],  // ℹ️
 
+        'gps'   => ['symbol' => '&#x1F6F0;&#65039;', 'label' => 'GPS-Info'],  // 🛰️
+
+
     ];
 
     $key = strtolower($status);

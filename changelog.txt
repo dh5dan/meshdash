@@ -1,3 +1,8 @@
+Version 1.10.54 SQL
+BUGFIX Anpassung an neue GUI ab MeshCom V 4.35c. Lora Info und Sensordaten nicht abrufbar.
+FEATURE GPS-Infodaten unter Menüpunkt Sensoren nun abrufbar.
+
+####################################
 Version 1.10.52 SQL
 BUGFIX Benachrichtigungen Rufzeichen mit einstelligem Präfix wie F1ABC wurden nicht akzeptiert
 ####################################

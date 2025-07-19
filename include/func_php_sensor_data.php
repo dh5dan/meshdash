@@ -89,7 +89,9 @@ function getSensorData2($loraIp, int $mode = 0)
     libxml_clear_errors();
 
     $xpath = new DOMXPath($doc);
-    $rows  = $xpath->query('//table[@class="table"]//tr');
+
+    #Anpassung an V 4.35c. Trigger auf Css Klasse hat sich geändert.
+    $rows  = $xpath->query('//table[contains(concat(" ", normalize-space(@class), " "), " table ")]//tr');
 
     foreach ($rows as $row) {
         $tds = $row->getElementsByTagName('td');
