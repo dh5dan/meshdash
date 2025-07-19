@@ -580,7 +580,6 @@ function showMenuIcons()
             echo '</ul>';
          echo '</li>';
 
-        #echo '<li class="menuitem">' . getStatusIcon('groups', true) . ' ' . getStatusIcon('right_triangle');
         echo '<li class="menuitem with-arrow">'
             . '<span class="menu-left">' . getStatusIcon('groups', true) . '</span>'
             . '<span class="menu-right">' . getStatusIcon('right_triangle') . '</span>';
@@ -590,7 +589,6 @@ function showMenuIcons()
             echo '</ul>';
         echo '</li>';
 
-        #echo '<li class="menuitem">' . getStatusIcon('sensors', true) . ' ' . getStatusIcon('right_triangle');
         echo '<li class="menuitem with-arrow">'
             . '<span class="menu-left">' . getStatusIcon('sensors', true) . '</span>'
             . '<span class="menu-right">' . getStatusIcon('right_triangle') . '</span>';
@@ -598,6 +596,7 @@ function showMenuIcons()
             echo '<ul class="submenuIcon">';
                 echo '<li data-action="sensor_data">' . getStatusIcon('sensordata', true) . '</li>';
                 echo '<li data-action="sensor_threshold">' . getStatusIcon('threshold', true) . '</li>';
+                echo '<li data-action="gps_info">' . getStatusIcon('gps', true) . '</li>';
             echo '</ul>';
         echo '</li>';
 
