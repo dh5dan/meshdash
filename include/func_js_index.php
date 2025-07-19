@@ -472,6 +472,9 @@
                case 'sensor_threshold':
                    iframeSrc = 'menu/sensor_threshold.php';
                    break;
+               case 'gps_info':
+                   iframeSrc = 'menu/gps_info.php';
+                   break;
                case 'mHeard':
                    iframeSrc = 'mheard.php';
                    break;
