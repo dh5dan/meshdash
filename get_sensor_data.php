@@ -4,7 +4,7 @@ require_once 'include/func_php_core.php';
 require_once 'include/func_php_sensor_data.php';
 require_once 'include/func_php_lora_info.php';
 
-$loraIp           = getParamData('loraIp');
+$loraIp = getParamData('loraIp');
 
 #Check new GUI
 if (getParamData('isNewMeshGui') == 1)

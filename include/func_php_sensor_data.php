@@ -158,7 +158,7 @@ function getSensorData2($loraIp, int $mode = 0)
 
     return true;
 }
-function showSensorData()
+function showSensorData(): bool
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
     $basename       = pathinfo(getcwd())['basename'];
@@ -872,7 +872,6 @@ function checkSensor($resGetSensorData): bool
 
     return true;
 }
-
 function checkSensorAlertCount(): bool
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten

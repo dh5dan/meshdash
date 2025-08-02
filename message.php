@@ -395,13 +395,6 @@ else
 #Get Keywords
 $arrayKeyWords = getKeyWordHooks('aktive');
 
-if ($debugFlag === true)
-{
-    echo "<pre>";
-    print_r($arrayKeyWords);
-    echo "</pre>";
-}
-
 #Prevents Error on fetch array
 if ($result !== false)
 {
@@ -458,29 +451,6 @@ if ($result !== false)
         $keywordErrorCode     = $resGetKeywordsData['errCode'];
         $keywordMsgSendFlag   = $resGetKeywordsData['execMsgSend'];
         $keywordExecTimestamp = $resGetKeywordsData['execTimestamp'];
-
-        if ($debugFlag === true)
-        {
-            echo "<br>resGetKeywordsData#$msgId#<pre>";
-            print_r($resGetKeywordsData);
-            echo "</pre>";
-        }
-
-//        #Wenn es einen fehler mit dem Keyword gab dann Meldung hier ausgeben
-//        if ($keywordExecuted == 1 && $keywordErrorCode > 0)
-//        {
-//            $keywordCmd = $keyword2Cmd;
-//            if (strpos($msg, $keyword1Text) !== false && $dst == $keyword1DmGrpId)
-//            {
-//                $keywordCmd = $keyword1Cmd;
-//            }
-//
-//            $msg .= '<br>';
-//            $msg .= '<span class="failureHint">';
-//            $msg .= 'Fehler bei Ausführung des CMD: ' . $keywordCmd;
-//            $msg .= '<br>ErrorCode: ' . $keywordErrorCode;
-//            $msg .= '<br>Error: ' . $resGetKeywordsData['errText'] . '</span>';
-//        }
 
         foreach ($arrayKeyWords as $resKey => $resValue)
         {
@@ -795,5 +765,5 @@ if ($msgExportEnable === true && $msgExportGroup != '' && $isSnapshot == 0)
     $msgExportGroup = $msgExportGroup == $ownCall ? -2 : $msgExportGroup; // Wenn Own-Call
 
     $html = file_get_contents(BASE_PATH_URL. 'message.php?isSnapshot=1&group=' . $msgExportGroup);
-    file_put_contents('export/'.$msgExportGroupFile.'.html', $html);
+    file_put_contents('export/' . $msgExportGroupFile . '.html', $html);
 }
