@@ -68,6 +68,16 @@ function showGpsInfo($localInfoArray)
     echo '</tr>';
 
     echo '<tr>';
+    echo '<td>Höhe über NN:</td>';
+    echo '<td colspan="2">' . ($localInfoArray['altitude'] ?? '') . 'm</td>';
+    echo '</tr>';
+
+    echo '<tr>';
+    echo '<td>Satelliten:</td>';
+    echo '<td colspan="2">' . ($localInfoArray['satellites'] ?? '') . '</td>';
+    echo '</tr>';
+
+    echo '<tr>';
     echo '<td>Pos Tx-Intervall:</td>';
     echo '<td colspan="2">' . ($localInfoArray['rate'] ?? '') . ' Sek.</td>';
     echo '</tr>';
