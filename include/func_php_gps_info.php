@@ -116,5 +116,7 @@ function showGpsInfo($localInfoArray)
     echo '<td>Track-Status:</td>';
     echo '<td colspan="2">' . ($localInfoArray['track'] ?? '') . '</td>';
     echo '</tr>';
+
+    return true;
 }
 
