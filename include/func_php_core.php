@@ -2236,10 +2236,6 @@ function getStatusIcon(string $status, bool $withLabel = false): string
 
     $entry = $icons[$key];
 
-//    return $withLabel
-//        ? $entry['symbol'] . ' ' . htmlspecialchars($entry['label'])
-//        : $entry['symbol'];
-
     return $withLabel
         ? '<span class="menu-icon">' . $entry['symbol'] . '</span> ' . htmlspecialchars($entry['label'])
         : '<span class="menu-icon">' . $entry['symbol'] . '</span>';

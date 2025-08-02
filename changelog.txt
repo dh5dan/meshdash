@@ -1,3 +1,7 @@
+Version 1.10.56 SQL
+BUGFIX Höhen-/Satellitenangabe fehlt bei PGS-info
+
+####################################
 Version 1.10.54 SQL
 BUGFIX Anpassung an neue GUI ab MeshCom V 4.35c. Lora Info und Sensordaten nicht abrufbar.
 FEATURE GPS-Infodaten unter Menüpunkt Sensoren nun abrufbar.
