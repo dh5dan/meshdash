@@ -102,6 +102,11 @@ function initDatabases()
     {
         initSQLiteDatabase('beacon');
     }
+
+    if (!file_exists('database/translation.db'))
+    {
+        initSQLiteDatabase('translation');
+    }
 }
 function initSQLiteDatabase($database): bool
 {
@@ -205,7 +210,8 @@ function initSQLiteDatabase($database): bool
                                        ('enableMsgPurge', 0, ''),
                                        ('enableMsgPurge', 0, ''),
                                        ('daysMsgPurge', 30, ''),
-                                       ('daysSensorPurge', 30, '')
+                                       ('daysSensorPurge', 30, ''),
+                                       ('language', '', 'de')
            ");
 
         #Close and write Back WAL
@@ -557,6 +563,81 @@ function initSQLiteDatabase($database): bool
         $db->close();
         unset($db);
     }
+    elseif ($database == 'translation')
+    {
+        #Open Database
+        $db = new SQLite3('database/translation.db');
+        $db->exec('PRAGMA journal_mode = wal;');
+        $db->exec('PRAGMA synchronous = NORMAL;');
+
+        // Tabelle erstellen wenn nicht vorhanden
+        $db->exec("CREATE TABLE IF NOT EXISTS translation 
+                                (
+                                  key TEXT NOT NULL UNIQUE,              
+                                  de TEXT NOT NULL,
+                                  en TEXT,
+                                  fr TEXT,
+                                  es TEXT,
+                                  it TEXT,
+                                  nl TEXT,
+                                  PRIMARY KEY(key)
+                                )
+                        ");
+
+        $db->exec("REPLACE INTO translation (
+                                          key, 
+                                          de, 
+                                          en,
+                                          fr,
+                                          es,
+                                          it,
+                                          nl
+                                       ) VALUES 
+                                       ('menu.einstellung', 'Einstellung', 'Settings', 'Paramètres','','',''),
+                                       ('menu.allgemein', 'Allgemein', 'Generally', '','','',''),
+                                       ('menu.send-queue', 'Send-Queue', 'Send-Queue', '','','',''),
+                                       ('menu.notification', 'Notification', 'Notification', '','','',''),
+                                       ('menu.keyword', 'Keyword', 'Keyword', '','','',''),
+                                       ('menu.update', 'Update', 'Update', '','','',''),
+                                       ('menu.restore', 'Restore', 'Restore', '','','',''),
+                                       ('menu.lora-info', 'Lora-Info', 'Lora-Info', '','','',''),
+                                       ('menu.ping-lora', 'Ping Lora', 'Ping Lora', '','','',''),
+                                       ('menu.debug-info', 'Debug-Info', 'Debug-Info', '','','',''),
+                                       ('menu.edit_translation', 'Lang-Editor', 'Lang-Editor', '','','',''),
+                                       
+                                       ('menu.gruppen', 'Gruppen', 'Groups', '','','',''),
+                                       ('menu.gruppenfilter', 'Gruppenfilter', 'Group-Filter', '','','',''),
+                                       
+                                       ('menu.sensoren', 'Sensoren', 'Sensors', '','','',''),
+                                       ('menu.sensordaten', 'Sensordaten', 'Sensordata', '','','',''),
+                                       ('menu.schwellwerte', 'Schwellwerte', 'Threshold', '','','',''),
+                                       ('menu.gps-info', 'GPS-Info', 'GPS-Info', '','','',''),
+                                       
+                                       ('menu.mheard', 'MHeard', 'MHeard', '','','',''),
+                                       ('menu.mheard-Lokal', 'MHeard-Lokal', 'MHeard-Local', '','','',''),
+                                       ('menu.mheard-Map', 'MHeard-Map', 'MHeard-Map', '','','',''),
+                                       
+                                       ('menu.data-purge', 'Data-Purge', 'Data-Purge', '','','',''),
+                                       ('menu.purge-manuell', 'Purge Manuell', 'Purge Manuell', '','','',''),
+                                       ('menu.purge-auto', 'Purge Auto', 'Purge Auto', '','','',''),
+                                       
+                                       ('menu.bake', 'Bake', 'Bake', '','','',''),
+                                       
+                                       ('menu.sende-befehl', 'Sende Befehl', 'Send Command', '','','',''),
+                                       
+                                       ('menu.message', 'Message', 'Message', '','','',''),
+                                       ('menu.about', 'About', 'About', '','','',''),
+                                                                           
+                                       
+                                       ('btn.save', 'Speichern', 'Save', 'Enregistrer','','',''),
+                                       ('msg.confirm', 'Bist du sicher?', 'Are you sure?', 'Êtes-vous sûr?','','','');
+                                       
+           ");
+
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+    }
 
     return true;
 }
@@ -580,6 +661,7 @@ function showMenuIcons()
                 echo '<li data-action="lora_info">' . getStatusIcon('lora-info', true) . '</li>';
                 echo '<li data-action="config_ping_lora">' . getStatusIcon('ping-lora', true) . '</li>';
                 echo '<li data-action="debug_info">' . getStatusIcon('debug-info', true) . '</li>';
+                echo '<li data-action="edit_translation">' . getStatusIcon('edit_translation', true) . '</li>';
             echo '</ul>';
          echo '</li>';
 

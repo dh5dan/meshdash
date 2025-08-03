@@ -300,6 +300,11 @@ iframe {
 }
 /* Menü Icon Ausrichtung ENDE */
 
+/* Translation CSS Neutralisator */
+[data-i18n] {
+    all: unset;
+    display: inline;
+}
 
 @media (max-width: 440px) {
 

@@ -94,6 +94,7 @@ $retentionDays     = getParamData('retentionDays'); //Tage logs behalten
 $chronMode         = getParamData('chronMode'); // zip|delete
 $strictCallEnable  = getParamData('strictCallEnable'); // Strict Call Flag
 $selTzName         = getParamData('timeZone') ?? 'Europe/Berlin'; // ZeitZone
+$selLanguage       = getParamData('language') ?? 'de'; // Sprache
 $mheardGroup       = getParamData('mheardGroup') ?? 0; // 0= egal welche Gruppe
 $bubbleStyleView   = getParamData('bubbleStyleView') ?? 0; // 1= Bubble Style aktiv
 $bubbleMaxWidth    = getParamData('bubbleMaxWidth') ?? 40;
@@ -102,6 +103,7 @@ $openStreetTileServerUrl = trim(getParamData('openStreetTileServerUrl')) ?? 'til
 $openStreetTileServerUrl = $openStreetTileServerUrl == '' ? 'tile.openstreetmap.org' : $openStreetTileServerUrl;
 
 $selTzName                = $selTzName == '' ? 'Europe/Berlin' : $selTzName;
+$selLanguage              = $selLanguage == '' ? 'de' : $selLanguage;
 $noPosDataChecked         = $noPosData == 1 ? 'checked' : '';
 $noDmAlertGlobalChecked   = $noDmAlertGlobal == 1 ? 'checked' : '';
 $noTimeSyncMsgChecked     = $noTimeSyncMsg == 1 ? 'checked' : '';
@@ -288,6 +290,15 @@ echo '</tr>';
 echo '<tr>';
 echo '<td>OpenStreet Tile-Url:</td>';
 echo '<td><input type="text" name="openStreetTileServerUrl"  id="openStreetTileServerUrl" value="' . $openStreetTileServerUrl . '" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td>Sprache:</td>';
+echo '<td>';
+echo '<select name="selLanguage" id="selLanguage">';
+selectLanguage($selLanguage);
+echo '</select>';
+echo '</td>';
 echo '</tr>';
 
 echo '<tr>';

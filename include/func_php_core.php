@@ -1582,8 +1582,8 @@ function setCronSensorInterval($intervallInMinuten, $deleteFlag): bool
 
         if ($rest > 0 && $debugFlag)
         {
-            echo "⚠️ Achtung: Intervall von {$intervallInMinuten} Minuten passt nicht exakt in 24h.\n";
-            echo "Es verbleiben {$rest} Minuten Rest am Tagesende.\n";
+            echo "⚠️ Achtung: Intervall von $intervallInMinuten Minuten passt nicht exakt in 24h.<br>";
+            echo "Es verbleiben $rest Minuten Rest am Tagesende.<br>";
         }
 
         $zeitpunkte = [];
@@ -1626,14 +1626,6 @@ function setCronSensorInterval($intervallInMinuten, $deleteFlag): bool
 
     file_put_contents('/tmp/crontab.txt', implode("\n", $cronJobsAlt) . "\n");
     exec('crontab /tmp/crontab.txt');
-
-    if ($debugFlag)
-    {
-        echo "<pre>";
-        echo "Generierte Cronjobs für Intervall: {$intervallInMinuten} Minuten\n";
-        print_r($cronJobsNeu);
-        echo "</pre>";
-    }
 
     return true;
 }
@@ -2176,7 +2168,7 @@ function getStatusIcon(string $status, bool $withLabel = false): string
         'off'        => ['symbol' => '&#x1F4F4;', 'label' => 'Ausgeschaltet'],  // 📴
         'attention'  => ['symbol' => '&#10071;', 'label' => 'Achtung'],         // ❗
 
-        'restore'       => ['symbol' => '&#128257;', 'label' => 'Restore'],     // 🔁
+
         'locked'     => ['symbol' => '&#128274;', 'label' => 'Gesperrt'],       // 🔒
         'unlocked'   => ['symbol' => '&#128275;', 'label' => 'Entsperrt'],      // 🔓
         'clock'      => ['symbol' => '&#128338;', 'label' => 'Uhr'],            // 🕒
@@ -2188,48 +2180,53 @@ function getStatusIcon(string $status, bool $withLabel = false): string
         'unknown'    => ['symbol' => '&#x2753;', 'label' => 'Unbekannt'],            // ❓
 
         'right_triangle3' => ['symbol' => '&#9654;', 'label' => ''], // ⏵
-        'right_triangle' => ['symbol' => '&#9656;', 'label' => ''], // ⏵
-        'toolbox' => ['symbol' => '&#129520;', 'label' => ''], // 🧰
+        'right_triangle'  => ['symbol' => '&#9656;', 'label' => ''], // ⏵
+        'toolbox'         => ['symbol' => '&#129520;', 'label' => ''], // 🧰
 
 
-        'configuration' => ['symbol' => '&#128736;&#65039;', 'label' => 'Einstellung'], // 🛠️
-        'generally2'     => ['symbol' => '&#9881;&#65039;', 'label' => 'Allgemein'],             // ⚙️
-        'generally3'     => ['symbol' => '&#128295;', 'label' => 'Allgemein'],             // 🔧
-        'generally4'     => ['symbol' => '&#129535;', 'label' => 'Allgemein'],             // 🧿
-        'generally'     => ['symbol' => '&#128261;', 'label' => 'Allgemein'],             // 🔅
-        'interval'      => ['symbol' => '&#9201;&#65039;', 'label' => 'Send-Queue'],       // ⏱️
-        'notification'  => ['symbol' => '&#128276;', 'label' => 'Notification'],    // 🔔️
-        'keyword'       => ['symbol' => '&#128278;', 'label' => 'Keyword'],             // 🏷️
-        'update'        => ['symbol' => '&#128260;', 'label' => 'Update'],              // 🔄
-        'lora-info'     => ['symbol' => '&#128225;&#65039;', 'label' => 'Lora-Info'],           // 📡
-        'data-purge'    => ['symbol' => '&#129529;&#65039;', 'label' => 'Data-Purge'],          // 🧹
+        'configuration' => ['symbol' => '&#128736;&#65039;', 'label' => 'menu.einstellung'], // 🛠️
+        'generally2'    => ['symbol' => '&#9881;&#65039;', 'label' => 'menu.allgemein'],             // ⚙️
+        'generally3'    => ['symbol' => '&#128295;', 'label' => 'menu.allgemein'],             // 🔧
+        'generally4'    => ['symbol' => '&#129535;', 'label' => 'menu.allgemein'],             // 🧿
+        'generally'     => ['symbol' => '&#128261;', 'label' => 'menu.allgemein'],             // 🔅
+        'interval'      => ['symbol' => '&#9201;&#65039;', 'label' => 'menu.send-queue'],       // ⏱️
+        'notification'  => ['symbol' => '&#128276;', 'label' => 'menu.notification'],    // 🔔️
+        'keyword'       => ['symbol' => '&#128278;', 'label' => 'menu.keyword'],             // 🏷️
+        'update'        => ['symbol' => '&#128260;', 'label' => 'menu.update'],              // 🔄
+        'restore'       => ['symbol' => '&#128257;', 'label' => 'menu.restore'],     // 🔁
+        'lora-info'     => ['symbol' => '&#128225;&#65039;', 'label' => 'menu.lora-info'],           // 📡
+        'ping-lora'     => ['symbol' => '&#128246;', 'label' => 'menu.ping-lora'],           // 📶
+        'debug-info'    => ['symbol' => '&#128030;', 'label' => 'menu.debug-info'],          // 🐞
+        'edit_translation'    => ['symbol' => '&#127760;', 'label' => 'menu.edit_translation'],          // 🌐
 
-        'data-purge-manuell'    => ['symbol' => ' &#9995;&#65039;', 'label' => 'Purge Manuell'],          // ✋
-        'data-purge-auto'    => ['symbol' => '&#129302;&#65039;', 'label' => 'Purge Auto'],          // 🤖
+        'groups'        => ['symbol' => '&#128101;&#65039;', 'label' => 'menu.gruppen'],  // 👥
+        'groups_define' => ['symbol' => '&#128450;&#65039;', 'label' => 'menu.gruppenfilter'],  // 🗂️
 
-        'ping-lora'     => ['symbol' => '&#128246;', 'label' => 'Ping Lora'],           // 📶
-        'debug-info'    => ['symbol' => '&#128030;', 'label' => 'Debug-Info'],          // 🐞
+        'data-purge'         => ['symbol' => '&#129529;&#65039;', 'label' => 'menu.data-purge'],   // 🧹
+        'data-purge-manuell' => ['symbol' => ' &#9995;&#65039;', 'label' => 'menu.purge-manuell'], // ✋
+        'data-purge-auto'    => ['symbol' => '&#129302;&#65039;', 'label' => 'menu.purge-auto'],   // 🤖
 
+        'sensors'    => ['symbol' => '&#127777;&#65039;', 'label' => 'menu.sensoren'],  // 🌡️
+        'sensordata' => ['symbol' => '&#128202;', 'label' => 'menu.sensordaten'],  // 📊
+        'threshold'  => ['symbol' => '&#129514;', 'label' => 'menu.schwellwerte'],  // 🧪
+        'gps'        => ['symbol' => '&#x1F6F0;&#65039;', 'label' => 'menu.gps-info'],  // 🛰️
 
-        'groups'   => ['symbol' => '&#128101;&#65039;', 'label' => 'Gruppen'],  // 👥
-        'groups_define'   => ['symbol' => '&#128450;&#65039;', 'label' => 'Gruppenfilter'],  // 🗂️
-
-        'sensors'   => ['symbol' => '&#127777;&#65039;', 'label' => 'Sensoren'],  // 🌡️
-        'sensordata'   => ['symbol' => '&#128202;', 'label' => 'Sensordaten'],  // 📊
-        'threshold'   => ['symbol' => '&#129514;', 'label' => 'Schwellwerte'],  // 🧪
-
-        'mheard'   => ['symbol' => '&#128066;&#65039;', 'label' => 'MHeard'],  // 👂
-        'mheard-page'   => ['symbol' => '&#x1F3A7;&#65039;', 'label' => 'MHeard-Lokal'],  // 🎧
-        'mheard-osm'   => ['symbol' => '&#x1F5FA;&#xFE0F;', 'label' => 'MHeard-Map'],  // 🗺️
+        'mheard'      => ['symbol' => '&#128066;&#65039;', 'label' => 'MHeard'],  // 👂
+        'mheard-page' => ['symbol' => '&#x1F3A7;&#65039;', 'label' => 'MHeard-Lokal'],  // 🎧
+        'mheard-osm'  => ['symbol' => '&#x1F5FA;&#xFE0F;', 'label' => 'MHeard-Map'],  // 🗺️
 
         'beacon'   => ['symbol' => ' &#x1F9ED;&#65039;', 'label' => 'Bake'],  // 🧭
-        'send-cmd'   => ['symbol' => '&#128228;', 'label' => 'Sende Befehl'],  // 📤
-        'message'   => ['symbol' => '&#128172;&#65039;', 'label' => 'Message'],  // 💬
-        'about'   => ['symbol' => '&#8505;&#65039;', 'label' => 'About'],  // ℹ️
+        'send-cmd' => ['symbol' => '&#128228;', 'label' => 'menu.sende-befehl'],  // 📤
+        'message'  => ['symbol' => '&#128172;&#65039;', 'label' => 'menu.message'],  // 💬
+        'about'    => ['symbol' => '&#8505;&#65039;', 'label' => 'menu.about'],  // ℹ️
 
-        'gps'   => ['symbol' => '&#x1F6F0;&#65039;', 'label' => 'GPS-Info'],  // 🛰️
-
-
+        'de'   => ['symbol' => '&#x1F1E9;&#x1F1EA;', 'label' => 'Deutsch'],
+        'en'   => ['symbol' => '&#x1F1EC;&#x1F1E7;', 'label' => 'Englisch'],
+        'fr'   => ['symbol' => '&#x1F1EB;&#x1F1F7;', 'label' => 'Französisch'],
+        'it'   => ['symbol' => '&#x1F1EE;&#x1F1F9;', 'label' => 'Italienisch'],
+        'es'   => ['symbol' => '&#x1F1EA;&#x1F1F8;', 'label' => 'Spanisch'],
+        'nl'   => ['symbol' => '&#x1F1F3;&#x1F1F1;', 'label' => 'Niederländisch'],
+        'us'   => ['symbol' => '&#x1F1FA;&#x1F1F8;', 'label' => 'Amerikanisch']
     ];
 
     $key = strtolower($status);
@@ -2242,9 +2239,8 @@ function getStatusIcon(string $status, bool $withLabel = false): string
     $entry = $icons[$key];
 
     return $withLabel
-        ? '<span class="menu-icon">' . $entry['symbol'] . '</span> ' . htmlspecialchars($entry['label'])
+        ? '<span class="menu-icon">' . $entry['symbol'] . '</span> ' .'<span data-i18n="'.htmlspecialchars($entry['label']).'">'. htmlspecialchars($entry['label']). '</span> '
         : '<span class="menu-icon">' . $entry['symbol'] . '</span>';
-
 }
 function stopBgProcess($paramBgProcess)
 {

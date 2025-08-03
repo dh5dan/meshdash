@@ -36,11 +36,13 @@ require_once 'dbinc/param.php';
 require_once 'include/func_php_index.php';
 require_once 'include/func_js_index.php';
 require_once 'include/func_php_core.php';
+require_once 'include/func_js_core.php';
 require_once 'include/func_php_grp_definition.php';
 
 #Show all Errors for debugging
 error_reporting(E_ALL);
 ini_set('display_errors',1);
+$userLang = 'de';
 
 $autostartBgProcess = true;
 $sendData           = $_REQUEST['sendData'] ?? '0';
@@ -50,7 +52,6 @@ $imgTaskStatusUdp   = $imgTaskRunning;
 $doCheckLoraIp      = true;
 $taskStatusFlagUdp  = 1;
 $debugFlag          = false; // For debug only
-
 
 #Major/Minor Version ermitteln für PHP.ini Modifikation unter Linux
 $phpVersionSplit = explode('.', phpversion());
@@ -200,6 +201,12 @@ echo '</form>';
 #Lade Iframes
 echo '<iframe id="message-frame" src="message.php"></iframe>';
 echo '<iframe id="bottom-frame" src="bottom.php"></iframe>';
+
+echo '<script>
+            $.getJSON("translation.php?lang=' . $userLang . '", function(dict) {
+            applyTranslation(dict); // siehe JS oben
+            });
+        </script>';
 
 echo '</body>';
 echo '</html>';
