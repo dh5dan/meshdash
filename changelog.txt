@@ -1,6 +1,8 @@
 Version 1.10.56 SQL
-BUGFIX Höhen-/Satellitenangabe fehlt bei PGS-info
-
+BUGFIX Höhen-/Satellitenangabe fehlt bei PGS-info.
+BUGFIX checkDbIntegrity DB für Meshdash war falsch gesetzt.
+BUGFIX checkDbIntegrity initDB-Variable war nicht gesetzt.
+FEATURE Auto-Purge Nachrichten-/Sensordaten. Für Pi-Zero zu empfehlen.
 ####################################
 Version 1.10.54 SQL
 BUGFIX Anpassung an neue GUI ab MeshCom V 4.35c. Lora Info und Sensordaten nicht abrufbar.

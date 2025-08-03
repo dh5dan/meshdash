@@ -21,6 +21,9 @@ if (!file_exists('database/parameter.db') || !file_exists('database/groups.db') 
 #Trigger LogRotate
 logRotate();
 
+#Trigger AutoPurgeData
+autoPurgeData();
+
 // Verbindung zur ersten DB (groups)
 $db1 = new SQLite3('database/groups.db', SQLITE3_OPEN_READONLY);
 $db1->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden

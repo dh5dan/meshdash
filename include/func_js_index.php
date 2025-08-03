@@ -367,20 +367,12 @@
            return false;
        });
 
-       /*      Menüfunktion                        */
+       /*      Menüfunktion                */
        /*                                  */
        // Menü umschalten, wenn auf das Menü-Icon geklickt wird
        $('#menu-icon').on("click", function ()
        {
            $('#menu').toggle();
-       });
-
-       // Klick auf ein Menüelement (li), um das Submenü ein- oder auszublenden
-       $('#menu > ul > li').on("click", function (e)
-       {
-           e.stopPropagation(); // Verhindert, dass der Klick das Dokument schließt
-           $(this).toggleClass('active'); // Toggle die 'active'-Klasse für das Submenü
-           $(this).siblings().removeClass('active'); // Entfernt die 'active'-Klasse von anderen Submenüs
        });
 
        // Klick auf das Dokument außerhalb des Menüs schließt das Menü und Submenüs
@@ -413,13 +405,34 @@
        }
 
        // Event-Listener für Klicks auf Menüeinträge
-       $('#menu li').on('click', function ()
+       $('#menu li').on('click', function (e)
        {
-           let action = $(this).data('action'); // Holt sich die Aktion für den angeklickten Punkt
+           e.stopPropagation();
+
+           // Prüfe, ob Menüpunkt Untermenü hat
+           if ($(this).children('ul').length > 0) {
+               // Öffne / schließe Submenü
+               $(this).toggleClass('active');
+               $(this).siblings().removeClass('active');
+               return; // Keine Aktion laden, nur Submenü öffnen/schließen
+           }
+
+           // Top-Level Menü-Items toggeln (falls gewünscht)
+           if ($(this).parent().is('#menu > ul')) {
+               $(this).toggleClass('active');
+               $(this).siblings().removeClass('active');
+           }
+
+           // Wenn hier, dann hat das Element kein Submenü => Aktion ausführen
+           let action = $(this).data('action');
+           if (!action) return; // Kein action => nichts tun
+
            let iframeSrc;
            isTabClick = true;
 
-           //Aktuellen aktiven Gruppentab ermitteln
+           //////////////////////
+
+           //Aktuellen aktiven Gruppen-Tab ermitteln
            let activeTab     = $('#top-tabs .tab.active');
            let activeTabGroupId = activeTab.data('group');
            let activeGroupId = '-1';
@@ -451,8 +464,11 @@
                case 'lora_info':
                    iframeSrc = 'menu/lora_info.php';
                    break;
-               case 'config_data_purge':
+               case 'config_data_purge_manuell':
                    iframeSrc = 'menu/config_data_purge.php';
+                   break;
+               case 'config_data_purge_auto':
+                   iframeSrc = 'menu/config_data_purge_auto.php';
                    break;
                case 'config_ping_lora':
                    iframeSrc = 'menu/config_ping_lora.php';
@@ -512,7 +528,7 @@
            if (iframeSrc !== '')
            {
                $('#menu').hide();
-               $('.submenu').removeClass('active');
+               $('#menu li').removeClass('active'); // Alle Menüs schließen
 
                // Setze das src-Attribut des Iframes
                let iframe = $('#message-frame')[0]; // Zugriff auf das Iframe-Element

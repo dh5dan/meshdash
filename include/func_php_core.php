@@ -2203,8 +2203,13 @@ function getStatusIcon(string $status, bool $withLabel = false): string
         'update'        => ['symbol' => '&#128260;', 'label' => 'Update'],              // 🔄
         'lora-info'     => ['symbol' => '&#128225;&#65039;', 'label' => 'Lora-Info'],           // 📡
         'data-purge'    => ['symbol' => '&#129529;&#65039;', 'label' => 'Data-Purge'],          // 🧹
+
+        'data-purge-manuell'    => ['symbol' => ' &#9995;&#65039;', 'label' => 'Purge Manuell'],          // ✋
+        'data-purge-auto'    => ['symbol' => '&#129302;&#65039;', 'label' => 'Purge Auto'],          // 🤖
+
         'ping-lora'     => ['symbol' => '&#128246;', 'label' => 'Ping Lora'],           // 📶
         'debug-info'    => ['symbol' => '&#128030;', 'label' => 'Debug-Info'],          // 🐞
+
 
         'groups'   => ['symbol' => '&#128101;&#65039;', 'label' => 'Gruppen'],  // 👥
         'groups_define'   => ['symbol' => '&#128450;&#65039;', 'label' => 'Gruppenfilter'],  // 🗂️
@@ -2552,7 +2557,7 @@ function checkDbIntegrity($database)
     if ($sizeKB == 0)
     {
         @unlink($realDatabasePath);
-        initSQLiteDatabase('tx_queue');
+        initSQLiteDatabase($database);
 
         $errorText = date('Y-m-d H:i:s') . ' Database: ' . $database . ' faulty integration. Reinitialize' . "\n";
         file_put_contents($fileDbIntegrityLog, $errorText, FILE_APPEND);
@@ -2734,4 +2739,114 @@ function showBackups()
 
     echo '</table>';
     echo '</div>';
+}
+function autoPurgeData(): bool
+{
+    if ((int) getParamData('enableMsgPurge') == 1)
+    {
+        $db = new SQLite3('database/meshdash.db', SQLITE3_OPEN_READONLY);
+        $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+
+        $daysMsgPurge      = (int) getParamData('daysMsgPurge');
+        $anzahlPurgeMsgSel = 0;
+
+        $sqlPurgeMsgSelect = "SELECT COUNT(*) AS anzahl 
+                                FROM meshdash
+                               WHERE timestamps < datetime('now', '-$daysMsgPurge days');
+                             ";
+
+        $sqlPurgeMsg = "DELETE FROM meshdash
+                              WHERE timestamps < datetime('now', '-$daysMsgPurge days');
+                       ";
+
+        $logArray   = array();
+        $logArray[] = "AutoPurge MSG Select";
+        $result     = safeDbRun($db, $sqlPurgeMsgSelect, 'query', $logArray);
+
+        if ($result !== false)
+        {
+            while ($row = $result->fetchArray(SQLITE3_ASSOC))
+            {
+                $anzahlPurgeMsgSel = $row['anzahl'] ?? 0;
+            }
+        }
+
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+
+        if ($anzahlPurgeMsgSel > 0)
+        {
+            $dbWrite = new SQLite3('database/meshdash.db');
+            $dbWrite->exec('PRAGMA synchronous = NORMAL;');
+
+            $logArray   = array();
+            $logArray[] = "AutoPurge MSG DELETE";
+            $res = safeDbRun( $dbWrite,  $sqlPurgeMsg, 'exec', $logArray);
+
+            if ($res === false)
+            {
+                #Close and write Back WAL
+                $dbWrite->close();
+                unset($dbWrite);
+
+                return false;
+            }
+        }
+    }
+
+    if ((int) getParamData('enableSensorPurge') == 1)
+    {
+        $db = new SQLite3('database/sensordata.db', SQLITE3_OPEN_READONLY);
+        $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+
+        $daysSensorPurge      = (int) getParamData('daysSensorPurge');
+        $anzahlPurgeSensorSel = 0;
+
+        $sqlPurgeSensorSelect = "SELECT count(*) AS anzahl 
+                                   FROM sensordata
+                                  WHERE timestamps < datetime('now', '-$daysSensorPurge days');
+                             ";
+
+        $sqlPurgeSensor = "DELETE FROM sensordata
+                                 WHERE timestamps < datetime('now', '-$daysSensorPurge days');
+                       ";
+
+        $logArray   = array();
+        $logArray[] = "AutoPurge Sensor Select";
+        $result     = safeDbRun($db, $sqlPurgeSensorSelect, 'query', $logArray);
+
+        if ($result !== false)
+        {
+            while ($row = $result->fetchArray(SQLITE3_ASSOC))
+            {
+                $anzahlPurgeSensorSel = $row['anzahl'] ?? 0;
+            }
+        }
+
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+
+        if ($anzahlPurgeSensorSel > 0)
+        {
+            $dbWrite = new SQLite3('database/sensordata.db');
+            $dbWrite->exec('PRAGMA synchronous = NORMAL;');
+
+            $logArray   = array();
+            $logArray[] = "AutoPurge SENSOR DELETE";
+            $res        = safeDbRun($dbWrite, $sqlPurgeSensor, 'exec', $logArray);
+
+            if ($res === false)
+            {
+                #Close and write Back WAL
+                $dbWrite->close();
+                unset($dbWrite);
+
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
