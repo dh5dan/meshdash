@@ -202,8 +202,8 @@ function initSQLiteDatabase($database): bool
                                        ('openStreeTileServerUrl', '', 'tile.openstreetmap.org'),
                                        ('bubbleStyleView', 1, ''),
                                        ('bubbleMaxWidth', 40, ''),
-                                       ('enableMsgPurge', 1, ''),
-                                       ('enableMsgPurge', 1, ''),
+                                       ('enableMsgPurge', 0, ''),
+                                       ('enableMsgPurge', 0, ''),
                                        ('daysMsgPurge', 30, ''),
                                        ('daysSensorPurge', 30, '')
            ");
@@ -578,19 +578,6 @@ function showMenuIcons()
                 echo '<li data-action="config_update">' . getStatusIcon('update', true) . '</li>';
                 echo '<li data-action="config_restore">' . getStatusIcon('restore', true) . '</li>';
                 echo '<li data-action="lora_info">' . getStatusIcon('lora-info', true) . '</li>';
-
-                echo '<li class="menuitem with-arrow">'
-                    . '<span class="menu-left">' . getStatusIcon('data-purge', true) . '</span>'
-                    . '<span class="menu-right">' . getStatusIcon('right_triangle') . '</span>';
-
-                echo '<ul class="submenuIcon">';
-                echo '<li data-action="config_data_purge_manuell">' . getStatusIcon('data-purge-manuell', true) . '</li>';
-                echo '<li data-action="config_data_purge_auto">' . getStatusIcon('data-purge-auto', true) . '</li>';
-                echo '</ul>';
-                echo '</li>';
-
-
-            #    echo '<li data-action="config_data_purge">' . getStatusIcon('data-purge', true) . '</li>';
                 echo '<li data-action="config_ping_lora">' . getStatusIcon('ping-lora', true) . '</li>';
                 echo '<li data-action="debug_info">' . getStatusIcon('debug-info', true) . '</li>';
             echo '</ul>';
@@ -623,6 +610,16 @@ function showMenuIcons()
             echo '<ul class="submenuIcon">';
                 echo '<li class="menuitem" data-action="mHeard">' . getStatusIcon('mheard-page', true) . '</li>';
                 echo '<li data-action="mHeard-osm">' . getStatusIcon('mheard-osm', true) . '</li>';
+            echo '</ul>';
+        echo '</li>';
+
+        echo '<li class="menuitem with-arrow">'
+            . '<span class="menu-left">' . getStatusIcon('data-purge', true) . '</span>'
+            . '<span class="menu-right">' . getStatusIcon('right_triangle') . '</span>';
+
+            echo '<ul class="submenuIcon">';
+                echo '<li data-action="config_data_purge_manuell">' . getStatusIcon('data-purge-manuell', true) . '</li>';
+                echo '<li data-action="config_data_purge_auto">' . getStatusIcon('data-purge-auto', true) . '</li>';
             echo '</ul>';
         echo '</li>';
 
