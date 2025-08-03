@@ -1,10 +1,16 @@
 <?php
+require_once 'dbinc/param.php';
+require_once 'include/func_php_core.php';
+
 header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1.
 header("Pragma: no-cache"); // HTTP 1.0.
 header("Expires: 0"); // Proxies.
 
+$userLang = getParamData('language');
+$userLang = $userLang == '' ? 'de' : $userLang;
+
 echo '<!DOCTYPE html>';
-echo '<html lang="de">';
+echo '<html lang="' . $userLang . '">';
 echo '<head><title>MeshDash-SQL</title>';
   echo '<meta charset="UTF-8">';
   echo '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
@@ -32,15 +38,16 @@ echo '<body>';
 ini_set('default_charset', 'UTF-8' );
 ini_set('max_execution_time', '300'); // Ausführungszeit auf 5min bei nicht performanten Geräten
 
-require_once 'dbinc/param.php';
 require_once 'include/func_php_index.php';
 require_once 'include/func_js_index.php';
-require_once 'include/func_php_core.php';
+require_once 'include/func_js_core.php';
 require_once 'include/func_php_grp_definition.php';
+
 
 #Show all Errors for debugging
 error_reporting(E_ALL);
 ini_set('display_errors',1);
+
 
 $autostartBgProcess = true;
 $sendData           = $_REQUEST['sendData'] ?? '0';
@@ -50,7 +57,6 @@ $imgTaskStatusUdp   = $imgTaskRunning;
 $doCheckLoraIp      = true;
 $taskStatusFlagUdp  = 1;
 $debugFlag          = false; // For debug only
-
 
 #Major/Minor Version ermitteln für PHP.ini Modifikation unter Linux
 $phpVersionSplit = explode('.', phpversion());
@@ -200,6 +206,12 @@ echo '</form>';
 #Lade Iframes
 echo '<iframe id="message-frame" src="message.php"></iframe>';
 echo '<iframe id="bottom-frame" src="bottom.php"></iframe>';
+
+echo '<script>
+            $.getJSON("translation.php?lang=' . $userLang . '", function(dict) {
+            applyTranslation(dict); // siehe JS oben
+            });
+        </script>';
 
 echo '</body>';
 echo '</html>';

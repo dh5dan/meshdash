@@ -41,9 +41,9 @@ function showLogFiles()
     echo '<div class="scrollable-container">';
     echo '<table class="logTable">';
     echo '<tr>';
-    echo'<th>Datum</th>';
-    echo'<th>Uhrzeit</th>';
-    echo'<th>Log-Datei</th>';
+    echo'<th><span data-i18n="submenu.debug_info.lbl.date">Datum</span></th>';
+    echo'<th><span data-i18n="submenu.debug_info.lbl.time">Uhrzeit</span></th>';
+    echo'<th><span data-i18n="submenu.debug_info.lbl.log-file">Log-Datei</span></th>';
     echo'<th colspan="2">&nbsp;</th>';
     echo'</tr>';
 
@@ -153,7 +153,7 @@ function getPhpConfig()
     if (!empty($result))
     {
         echo '<tr>';
-        echo '<td style="vertical-align: top;">Php Values:</td>';
+        echo '<td style="vertical-align: top;"><span data-i18n="submenu.debug_info.lbl.php-value">PHP-Values</span>:</td>';
         echo '<td><pre style="margin:0; font-family: monospace;">';
 
         foreach ($result as $checkPhpKey => $phpKeyValue)
@@ -235,7 +235,7 @@ function getWritableStatus(): array
         }
         else
         {
-            $result[$dir] = is_writable($realPath) ? 'Beschreibbar ' . html_entity_decode(getStatusIcon('ok')) : 'Nur Lesend ' . html_entity_decode(getStatusIcon('warning'));
+            $result[$dir] = is_writable($realPath) ? '<span data-i18n="submenu.debug_info.lbl.dir-status-writable">Beschreibbar</span> ' . html_entity_decode(getStatusIcon('ok')) : '<span data-i18n="submenu.debug_info.lbl.dir-status-readonly">Nur lesend</span> ' . html_entity_decode(getStatusIcon('warning'));
         }
 
         // Maximale Länge ermitteln
@@ -246,7 +246,7 @@ function getWritableStatus(): array
     echo '<tr>';
     if (!empty($result))
     {
-        echo '<td style="vertical-align: top;">Schreibstatus Directory:</td>';
+        echo '<td style="vertical-align: top;"><span data-i18n="submenu.debug_info.lbl.dir-writeable">Schreibstatus Directory</span>:</td>';
         echo '<td><pre style="margin:0; font-family: monospace;">';
 
         foreach ($result as $checkDir => $dirAccess)
@@ -343,7 +343,7 @@ function getSqliteDbSizes(): array
     echo '<tr>';
     if (!empty($result))
     {
-        echo '<td style="vertical-align: top;">Datenbanken:</td>';
+        echo '<td style="vertical-align: top;"><span data-i18n="submenu.debug_info.lbl.databases">Datenbanken</span>:</td>';
         echo '<td><pre style="margin:0; font-family: monospace;">';
 
         foreach ($result as $file => $data)
@@ -354,9 +354,12 @@ function getSqliteDbSizes(): array
                 . str_repeat(' ', 2);
 
             $iconHtml = getStatusIcon($data['status']);
-            $accessInfo = '   [Letzter Zugriff: ' . $data['atime'] . ']';
+            #$accessInfo = '   [Letzter Zugriff: ' . $data['atime'] . ']';
+            $accessInfo = '   [<span data-i18n="submenu.debug_info.lbl.last-access">Letzter Zugriff</span>: ' . $data['atime'] . ']';
 
-            echo htmlspecialchars($label) . $iconHtml . htmlspecialchars($accessInfo) . "\n";
+
+            #echo htmlspecialchars($label) . $iconHtml . htmlspecialchars($accessInfo) . "\n";
+            echo htmlspecialchars($label) . $iconHtml . $accessInfo . "\n";
         }
 
         echo '</pre></td>';
@@ -426,7 +429,7 @@ function getLoadAverage()
         $load = shell_exec($cmd);
 
         echo '<tr>';
-        echo '<td>Rechnerauslastung:</td>';
+        echo '<td><span data-i18n="submenu.debug_info.cpu-load">Rechnerauslastung</span>:</td>';
         echo '<td>';
         echo  $load . '%';
         echo '</td>';

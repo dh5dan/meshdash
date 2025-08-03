@@ -1,7 +1,10 @@
 <?php
-echo '<!DOCTYPE html>';
-echo '<html lang="de">';
-echo '<head><title>Bakentest</title>';
+require_once '../dbinc/param.php';
+require_once '../include/func_php_core.php';
+
+$userLang = getParamData('language');
+$userLang = $userLang == '' ? 'de' : $userLang;
+echo '<head><title data-i18n="submenu.config_beacon.lbl.title">Baken Einstellungen</title>';
 
 #Prevnts UTF8 Errors on misconfigured php.ini
 ini_set( 'default_charset', 'UTF-8' );
@@ -15,10 +18,9 @@ echo '<link rel="stylesheet" href="../css/loader.css?' . microtime() . '">';
 echo '</head>';
 echo '<body>';
 
-require_once '../dbinc/param.php';
-require_once '../include/func_php_core.php';
 require_once '../include/func_js_config_beacon.php';
 require_once '../include/func_php_config_beacon.php';
+require_once '../include/func_js_core.php';
 
 #Show all Errors for debugging
 error_reporting(E_ALL);
@@ -35,11 +37,11 @@ if ($sendData === '1')
 
     if ($resSaveSendQueueSettings)
     {
-        echo '<span class="successHint">'.date('H:i:s').'-Settings wurden erfolgreich abgespeichert!</span>';
+        echo '<span class="successHint">'.date('H:i:s').'-<span data-i18n="submenu.config_beacon.msg.save-settings-success">Settings wurden erfolgreich abgespeichert!</span></span>';
     }
     else
     {
-        echo '<span class="failureHint">Es gab einen Fehler beim Abspeichern der Settings!</span>';
+        echo '<span class="failureHint">' . date('H:i:s') . '-<span data-i18n="submenu.config_beacon.msg.save-settings-failed">Es gab einen Fehler beim Abspeichern der Settings!</span></span>';
     }
 }
 
@@ -71,7 +73,7 @@ if ($osIssWindows === false)
     $resCheckBeaconCron = getBeaconCronEntries(array('send_beacon.php')) === false ? getStatusIcon('inactive') : getStatusIcon('active');
 }
 
-echo "<h2>Baken Einstellungen</h2>";
+echo '<h2><span data-i18n="submenu.config_beacon.lbl.title">Baken Einstellungen</span></h2>';
 
 echo '<form id="frmBake" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
@@ -80,44 +82,44 @@ echo '<input type="hidden"  id="osIssWindows" value="' . $osIssWindows . '" />';
 echo '<table>';
 
 echo '<tr>';
-echo '<td>Intervall in Min.:</td>';
+echo '<td><span data-i18n="submenu.config_beacon.lbl.beacon-interval">Intervall in Min.</span>:</td>';
 echo '<td><select name="beaconInterval" id="beaconInterval">';
 selectBeaconIntervall($beaconInterval);
 echo '</td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Stop-Counts (100):</td>';
+echo '<td><span data-i18n="submenu.config_beacon.lbl.beacon-stop-counts">Stop-Counts (100)</span>:</td>';
 echo '<td><input type="text" name="beaconStopCount" size="4" id="beaconStopCount" value="' . $beaconStopCount . '" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Text:</td>';
+echo '<td><span data-i18n="submenu.config_beacon.lbl.beacon-text">Text</span>:</td>';
 echo '<td><input type="text" name="beaconMsg" size="20px" id="beaconMsg" value="' . $beaconMsg . '" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Gruppe:</td>';
+echo '<td><span data-i18n="submenu.config_beacon.lbl.beacon-group">Gruppe</span>:</td>';
 echo '<td><input type="text" name="beaconGroup" size="4" id="beaconGroup" value="' . $beaconGroup . '" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Task enabled:</td>';
+echo '<td><span data-i18n="submenu.config_beacon.lbl.beacon-task-status">Task enabled</span>:</td>';
 echo '<td><input type="checkbox" name="beaconEnabled" ' . $beaconEnabledChecked . ' id="beaconEnabled" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Init Send:</td>';
+echo '<td><span data-i18n="submenu.config_beacon.lbl.beacon-init-sent">Startzeit</span>:</td>';
 echo '<td>' . $beaconInitSendTs . '</td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Last Send:</td>';
+echo '<td><span data-i18n="submenu.config_beacon.lbl.beacon-last-sent">Zuletzt gesendet</span>:</td>';
 echo '<td>' . $beaconLastSendTs . '</td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Current Count:</td>';
+echo '<td><span data-i18n="submenu.config_beacon.lbl.beacon-current-count">Aktueller Zähler</span>:</td>';
 echo '<td>' . $currentBeaconCount . '</td>';
 echo '</tr>';
 
@@ -138,10 +140,11 @@ echo '<td colspan="2"><hr></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td colspan="2"><span class="failureHint">Eine autom. Abschaltung erfolgt wenn:';
-echo '<br>Laufzeit größer als 8h.';
-echo '<br>Stop-Count Ziel erreicht.';
-echo'</span></td>';
+echo '<td colspan="2"><span class="failureHint"><span data-i18n="submenu.config_beacon.lbl.beacon-hint">' .
+    'Eine autom. Abschaltung erfolgt wenn:' .
+    '<br>Laufzeit größer als 8h.' .
+    '<br>Stop-Count Ziel erreicht.' .
+    '</span></span></td>';
 echo '</tr>';
 
 echo '<tr>';
@@ -149,12 +152,20 @@ echo '<tr>';
 echo '</tr>';
 
 echo '<tr>';
-    echo '<td colspan="2"><input type="button" class="btnSaveConfigGenerally" id="btnSaveBakeSettings" value="Settings speichern"  /></td>';
+
+echo '<td colspan="2">
+        <button type="button" class="btnSaveConfigGenerally" id="btnSaveBakeSettings"><span data-i18n="submenu.config_beacon.btn.save-settings">Settings speichern</span></button>
+      </td>';
 echo '</tr>';
 
 echo '</table>';
 echo '</form>';
 
 echo '<div id="pageLoading" class="pageLoadingSub"></div>';
+echo '<script>
+            $.getJSON("../translation.php?lang=' . $userLang . '", function(dict) {
+            applyTranslation(dict); // siehe JS oben
+            });
+        </script>';
 echo '</body>';
 echo '</html>';

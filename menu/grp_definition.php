@@ -1,7 +1,13 @@
 <?php
+require_once '../dbinc/param.php';
+require_once '../include/func_php_core.php';
+
+$userLang = getParamData('language');
+$userLang = $userLang == '' ? 'de' : $userLang;
+
 echo '<!DOCTYPE html>';
-echo '<html lang="de">';
-echo '<head><title>Gruppendefinition</title>';
+echo '<html lang="' . $userLang . '">';
+echo '<head><title data-i18n="submenu.grp_definition.lbl.title">Gruppendefinition</title>';
 
 #Prevnts UTF8 Errors on misconfigured php.ini
 ini_set( 'default_charset', 'UTF-8' );
@@ -15,11 +21,10 @@ echo '<link rel="stylesheet" href="../css/loader.css?' . microtime() . '">';
 echo '</head>';
 echo '<body>';
 
-require_once '../dbinc/param.php';
-require_once '../include/func_php_core.php';
 require_once '../include/func_js_grp_definition.php';
 require_once '../include/func_php_grp_definition.php';
 require_once '../include/func_php_config_alerting.php';
+require_once '../include/func_js_core.php';
 
 #Show all Errors for debugging
 error_reporting(E_ALL);
@@ -160,8 +165,8 @@ $msgExportGroup    = getParamData('msgExportGroup') ?? '';
 $msgExportEnable   = getParamData('msgExportEnable') ?? 0;
 $msgExportEnableChecked   = $msgExportEnable == 1 ? 'checked' : '';
 
-echo '<h2>Gruppen-Definition';
-echo '<br><span class="hintText failureHint">Hinweis: Reload nötig für Anzeige!</span></h2>';
+echo '<h2><span data-i18n="submenu.grp_definition.lbl.title">Gruppendefinition</span>';
+echo '<br><span class="hintText failureHint"><span data-i18n="submenu.grp_definition.lbl.sub-title">Hinweis: Reload nötig für Anzeige!</span></span></h2>';
 
 echo '<form id="frmGrpDefinition" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
@@ -175,49 +180,49 @@ echo '<td>&#x1F50A;/&#x1F507;</td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Gruppe 1 :</td>';
+echo '<td><span data-i18n="submenu.grp_definition.lbl.group">Gruppe</span> 1:</td>';
 echo '<td><input type="text" class="groupIdField" name="groupNumber1" id="groupNumber1" value="' . $groupNumber1 . '" placeholder="1-99999"  /></td>';
 echo '<td class="tdCenter"><input type="checkbox" name="groupNumber1Enabled" ' . $groupNumber1EnabledChecked . ' id="groupNumber1Enabled" value="1" /></td>';
 echo '<td class="tdCenter"><input type="checkbox" name="groupSound1Enabled" ' . $groupSound1EnabledChecked . ' id="groupSound1Enabled" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Gruppe 2 :</td>';
+echo '<td><span data-i18n="submenu.grp_definition.lbl.group">Gruppe</span> 2:</td>';
 echo '<td class=""><input type="text" class="groupIdField" name="groupNumber2" id="groupNumber2" value="' . $groupNumber2 . '" placeholder="1-99999"  /></td>';
 echo '<td class="tdCenter"><input type="checkbox" name="groupNumber2Enabled" ' . $groupNumber2EnabledChecked . ' id="groupNumber2Enabled" value="1" /></td>';
 echo '<td class="tdCenter"><input type="checkbox" name="groupSound2Enabled" ' . $groupSound2EnabledChecked . ' id="groupSound2Enabled" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Gruppe 3 :</td>';
+echo '<td><span data-i18n="submenu.grp_definition.lbl.group">Gruppe</span> 3:</td>';
 echo '<td class=""><input type="text" class="groupIdField" name="groupNumber3" id="groupNumber3" value="' . $groupNumber3 . '" placeholder="1-99999"  /></td>';
 echo '<td class="tdCenter"><input type="checkbox" name="groupNumber3Enabled" ' . $groupNumber3EnabledChecked . ' id="groupNumber3Enabled" value="1" /></td>';
 echo '<td class="tdCenter"><input type="checkbox" name="groupSound3Enabled" ' . $groupSound3EnabledChecked . ' id="groupSound3Enabled" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Gruppe 4 :</td>';
+echo '<td><span data-i18n="submenu.grp_definition.lbl.group">Gruppe</span> 4:</td>';
 echo '<td class=""><input type="text" class="groupIdField" name="groupNumber4" id="groupNumber4" value="' . $groupNumber4 . '" placeholder="1-99999"  /></td>';
 echo '<td class="tdCenter"><input type="checkbox" name="groupNumber4Enabled" ' . $groupNumber4EnabledChecked . ' id="groupNumber4Enabled" value="1" /></td>';
 echo '<td class="tdCenter"><input type="checkbox" name="groupSound4Enabled" ' . $groupSound4EnabledChecked . ' id="groupSound4Enabled" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Gruppe 5 :</td>';
+echo '<td><span data-i18n="submenu.grp_definition.lbl.group">Gruppe</span> 5:</td>';
 echo '<td class=""><input type="text" class="groupIdField" name="groupNumber5" id="groupNumber5" value="' . $groupNumber5 . '" placeholder="1-99999"  /></td>';
 echo '<td class="tdCenter"><input type="checkbox" name="groupNumber5Enabled" ' . $groupNumber5EnabledChecked . ' id="groupNumber5Enabled" value="1" /></td>';
 echo '<td class="tdCenter"><input type="checkbox" name="groupSound5Enabled" ' . $groupSound5EnabledChecked . ' id="groupSound5Enabled" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Own-Call :</td>';
+echo '<td><span data-i18n="submenu.grp_definition.lbl.grp-own-call">Own-Call</span>:</td>';
 echo '<td class="">&nbsp;</td>';
 echo '<td class="">&nbsp;</td>';
 echo '<td class="tdCenter"><input type="checkbox" name="groupSoundOwnCallEnabled" ' . $groupSoundOwnCallEnabledChecked . ' id="groupSoundOwnCallEnabled" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Kein Filter :</td>';
+echo '<td><span data-i18n="submenu.grp_definition.lbl.grp-no-filter">Kein Filter</span>:</td>';
 echo '<td class="">&nbsp;</td>';
 echo '<td class="">&nbsp;</td>';
 echo '<td class="tdCenter"><input type="checkbox" name="groupSoundNoFilterEnabled" ' . $groupSoundNoFilterEnabledChecked . ' id="groupSoundNoFilterEnabled" value="1" /></td>';
@@ -228,14 +233,14 @@ echo '<td colspan="5">&nbsp;</td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>POS-Filter :</td>';
+echo '<td><span data-i18n="submenu.grp_definition.lbl.grp-pos-filter">POS-Filter</span>:</td>';
 echo '<td class="">&nbsp;</td>';
 echo '<td class="tdCenter"><input type="checkbox" name="groupPosEnabled" ' . $groupPosEnabledChecked . ' id="groupPosEnabled" value="1" /></td>';
 echo '<td class="tdCenter"><input type="checkbox" name="groupSoundPosEnabled" ' . $groupSoundPosEnabledChecked . ' id="groupSoundPosEnabled" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>CET-Filter :</td>';
+echo '<td><span data-i18n="submenu.grp_definition.lbl.grp-cet-filter">CET-Filter</span>:</td>';
 echo '<td class="">&nbsp;</td>';
 echo '<td class="tdCenter"><input type="checkbox" name="groupCetEnabled" ' . $groupCetEnabledChecked . ' id="groupCetEnabled" value="1" /></td>';
 echo '<td class="tdCenter"><input type="checkbox" name="groupSoundCetEnabled" ' . $groupSoundCetEnabledChecked . ' id="groupSoundCetEnabled" value="1" /></td>';
@@ -246,14 +251,14 @@ echo '<td colspan="5">&nbsp;</td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Notfall-Gruppe :</td>';
+echo '<td><span data-i18n="submenu.grp_definition.lbl.emergency-group">Notfall-Gruppe</span>:</td>';
 echo '<td class="tdCenter"><input type="text" class="groupIdField" name="groupNumber6" id="groupNumber6" value="' . $groupNumber6 . '" placeholder="1-99999"  /></td>';
 echo '<td class="tdCenter"><input type="checkbox" name="groupNumber6Enabled" ' . $groupNumber6EnabledChecked . ' id="groupNumber6Enabled" value="1" /></td>';
 echo '<td class="tdCenter"><input type="checkbox" name="groupSound6Enabled" ' . $groupSound6EnabledChecked . ' id="groupSound6Enabled" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>HTML-Export :</td>';
+echo '<td><span data-i18n="submenu.grp_definition.lbl.html-export-group">HTML-Export Gruppe</span>:</td>';
 echo '<td class="tdCenter"><input type="text" name="msgExportGroup" id="msgExportGroup" class="groupExportField" value="' . $msgExportGroup . '" /></td>';
 echo '<td class="tdCenter"><input type="checkbox" name="msgExportEnable" ' . $msgExportEnableChecked . ' id="msgExportEnable" value="1" /></td>';
 echo '</tr>';
@@ -267,8 +272,8 @@ echo '<td colspan="5"><hr></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Sound-File :</td>';
-#echo '<td colspan="5"><input type="text" class="" name="groupSoundFile" id="groupSoundFile" value="' . $groupSoundFile . '" placeholder="Sound-File"  /></td>';
+echo '<td><span data-i18n="submenu.grp_definition.lbl.media-file">Sound-Datei</span>:</td>';
+
 echo '<td colspan="5">';
 echo '<select name="groupSoundFile" id="groupSoundFile">';
 selectSoundFile(showAlertMediaFiles(false), $groupSoundFile);
@@ -284,11 +289,17 @@ echo '<tr>';
 echo '<td colspan="4">';
 if ($sendData === '1')
 {
-    echo '<input type="button" class="failureHint" id="btnGrpDefinitionReload" value="MeshDash-Seite neu laden"/>';
+    echo '<button type="button" class="failureHint" id="btnGrpDefinitionReload">
+            <span data-i18n="submenu.grp_definition.btn.reload">MeshDash-Seite neu laden</span>
+          </button>
+         ';
 }
 else
 {
-    echo '<input type="button" class="btnSaveGrpDefinition" id="btnSaveGrpDefinition" value="Settings speichern" />';
+    echo '<button type="button" class="btnSaveGrpDefinition" id="btnSaveGrpDefinition">
+            <span data-i18n="submenu.grp_definition.btn.save-settings">Settings speichern</span>
+          </button>
+         ';
 }
 echo '</td>';
 echo '</tr>';
@@ -300,5 +311,12 @@ echo '<br>';
 showAlertMediaFiles();
 
 echo '<div id="pageLoading" class="pageLoadingSub"></div>';
+
+echo '<script>
+            $.getJSON("../translation.php?lang=' . $userLang . '", function(dict) {
+            applyTranslation(dict); // siehe JS oben
+            });
+        </script>';
+
 echo '</body>';
 echo '</html>';

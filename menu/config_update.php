@@ -1,8 +1,11 @@
 <?php
 ob_start(); // Output Buffering starten
-echo '<!DOCTYPE html>';
-echo '<html lang="de">';
-echo '<head><title>Update</title>';
+require_once '../dbinc/param.php';
+require_once '../include/func_php_core.php';
+
+$userLang = getParamData('language');
+$userLang = $userLang == '' ? 'de' : $userLang;
+echo '<head><title data-i18n="submenu.config_update.lbl.title">MeshDash-SQL Update</title>';
 
 #Prevnts UTF8 Errors on misconfigured php.ini
 ini_set( 'default_charset', 'UTF-8' );
@@ -16,10 +19,9 @@ echo '<link rel="stylesheet" href="../css/loader.css?' . microtime() . '">';
 echo '</head>';
 echo '<body>';
 
-require_once '../dbinc/param.php';
-require_once '../include/func_php_core.php';
 require_once '../include/func_js_config_update.php';
 require_once '../include/func_php_config_update.php';
+require_once '../include/func_js_core.php';
 
 #Show all Errors for debugging
 error_reporting(E_ALL);
@@ -47,9 +49,15 @@ if ($debugFlag === true)
 #Check what oS is running
 $osIssWindows = chkOsIsWindows();
 $osName       = $osIssWindows === true ? 'Windows' : 'Linux';
+$lineBreak    = '<span class="lineBreak">';
 
-echo '<h2>MeshDash-SQL Update';
-echo '<span class="hintText"><br>(Update-Datei muss im MeshDash-SQL Format<span class="lineBreak">als Zip vorliegen.)</span></span>';
+echo '<h2><span data-i18n="submenu.config_update.lbl.title">MeshDash-SQL Update</span>';
+
+echo '<span class="hintText"><br>' .
+    '<span data-i18n="submenu.config_update.lbl.subtitle" data-vars-replace="' .
+    htmlspecialchars($lineBreak, ENT_QUOTES, 'UTF-8') . '">' .
+    '(Update-Datei muss im MeshDash-SQL Format ' . $lineBreak . ' als Zip vorliegen.)' .
+    '</span></span></span>';
 echo '</h2>';
 
 if ($debugFlag === true)
@@ -337,18 +345,30 @@ echo '<table>';
 echo '<tr>';
 if ($sendData != 1)
 {
-    echo '<td ><label for="updateFile">Wähle das Update (Zip-Datei):&nbsp;</label></td>';
+    echo '<td ><label for="updateFile"><span data-i18n="submenu.config_update.lbl.choose-zip-file">Wähle das Update (Zip-Datei)</span>:&nbsp;</label></td>';
     echo '<td><input type="file" name="updateFile" id="updateFile" required></td>';
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td ><label for="updateFile">Lade aktuelles Release von GitHub herunter:&nbsp;</label></td>';
-    echo '<td><input type="button" class="btnDwnLatestRelease" id="btnDwnLatestRelease" value="Lade letzte Release-Version  "></td>';
+    echo '<td ><label for="updateFile"><span data-i18n="submenu.config_update.lbl.load-latest-release">Lade aktuelles Release von GitHub herunter</span>:&nbsp;</label></td>';
+
+    echo '<td>
+        <button type="button" class="btnDwnLatestRelease" id="btnDwnLatestRelease">
+            <span data-i18n="submenu.config_update.btn.load-latest-release">Lade letzte Release-Version</span>
+        </button>
+      </td>';
+
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td ><label for="btnShowChangeLog">Zeige Changelog zur aktuellen Release-Version:&nbsp;</label></td>';
-    echo '<td><input type="button" class="btnDwnLatestRelease" id="btnShowChangeLog" value="Release Changelog anzeigen"></td>';
+    echo '<td ><label for="btnShowChangeLog"><span data-i18n="submenu.config_update.lbl.show-release-info">Zeige Changelog zur aktuellen Release-Version</span>:&nbsp;</label></td>';
+
+    echo '<td>
+        <button type="button" class="btnDwnLatestRelease" id="btnShowChangeLog">
+            <span data-i18n="submenu.config_update.btn.view-changelog">Release Changelog anzeigen</span>
+        </button>
+      </td>';
+
     echo '</tr>';
 
     echo '<tr>';
@@ -356,8 +376,18 @@ if ($sendData != 1)
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td><input type="button" class="btnConfigUpdateBackup" id="btnConfigUpdateBackup" value="Nur Backup anlegen"/></td>';
-    echo '<td><input type="button" class="btnConfigUpdate" id="btnConfigUpdate" value="Update Hochladen"/></td>';
+
+    echo '<td>
+        <button type="button" class="btnConfigUpdateBackup" id="btnConfigUpdateBackup">
+            <span data-i18n="submenu.config_update.btn.backup-only">Nur Backup anlegen</span>
+        </button>
+      </td>';
+
+    echo '<td>
+        <button type="button" class="btnConfigUpdate" id="btnConfigUpdate">
+            <span data-i18n="submenu.config_update.btn.upload-update">Update Hochladen</span>
+        </button>
+      </td>';
 }
 else
 {
@@ -366,7 +396,13 @@ else
 
     echo '<tr>';
     echo '<td ><label for="btnConfigUpdateReload" class="reloadMsg failureHint">Wichtig!<br>MeshDash jetzt neu laden!</label>&nbsp;</td>';
-    echo '<td><input type="button" class="failureHint reloadButton" id="btnConfigUpdateReload" value="MeshDash hier neu laden!"/></td>';
+
+    echo '<td>
+        <button type="button" class="failureHint reloadButton" id="btnConfigUpdateReload">
+            <span data-i18n="submenu.config_update.btn.reload">MeshDash hier neu laden!</span>
+        </button>
+      </td>';
+
     echo '</tr>';
 
     echo '<tr>';
@@ -382,6 +418,12 @@ showBackups();
 echo '</form>';
 
 echo '<div id="pageLoading" class="pageLoadingSub"></div>';
+
+echo '<script>
+            $.getJSON("../translation.php?lang=' . $userLang . '", function(dict) {
+            applyTranslation(dict); // siehe JS oben
+            });
+        </script>';
 
 echo '</body>';
 echo '</html>';

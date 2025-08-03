@@ -1,3 +1,10 @@
+Version 1.10.58 SQL
+FEATURE Übersetzung EN/DE/FR/ES/NL/IT im Menü/Submenü
+        PopUp-Meldungen sind noch nicht inbegriffen und kommen im nächsten Step.
+
+BUGFIX: JIT memory failed Meldung bei Debian Trixi/PHP8.4 abgeschaltet.
+
+####################################
 Version 1.10.56 SQL
 BUGFIX Höhen-/Satellitenangabe fehlt bei PGS-info.
 BUGFIX checkDbIntegrity DB für Meshdash war falsch gesetzt.

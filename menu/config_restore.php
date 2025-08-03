@@ -1,8 +1,12 @@
 <?php
 ob_start(); // Output Buffering starten
-echo '<!DOCTYPE html>';
-echo '<html lang="de">';
-echo '<head><title>Restore</title>';
+require_once '../dbinc/param.php';
+require_once '../include/func_php_core.php';
+
+$userLang = getParamData('language');
+$userLang = $userLang == '' ? 'de' : $userLang;
+
+echo '<head><title data-i18n="submenu.config_restore.lbl.title">MeshDash-SQL Restor</title>';
 
 #Prevnts UTF8 Errors on misconfigured php.ini
 ini_set( 'default_charset', 'UTF-8' );
@@ -20,6 +24,7 @@ require_once '../dbinc/param.php';
 require_once '../include/func_php_core.php';
 require_once '../include/func_js_config_restore.php';
 require_once '../include/func_php_config_restore.php';
+require_once '../include/func_js_core.php';
 
 #Show all Errors for debugging
 error_reporting(E_ALL);
@@ -46,9 +51,13 @@ if ($debugFlag === true)
 #Check what oS is running
 $osIssWindows = chkOsIsWindows();
 $osName       = $osIssWindows === true ? 'Windows' : 'Linux';
+$lb           = '<span class="lineBreak">';
 
-echo '<h2>MeshDash-SQL Restore';
-echo '<span class="hintText"><br>(Restore-Datei muss im MeshDash-SQL Format<span class="lineBreak">als Zip vorliegen.)</span></span>';
+echo '<h2><span data-i18n="submenu.config_restore.lbl.title">MeshDash-SQL Restore</span>';
+echo '<span class="hintText"><br>' .
+    '<span data-i18n="submenu.config_restore.lbl.subtitle"  data-vars-replace="' . htmlspecialchars($lb, ENT_QUOTES, 'UTF-8') . '">' .
+    '(Restore-Datei muss im MeshDash-SQL Format ' . $lb . ' als Zip vorliegen.)' .
+    '</span></span></span>';
 echo '</h2>';
 
 if ($debugFlag === true)
@@ -282,12 +291,17 @@ echo '<table>';
 echo '<tr>';
 if ($sendData != 1)
 {
-    echo '<td ><label for="restoreFile">Wähle das Restore (Zip-Datei):&nbsp;</label></td>';
+    echo '<td ><label for="restoreFile"><span data-i18n="submenu.config_restore.lbl.choose-zip-file">Wähle das Restore (Zip-Datei)</span>:&nbsp;</label></td>';
     echo '<td><input type="file" name="restoreFile" id="restoreFile" required></td>';
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td><input type="button" class="btnConfigRestore" id="btnConfigRestore" value="Restore Hochladen"/></td>';
+
+    echo '<td>
+        <button type="button" class="btnConfigRestore" id="btnConfigRestore">
+            <span data-i18n="submenu.config_restore.btn.upload-restore">Restore Hochladen</span>
+        </button>
+      </td>';
 }
 else
 {
@@ -296,7 +310,13 @@ else
 
     echo '<tr>';
     echo '<td ><label for="btnConfigRestoreReload" class="reloadMsg failureHint">Wichtig!<br>MeshDash jetzt neu laden!</label>&nbsp;</td>';
-    echo '<td><input type="button" class="failureHint reloadButton" id="btnConfigRestoreReload" value="MeshDash hier neu laden!"/></td>';
+
+    echo '<td>
+        <button type="button" class="failureHint reloadButton" id="btnConfigRestoreReload">
+            <span data-i18n="submenu.config_restore.btn.reload">MeshDash hier neu laden!</span>
+        </button>
+      </td>';
+
     echo '</tr>';
 
     echo '<tr>';
@@ -312,6 +332,12 @@ showBackups();
 echo '</form>';
 
 echo '<div id="pageLoading" class="pageLoadingSub"></div>';
+
+echo '<script>
+            $.getJSON("../translation.php?lang=' . $userLang . '", function(dict) {
+            applyTranslation(dict); // siehe JS oben
+            });
+        </script>';
 
 echo '</body>';
 echo '</html>';

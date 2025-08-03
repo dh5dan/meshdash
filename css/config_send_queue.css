@@ -27,8 +27,8 @@ td {
 }
 
 input[type="text"] {
-    width: 100%;
-    max-width: 90px;
+    /*width: 100%;*/
+    /*max-width: 90px;*/
     padding: 5px;
 }
 
@@ -43,7 +43,7 @@ input[type="checkbox"] {
     text-align: center;
 }
 
-.btnSaveConfigGenerally {
+.btnSaveConfigSendQueue {
     font-size: 14px;
     padding: 8px 15px;
     border: none;

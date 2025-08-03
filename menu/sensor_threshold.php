@@ -1,7 +1,10 @@
 <?php
-echo '<!DOCTYPE html>';
-echo '<html lang="de">';
-echo '<head><title>Sensorschwellwert</title>';
+require_once '../dbinc/param.php';
+require_once '../include/func_php_core.php';
+
+$userLang = getParamData('language');
+$userLang = $userLang == '' ? 'de' : $userLang;
+echo '<head><title data-i18n="submenu.sensor_threshold.lbl.title">Sensorschwellwert</title>';
 
 #Prevnts UTF8 Errors on misconfigured php.ini
 ini_set( 'default_charset', 'UTF-8' );
@@ -15,11 +18,10 @@ echo '<link rel="stylesheet" href="../css/loader.css?' . microtime() . '">';
 echo '</head>';
 echo '<body>';
 
-require_once '../dbinc/param.php';
-require_once '../include/func_php_core.php';
 require_once '../include/func_js_sensor_threshold.php';
 require_once '../include/func_php_sensor_threshold.php';
 require_once '../include/func_php_lora_info.php';
+require_once '../include/func_js_core.php';
 
 #Show all Errors for debugging
 error_reporting(E_ALL);
@@ -88,10 +90,12 @@ if ($sendData === '1')
 
     if ($resSaveSensorThresholdSetting)
     {
+        echo '<span class="successHint">'.date('H:i:s').'-<span data-i18n="submenu.sensor_threshold.msg.save-settings-success">Settings wurden erfolgreich abgespeichert!</span></span>';
         echo '<span class="successHint">'.date('H:i:s').'-Settings erfolgreich abgespeichert!</span>';
     }
     else
     {
+        echo '<span class="failureHint">' . date('H:i:s') . '-<span data-i18n="submenu.sensor_threshold.msg.save-settings-failed">Es gab einen Fehler beim Abspeichern der Settings!</span></span>';
         echo '<span class="failureHint">Es gab einen Fehler beim Abspeichern der Settings!</span>';
     }
 }
@@ -116,8 +120,8 @@ $sensorThTempEnabledChecked = $sensorThTempEnabled == 1 ? 'checked' : '';
 $sensorThTempDmGrpId        = $sensorThTempDmGrpId == '' ? '999' : $sensorThTempDmGrpId;
 
 $sensorThTempIntervallMin      = $sensorThTempIntervallMin = '' ? 60 : $sensorThTempIntervallMin;
-
-echo '<h2>Sensorschwellwert-Definition <span class="lineBreak">zur Auslösung von Meldungen</span>';
+$lineBreak = '<span class="lineBreak">';
+echo '<h2><span data-i18n="submenu.sensor_threshold.lbl.header-text" data-vars-replace="' . htmlspecialchars($lineBreak, ENT_QUOTES, 'UTF-8') . '">Sensorschwellwert-Definition '.$lineBreak.'zur Auslösung von Meldungen</span></span>';
 echo '</h2>';
 
 echo '<form id="frmSensorThreshold" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
@@ -125,7 +129,7 @@ echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
 echo '<table>';
 
 echo '<tr>';
-echo '<td>Abfrage-Intervall:</td>';
+echo '<td><span data-i18n="submenu.sensor_threshold.lbl.tx-interval">Abfrage-Intervall</span>:</td>';
 echo '<td>';
 echo '<input type="text" name="sensorThTempIntervallMin" id="sensorThTempIntervallMin" value="' . $sensorThTempIntervallMin . '" placeholder="Intervall Min." />&nbsp;Min.&nbsp;(>=1 - 1439)';
 echo'</td>';
@@ -135,14 +139,14 @@ echo '<td colspan="2"><hr></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Temp Enable/Disable:</td>';
+echo '<td><span data-i18n="submenu.sensor_threshold.lbl.temp-status">Temp Enable/Disable</span>:</td>';
 echo '<td>';
 echo '<input type="checkbox" name="sensorThTempEnabled" ' . $sensorThTempEnabledChecked . ' id="sensorThTempEnabled" value="1" />';
 echo'</td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Min/Max:</td>';
+echo '<td><span data-i18n="submenu.sensor_threshold.lbl.temp-min-max">Min/Max</span>:</td>';
 echo '<td>';
 echo '<input type="text" name="sensorThTempMinValue" id="sensorThTempMinValue" value="' . $sensorThTempMinValue . '" placeholder="min. Wert" />';
 echo '<input type="text" name="sensorThTempMaxValue" id="sensorThTempMaxValue" value="' . $sensorThTempMaxValue . '" placeholder="max. Wert" />';
@@ -150,12 +154,12 @@ echo '</td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Alertmeldung:</td>';
+echo '<td><span data-i18n="submenu.sensor_threshold.lbl.temp-alert-msg">Alertmeldung</span>:</td>';
 echo '<td colspan="2"><input type="text" name="sensorThTempAlertMsg" id="sensorThTempAlertMsg" value="' . $sensorThTempAlertMsg . '" placeholder="Rückmeldung Temp" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>DM-Gruppe/Call:</td>';
+echo '<td><span data-i18n="submenu.sensor_threshold.lbl.temp-dm-group">DM-Gruppe/Call</span>:</td>';
 echo '<td><input type="text" name="sensorThTempDmGrpId" id="sensorThTempDmGrpId" value="' . $sensorThTempDmGrpId . '" placeholder="Temp DM-Gruppe/Call" /></td>';
 echo '</tr>';
 
@@ -180,12 +184,12 @@ $sensorThToutEnabledChecked = $sensorThToutEnabled == 1 ? 'checked' : '';
 $sensorThToutDmGrpId        = $sensorThToutDmGrpId == '' ? '999' : $sensorThToutDmGrpId;
 
 echo '<tr>';
-echo '<td>Tout Enable/Disable:</td>';
+echo '<td><span data-i18n="submenu.sensor_threshold.lbl.tout-status">Tout Enable/Disable</span>:</td>';
 echo '<td><input type="checkbox" name="sensorThToutEnabled" ' . $sensorThToutEnabledChecked . ' id="sensorThToutEnabled" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Min/Max:</td>';
+echo '<td><span data-i18n="submenu.sensor_threshold.lbl.tout-min-max">Min/Max</span>:</td>';
 echo '<td>';
 echo '<input type="text" name="sensorThToutMinValue" id="sensorThToutMinValue" value="' . $sensorThToutMinValue . '" placeholder="min. Wert" />';
 echo '<input type="text" name="sensorThToutMaxValue" id="sensorThToutMaxValue" value="' . $sensorThToutMaxValue . '" placeholder="max. Wert" />';
@@ -193,12 +197,12 @@ echo '</td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Alertmeldung:</td>';
+echo '<td><span data-i18n="submenu.sensor_threshold.lbl.tout-alert-msg">Alertmeldung</span>:</td>';
 echo '<td colspan="2"><input type="text" name="sensorThToutAlertMsg" id="sensorThToutAlertMsg" value="' . $sensorThToutAlertMsg . '" placeholder="Rückmeldung Tout" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>DM-Gruppe/Call:</td>';
+echo '<td><span data-i18n="submenu.sensor_threshold.lbl.temp-dm-group">DM-Gruppe/Call</span>:</td>';
 echo '<td><input type="text" name="sensorThToutDmGrpId" id="sensorThToutDmGrpId" value="' . $sensorThToutDmGrpId . '" placeholder="Tout DM-Gruppe/Call" /></td>';
 echo '</tr>';
 
@@ -207,7 +211,14 @@ echo '<td colspan="2"><hr></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td colspan="3"><input type="button" class="btnSaveSensorThreshold" id="btnSaveSensorThresholdTop" value="Settings speichern"  /></td>';
+#echo '<td colspan="3"><input type="button" class="btnSaveSensorThreshold" id="btnSaveSensorThresholdTop" value="Settings speichern"  /></td>';
+
+echo '<td colspan="3">
+        <button type="button" class="btnSaveSensorThreshold" id="btnSaveSensorThresholdTop">
+            <span data-i18n="submenu.sensor_threshold.btn.save-settings">Settings speichern</span>
+        </button>
+      </td>';
+
 echo '</tr>';
 
 if ($hasIna226Sensor === true)
@@ -382,6 +393,12 @@ if ($hasIna226Sensor === true)
 
 echo '</table>';
 echo '</form>';
+
+echo '<script>
+            $.getJSON("../translation.php?lang=' . $userLang . '", function(dict) {
+            applyTranslation(dict); // siehe JS oben
+            });
+        </script>';
 
 echo '</body>';
 echo '</html>';

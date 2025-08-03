@@ -375,6 +375,15 @@
            $('#menu').toggle();
        });
 
+
+       // Klick auf ein Menüelement (li), um das Submenü ein- oder auszublenden
+       $('#menu > ul > li').on("click", function (e)
+       {
+           e.stopPropagation(); // Verhindert, dass der Klick das Dokument schließt
+           $(this).toggleClass('active'); // Toggle die 'active'-Klasse für das Submenü
+           $(this).siblings().removeClass('active'); // Entfernt die 'active'-Klasse von anderen Submenüs
+       });
+
        // Klick auf das Dokument außerhalb des Menüs schließt das Menü und Submenüs
        $(document).on("click", function (e)
        {
@@ -405,27 +414,10 @@
        }
 
        // Event-Listener für Klicks auf Menüeinträge
-       $('#menu li').on('click', function (e)
+       $('#menu li').on('click', function ()
        {
-           e.stopPropagation();
-
-           // Prüfe, ob Menüpunkt Untermenü hat
-           if ($(this).children('ul').length > 0) {
-               // Öffne / schließe Submenü
-               $(this).toggleClass('active');
-               $(this).siblings().removeClass('active');
-               return; // Keine Aktion laden, nur Submenü öffnen/schließen
-           }
-
-           // Top-Level Menü-Items toggeln (falls gewünscht)
-           if ($(this).parent().is('#menu > ul')) {
-               $(this).toggleClass('active');
-               $(this).siblings().removeClass('active');
-           }
-
            // Wenn hier, dann hat das Element kein Submenü => Aktion ausführen
-           let action = $(this).data('action');
-           if (!action) return; // Kein action => nichts tun
+           let action = $(this).data('action'); // Holt sich die Aktion für den angeklickten Punkt
 
            let iframeSrc;
            isTabClick = true;
@@ -472,6 +464,9 @@
                    break;
                case 'config_ping_lora':
                    iframeSrc = 'menu/config_ping_lora.php';
+                   break;
+               case 'edit_translation':
+                   iframeSrc = 'translation_editor.php';
                    break;
                case 'grp_definition':
                    iframeSrc = 'menu/grp_definition.php';

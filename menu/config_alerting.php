@@ -1,7 +1,14 @@
 <?php
+require_once '../dbinc/param.php';
+require_once '../include/func_php_core.php';
+
+$userLang = getParamData('language');
+$userLang = $userLang == '' ? 'de' : $userLang;
+
 echo '<!DOCTYPE html>';
-echo '<html lang="de">';
-echo '<head><title>Alerting</title>';
+echo '<html lang="' . $userLang . '">';
+
+echo '<head><title data-i18n="submenu.config_alerting.lbl.title">Benachrichtigungen</title>';
 
 #Prevnts UTF8 Errors on misconfigured php.ini
 ini_set( 'default_charset', 'UTF-8' );
@@ -15,10 +22,9 @@ echo '<link rel="stylesheet" href="../css/loader.css?' . microtime() . '">';
 echo '</head>';
 echo '<body>';
 
-require_once '../dbinc/param.php';
-require_once '../include/func_php_core.php';
 require_once '../include/func_js_config_alerting.php';
 require_once '../include/func_php_config_alerting.php';
+require_once '../include/func_js_core.php';
 
 #Show all Errors for debugging
 error_reporting(E_ALL);
@@ -56,11 +62,11 @@ if ($sendData === '1')
 
     if ($resSveNotifySettings)
     {
-        echo '<span class="successHint">' . date('H:i:s') . '-Settings erfolgreich abgespeichert!</span>';
+        echo '<span class="successHint">'.date('H:i:s').'-<span data-i18n="submenu.send_queue.msg.save-settings-success">Settings wurden erfolgreich abgespeichert!</span></span>';
     }
     else
     {
-        echo '<span class="failureHint">' . date('H:i:s') . '-Es gab einen Fehler beim Abspeichern der Settings!</span>';
+        echo '<span class="failureHint">' . date('H:i:s') . '-<span data-i18n="submenu.send_queue.msg.save-settings-failed">Es gab einen Fehler beim Abspeichern der Settings!</span></span>';
     }
 }
 
@@ -140,7 +146,8 @@ if ($arrayNotificationData === false)
     exit();
 }
 
-echo '<h2>Benachrichtigungen</h2>';
+echo '<h2></h2>';
+echo '<h2><span data-i18n="submenu.config_alerting.lbl.title">Benachrichtigungen</span></h2>';
 
 echo '<form id="frmConfigAlerting" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
@@ -161,7 +168,7 @@ foreach ($arrayNotificationData as $notifyCallSign => $value)
     echo '<input type="hidden" name="notifyId[' . $notifyId . ']" id="notifyId" value="' . $notifyId . '" />';
 
     echo '<tr>';
-    echo '<td>Snd-File:</td>';
+    echo '<td><span data-i18n="submenu.config_alerting.lbl.snd-file">Snd-File</span>:</td>';
     echo '<td><select name="notifySoundFile[' . $notifyId . ']" id="notifySoundFile_' . $notifyId . '">';
     selectSoundFile(showAlertMediaFiles(false), $notifySoundFile);
     echo '</select>';
@@ -169,7 +176,7 @@ foreach ($arrayNotificationData as $notifyCallSign => $value)
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td>CallSign:</td>';
+    echo '<td><span data-i18n="submenu.config_alerting.lbl.callsign">Rufzeichen</span>:</td>';
     echo '<td><input type="text" name="notifyCallSign[' . $notifyId . ']" id="notifyCallSign_' . $notifyId . '" size="10" value="' . $notifyCallSign . '" placeholder="Call-SSID" />&nbsp;';
     echo '<input type="checkbox" name="notifyEnabled[' . $notifyId . ']" ' . $notifyEnabledChecked . ' id="notifyEnabled_' . $notifyId . '" value="1" />&nbsp;';
     echo '<span data-notify_delete="'
@@ -181,7 +188,7 @@ foreach ($arrayNotificationData as $notifyCallSign => $value)
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td>Src/Dst:</td>';
+    echo '<td><span data-i18n="submenu.config_alerting.lbl.src-dst">Src/Dst</span>:</td>';
     echo '<td>';
     echo 'SRC <input type="radio" ' . $notifySrcDstChecked0 . ' name="notifySrcDst[' . $notifyId . ']" id="notifySrcDst0_' . $notifyId . '" value="0" />&nbsp;&nbsp;';
     echo 'DST <input type="radio" ' . $notifySrcDstChecked1 . ' name="notifySrcDst[' . $notifyId . ']" id="notifySrcDst1_' . $notifyId . '" value="1" />&nbsp;';
@@ -206,7 +213,7 @@ if (count($arrayNotificationData) > 0)
     echo '<input type="hidden" name="notifyId[' . $notifyId . ']" id="notifyId" value="' . $notifyId . '" />';
 
     echo '<tr class="notifyNewRow">';
-    echo '<td>Snd-File:</td>';
+    echo '<td><span data-i18n="submenu.config_alerting.lbl.snd-file">Snd-File</span>:</td>';
     echo '<td>';
     echo '<select name="notifySoundFile[' . $notifyId . ']" id="notifySoundFile_' . $notifyId . '" disabled>';
     selectSoundFile(showAlertMediaFiles(false), $notifySoundFile);
@@ -216,14 +223,14 @@ if (count($arrayNotificationData) > 0)
     echo '</tr>';
 
     echo '<tr class="notifyNewRow">';
-    echo '<td>CallSign:</td>';
+    echo '<td><span data-i18n="submenu.config_alerting.lbl.callsign">Rufzeichen</span>:</td>';
     echo '<td><input type="text" name="notifyCallSign[' . $notifyId . ']" id="notifyCallSign_' . $notifyId . '" size="10" value="' . $notifyNewCallSign . '" placeholder="Call-SSID" disabled />&nbsp;';
     echo '<input type="checkbox" name="notifyEnabled[' . $notifyId . ']" ' . $notifyEnabledChecked . ' id="notifyEnabled_' . $notifyId . '" value="1" disabled />&nbsp;';
     echo '</td>';
     echo '</tr>';
 
     echo '<tr class="notifyNewRow">';
-    echo '<td>Src/Dst:</td>';
+    echo '<td><span data-i18n="submenu.config_alerting.lbl.src-dst">Src/Dst</span>:</td>';
     echo '<td>';
     echo 'SRC <input type="radio" ' . $notifySrcDstChecked0 . ' name="notifySrcDst[' . $notifyId . ']" id="notifySrcDst0_' . $notifyId . '" value="0" disabled />&nbsp;&nbsp;';
     echo 'DST <input type="radio" ' . $notifySrcDstChecked1 . ' name="notifySrcDst[' . $notifyId . ']" id="notifySrcDst1_' . $notifyId . '" value="1" disabled/>&nbsp;';
@@ -231,7 +238,13 @@ if (count($arrayNotificationData) > 0)
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td colspan="3"><input type="button" class="btnSaveConfigAlerting" id="btnAddNewItem" value="Neuer Eintrag"  /></td>';
+
+    echo '<td colspan="3">
+        <button type="button" class="btnSaveConfigAlerting" id="btnAddNewItem">
+            <span data-i18n="submenu.config_alerting.btn.new-item">Neuer Eintrag</span>
+        </button>
+      </td>';
+
     echo '</tr>';
 }
 
@@ -246,7 +259,7 @@ if (count($arrayNotificationData) == 0)
     echo '<input type="hidden" name="notifyId[' . $notifyId . ']" id="notifyId" value="' . $notifyId . '" />';
 
     echo '<tr>';
-    echo '<td>Snd-File:</td>';
+    echo '<td><span data-i18n="submenu.config_alerting.lbl.snd-file">Snd-File</span>:</td>';
     echo '<td><select name="notifySoundFile[' . $notifyId . ']" id="notifySoundFile_' . $notifyId . '">';
     selectSoundFile(showAlertMediaFiles(false), $notifySoundFile);
     echo '</td>';
@@ -254,14 +267,14 @@ if (count($arrayNotificationData) == 0)
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td>CallSign:</td>';
+    echo '<td><span data-i18n="submenu.config_alerting.lbl.callsign">Rufzeichen</span>:</td>';
     echo '<td><input type="text" name="notifyCallSign[' . $notifyId . ']" id="notifyCallSign_' . $notifyId . '" size="10" value="' . $notifyCallSign . '" placeholder="Call-SSID" />&nbsp;';
     echo '<input type="checkbox" name="notifyEnabled[' . $notifyId . ']" ' . $notifyEnabledChecked . ' id="notifyEnabled_' . $notifyId . '" value="1" />&nbsp;';
     echo '</td>';
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td>Src/Dst:</td>';
+    echo '<td><span data-i18n="submenu.config_alerting.lbl.src-dst">Src/Dst</span>:</td>';
     echo '<td>';
     echo 'SRC <input type="radio" ' . $notifySrcDstChecked0 . ' name="notifySrcDst[' . $notifyId . ']" id="notifySrcDst0_' . $notifyId . '" value="0" />&nbsp;&nbsp;';
     echo 'DST <input type="radio" ' . $notifySrcDstChecked1 . ' name="notifySrcDst[' . $notifyId . ']" id="notifySrcDst1_' . $notifyId . '" value="1" />&nbsp;';
@@ -274,7 +287,13 @@ echo '<td colspan="3"><hr></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td colspan="3"><input type="button" class="btnSaveConfigAlerting" id="btnSaveConfigAlerting" value="Settings speichern"  /></td>';
+
+echo '<td colspan="3">
+        <button type="button" class="btnSaveConfigAlerting" id="btnSaveConfigAlerting">
+            <span data-i18n="submenu.config_alerting.btn.save-settings">Settings speichern</span>
+        </button>
+      </td>';
+
 echo '</tr>';
 
 echo '</table>';
@@ -284,5 +303,12 @@ echo '<br>';
 showAlertMediaFiles();
 
 echo '<div id="pageLoading" class="pageLoadingSub"></div>';
+
+echo '<script>
+            $.getJSON("../translation.php?lang=' . $userLang . '", function(dict) {
+            applyTranslation(dict); // siehe JS oben
+            });
+        </script>';
+
 echo '</body>';
 echo '</html>';

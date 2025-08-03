@@ -20,7 +20,8 @@ td {
     vertical-align: middle;
 }
 
-td[colspan] input {
+td[colspan] input,
+td[colspan] button {
     width: 100%;
     box-sizing: border-box; /* Verhindert Überlauf durch Padding */
 }
