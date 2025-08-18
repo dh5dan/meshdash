@@ -82,9 +82,4 @@
 
     });
 
-    function reloadBottomFrame()
-    {
-        parent.document.getElementById("bottom-frame").contentWindow.location.reload();
-    }
-
 </script>

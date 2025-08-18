@@ -1,7 +1,14 @@
 <?php
+require_once '../dbinc/param.php';
+require_once '../include/func_php_core.php';
+
+$userLang = getParamData('language');
+$userLang = $userLang == '' ? 'de' : $userLang;
+
 echo '<!DOCTYPE html>';
-echo '<html lang="de">';
-echo '<head><title>Send-Queue</title>';
+echo '<html lang="' . $userLang . '">';
+
+echo '<head><title data-i18n="submenu.send_queue.lbl.title">Send-Queue</title>';
 
 #Prevnts UTF8 Errors on misconfigured php.ini
 ini_set( 'default_charset', 'UTF-8' );
@@ -19,6 +26,7 @@ require_once '../dbinc/param.php';
 require_once '../include/func_php_core.php';
 require_once '../include/func_js_config_send_queue.php';
 require_once '../include/func_php_config_send_queue.php';
+require_once '../include/func_js_core.php';
 
 #Show all Errors for debugging
 error_reporting(E_ALL);
@@ -42,13 +50,11 @@ if ($sendData === '1')
 
     if ($resSaveSendQueueSettings)
     {
-        echo '<span class="successHint">'.date('H:i:s').'-Settings wurden erfolgreich abgespeichert!</span>';
-
-        echo "<script>reloadBottomFrame();</script>";
+        echo '<span class="successHint">'.date('H:i:s').'-<span data-i18n="submenu.send_queue.msg.save-settings-success">Settings wurden erfolgreich abgespeichert!</span></span>';
     }
     else
     {
-        echo '<span class="failureHint">Es gab einen Fehler beim Abspeichern der Settings!</span>';
+        echo '<span class="failureHint">' . date('H:i:s') . '-<span data-i18n="submenu.send_queue.msg.save-settings-failed">Es gab einen Fehler beim Abspeichern der Settings!</span></span>';
     }
 }
 
@@ -61,24 +67,24 @@ $sendQueueEnabledChecked = $sendQueueEnabled == 1 ? 'checked' : '';
 
 $resCheckCronLoopBgTask = checkCronLoopBgTask() == '' ? getStatusIcon('inactive') : getStatusIcon('active');
 
-echo "<h2>Send-Queue</h2>";
+echo '<h2><span data-i18n="submenu.send_queue.lbl.title">Sende-Queue</span></h2>';
 
 echo '<form id="frmSendQueue" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
 echo '<table>';
 
 echo '<tr>';
-echo '<td>Sendeintervall in Sek. >= 5:</td>';
-echo '<td><input type="text" name="sendQueueInterval" id="sendQueueInterval" value="' . $sendQueueInterval . '" /></td>';
+echo '<td><span data-i18n="submenu.send_queue.lbl.send-intervall">Sendeintervall in Sek.</span> >= 5:</td>';
+echo '<td><input type="text" name="sendQueueInterval" size="2" id="sendQueueInterval" value="' . $sendQueueInterval . '" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Send-Queue enabled:</td>';
+echo '<td><span data-i18n="submenu.send_queue.lbl.queue-enabled">Send-Queue enabled</span>:</td>';
 echo '<td><input type="checkbox" name="sendQueueMode" ' . $sendQueueEnabledChecked . ' id="sendQueueMode" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Send-Cron Status:</td>';
+echo '<td><span data-i18n="submenu.send_queue.lbl.send-cron-status">Send-Cron Status</span>:</td>';
 
 echo '<td>';
 echo $resCheckCronLoopBgTask;
@@ -95,11 +101,25 @@ echo '<tr>';
 echo '</tr>';
 
 echo '<tr>';
-    echo '<td colspan="2"><input type="button" class="btnSaveConfigGenerally" id="btnSaveSendQueue" value="Settings speichern"  /></td>';
+
+echo '<td colspan="2">
+        <button type="button" class="btnSaveConfigSendQueue" id="btnSaveSendQueue">
+            <span data-i18n="submenu.send_queue.btn.save-settings">Settings speichern</span>
+        </button>
+      </td>';
+
+
 echo '</tr>';
 
 echo '</table>';
 echo '</form>';
+
+echo '<script>
+            $.getJSON("../translation.php?lang=' . $userLang . '", function(dict) {
+            applyTranslation(dict); // siehe JS oben
+            });
+        </script>';
+
 
 echo '</body>';
 echo '</html>';

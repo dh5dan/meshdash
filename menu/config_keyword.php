@@ -1,7 +1,11 @@
 <?php
-echo '<!DOCTYPE html>';
-echo '<html lang="de">';
-echo '<head><title>Keywords</title>';
+require_once '../dbinc/param.php';
+require_once '../include/func_php_core.php';
+
+$userLang = getParamData('language');
+$userLang = $userLang == '' ? 'de' : $userLang;
+
+echo '<head><title data-i18n="submenu.config_keyword.lbl.title">Keywords-Definition</title>';
 
 #Prevnts UTF8 Errors on misconfigured php.ini
 ini_set( 'default_charset', 'UTF-8' );
@@ -19,6 +23,7 @@ require_once '../dbinc/param.php';
 require_once '../include/func_php_core.php';
 require_once '../include/func_js_config_keyword.php';
 require_once '../include/func_php_config_keyword.php';
+require_once '../include/func_js_core.php';
 
 #Show all Errors for debugging
 error_reporting(E_ALL);
@@ -53,11 +58,11 @@ if ($sendData === '1')
 
     if ($resSaveHookSetting)
     {
-        echo '<span class="successHint">'.date('H:i:s').'-Settings erfolgreich abgespeichert!</span>';
+        echo '<span class="successHint">'.date('H:i:s').'-<span data-i18n="submenu.config_keyword.msg.save-settings-success">Settings wurden erfolgreich abgespeichert!</span></span>';
     }
     else
     {
-        echo '<span class="failureHint">Es gab einen Fehler beim Abspeichern der Settings!</span>';
+        echo '<span class="failureHint">' . date('H:i:s') . '-<span data-i18n="submenu.config_keyword.msg.save-settings-failed">Es gab einen Fehler beim Abspeichern der Settings!</span></span>';
     }
 }
 
@@ -155,7 +160,7 @@ if ($arrayKeywordHooks === false)
     exit();
 }
 
-echo '<h2>Keyword-Definition</h2>';
+echo '<h2><span data-i18n="submenu.config_keyword.lbl.title">Keyword-Definition</span></h2>';
 
 echo '<form id="frmConfigKeyword" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
@@ -189,13 +194,13 @@ foreach ($arrayKeywordHooks as $keyHookId => $value)
     echo '<input type="hidden" name="keyHookId[' . $keyHookId . ']" id="keyHookId" value="' . $keyHookId . '" />';
 
     echo '<tr>';
-    echo '<td>KeyWord:</td>';
+    echo '<td><span data-i18n="submenu.config_keyword.lbl.keyword">Keyword</span>:</td>';
     echo '<td><input type="text" name="keyHookTrigger[' . $keyHookId . ']" id="keyHookTrigger_' . $keyHookId . '" value="' . $keyHookTrigger . '" placeholder="Keyword"  /></td>';
     echo '<td></td>';
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td>Startskript:</td>';
+    echo '<td><span data-i18n="submenu.config_keyword.lbl.start-script">Start-Skript</span>:</td>';
     echo '<td><select name="keyHookExecute[' . $keyHookId . ']" id="keyHookExecute_' . $keyHookId . '">';
     selectScriptFile(showKeyScriptFiles(false), $keyHookExecute);
     echo '</select>';
@@ -203,12 +208,12 @@ foreach ($arrayKeywordHooks as $keyHookId => $value)
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td>Statusrückmeldung:</td>';
+    echo '<td><span data-i18n="submenu.config_keyword.lbl.status-feedback-msg">Statusrückmeldung</span>:</td>';
     echo '<td><input type="text" name="keyHookReturnMsg[' . $keyHookId . ']" id="keyHookReturnMsg_' . $keyHookId . '" value="' . $keyHookReturnMsg . '" placeholder="Return Msg" /></td>';
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td>DM-Gruppe: RX/TX:</td>';
+    echo '<td><span data-i18n="submenu.config_keyword.lbl.dm-group-rx-tx">DM-Gruppe: RX/TX</span>:</td>';
     echo '<td><input type="text" name="keyHookDmGrpId[' . $keyHookId . ']" id="keyHookDmGrpId_' . $keyHookId . '" size="8" value="' . $keyHookDmGrpId . '" placeholder="DM-Gruppe" />&nbsp;';
     echo '<input type="checkbox" name="keyHookEnabled[' . $keyHookId . ']" ' . $keyHookEnabledChecked . ' id="keyHookEnabled_' . $keyHookId . '" value="1" />';
     echo '<span data-hook_delete="'
@@ -238,13 +243,13 @@ if (count($arrayKeywordHooks) > 0)
     echo '<input type="hidden" name="keyHookId[' . $keyHookId . ']" id="keyHookId" value="' . $keyHookId . '"  />';
 
     echo '<tr class="keyHookNewRow">';
-    echo '<td>KeyWord:</td>';
+    echo '<td><span data-i18n="submenu.config_keyword.lbl.keyword">Keyword</span>:</td>';
     echo '<td><input type="text" name="keyHookTrigger[' . $keyHookId . ']" id="keyHookTrigger_' . $keyHookId . '" value="' . $keyHookTrigger . '" placeholder="Keyword" disabled /></td>';
     echo '<td></td>';
     echo '</tr>';
 
     echo '<tr class="keyHookNewRow">';
-    echo '<td>Startskript:</td>';
+    echo '<td><span data-i18n="submenu.config_keyword.lbl.start-script">Start-Skript</span>:</td>';
     echo '<td><select name="keyHookExecute[' . $keyHookId . ']" id="keyHookExecute_' . $keyHookId . '" disabled >';
     selectScriptFile(showKeyScriptFiles(false), $keyHookExecute);
     echo '</select>';
@@ -252,12 +257,12 @@ if (count($arrayKeywordHooks) > 0)
     echo '</tr>';
 
     echo '<tr class="keyHookNewRow">';
-    echo '<td>Statusrückmeldung:</td>';
+    echo '<td><span data-i18n="submenu.config_keyword.lbl.status-feedback-msg">Statusrückmeldung</span>:</td>';
     echo '<td><input type="text" name="keyHookReturnMsg[' . $keyHookId . ']" id="keyHookReturnMsg_' . $keyHookId . '" value="' . $keyHookReturnMsg . '" placeholder="Return Msg" disabled /></td>';
     echo '</tr>';
 
     echo '<tr class="keyHookNewRow">';
-    echo '<td>DM-Gruppe: RX/TX:</td>';
+    echo '<td><span data-i18n="submenu.config_keyword.lbl.dm-group-rx-tx">DM-Gruppe: RX/TX</span>:</td>';
     echo '<td><input type="text" name="keyHookDmGrpId[' . $keyHookId . ']" id="keyHookDmGrpId_' . $keyHookId . '" size="8" value="' . $keyHookDmGrpId . '" placeholder="DM-Gruppe" disabled />&nbsp;';
     echo '<input type="checkbox" name="keyHookEnabled[' . $keyHookId . ']" ' . $keyHookEnabledChecked . ' id="keyHookEnabled_' . $keyHookId . '" value="1" disabled />';
 
@@ -265,7 +270,13 @@ if (count($arrayKeywordHooks) > 0)
     echo '</tr>';
 
     echo '<tr>';
-    echo '<td colspan="3"><input type="button" class="btnSaveConfigKeyword" id="btnAddNewHookItem" value="Neuer Eintrag"  /></td>';
+
+    echo '<td colspan="3">
+        <button type="button" class="btnSaveConfigKeyword" id="btnAddNewHookItem">
+            <span data-i18n="submenu.config_keyword.btn.new-item">Neuer Eintrag</span>
+        </button>
+      </td>';
+
     echo '</tr>';
 }
 
@@ -315,7 +326,11 @@ echo '<td colspan="2"><hr></td>';
 echo '</tr>';
 
 echo '<tr>';
-    echo '<td colspan="3"><input type="button" class="btnSaveConfigKeyword" id="btnSaveConfigKeyword" value="Settings speichern"  /></td>';
+    echo '<td colspan="3">
+        <button type="button" class="btnSaveConfigKeyword" id="btnSaveConfigKeyword">
+            <span data-i18n="submenu.config_keyword.btn.save-settings">Settings speichern</span>
+        </button>
+      </td>';
 echo '</tr>';
 
 echo '</table>';
@@ -325,6 +340,12 @@ echo '<br>';
 showKeyScriptFiles();
 
 echo '<div id="pageLoading" class="pageLoadingSub"></div>';
+
+echo '<script>
+            $.getJSON("../translation.php?lang=' . $userLang . '", function(dict) {
+            applyTranslation(dict); // siehe JS oben
+            });
+        </script>';
 
 echo '</body>';
 echo '</html>';

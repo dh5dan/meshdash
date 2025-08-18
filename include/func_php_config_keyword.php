@@ -245,13 +245,20 @@ function showKeyScriptFiles(bool $showTable = true)
         echo '<table>';
 
         echo '<tr>';
-        echo '<td ><label for="uploadScriptFile">Skript hinzufügen:&nbsp;</label></td>';
+        echo '<td ><label for="uploadScriptFile"><span data-i18n="submenu.config_keyword.lbl.add-script">Skript hinzufügen</span>:&nbsp;</label></td>';
         echo '<td><input type="file" name="uploadScriptFile" id="uploadScriptFile" required></td>';
+
         echo '</tr>';
 
         echo '<tr>';
-        echo '<td ><label for="btnUploadScriptFile">Skript hochladen:&nbsp;</label></td>';
-        echo '<td><input type="button" class="btnUploadScriptFile" id="btnUploadScriptFile" value="Datei hochladen"></td>';
+        echo '<td ><label for="btnUploadScriptFile"><span data-i18n="submenu.config_keyword.lbl.upload-script">Skript hochladen</span>:&nbsp;</label></td>';
+
+        echo '<td>
+                <button type="button" class="btnUploadScriptFile" id="btnUploadScriptFile">
+                    <span data-i18n="submenu.config_keyword.btn.upload-file">Datei hochladen</span>
+                </button>
+              </td>';
+
         echo '</tr>';
 
         echo '</table>';
@@ -259,9 +266,9 @@ function showKeyScriptFiles(bool $showTable = true)
         echo '<div class="scrollable-container">';
         echo '<table class="backupTable">';
         echo '<tr>';
-        echo '<th>Datum</th>';
-        echo '<th>Uhrzeit</th>';
-        echo '<th>Script-Datei</th>';
+        echo '<th><span data-i18n="submenu.config_keyword.lbl.date">Datum</span></th>';
+        echo '<th><span data-i18n="submenu.config_keyword.lbl.time">Uhrzeit</span></th>';
+        echo '<th><span data-i18n="submenu.config_keyword.lbl.script-file">Script-Datei</span></th>';
         echo '<th colspan="2">&nbsp;</th>';
         echo '</tr>';
     }

@@ -24,6 +24,8 @@ function saveGenerallySettings(): bool
     $bubbleStyleView         = $_REQUEST['bubbleStyleView'] ?? 0;
     $bubbleMaxWidth          = trim($_REQUEST['bubbleMaxWidth']) ?? 40;
     $bubbleMaxWidth          = $bubbleMaxWidth == '' ? 40 : $bubbleMaxWidth;
+    $language                = $_REQUEST['selLanguage'] ?? 'de';
+    $language                = $language == '' ? 'de' : $language;
 
     setParamData('noPosData', $noPosData);
     setParamData('noDmAlertGlobal', $noDmAlertGlobal);
@@ -44,6 +46,7 @@ function saveGenerallySettings(): bool
     setParamData('openStreetTileServerUrl', $openStreetTileServerUrl, 'txt');
     setParamData('bubbleStyleView', $bubbleStyleView);
     setParamData('bubbleMaxWidth', $bubbleMaxWidth);
+    setParamData('language', $language, 'txt');
 
     return true;
 }
@@ -92,6 +95,34 @@ function selectTimezone($selTzName)
         else
         {
             echo '<option value="' . $code . '">(UTC' . $name . ') ' . $code . '</option>';
+        }
+    }
+}
+
+function selectLanguage($selLanguage)
+{
+    $selLanguage = $selLanguage == '' ? 'de' : $selLanguage;
+
+    $languages = [
+        'Deutsch' => 'de',
+        'Englisch' => 'en',
+        'Französisch' => 'fr',
+        'Spanisch' => 'es',
+        'Niederländisch' => 'nl',
+        'Italienisch' => 'it',
+    ];
+
+    foreach ($languages as $name => $code) {
+
+        $iconHtml = html_entity_decode(getStatusIcon($code));
+
+        if ($selLanguage == $code)
+        {
+            echo '<option value="' . $code . '" selected>' . $iconHtml . ' ' . $name . ' (' . $code . ')</option>';
+        }
+        else
+        {
+            echo '<option value="' . $code . '">' . $iconHtml . ' ' . $name . ' (' . $code . ')</option>';
         }
     }
 }

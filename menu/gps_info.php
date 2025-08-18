@@ -1,7 +1,10 @@
 <?php
-echo '<!DOCTYPE html>';
-echo '<html lang="de">';
-echo '<head><title>GPS-Info</title>';
+require_once '../dbinc/param.php';
+require_once '../include/func_php_core.php';
+
+$userLang = getParamData('language');
+$userLang = $userLang == '' ? 'de' : $userLang;
+echo '<head><title data-i18n="submenu.gps_info.lbl.title">GPS-Info</title>';
 
 #Prevnts UTF8 Errors on misconfigured php.ini
 ini_set( 'default_charset', 'UTF-8' );
@@ -15,10 +18,9 @@ echo '<link rel="stylesheet" href="../css/loader.css?' . microtime() . '">';
 echo '</head>';
 echo '<body>';
 
-require_once '../dbinc/param.php';
-require_once '../include/func_php_core.php';
 require_once '../include/func_js_gps_info.php';
 require_once '../include/func_php_gps_info.php';
+require_once '../include/func_js_core.php';
 
 #Show all Errors for debugging
 error_reporting(E_ALL);
@@ -26,9 +28,9 @@ ini_set('display_errors',1);
 
 $sendData = $_REQUEST['sendData'] ?? 0;
 $loraIp   = getParamData('loraIp');
-$btnText  = $sendData == 1 ? 'GPS-Infoseite neu laden' : 'GPS-Infoseite laden';
+$btnText  = $sendData == 1 ? '<span data-i18n="submenu.gps_info.lbl.load-page-new">GPS-Infoseite neu laden</span>' : '<span data-i18n="submenu.gps_info.lbl.load-page">GPS-Infoseite laden</span>';
 
-echo "<h2>GPS-Infoseite</h2>";
+echo '<h2><span data-i18n="submenu.gps_info.lbl.title">GPS-Infoseite</span></h2>';
 
 echo '<form id="frmLoraInfo" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
@@ -36,7 +38,11 @@ echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
 echo '<table class="table">';
 
 echo '<tr>';
-echo '<th colspan="3"><input type="button" class="btnLoadLoraInfo" id="btnLoadLoraInfo" value="' . $btnText . '" /></th>';
+
+echo '<td colspan="3">
+        <button type="button" class="btnLoadLoraGpsInfo" id="btnLoadLoraGpsInfo">' . $btnText . '</button>
+      </td>';
+
 echo '</tr>';
 
 if ($sendData == 1)
@@ -47,5 +53,10 @@ if ($sendData == 1)
 echo '<table>';
 echo '</form>';
 echo '<div id="pageLoading" class="pageLoadingSub"></div>';
+echo '<script>
+            $.getJSON("../translation.php?lang=' . $userLang . '", function(dict) {
+            applyTranslation(dict); // siehe JS oben
+            });
+        </script>';
 echo '</body>';
 echo '</html>';

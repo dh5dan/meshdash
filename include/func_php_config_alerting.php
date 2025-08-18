@@ -148,13 +148,20 @@ function showAlertMediaFiles(bool $showTable = true)
         echo '<table>';
 
         echo '<tr>';
-        echo '<td ><label for="uploadSoundFile">Sound hinzufügen:&nbsp;</label></td>';
+        echo '<td ><label for="uploadSoundFile"><span data-i18n="submenu.grp_definition.lbl.add-sound">Sound hinzufügen</span>:&nbsp;</label></td>';
         echo '<td><input type="file" name="uploadSoundFile" id="uploadSoundFile" required></td>';
         echo '</tr>';
 
         echo '<tr>';
-        echo '<td ><label for="updateFile">Sound hochladen:&nbsp;</label></td>';
-        echo '<td><input type="button" class="btnUploadSoundFile" id="btnUploadSoundFile" value="Datei hochladen"></td>';
+        echo '<td ><label for="updateFile"><span data-i18n="submenu.grp_definition.lbl.upload-sound">Sound hochladen</span>:&nbsp;</label></td>';
+
+        echo '<td>
+                <button type="button" class="btnUploadSoundFile" id="btnUploadSoundFile">
+                    <span data-i18n="submenu.grp_definition.btn.file-upload">Datei hochladen</span>
+                </button>
+              </td>
+             ';
+
         echo '</tr>';
 
         echo '</table>';
@@ -162,9 +169,9 @@ function showAlertMediaFiles(bool $showTable = true)
         echo '<div class="scrollable-container">';
         echo '<table class="backupTable">';
         echo '<tr>';
-        echo '<th>Datum</th>';
-        echo '<th>Uhrzeit</th>';
-        echo '<th>Media-Datei</th>';
+        echo '<th><span data-i18n="submenu.grp_definition.lbl.date">Datum</span></th>';
+        echo '<th><span data-i18n="submenu.grp_definition.lbl.time">Uhrzeit</span></th>';
+        echo '<th><span data-i18n="submenu.grp_definition.lbl.media-file">Sound-Datei</span></th>';
         echo '<th colspan="2">&nbsp;</th>';
         echo '</tr>';
     }

@@ -1,7 +1,10 @@
 <?php
-echo '<!DOCTYPE html>';
-echo '<html lang="de">';
-echo '<head><title>Command-Send</title>';
+require_once '../dbinc/param.php';
+require_once '../include/func_php_core.php';
+
+$userLang = getParamData('language');
+$userLang = $userLang == '' ? 'de' : $userLang;
+echo '<head><title data-i18n="submenu.send_command.lbl.title">Befehl an Lora senden</title>';
 
 #Prevnts UTF8 Errors on misconfigured php.ini
 ini_set( 'default_charset', 'UTF-8' );
@@ -15,10 +18,9 @@ echo '<link rel="stylesheet" href="../css/loader.css?' . microtime() . '">';
 echo '</head>';
 echo '<body>';
 
-require_once '../dbinc/param.php';
-require_once '../include/func_php_core.php';
 require_once '../include/func_js_send_command.php';
 require_once '../include/func_php_send_command.php';
+require_once '../include/func_js_core.php';
 
 #Show all Errors for debugging
 error_reporting(E_ALL);
@@ -42,15 +44,16 @@ if ($sendData === '1')
 
     if ($resSendCommand)
     {
-        echo '<span class="successHint">'.date('H:i:s').'-Befehl erfolgreich gesendet!</span>';
+        echo '<span class="successHint">'.date('H:i:s').'-<span data-i18n="submenu.send_command.msg.save-settings-success">Settings wurden erfolgreich abgespeichert!</span></span>';
+
     }
     else
     {
-        echo '<span class="failureHint">'.date('H:i:s').'-Fehler beim Senden des Befehls!</span>';
+        echo '<span class="failureHint">' . date('H:i:s') . '-<span data-i18n="submenu.send_command.msg.save-settings-failed">Es gab einen Fehler beim Abspeichern der Settings!</span></span>';
     }
 }
 
-echo "<h2>Befehl an Lora senden</h2>";
+echo '<h2><span data-i18n="submenu.send_command.lbl.title">Befehl an Lora senden</span></h2>';
 
 echo '<form id="frmSendCommand" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
@@ -58,7 +61,7 @@ echo '<input type="hidden" id="loraIp" value="' . $loraIp . '" />';
 echo '<table>';
 
 echo '<tr>';
-echo '<td>Befehlszeile:</td>';
+echo '<td><span data-i18n="submenu.send_command.lbl.command-line">Befehlszeile</span>:</td>';
 echo '<td><input type="text" name="sendCommand"  size="30" id="sendCommand" value="' . $sendCommand . '" placeholder="--extudpip on"  /></td>';
 echo '</tr>';
 
@@ -66,7 +69,10 @@ echo '<tr>';
 echo '<td>&nbsp;</td>';
 echo '<td>';
 echo '<img src="../image/info_blau.png" class="infoImagePoint" id="infoImagePoint" alt="info" />';
-echo '<input type="button" class="btnSendCommand" id="btnSendCommand" value="Sende Befehl" />';
+#echo '<input type="button" class="btnSendCommand" id="btnSendCommand" value="Sende Befehl" />';
+
+echo '<button type="button" class="btnSendCommand" id="btnSendCommand"><span data-i18n="submenu.send_command.btn.send-command">Sende Befehl</span></button>';
+
 echo'</td>';
 echo '</tr>';
 
@@ -76,13 +82,13 @@ echo '</tr>';
 
 echo '<tr>';
 echo '<td colspan="2">';
-echo '<span class="failureHint">Bei der erstmaligen UDP-Aktivierung,<br>muss einmalig ein Reboot ausgeführt werden!</span></td>';
+echo '<span class="failureHint"><span data-i18n="submenu.send_command.lbl.hint">Bei der erstmaligen UDP-Aktivierung,<br>muss einmalig ein Reboot ausgeführt werden!</span></span></td>';
 echo '</tr>';
 
 if ($countIps == 1)
 {
     echo '<tr>';
-    echo '<td>Setzte UDP Ziel-Ip :</td>';
+    echo '<td><span data-i18n="submenu.send_command.lbl.set-upd-ip">Setzte UDP Ziel-Ip</span>:</td>';
     echo '<td><input type="button" class="btnPreCmd" data-cmd="--extudpip ' . $ips[0] . '" value="--extudpip ' . $ips[0] . '" /></td>';
     echo '</tr>';
 }
@@ -91,24 +97,24 @@ else
     for ($t = 0; $t < $countIps; ++$t)
     {
         echo '<tr>';
-        echo '<td>Setzte UDP Ziel-Ip' . $t . ' :</td>';
+        echo '<td><span data-i18n="submenu.send_command.lbl.set-upd-ip">Setzte UDP Ziel-Ip</span>' . $t . ' :</td>';
         echo '<td><input type="button" class="btnPreCmd" data-cmd="--extudpip ' . $ips[$t] . '" value="--extudpip ' . $ips[$t] . '" /></td>';
         echo '</tr>';
     }
 }
 
 echo '<tr>';
-echo '<td>Aktiviere UDP :</td>';
+echo '<td><span data-i18n="submenu.send_command.lbl.activate-upd">Aktiviere UDP</span>:</td>';
 echo '<td><input type="button" class="btnPreCmd" data-cmd="--extudp on" value="--extudp on" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Deaktiviere UDP :</td>';
+echo '<td><span data-i18n="submenu.send_command.lbl.deactivate-upd">Deaktiviere UDP</span>:</td>';
 echo '<td><input type="button" class="btnPreCmd" data-cmd="--extudp off" value="--extudp off" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Reboot Lora :</td>';
+echo '<td><span data-i18n="submenu.send_command.reboot-node">Reboot Lora</span>:</td>';
 echo '<td><input type="button" class="btnPreCmd" data-cmd="--reboot" value="--reboot" /></td>';
 echo '</tr>';
 
@@ -117,22 +123,28 @@ echo '<td colspan="2">&nbsp;</td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>OTA-Update :</td>';
+echo '<td><span data-i18n="submenu.send_command.ota-update">OTA-Update</span>:</td>';
 echo '<td><input type="button" class="btnPreCmd" data-cmd="--ota-update" value="--ota-update" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Gateway ON :</td>';
+echo '<td><span data-i18n="submenu.send_command.gateway-on">Gateway ON</span>:</td>';
 echo '<td><input type="button" class="btnPreCmd" data-cmd="--gateway on" value="--gateway on" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Gateway OFF :</td>';
+echo '<td><span data-i18n="submenu.send_command.gateway-off">Gateway OFF</span>:</td>';
 echo '<td><input type="button" class="btnPreCmd" data-cmd="--gateway off" value="--gateway off" /></td>';
 echo '</tr>';
 
 echo '</table>';
 echo '</form>';
+
+echo '<script>
+            $.getJSON("../translation.php?lang=' . $userLang . '", function(dict) {
+            applyTranslation(dict); // siehe JS oben
+            });
+        </script>';
 
 echo '</body>';
 echo '</html>';

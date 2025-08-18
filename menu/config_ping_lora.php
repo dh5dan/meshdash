@@ -1,7 +1,10 @@
 <?php
-echo '<!DOCTYPE html>';
-echo '<html lang="de">';
-echo '<head><title>Ping</title>';
+require_once '../dbinc/param.php';
+require_once '../include/func_php_core.php';
+
+$userLang = getParamData('language');
+$userLang = $userLang == '' ? 'de' : $userLang;
+echo '<head><title data-i18n="submenu.ping_lora.lbl.title">Ping Lora</title>';
 
 #Prevnts UTF8 Errors on misconfigured php.ini
 ini_set( 'default_charset', 'UTF-8' );
@@ -15,9 +18,8 @@ echo '<link rel="stylesheet" href="../css/config_ping_lora.css?' . microtime() .
 echo '</head>';
 echo '<body>';
 
-require_once '../dbinc/param.php';
 require_once '../include/func_js_config_ping_lora.php';
-require_once '../include/func_php_core.php';
+require_once '../include/func_js_core.php';
 
 #Show all Errors for debugging
 error_reporting(E_ALL);
@@ -63,15 +65,27 @@ if ($sendData == 1)
     }
 }
 
-echo "<h2>Ping Lora IP: ". $loraIp .'</h2>';
+echo '<h2><span data-i18n="submenu.ping_lora.lbl.title">Ping Lora IP</span> IP:' . $loraIp .'</h2>';
 
 echo '<form id="frmPingLora" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
 echo '<input type="hidden" name="loraIp" id="loraIP" value="' . $loraIp . '" />';
-echo '<input type="button" class="submitParamLoraIp" id="btnPingLoraIp" value="Ping jetzt aus&uuml;hren"  />';
+
+echo '<td>
+        <button type="button" class="submitParamLoraIp" id="btnPingLoraIp">
+            <span data-i18n="submenu.ping_lora.btn.ping">Ping jetzt ausführen</span>
+        </button>
+      </td>';
+
 echo '</form>';
 
 echo '<div id="pageLoading" class="pageLoadingSub"></div>';
+
+echo '<script>
+            $.getJSON("../translation.php?lang=' . $userLang . '", function(dict) {
+            applyTranslation(dict); // siehe JS oben
+            });
+        </script>';
 
 echo '</body>';
 echo '</html>';

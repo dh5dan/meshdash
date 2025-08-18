@@ -1,0 +1,19 @@
+body {
+    font-family: sans-serif;
+    margin: 20px;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 0px;
+}
+
+th {
+    background: #eee;
+}
+
+input[type=text] {
+    width: 100%;
+    box-sizing: border-box;
+}

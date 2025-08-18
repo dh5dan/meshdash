@@ -1,5 +1,5 @@
 <?php
-const VERSION = '1.10.56';
+const VERSION = '1.10.58';
 date_default_timezone_set('Europe/Berlin');
 
 if (PHP_SAPI === 'cli')
@@ -73,6 +73,9 @@ else
 
     define('BASE_PATH_URL', $meshDashUrl);
 }
+
+#Prevents Warning: preg_replace(): Allocation of JIT memory failed, PCRE JIT will be disabled.
+ini_set("pcre.jit", "0");
 
 $triggerLinkSendQueue = BASE_PATH_URL . 'send_queue.php';
 

@@ -1,7 +1,10 @@
 <?php
-echo '<!DOCTYPE html>';
-echo '<html lang="de">';
-echo '<head><title>Debug-Info</title>';
+require_once '../dbinc/param.php';
+require_once '../include/func_php_core.php';
+
+$userLang = getParamData('language');
+$userLang = $userLang == '' ? 'de' : $userLang;
+echo '<head><title data-i18n="submenu.debug_info.lbl.title">Debug-Info zu MeshDash-SQL</title>';
 
 #Prevnts UTF8 Errors on misconfigured php.ini
 ini_set( 'default_charset', 'UTF-8' );
@@ -15,10 +18,9 @@ echo '<link rel="stylesheet" href="../css/loader.css?' . microtime() . '">';
 echo '</head>';
 echo '<body>';
 
-require_once '../dbinc/param.php';
-require_once '../include/func_php_core.php';
 require_once '../include/func_js_debug_info.php';
 require_once '../include/func_php_debug_info.php';
+require_once '../include/func_js_core.php';
 
 #Show all Errors for debugging
 error_reporting(E_ALL);
@@ -106,7 +108,7 @@ if ($sendData === '3')
     }
 }
 
-echo "<h2>Debug-Info zu MeshDash-SQL</h2>";
+echo '<h2><span data-i18n="submenu.debug_info.lbl.title">Debug-Info zu MeshDash-SQL</span></h2>';
 
 echo '<form id="frmDebugInfo" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
@@ -114,19 +116,19 @@ echo '<input type="hidden" name="deleteFileImage" id="deleteFileImage" value="" 
 echo '<table>';
 
 echo '<tr>';
-echo '<td>OS :</td>';
+echo '<td><span data-i18n="submenu.debug_info.lbl.os">OS</span>:</td>';
 echo '<td>'. $osName .'</td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Architektur :</td>';
+echo '<td><span data-i18n="submenu.debug_info.lbl.architecture">Architektur</span>:</td>';
 echo '<td>'. $architecture .'</td>';
 echo '</tr>';
 
 if ($osIssWindows === false)
 {
     echo '<tr>';
-    echo '<td>Release :</td>';
+    echo '<td><span data-i18n="submenu.debug_info.lbl.release">Release</span>:</td>';
     echo '<td>'. $osRelease .'</td>';
     echo '</tr>';
 }
@@ -134,55 +136,55 @@ if ($osIssWindows === false)
 if ($hardware != '')
 {
     echo '<tr>';
-    echo '<td>Hardware :</td>';
+    echo '<td><span data-i18n="submenu.debug_info.lbl.hardware">Hardware</span>:</td>';
     echo '<td>' . $hardware . '</td>';
     echo '</tr>';
 }
 
 echo '<tr>';
-echo '<td>Sendeintervall (Sek.) :</td>';
+echo '<td><span data-i18n="submenu.debug_info.lbl.tx-interval">Sendeintervall (Sek.)</span>:</td>';
 echo '<td>';
 echo  $sendQueueInterval;
 echo '</td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Send-Queue Status:</td>';
+echo '<td><span data-i18n="submenu.debug_info.lbl.queue-status">Send-Queue Status</span>:</td>';
 echo '<td>';
 echo  $sendQueueMode;
 echo '</td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Current PHP-Version:</td>';
+echo '<td><span data-i18n="submenu.debug_info.lbl.php-version">Aktuelle PHP-Version</span>:</td>';
 echo '<td>';
 echo  phpversion();
 echo '</td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>PHP-Extension <b>pdo_sqlite</b> loaded:</td>';
+echo '<td><span data-i18n="submenu.debug_info.lbl.pdo-sqlite">PHP-Extension <b>pdo_sqlite</b> geladen</span>:</td>';
 echo '<td>';
 echo  $resExtensionPdoSqlite3;
 echo '</td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>PHP-Extension <b>sqlite3</b> loaded:</td>';
+echo '<td><span data-i18n="submenu.debug_info.lbl.sqlite">PHP-Extension <b>sqlite3</b> geladen</span>:</td>';
 echo '<td>';
 echo  $resExtensionSqlite3;
 echo '</td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Webserver:</td>';
+echo '<td><span data-i18n="submenu.debug_info.lbl.webserver">Webserver</span>:</td>';
 echo '<td>';
 echo  getServerSoftware();
 echo '</td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>System Uptime:</td>';
+echo '<td><span data-i18n="submenu.debug_info.lbl.uptime">System Uptime</span>:</td>';
 echo '<td>';
 echo gmdate("d",getSystemUptimeSeconds()). 'Tage ' .gmdate("H:i:s",getSystemUptimeSeconds());
 echo '</td>';
@@ -195,7 +197,7 @@ echo '<td colspan="2"><hr></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Lora-Node GUI-Status:</td>';
+echo '<td><span data-i18n="submenu.debug_info.lbl.node-firmware">Lora-Node GUI-Status</span>:</td>';
 echo '<td>';
 #Check new GUI
 if (getParamData('isNewMeshGui') == 1)
@@ -214,21 +216,21 @@ echo '<td colspan="2"><hr></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>UDP-Receiver BG-Status:</td>';
+echo '<td><span data-i18n="submenu.debug_info.lbl.udp-bg-status">UDP-Receiver BG-Status</span>:</td>';
 echo '<td>';
 echo  $statusImageUpdReceiver;
 echo '</td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>UDP-Receiver BG-Task:</td>';
+echo '<td><span data-i18n="submenu.debug_info.lbl.udp-bg-task">UDP-Receiver BG-Task</span>:</td>';
 echo '<td>';
 echo  $taskResultUdpReceiver;
 echo '</td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>UDP-Receiver BG-Timestamp:</td>';
+echo '<td><span data-i18n="submenu.debug_info.lbl.udp-bg-timestamp">UDP-Receiver BG-Timestamp</span>:</td>';
 echo '<td>';
 echo  getParamData('udpReceiverTs');
 echo '</td>';
@@ -239,21 +241,21 @@ echo '<td colspan="2"><hr></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Cron-Loop BG-Status:</td>';
+echo '<td><span data-i18n="submenu.debug_info.lbl.cron-bg-status">Cron-Loop BG-Status</span>:</td>';
 echo '<td>';
 echo  $statusCronLoop;
 echo '</td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Cron-Loop BG-Task:</td>';
+echo '<td><span data-i18n="submenu.debug_info.lbl.cron-bg-task">Cron-Loop BG-Task</span>:</td>';
 echo '<td>';
 echo  $taskResultCronLoop;
 echo '</td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Cron-Loop BG-Timestamp:</td>';
+echo '<td><span data-i18n="submenu.debug_info.lbl.cron-bg-timestamp">Cron-Loop BG-Timestamp</span>:</td>';
 echo '<td>';
 echo  getParamData('cronLoopTs');
 echo '</td>';
@@ -294,12 +296,14 @@ echo '</tr>';
 
 showLogFiles();
 
-//echo '<tr>';
-//    echo '<td colspan="2"><input type="button" class="btnSaveDebugInfo" id="btnSaveDebugInfo" value="Settings speichern"  /></td>';
-//echo '</tr>';
-
 echo '</table>';
 echo '</form>';
+
+echo '<script>
+            $.getJSON("../translation.php?lang=' . $userLang . '", function(dict) {
+            applyTranslation(dict); // siehe JS oben
+            });
+        </script>';
 
 echo '</body>';
 echo '</html>';
