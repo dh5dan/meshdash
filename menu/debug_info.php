@@ -82,6 +82,10 @@ $checkTaskCmdCronLoop = getTaskCmd('cron');
 $taskResultCronLoop   = shell_exec($checkTaskCmdCronLoop); //Prüfe Hintergrundprozess
 $statusCronLoop       = $taskResultCronLoop != '' ? getStatusIcon('active') : getStatusIcon('inactive');
 
+$checkTaskCmdCronBeacon = getTaskCmd('cronBeacon');
+$taskResultCronBeacon   = shell_exec($checkTaskCmdCronBeacon); //Prüfe Hintergrundprozess
+$statusCronBeacon       = $taskResultCronBeacon != '' ? getStatusIcon('active') : getStatusIcon('inactive');
+
 $resExtensionPdoSqlite3  = extension_loaded('pdo_sqlite') == 1 ? getStatusIcon('active') : getStatusIcon('inactive');
 $resExtensionSqlite3     = extension_loaded('sqlite3') == 1 ? getStatusIcon('active') : getStatusIcon('inactive');
 
@@ -257,7 +261,33 @@ echo '</tr>';
 echo '<tr>';
 echo '<td><span data-i18n="submenu.debug_info.lbl.cron-bg-timestamp">Cron-Loop BG-Timestamp</span>:</td>';
 echo '<td>';
-echo  getParamData('cronLoopTs');
+echo  getParamData('cronLoopTs') ?? '0000-00-00 00:00';
+echo '</td>';
+echo '</tr>';
+
+#
+echo '<tr>';
+echo '<td colspan="2"><hr></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td><span data-i18n="submenu.debug_info.lbl.cron-beacon-bg-status">Cron-Beacon BG-Status</span>:</td>';
+echo '<td>';
+echo  $statusCronBeacon;
+echo '</td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td><span data-i18n="submenu.debug_info.lbl.cron-beacon-bg-task">Cron-Beacon BG-Task</span>:</td>';
+echo '<td>';
+echo  $taskResultCronBeacon;
+echo '</td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td><span data-i18n="submenu.debug_info.lbl.cron-beacon-bg-timestamp">Cron-Beacon BG-Timestamp</span>:</td>';
+echo '<td>';
+echo  getParamData('cronLoopBeaconTs') ?? '0000-00-00 00:00';
 echo '</td>';
 echo '</tr>';
 

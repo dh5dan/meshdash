@@ -38,12 +38,6 @@ $sendData = $_REQUEST['sendData'] ?? 0;
 $osIssWindows = chkOsIsWindows();
 $osName       = $osIssWindows === true ? 'Windows' : 'Linux';
 
-$execDir         = 'log';
-$currentBaseDir  = pathinfo(getcwd())['basename'];
-$cronPidFileSub  = '../' . $execDir . '/' . CRON_STOP_FILE;
-$cronPidFileRoot = $execDir . '/' . CRON_STOP_FILE;
-$cronPidFile     = $currentBaseDir == 'menu' ? $cronPidFileSub : $cronPidFileRoot;
-
 if ($sendData === '1')
 {
     $resSaveSendQueueSettings = saveSendQueueSettings();
@@ -65,7 +59,7 @@ $sendQueueEnabled        = getParamData('sendQueueMode');
 $sendQueueEnabled        = $sendQueueEnabled == '' ? 0 : $sendQueueEnabled;
 $sendQueueEnabledChecked = $sendQueueEnabled == 1 ? 'checked' : '';
 
-$resCheckCronLoopBgTask = checkCronLoopBgTask() == '' ? getStatusIcon('inactive') : getStatusIcon('active');
+$resCheckCronLoopBgTask = checkBgTask('cron') == '' ? getStatusIcon('inactive') : getStatusIcon('active');
 
 echo '<h2><span data-i18n="submenu.send_queue.lbl.title">Sende-Queue</span></h2>';
 

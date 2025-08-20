@@ -141,7 +141,6 @@ function checkMheard($msgId, $msg, $src, $dst, $callSign, $loraIp, $mhTargetFlag
     }
 
     // Regulärer Ausdruck für "#mheard", gefolgt von einem Rufzeichen mit SSID (1-999)
-    #$pattern = '/\bmheard\s+([A-Za-z0-9]+-\d{1,3})\b/i';
     $pattern = '/#mheard\s+([A-Za-z0-9]+-\d{1,3})\b/i';
 
     if (preg_match($pattern, $msg, $matches))
@@ -184,6 +183,82 @@ function checkMheard($msgId, $msg, $src, $dst, $callSign, $loraIp, $mhTargetFlag
             echo "<br>Kein gültiges Mheard-Muster gefunden.";
         }
     }
+}
+function checkBeaconOtp($msgId, $msg, $callSign, $dst, $beaconOtp): bool
+{
+    #Eliminiere Hops in Quelle und Ziel
+    $dst = explode(',', $dst)[0];
+
+    $debugFlag = false;
+
+    if ($debugFlag === true)
+    {
+        echo "<br>msgId:$msgId";
+        echo "<br>msg:$msg";
+        echo "<br>callSign:$callSign";
+        echo "<br>dst:$dst";
+        echo "<br>beaconOtp:$beaconOtp";
+    }
+
+    // Regulärer Ausdruck für "#otpstart", gefolgt von einem OTP
+    $pattern = '/#beacon\s+(.+)/i';
+
+    if (preg_match($pattern, $msg, $matches))
+    {
+        $foundOtp = $matches[1]; // Gefundenes Rufzeichen mit SSID
+
+        if ($debugFlag === true)
+        {
+            echo "<br>Gefunden foundOtp: $foundOtp";
+        }
+
+        if (strcasecmp($foundOtp, $beaconOtp) === 0)
+        {
+            if ($debugFlag === true)
+            {
+                echo "<br>Übereinstimmung! Funktion wird ausgeführt ...";
+            }
+          #  return false;
+            #Aktiviere Bake lösche OPT
+            $resRemoteStartBeacon = remoteStartBeacon();
+
+            if ($resRemoteStartBeacon === true)
+            {
+                $beaconInterval  = getBeaconData('beaconInterval');
+                $beaconStopCount = getBeaconData('beaconStopCount');
+
+                $arraySend['txType'] = 'msg';
+                $arraySend['txDst']  = 9;
+                $arraySend['txMsg']  = 'Beacon['. $callSign .'] activated. Interval: '. $beaconInterval .' Stop-Count: '. $beaconStopCount;
+                $resSetTxQueue       = setTxQueue($arraySend);
+
+                if($resSetTxQueue === true)
+                {
+                    #Setzte Msg als gesendet
+                    updateMeshDashData($msgId, 'beaconEnabledStatusSend', 1);
+                }
+            }
+        }
+        else
+        {
+            if ($debugFlag === true)
+            {
+                echo "<br>Kein Match mit OTP ($beaconOtp).";
+                return false;
+            }
+        }
+    }
+    else
+    {
+        if ($debugFlag === true)
+        {
+            echo "<br>Kein gültigen #beacon Key gefunden.";
+        }
+
+        return false;
+    }
+
+    return true;
 }
 function sendMheard($msgId, $src): bool
 {

@@ -62,6 +62,10 @@ $maxScrollBackRows  = (int) getParamData('maxScrollBackRows');
 $callSign           = trim(getParamData('callSign'));
 $posStatusValue     = $noPosData;
 
+$beaconOtp          = getBeaconData('beaconOtp') ?? '';
+$beaconGroup        = getBeaconData('beaconGroup');
+$beaconGroup        = $beaconGroup == '' ? 0 : $beaconGroup;
+
 $alertSoundFileSrc = getParamData('alertSoundFileSrc');
 $alertEnabledSrc   = getParamData('alertEnabledSrc');
 $alertSoundCallSrc = getParamData('alertSoundCallSrc');
@@ -402,18 +406,19 @@ if ($result !== false)
     {
         ###############################################
         #Common
-        $srcType          = $row['src_type'] ?? ''; // node, lora
-        $type             = $row['type'] ?? '';     // pos / msg
-        $src              = $row['src'] ?? '';     // <call>-<sid>
-        $msg              = $row['msg'] ?? '';     //
-        $msgId            = $row['msg_id']; // 72378728
-        $timestamp        = $row['timestamps'] ?? date('Y-m-d H:i:s');  // Timestamp added by myself
-        $dst              = $row['dst'] ?? ''; // 995 | call
-        $msgAckReqDb      = $row['ackReq'] ?? '';
-        $msgAckDb         = $row['ack'] ?? '';
-        $mhSend           = $row['mhSend'] ?? 0;
-        $alertExecutedSrc = $row['alertExecutedSrc'] ?? 0;
-        $alertExecutedDst = $row['alertExecutedDst'] ?? 0;
+        $srcType                 = $row['src_type'] ?? ''; // node, lora
+        $type                    = $row['type'] ?? '';     // pos / msg
+        $src                     = $row['src'] ?? '';     // <call>-<sid>
+        $msg                     = $row['msg'] ?? '';     //
+        $msgId                   = $row['msg_id']; // 72378728
+        $timestamp               = $row['timestamps'] ?? date('Y-m-d H:i:s');  // Timestamp added by myself
+        $dst                     = $row['dst'] ?? ''; // 995 | call
+        $msgAckReqDb             = $row['ackReq'] ?? '';
+        $msgAckDb                = $row['ack'] ?? '';
+        $mhSend                  = $row['mhSend'] ?? 0;
+        $beaconEnabledStatusSend = $row['beaconEnabledStatusSend'] ?? 0;
+        $alertExecutedSrc        = $row['alertExecutedSrc'] ?? 0;
+        $alertExecutedDst        = $row['alertExecutedDst'] ?? 0;
 
         $msgAckReq   = 0; // Acknowledge Request
         $msgAck      = 0; // Acknowledge
@@ -588,6 +593,14 @@ if ($result !== false)
             if ($mhSend == 0 && $dst != 'all' && $dst != '*' && $dst == $mheardGroup)
             {
                 checkMheard($msgId, $msg, $src, $dst, $callSign, $loraIp, 1);
+            }
+
+            #Prüfe ob Baken-OTP Keyword geschickt wurde.
+            #Prüfe ob Baken-Gruppe übereinstimmt und Enabled MSg noch nicht gesendet wurde
+            #Anfrage gilt nicht, wenn OTP schon gesendet wurde.
+            if ($beaconOtp != ''&& $dst == $beaconGroup && $beaconEnabledStatusSend == 0)
+            {
+                checkBeaconOtp($msgId, $msg, $callSign, $dst, $beaconOtp);
             }
 
             $parts     = explode(',', $src);

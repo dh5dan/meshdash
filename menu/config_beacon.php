@@ -51,6 +51,7 @@ $beaconInterval = $beaconInterval == '' ? 5 : $beaconInterval;
 $beaconStopCount = getBeaconData('beaconStopCount') ?? 100;
 $beaconMsg       = getBeaconData('beaconMsg') ?? 'Bakensendung';
 $beaconGroup     = getBeaconData('beaconGroup') ?? 9;
+$beaconOtp       = getBeaconData('beaconOtp') ?? '';
 
 $beaconStopCount = $beaconStopCount == '' ? 100 : $beaconStopCount;
 $beaconMsg       = $beaconMsg == '' ? 'Bakensendung' : $beaconMsg;
@@ -68,10 +69,7 @@ $beaconInitSendTs   = $beaconInitSendTs == '' ? '0000-00-00 00:00:00' : $beaconI
 $beaconLastSendTs   = $beaconLastSendTs == '' ? '0000-00-00 00:00:00' : $beaconLastSendTs;
 $currentBeaconCount = $currentBeaconCount == '' ? 0 : $currentBeaconCount;
 
-if ($osIssWindows === false)
-{
-    $resCheckBeaconCron = getBeaconCronEntries(array('send_beacon.php')) === false ? getStatusIcon('inactive') : getStatusIcon('active');
-}
+$resCheckBeaconCron = checkBgTask('cronBeacon') == '' ? getStatusIcon('inactive') : getStatusIcon('active');
 
 echo '<h2><span data-i18n="submenu.config_beacon.lbl.title">Baken Einstellungen</span></h2>';
 
@@ -94,18 +92,28 @@ echo '<td><input type="text" name="beaconStopCount" size="4" id="beaconStopCount
 echo '</tr>';
 
 echo '<tr>';
-echo '<td><span data-i18n="submenu.config_beacon.lbl.beacon-text">Text</span>:</td>';
+echo '<td><span data-i18n="submenu.config_beacon.lbl.beacon-text">Baken-Text</span>:</td>';
 echo '<td><input type="text" name="beaconMsg" size="20px" id="beaconMsg" value="' . $beaconMsg . '" /></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td><span data-i18n="submenu.config_beacon.lbl.beacon-group">Gruppe</span>:</td>';
+echo '<td><span data-i18n="submenu.config_beacon.lbl.beacon-group">Baken-Gruppe</span>:</td>';
 echo '<td><input type="text" name="beaconGroup" size="4" id="beaconGroup" value="' . $beaconGroup . '" /></td>';
 echo '</tr>';
 
 echo '<tr>';
 echo '<td><span data-i18n="submenu.config_beacon.lbl.beacon-task-status">Task enabled</span>:</td>';
 echo '<td><input type="checkbox" name="beaconEnabled" ' . $beaconEnabledChecked . ' id="beaconEnabled" value="1" /></td>';
+echo '</tr>';
+
+
+echo '<tr>';
+echo '<td><span data-i18n="submenu.config_beacon.lbl.beacon-otp-pwd">Remote-Start OTP</span>:</td>';
+echo '<td><input type="text" name="beaconOtp" size="20px" id="beaconOtp" value="' . $beaconOtp . '" placeholder="A-Z, a-z, 0-9"/></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td colspan="2"><hr></td>';
 echo '</tr>';
 
 echo '<tr>';
@@ -123,17 +131,14 @@ echo '<td><span data-i18n="submenu.config_beacon.lbl.beacon-current-count">Aktue
 echo '<td>' . $currentBeaconCount . '</td>';
 echo '</tr>';
 
-if ($osIssWindows === false)
-{
-    echo '<tr>';
-    echo '<td>Baken-Cron Status:</td>';
+echo '<tr>';
+echo '<td><span data-i18n="submenu.config_beacon.lbl.beacon-cron-status">Baken-Cron Status</span>:</td>';
 
-    echo '<td>';
-    echo $resCheckBeaconCron;
-    echo '</td>';
+echo '<td>';
+echo $resCheckBeaconCron;
+echo '</td>';
 
-    echo '</tr>';
-}
+echo '</tr>';
 
 echo '<tr>';
 echo '<td colspan="2"><hr></td>';
