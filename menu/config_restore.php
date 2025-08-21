@@ -130,7 +130,7 @@ if ($sendData === '1')
                     }
 
                     #wenn Cron rennt dann auch beenden
-                    if (!(checkCronLoopBgTask() == '') === true)
+                    if (!(checkBgTask('cron') == '') === true)
                     {
                         #Beende UDP-BG Prozess.
                         echo '<br><span class="successHint">Beende CRON-Prozess.</span>';
@@ -198,7 +198,7 @@ if ($sendData === '1')
                         }
 
                         #wenn Cron gestartet war dann auch wieder starten
-                        if (!(checkCronLoopBgTask() == '') === true)
+                        if (!(checkBgTask('cron') == '') === true)
                         {
                             #Beende UDP-BG Prozess.
                             echo '<br><span class="successHint">Starte CRON-Prozess.</span>';

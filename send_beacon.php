@@ -37,17 +37,12 @@ if ($beaconCount < $beaconStopCount && $beaconEnabled == 1)
     $beaconLastSendTs = getBeaconData('beaconLastSendTs') ?? '0000-00-00 00:00:00';
     $resIsPassed      = hasBeaconTimePassed($beaconInitSendTs, $beaconLastSendTs, $limitHours);
 
-    #Wenn Zeitlimit erreicht dann sofort beenden
-    if ($resIsPassed === true)
+    #Wenn Zeitlimit oder Stop-Count erreicht, dann sofort beenden
+    if ($resIsPassed === true || $beaconCount >= $beaconStopCount)
     {
-        echo "<br>Max. 8h erreicht schalte ab.";
+        echo "<br>Max. 8h/Stop-Count erreicht schalte ab.";
         setBeaconData('beaconEnabled', 0);
-
-        if (chkOsIsWindows() === false)
-        {
-            setBeaconCronInterval($beaconInterval, 0);
-        }
-
+        setBeaconCronInterval($beaconInterval, 0);
         exit();
     }
 }
@@ -55,11 +50,7 @@ else
 {
     echo "<br>Max count $beaconCount/$beaconStopCount erreicht schalte ab.";
     setBeaconData('beaconEnabled', 0);
-
-    if (chkOsIsWindows() === false)
-    {
-        setBeaconCronInterval($beaconInterval, 0);
-    }
+    setBeaconCronInterval($beaconInterval, 0);
 }
 
 echo "<br>beaconInitSendTs:$beaconInitSendTs";

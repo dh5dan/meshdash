@@ -13,6 +13,8 @@ function saveBeaconSettings(): bool
     $beaconMsg = trim($_REQUEST['beaconMsg']) ?? '';
     $beaconMsg = $beaconMsg == '' ? 'Bakensendung' : $beaconMsg;
 
+    $beaconOtp = trim($_REQUEST['beaconOtp']) ?? '';
+
     $beaconGroup = $_REQUEST['beaconGroup'] ?? 9;
     $beaconGroup = $beaconGroup == '' ? 9 : $beaconGroup;
 
@@ -22,6 +24,7 @@ function saveBeaconSettings(): bool
     setBeaconData('beaconInterval', $beaconInterval);
     setBeaconData('beaconStopCount', $beaconStopCount);
     setBeaconData('beaconMsg', $beaconMsg, 'txt');
+    setBeaconData('beaconOtp', $beaconOtp, 'txt');
     setBeaconData('beaconGroup', $beaconGroup);
     setBeaconData('beaconEnabled', $beaconEnabled);
 
@@ -38,10 +41,7 @@ function saveBeaconSettings(): bool
         setBeaconData('beaconCount', 0);
     }
 
-    if (chkOsIsWindows() === false)
-    {
-        setBeaconCronInterval($beaconInterval, $beaconEnabled);
-    }
+    setBeaconCronInterval($beaconInterval, $beaconEnabled);
 
     return true;
 }
@@ -68,57 +68,7 @@ function selectBeaconIntervall($beaconInterval)
         }
     }
 }
-function setBeaconCronInterval($beaconInterval,$beaconEnabled): bool
-{
-    $delete    = $beaconEnabled == 0; // Wenn 0 = true
-    $debugFlag = false;
 
-    $skriptPfad = '/usr/bin/wget -q -O /dev/null ' . BASE_PATH_URL . 'send_beacon.php';
-
-    $cronJobsNeu = [];
-
-    if ($beaconInterval == '' || $beaconInterval < 5)
-    {
-        if ($debugFlag)
-        {
-            echo "Intervall ungültig!.\n";
-        }
-
-        return false;
-    }
-
-    if ($beaconInterval <= 60)
-    {
-        // Einfache Minuten-Intervalle
-        $cronJobsNeu[] = "*/$beaconInterval * * * * $skriptPfad";
-    }
-
-    // Bestehende Crontab einlesen
-    exec('crontab -l 2>/dev/null', $cronJobsAlt);
-
-    // Löschen aller Jobs, die dieses Skript enthalten
-    $cronJobsAlt = array_filter($cronJobsAlt, function ($zeile) use ($skriptPfad) {
-        return strpos($zeile, $skriptPfad) === false;
-    });
-
-    if (!$delete)
-    {
-        $cronJobsAlt = array_merge($cronJobsAlt, $cronJobsNeu);
-    }
-
-    file_put_contents('/tmp/crontab.txt', implode("\n", $cronJobsAlt) . "\n");
-    exec('crontab /tmp/crontab.txt');
-
-    if ($debugFlag)
-    {
-        echo "<pre>";
-        echo "Generiere Baken Cronjob für Intervall: {$beaconInterval} Minuten\n";
-        print_r($cronJobsNeu);
-        echo "</pre>";
-    }
-
-    return true;
-}
 function getBeaconCronEntries(array $scriptsToCheck = []): bool
 {
     $debugFlag = false;

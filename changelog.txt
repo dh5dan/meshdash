@@ -1,9 +1,24 @@
+Version 1.10.60 SQL
+
+FEATURE Remote-Start der Bake via OTP
+        Keyword: #beacon <otp>
+        OTP = One Time Password (A-Za-z0-9)
+
+Es kann nun die Bake auch aus der Ferne aktiviert werden.
+Nach Aktivierung bekommt man eine Rückmeldung und das OTP ist ungültig.
+Die Remote-Aktivierung ist also nur einmal möglich und muss danach erneut aktiviert werden.
+
+FEATURE Umstellung des Baken-Cron auf PHP-Cron,
+        da Trixie die Ausführung von Crontab via PHP nicht mehr erlaubt.
+        Durch die Umstellung ist dieser PHP-Cron auch besser skalierbar
+        und wir sind hierdurch auch völlig autark vom Linux-System.
+
+####################################
 Version 1.10.58 SQL
 FEATURE Übersetzung EN/DE/FR/ES/NL/IT im Menü/Submenü
         PopUp-Meldungen sind noch nicht inbegriffen und kommen im nächsten Step.
 
 BUGFIX: JIT memory failed Meldung bei Debian Trixi/PHP8.4 abgeschaltet.
-
 ####################################
 Version 1.10.56 SQL
 BUGFIX Höhen-/Satellitenangabe fehlt bei PGS-info.
@@ -47,7 +62,7 @@ Remote-Kommandos:
 Mheard-Modul:
  - OpenStreetMap-Kartenansicht ist jetzt auch im Mheard-Untermenü verfügbar.
 
-HF-Reichweitentest:
+HF-Reichweiten-Test:
  - Neue Funktion zur HF-Reichweitenmessung hinzugefügt.
 
 Visuelle Rückmeldung:

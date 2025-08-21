@@ -1085,6 +1085,52 @@ function updateMeshDashData($msgId, $key, $value, $doNothing = false): bool
 
     return true;
 }
+function remoteStartBeacon(): bool
+{
+    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    $basename       = pathinfo(getcwd())['basename'];
+    $dbFilenameSub  = '../database/beacon.db';
+    $dbFilenameRoot = 'database/beacon.db';
+    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+
+    $db = new SQLite3($dbFilename);
+    $db->exec('PRAGMA synchronous = NORMAL;');
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+
+    $sql = "UPDATE beacon
+               SET 
+                   param_text  = CASE WHEN param_key = 'beaconOtp'        THEN '' END,
+                   param_text  = CASE WHEN param_key = 'beaconInitSendTs' THEN '0000-00-00 00:00:00' END,
+                   param_text  = CASE WHEN param_key = 'beaconLastSendTs' THEN '0000-00-00 00:00:00' END,
+                   param_value = CASE WHEN param_key = 'beaconCount'      THEN 0 END,
+                   param_value = CASE WHEN param_key = 'beaconEnabled'    THEN 1 END
+             WHERE param_key IN ('beaconOtp', 'beaconEnabled');
+           ";
+
+    $logArray   = array();
+    $logArray[] = "updateBeaconOtp: OTP";
+    $logArray[] = "updateBeaconOtp: Enable Beacon";
+    $logArray[] = "updateBeaconOtp: Database: $dbFilename";
+
+    $res = safeDbRun( $db,  $sql, 'exec', $logArray);
+
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
+    if ($res === false)
+    {
+        return false;
+    }
+
+    #Aktiviere Bake
+    $beaconInterval = getBeaconData('beaconInterval') ?? 0;
+    $beaconInterval = $beaconInterval == '' ? 5 : $beaconInterval;
+
+    setBeaconCronInterval($beaconInterval, 1);
+
+    return true;
+}
 function columnExists($database, $tabelle, $spalte): bool
 {
     // SQLite3-Datenbank öffnen
@@ -1158,6 +1204,13 @@ function checkDbUpgrade($database)
         {
             // Spalte hinzufügen
             addColumn($database, 'meshdash', 'fw_sub');
+            $doRestartBgProcess = true;
+        }
+
+        if (!columnExists($database, 'meshdash', 'beaconEnabledStatusSend') && $database === 'meshdash')
+        {
+            // Spalte hinzufügen
+            addColumn($database, 'meshdash', 'beaconEnabledStatusSend', 'INTEGER', 0);
             $doRestartBgProcess = true;
         }
 
@@ -1277,6 +1330,11 @@ function addColumn($database, $tabelle, $spalte, $typ = 'TEXT', $default = null)
     {
         // Wenn ein Standardwert übergeben wurde, wird dieser hinzugefügt
         $defaultSql = " DEFAULT '" . SQLite3::escapeString($default) . "'";
+
+        if ($typ == 'INTEGER')
+        {
+            $defaultSql = " DEFAULT " . (int) $default;
+        }
     }
 
     // SQL Befehl zum Hinzufügen der Spalte mit Typ und optionalem Standardwert
@@ -1358,11 +1416,13 @@ function delIndex($database, $IndexName): bool
 function getTaskCmd($mode)
 {
     #Check what oS is running
-    $osIssWindows    = chkOsIsWindows();
-    $udpReceiverPid  = getParamData('udpReceiverPid');
-    $cronLoopPid     = getParamData('cronLoopPid');
-    $cronLoopPidFile = 'log/' . CRON_PID_FILE;
-    $mode            = $mode == '' ? 'udp' : $mode;  // default UDP
+    $osIssWindows          = chkOsIsWindows();
+    $udpReceiverPid        = getParamData('udpReceiverPid');
+    $cronLoopPid           = getParamData('cronLoopPid');
+    $cronLoopPidFile       = 'log/' . CRON_PID_FILE;
+    $cronBeaconLoopPid     = getParamData('cronBeaconLoopPid');
+    $cronBeaconLoopPidFile = 'log/' . CRON_BEACON_PID_FILE;
+    $mode                  = $mode == '' ? 'udp' : $mode;  // default UDP
 
     if ($mode == 'udp')
     {
@@ -1386,14 +1446,34 @@ function getTaskCmd($mode)
             # Wenn Pid-File fehlt, dann unter Windows über Dummy einen leeren Eintrag zurückgeben lassen mittels Dummy
             if (!file_exists($cronLoopPidFile))
             {
-                return $osIssWindows === true ? 'tasklist | find "dummyFile.exe"' : "pgrep -a -f cron_loop.php | grep -v pgrep | awk '{print $1}'";
+                return $osIssWindows === true ? 'tasklist | find "dummyFile.exe"' : "pgrep -a -f " . CRON_PROC_FILE . " | grep -v pgrep | awk '{print $1}'";
             }
 
-            return $osIssWindows === true ? 'tasklist | find "php.exe"' : "pgrep -a -f cron_loop.php | grep -v pgrep | awk '{print $1}'";
+            return $osIssWindows === true ? 'tasklist | find "php.exe"' : "pgrep -a -f " . CRON_PROC_FILE . " | grep -v pgrep | awk '{print $1}'";
         }
         else
         {
-            return $osIssWindows === true ? 'tasklist /FI "PID eq ' . $cronLoopPid . '" | findstr /I "php.exe"' : "pgrep -a -f cron_loop.php | grep -v pgrep | awk '{print $1}'";
+            return $osIssWindows === true ? 'tasklist /FI "PID eq ' . $cronLoopPid . '" | findstr /I "php.exe"' : "pgrep -a -f " . CRON_PROC_FILE . " | grep -v pgrep | awk '{print $1}'";
+        }
+    }
+
+    if ($mode == 'cronBeacon')
+    {
+        #Hinweis Pgrep -x funktioniert nicht, wenn man die PHP Datei ermitteln muss
+        if ($cronBeaconLoopPid == '')
+        {
+            # Wenn keine Pid, dann über Pid-File Status ermitteln.
+            # Wenn Pid-File fehlt, dann unter Windows über Dummy einen leeren Eintrag zurückgeben lassen mittels Dummy
+            if (!file_exists($cronBeaconLoopPidFile))
+            {
+                return $osIssWindows === true ? 'tasklist | find "dummyFile.exe"' : "pgrep -a -f " . CRON_BEACON_PROC_FILE . " | grep -v pgrep | awk '{print $1}'";
+            }
+
+            return $osIssWindows === true ? 'tasklist | find "php.exe"' : "pgrep -a -f " . CRON_BEACON_PROC_FILE . " | grep -v pgrep | awk '{print $1}'";
+        }
+        else
+        {
+            return $osIssWindows === true ? 'tasklist /FI "PID eq ' . $cronBeaconLoopPid . '" | findstr /I "php.exe"' : "pgrep -a -f " . CRON_BEACON_PROC_FILE . " | grep -v pgrep | awk '{print $1}'";
         }
     }
 
@@ -1405,17 +1485,18 @@ function getTaskKillCmd($mode = 'udp')
     $osIssWindows    = chkOsIsWindows();
     $udpReceiverPid  = getParamData('udpReceiverPid');
     $cronLoopPid     = getParamData('cronLoopPid');
+    $cronBeaconPid   = getParamData('cronBeaconLoopPid');
 
     if ($mode == 'udp')
     {
         #Hinweis Pgrep -x funktioniert nicht, wenn man die PHP Datei ermitteln muss
         if ($udpReceiverPid == '')
         {
-            return $osIssWindows === true ? 'taskkill /f /fi "imagename eq php.exe"' : 'pkill -9 -f "udp_receiver.php"';
+            return $osIssWindows === true ? 'taskkill /f /fi "imagename eq php.exe"' : 'pkill -9 -f "' . UDP_PROC_FILE . '"';
         }
         else
         {
-            return $osIssWindows === true ? 'taskkill /F /PID ' . $udpReceiverPid : 'pkill -9 -f "udp_receiver.php"';
+            return $osIssWindows === true ? 'taskkill /F /PID ' . $udpReceiverPid : 'pkill -9 -f "' . UDP_PROC_FILE . '"';
         }
     }
 
@@ -1425,12 +1506,27 @@ function getTaskKillCmd($mode = 'udp')
         if ($cronLoopPid == '')
         {
             # Wenn keine Pid, dann All-Kill für Windows.
-            return $osIssWindows === true ? 'taskkill /f /fi "imagename eq php.exe"' : 'pkill -9 -f "cron_loop.php"';
+            return $osIssWindows === true ? 'taskkill /f /fi "imagename eq php.exe"' : 'pkill -9 -f "' . CRON_PROC_FILE . '"';
 
         }
         else
         {
-            return $osIssWindows === true ? 'taskkill /F /PID ' . $cronLoopPid : 'pkill -9 -f "cron_loop.php"';
+            return $osIssWindows === true ? 'taskkill /F /PID ' . $cronLoopPid : 'pkill -9 -f "' . CRON_PROC_FILE . '"';
+        }
+    }
+
+    if ($mode == 'cronBeacon')
+    {
+        #Hinweis Pgrep -x funktioniert nicht, wenn man die PHP Datei ermitteln muss
+        if ($cronBeaconPid == '')
+        {
+            # Wenn keine Pid, dann All-Kill für Windows.
+            return $osIssWindows === true ? 'taskkill /f /fi "imagename eq php.exe"' : 'pkill -9 -f "' . CRON_BEACON_PROC_FILE . '"';
+
+        }
+        else
+        {
+            return $osIssWindows === true ? 'taskkill /F /PID ' . $cronBeaconPid : 'pkill -9 -f "' . CRON_BEACON_PROC_FILE . '"';
         }
     }
 
@@ -1629,11 +1725,9 @@ function setCronSensorInterval($intervallInMinuten, $deleteFlag): bool
 
     return true;
 }
-function checkCronLoopBgTask()
+function checkBgTask($task)
 {
-    $taskCmdCron = getTaskCmd('cron');
-
-    return shell_exec($taskCmdCron);
+    return shell_exec(getTaskCmd($task));
 }
 function deleteOldCron(): bool
 {
@@ -2248,12 +2342,28 @@ function stopBgProcess($paramBgProcess)
     $taskBg         = $paramBgProcess['task'] ?? '';
     $taskBg         = $taskBg == '' ? 'udp' : $taskBg;
     $checkBgTaskCmd = getTaskCmd($taskBg);
-    $bgPidFile      = $taskBg  == 'udp' ? UPD_PID_FILE : CRON_PID_FILE;
     $debugFlag      = false;
 
-    $bgTaskPid = $taskBg  == 'udp' ? getParamData('udpReceiverPid') : getParamData('cronLoopPid');
+    switch ($taskBg)
+    {
+        case 'udp':
+            $bgPidFile = UPD_PID_FILE;
+            $bgTaskPid = getParamData('udpReceiverPid');
+            break;
+        case 'cron':
+            $bgPidFile = CRON_PID_FILE;
+            $bgTaskPid = getParamData('cronLoopPid');
+            break;
+        case 'cronBeacon':
+            $bgPidFile = CRON_BEACON_PID_FILE;
+            $bgTaskPid = getParamData('cronBeaconLoopPid');
+            break;
+        default:
+            $bgPidFile = CRON_PID_FILE;
+            $bgTaskPid = getParamData('cronLoopPid');
+    }
 
-    if ($taskBg  == 'cron')
+    if ($taskBg  == 'cron' || $taskBg == 'cronBeacon')
     {
         $execDir         = 'log';
         $basename        = pathinfo(getcwd())['basename'];
@@ -2340,10 +2450,24 @@ function startBgProcess($paramStartBgProcess)
 {
     $osIsWindows = chkOsIsWindows();
     $taskBg      = $paramStartBgProcess['task'] ?? 'udp';
-    $bgProcFile  = $taskBg == 'udp' ? UDP_PROC_FILE : CRON_PROC_FILE;
     $taskCmd     = getTaskCmd($taskBg);
     $taskResult  = shell_exec($taskCmd);
     $debugFlag   = false;
+
+    switch ($taskBg)
+    {
+        case 'udp':
+            $bgProcFile = UDP_PROC_FILE;
+            break;
+        case 'cron':
+            $bgProcFile = CRON_PROC_FILE;
+            break;
+        case 'cronBeacon':
+            $bgProcFile = CRON_BEACON_PROC_FILE;
+            break;
+        default:
+            $bgProcFile = CRON_PROC_FILE;
+    }
 
     if ($osIsWindows === false)
     {
@@ -2842,6 +2966,91 @@ function autoPurgeData(): bool
                 return false;
             }
         }
+    }
+
+    return true;
+}
+function setBeaconCronIntervalBAK($beaconInterval,$beaconEnabled): bool
+{
+    $delete    = $beaconEnabled == 0; // Wenn 0 = true
+    $debugFlag = false;
+
+    $skriptPfad = '/usr/bin/wget -q -O /dev/null ' . BASE_PATH_URL . 'send_beacon.php';
+
+    $cronJobsNeu = [];
+
+    if ($beaconInterval == '' || $beaconInterval < 5)
+    {
+        if ($debugFlag)
+        {
+            echo "Intervall ungültig!.\n";
+        }
+
+        return false;
+    }
+
+    if ($beaconInterval <= 60)
+    {
+        // Einfache Minuten-Intervalle
+        $cronJobsNeu[] = "*/$beaconInterval * * * * $skriptPfad";
+    }
+
+    // Bestehende Crontab einlesen
+    exec('crontab -l 2>/dev/null', $cronJobsAlt);
+
+    // Löschen aller Jobs, die dieses Skript enthalten
+    $cronJobsAlt = array_filter($cronJobsAlt, function ($zeile) use ($skriptPfad) {
+        return strpos($zeile, $skriptPfad) === false;
+    });
+
+    if (!$delete)
+    {
+        $cronJobsAlt = array_merge($cronJobsAlt, $cronJobsNeu);
+    }
+
+    file_put_contents('/tmp/crontab.txt', implode("\n", $cronJobsAlt) . "\n");
+    exec('crontab /tmp/crontab.txt');
+
+    if ($debugFlag)
+    {
+        echo "<pre>";
+        echo "Generiere Baken Cronjob für Intervall: {$beaconInterval} Minuten\n";
+        print_r($cronJobsNeu);
+        echo "</pre>";
+    }
+
+    return true;
+}
+function setBeaconCronInterval($beaconInterval,$beaconEnabled): bool
+{
+    $delete                         = $beaconEnabled == 0; // Wenn 0 = true
+    $paramCronBeaconProcess['task'] = 'cronBeacon';
+    $debugFlag                      = false;
+
+    $execDir              = 'log';
+    $basename             = pathinfo(getcwd())['basename'];
+    $intervalFilenameSub  = '../' . $execDir . '/' . CRON_BEACON_CONF_FILE;
+    $intervalFilenameRoot = $execDir . '/' . CRON_BEACON_CONF_FILE;
+    $intervalFilename     = $basename == 'menu' ? $intervalFilenameSub : $intervalFilenameRoot;
+
+    if ($debugFlag === true)
+    {
+        echo "<br>beaconInterval:$beaconInterval";
+        echo "<br>beaconEnabled:$beaconEnabled";
+        echo "<br>intervalFilename:$intervalFilename";
+        echo "<br>";
+    }
+
+    if ($beaconInterval <= 60 && $delete === false)
+    {
+        file_put_contents($intervalFilename, $beaconInterval);
+        startBgProcess($paramCronBeaconProcess);
+    }
+
+    if ($delete === true)
+    {
+        stopBgProcess($paramCronBeaconProcess);
+        @unlink($intervalFilename);
     }
 
     return true;

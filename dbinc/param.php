@@ -1,5 +1,5 @@
 <?php
-const VERSION = '1.10.58';
+const VERSION = '1.10.60';
 date_default_timezone_set('Europe/Berlin');
 
 if (PHP_SAPI === 'cli')
@@ -78,12 +78,19 @@ else
 ini_set("pcre.jit", "0");
 
 $triggerLinkSendQueue = BASE_PATH_URL . 'send_queue.php';
-
 define('TRIGGER_LINK_SEND_QUEUE', $triggerLinkSendQueue);
 const CRON_PID_FILE = 'cron_loop.pid';
 const CRON_CONF_FILE = 'cron_interval.conf';
 const CRON_STOP_FILE = 'cron_stop';
 const CRON_PROC_FILE = 'cron_loop.php';
+
+$triggerLinkSendBeacon = BASE_PATH_URL . 'send_beacon.php';
+define('TRIGGER_LINK_SEND_BEACON', $triggerLinkSendBeacon);
+const CRON_BEACON_PID_FILE = 'cron_beacon_loop.pid';
+const CRON_BEACON_CONF_FILE = 'cron_beacon_interval.conf';
+const CRON_BEACON_STOP_FILE = 'cron_beacon_stop';
+const CRON_BEACON_PROC_FILE = 'cron_beacon_loop.php';
+
 const UPD_PID_FILE = 'udp.pid';
 const UPD_STOP_FILE = 'udp_stop';
 const UDP_PROC_FILE = 'udp_receiver.php';

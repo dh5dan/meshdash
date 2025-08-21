@@ -9,10 +9,18 @@
             let sendData        = 1;
             let beaconStopCount = $("#beaconStopCount").val().trim();
             let beaconMsg       = $("#beaconMsg").val().trim();
+            let beaconOtp       = $("#beaconOtp").val().trim();
             let beaconGroup     = $("#beaconGroup").val().trim();
-            let osIssWindows    = $("#osIssWindows").val();
-            let beaconEnabled   = $("#beaconEnabled").is(":checked");
             let numberPattern   = /^\d+$/;
+            let otpPattern      = /^[A-Za-z0-9]+$/;
+
+            if (beaconOtp !== '' && (!otpPattern.test(beaconOtp)))
+            {
+                width = 750;
+                outputMsg = 'Bitte einen OTP-Passwort im Bereich A-Z, a-z, 0-9 eingeben.';
+                dialog(outputMsg, titleMsg, width);
+                return false;
+            }
 
             if (beaconStopCount === '')
             {
@@ -55,14 +63,6 @@
             {
                 width = 750;
                 outputMsg = 'Der eingegebene Wert für die Bakengruppe ist keine Zahl.';
-                dialog(outputMsg, titleMsg, width);
-                return false;
-            }
-
-            if (beaconEnabled === true && osIssWindows === '1')
-            {
-                width = 450;
-                outputMsg = 'Aktivierung nur unter Linux möglich.';
                 dialog(outputMsg, titleMsg, width);
                 return false;
             }
