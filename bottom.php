@@ -29,10 +29,11 @@ $dm      = $_REQUEST['dm'] ?? '';
 $loraIP  = getParamData('loraIp');
 $group   = $_REQUEST['group'] ?? '';
 
-$clickOnCall             = getParamData('clickOnCall'); // 0=call->DM, 1= qrz, 2=@call
-$clickOnCallDMActiveCss  = $clickOnCall == 0 ? 'active' : '';
-$clickOnCallQrzActiveCss = $clickOnCall == 1 ? 'active' : '';
-$clickOnCallMsgActiveCss = $clickOnCall == 2 ? 'active' : '';
+$clickOnCall                = getParamData('clickOnCall'); // 0=call->DM, 1= qrz, 2=@call, 3=Notice
+$clickOnCallDMActiveCss     = $clickOnCall == 0 ? 'active' : '';
+$clickOnCallQrzActiveCss    = $clickOnCall == 1 ? 'active' : '';
+$clickOnCallMsgActiveCss    = $clickOnCall == 2 ? 'active' : '';
+$clickOnCallNoticeActiveCss = $clickOnCall == 3 ? 'active' : '';
 
 # Wenn Gruppe nicht DM und Gruppe eine Gruppennummer ist dann wieder Gruppennummer eintragen
 $dm = $group != $dm && $group > 0 ? $group : $dm;
@@ -69,9 +70,10 @@ echo '</div>';
     echo '<button class="bottomInputSubmit" type="submit">Absenden</button>';
 
             echo '<div class="bottomIconContainer">';
-            echo '<img class="bottomImgIcons ' . $clickOnCallDMActiveCss . '" src=" image/call_dm.png" >';
-            echo '<img class="bottomImgIcons ' . $clickOnCallQrzActiveCss . '" src=" image/call_qrz.png" >';
-            echo '<img class="bottomImgIcons ' . $clickOnCallMsgActiveCss . '" src=" image/call_at.png" >';
+            echo '<img class="bottomImgIcons ' . $clickOnCallDMActiveCss . '" src="image/call_dm.png" >';
+            echo '<img class="bottomImgIcons ' . $clickOnCallQrzActiveCss . '" src="image/call_qrz.png" >';
+            echo '<img class="bottomImgIcons ' . $clickOnCallMsgActiveCss . '" src="image/call_at.png" >';
+            echo '<img class="bottomImgIcons ' . $clickOnCallNoticeActiveCss . '"src="image/call_notice.png" >';
             echo '</div>';
 
     echo '</div>';

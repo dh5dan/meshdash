@@ -251,3 +251,17 @@ body {
         cursor: pointer;
     }
 }
+
+@media only screen and (max-width: 600px) {
+    .ui-dialog {
+        width: 90% !important;
+        left: 5% !important;
+        right: 5% !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    .ui-dialog .ui-dialog-content {
+        overflow-x: auto;
+    }
+}

@@ -128,6 +128,7 @@ $onClickChronModeCheckedDelete = $chronMode == 'delete' ? 'checked' : '';
 $onClickOnCallChecked0 = $clickOnCall == 0 ? 'checked' : '';
 $onClickOnCallChecked1 = $clickOnCall == 1 ? 'checked' : '';
 $onClickOnCallChecked2 = $clickOnCall == 2 ? 'checked' : '';
+$onClickOnCallChecked3 = $clickOnCall == 3 ? 'checked' : '';
 
 $newMsgBgColor = $newMsgBgColor == '' ? '#FFFFFF' : $newMsgBgColor;
 $mheardGroup   = $mheardGroup == 0 ? '' : $mheardGroup;
@@ -261,6 +262,11 @@ echo '</tr>';
 echo '<tr>';
 echo '<td>&nbsp;- <span data-i18n="submenu.config_generally.lbl.at-call-on-click">Setzt @Call in Msg-Feld</span>:</td>';
 echo '<td><input type="radio" name="clickOnCall" ' . $onClickOnCallChecked2 . ' id="clickOnCall2" value="2" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td>&nbsp;- <span data-i18n="submenu.config_generally.lbl.notice-call-on-click">Notizfunktion zum Call</span>:</td>';
+echo '<td><input type="radio" name="clickOnCall" ' . $onClickOnCallChecked3 . ' id="clickOnCall3" value="3" /></td>';
 echo '</tr>';
 
 echo '<tr>';
