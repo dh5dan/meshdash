@@ -1,3 +1,9 @@
+Version 1.10.62 SQL
+
+FEATURE Call-basierte Notizfunktion.
+        Es können nun optional Notizen zu einem Call gespeichert werden.
+
+##########################
 Version 1.10.60 SQL
 
 FEATURE Remote-Start der Bake via OTP

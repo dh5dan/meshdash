@@ -216,11 +216,13 @@
        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
        let isTabClick = false; // Globale Variable die prüft, ob Tab geklickt wurde
+       window.isMessageReloadEnabled = true; // Für Notice PopUP
 
        // Refresh via Ajax für message.php
        function loadNewMessages()
        {
            if (isTabClick) return; // Falls gerade ein Tab-Klick aktiv ist, beende die Funktion
+           if (!window.isMessageReloadEnabled) return; // Falls gerade ein PopUP geöffnet ist, beende die Funktion
 
            let messageFrame = $("#message-frame"); // ID des Iframes
            let currentSrc   = messageFrame.attr("src");

@@ -11,6 +11,12 @@ echo '<head><title>Nachrichten</title>';
 ini_set( 'default_charset', 'UTF-8' );
 echo '<script type="text/javascript" src="jquery/jquery.min.js"></script>';
 
+echo '<link rel="stylesheet" href="jquery/jquery-ui-1.13.3/jquery-ui.css">';
+echo '<link rel="stylesheet" href="jquery/css/jq_custom.css">';
+
+# Achtung das ist V jquery-ui-1.13.3 weil nur die mit dem DateTimePicker Addon funktioniert
+echo '<script type="text/javascript" src="jquery/jquery-ui-1.13.3/jquery-ui.min.js"></script>';
+
 #Wenn Snapshot Abfrage, dann CSS in HTML Inline einbetten und UTF-8 Charset Meta-Tag setzen
 if (isset($_GET['isSnapshot']) && $_GET['isSnapshot'] == 1)
 {
@@ -719,11 +725,24 @@ if ($result !== false)
                     . '</span>' . ' > ' . '<span class="' . $alertDstCss . '">' . $dstTxt
                     . '</span> :</span> ' . $linkedText;
             }
-            else
+            else if ($clickOnCall == 2)
             {
                 #Setze Call mit @ in MSG Feld ohne SSID
                 $patternClickOnCall    = '/\b([A-Za-z0-9]{3,})(?:-\d+)?\b/i';
                 $replaceClickOnCall    = '<span onclick="sendToBottomMsgFrame(\'$1\')" style="cursor: pointer;color:#0000ee" class="' . $alertSrcCss . '">$0</span>';
+                $linkedTextClickOnCall = preg_replace($patternClickOnCall, $replaceClickOnCall, $firstCall);
+
+                echo '<span class="' . $fromToSquare . '">'
+                    . '<span class="' . $alertSrcCss . '">' . $linkedTextClickOnCall. '</span> > '
+                    . '<span class="' . $alertDstCss . '">' . $dstTxt
+                    . '</span> :</span> ' . $linkedText;
+            }
+            else
+            {
+                #popup Notizfeld
+                $patternClickOnCall    = '/\b([A-Za-z0-9]{3,})(?:-\d+)?\b/i';
+              #  $replaceClickOnCall    = '<span onclick="callNotice(\'$1\')" style="cursor: pointer;color:#0000ee" class="' . $alertSrcCss . '">$0</span>';
+                $replaceClickOnCall    = '<span class="callNotice" data-callsign = "\'$1\'" style="cursor: pointer;color:#0000ee" class="' . $alertSrcCss . '">$0</span>';
                 $linkedTextClickOnCall = preg_replace($patternClickOnCall, $replaceClickOnCall, $firstCall);
 
                 echo '<span class="' . $fromToSquare . '">'

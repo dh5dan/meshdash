@@ -107,6 +107,11 @@ function initDatabases()
     {
         initSQLiteDatabase('translation');
     }
+
+    if (!file_exists('database/call_notice.db'))
+    {
+        initSQLiteDatabase('call_notice');
+    }
 }
 function initSQLiteDatabase($database): bool
 {
@@ -828,6 +833,28 @@ function initSQLiteDatabase($database): bool
 
                                        
            ");
+
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+    }
+    elseif ($database == 'call_notice')
+    {
+        #Open Database
+        $db = new SQLite3('database/call_notice.db');
+        $db->exec('PRAGMA journal_mode = wal;');
+        $db->exec('PRAGMA synchronous = NORMAL;');
+
+        // Tabelle erstellen wenn nicht vorhanden
+        $db->exec("CREATE TABLE IF NOT EXISTS callNotice 
+                                (
+                                  callSign TEXT NOT NULL UNIQUE,              
+                                  callNotice TEXT,
+                                  lastHeard TEXT NOT NULL,
+                                  timestamps TEXT NOT NULL,
+                                  PRIMARY KEY(callSign)
+                                )
+                        ");
 
         #Close and write Back WAL
         $db->close();

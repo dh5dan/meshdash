@@ -2,7 +2,7 @@
     $(function ($) {
 
         const $btnScrollToTop = $('#scrollTopBtn');
-        const showAfterScrollToTop = 150; // Pixel ab Scrollhöhe Button anzeigen
+        const showAfterScrollToTop = 150; // Pixel ab Scroll-Höhe Button anzeigen
 
         $(window).on('scroll', function()
         {
@@ -72,11 +72,11 @@
 
             if (bottomFrame && bottomFrame.contentWindow) {
 
-                let posOff = 'POS:<img class="statusImageBottom" src="image/punkt_red.png" width="15px" >';
-                let posOn  = 'POS:<img class="statusImageBottom" src="image/punkt_green.png" width="15px" >';
+                let posOff = 'POS:<img class="statusImageBottom" src="image/punkt_red.png" alt="POS Red-Point" width="15px" >';
+                let posOn  = 'POS:<img class="statusImageBottom" src="image/punkt_green.png" alt="POS Green-Point" width="15px" >';
 
-                let ntsOff = 'NTS:<img class="statusImageBottom" src="image/punkt_red.png" width="15px" >';
-                let ntsOn  = 'NTS:<img class="statusImageBottom" src="image/punkt_green.png" width="15px" >';
+                let ntsOff = 'NTS:<img class="statusImageBottom" src="image/punkt_red.png" alt="NTS Red-Point" width="15px" >';
+                let ntsOn  = 'NTS:<img class="statusImageBottom" src="image/punkt_green.png" alt="NTS Green-Point" width="15px" >';
 
                 let statusTextPos = posStatusValue === '1' ? posOff : posOn; // Invertierte Logik
                 let statusTextTs  = noTimeSyncMsgValue === '1' ? ntsOff : ntsOn; // Invertierte Logik
@@ -96,6 +96,72 @@
                 }
             }
         }
+
+        $(".callNotice").on("click", function ()
+        {
+            // Reload anhalten
+            window.parent.isMessageReloadEnabled = false;
+
+            let callSign  = $(this).data('callsign');
+            let titleMsg  = 'Notizen zu ' + callSign;
+            let width     = 750;
+
+            dialogConfirmNotice(callSign, titleMsg, width)
+
+            return false;
+        });
+
+        function dialogConfirmNotice(callSign, titleMsg, width) {
+            width     = !width ? 300 : width;
+            titleMsg  = !titleMsg ? '' : titleMsg;
+
+            // Container für die textarea
+            let $dialogDiv = $("<div></div>").html('<textarea id="callNoticeText" style="width:100%;height:200px;box-sizing:border-box;"></textarea>');
+
+            // Vorher Daten aus SQLite laden
+            $.post('call_notice_api.php', {
+                callSign: callSign,
+                action:'get'
+            }, function(res){
+                if (res.callNotice)
+                {
+                    $dialogDiv.find('#callNoticeText').val(res.callNotice);
+                }
+            }, 'json');
+
+            $dialogDiv.dialog({
+                title: titleMsg,
+                resizable: true,
+                modal: true,
+                width: width,
+                buttons: {
+                    'Speichern': function () {
+                        let noteText = $dialogDiv.find('#callNoticeText').val();
+
+                        // Speichern per AJAX
+                        $.post('call_notice_api.php', {
+                            callSign: callSign,
+                            action: 'set',
+                            callNotice: noteText
+                        }, function (res) {
+                            console.log('Notiz gespeichert', res);
+                        }, 'json');
+
+                        window.top.isMessageReloadEnabled = true; // Enable reload
+                        $(this).dialog('close');
+                    },
+                    'Abbruch': function () {
+                        window.top.isMessageReloadEnabled = true; // Enable reload
+                        $(this).dialog('close');
+                    }
+                },
+                close: function () {
+                    window.top.isMessageReloadEnabled = true;
+                    $(this).dialog('destroy').remove();
+                }
+            }).prev(".ui-dialog-titlebar").css("background", "red");
+        }
+
     });
 
     function sendToBottomFrame(callSign)
@@ -125,5 +191,7 @@
             }
         }
     }
+
+
 
 </script>
