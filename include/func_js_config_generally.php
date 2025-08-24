@@ -13,6 +13,12 @@
             let retentionDays     = $("#retentionDays").val().trim();
             let bubbleMaxWidth    = $("#bubbleMaxWidth").val().trim();
 
+            let udpForwardEnabled = $("#udpForwardingEnable").is(":checked");
+            let udpFwIp            = $("#udpFwIp").val().trim();
+            let udpFwPort          = $("#udpFwPort").val().trim();
+            let ipList             = $('#ipContainer').data('ips');
+
+            // RegEx-Pattern
             let ipv4Pattern     = /^(\d{1,3}\.){3}\d{1,3}$/;
             let callSignPattern = /^[A-Z0-9]{1,2}[0-9][A-Z0-9]{1,4}-(?:[1-9][0-9]?)$/i
             let numberPattern   = /^\d+$/;
@@ -27,6 +33,61 @@
             }
             else if (!ipv4Pattern.test(loraIp) && !mDnsPatter.test(loraIp)) {
                 outputMsg = 'Ip/mDNS hat nicht das gültige Format oder enthält ungültige Zeichen.';
+                outputMsg += '<br><br>Bitte Prüfen.';
+                dialog(outputMsg, titleMsg, width);
+                return false;
+            }
+
+            if (udpFwIp !== '' && udpFwIp === loraIp)
+            {
+                outputMsg = 'Für die UDP-Weiterleitung darf nicht die Ipv4 ('+udpFwIp+') des Node verwendet werden.';
+                outputMsg += '<br><br>Bitte Prüfen.';
+                dialog(outputMsg, titleMsg, width);
+                return false;
+            }
+
+            if (udpFwIp !== '' && (ipList.includes(udpFwIp) || udpFwIp === '127.0.0.1'))
+            {
+                outputMsg = 'Für die UDP-Weiterleitung darf nicht die lokale IPv4 ('+udpFwIp+') verwendet werden.';
+                outputMsg += '<br><br>Bitte Prüfen.';
+                dialog(outputMsg, titleMsg, width);
+                return false;
+            }
+
+            if (udpForwardEnabled === true && (udpFwIp === '' || udpFwPort === ''))
+            {
+                width = 500;
+                outputMsg = 'Es ist kein(e) IP/Port für UDP-Weiterleitung definiert.';
+                outputMsg += '<br><br>Bitte Prüfen.';
+                dialog(outputMsg, titleMsg, width);
+                return false;
+            }
+
+            if (!numberPattern.test(udpFwPort) && udpFwPort !== '')
+            {
+                width = 500;
+                outputMsg = 'Port für UDP-Weiterleitung ist ungültig oder enthält ungültige Zeichen.';
+                outputMsg += '<br><br>Beispiel: 4444';
+                outputMsg += '<br>Bereich 1024-65535';
+                outputMsg += '<br><br>Bitte Prüfen.';
+                dialog(outputMsg, titleMsg, width);
+                return false;
+            }
+            else if ((udpFwPort <= 1024 || udpFwPort >= 65535) && udpFwPort !== '')
+            {
+                width = 500;
+                outputMsg = 'Port für UDP-Weiterleitung ist nicht im gültigen Bereich.';
+                outputMsg += '<br>Bereich 1024-65535';
+                outputMsg += '<br><br>Bitte Prüfen.';
+                dialog(outputMsg, titleMsg, width);
+                return false;
+            }
+
+            if (!ipv4Pattern.test(udpFwIp) && udpFwIp !== '')
+            {
+                width = 500;
+                outputMsg = 'Ip für UDP-Weiterleitung hat nicht das gültige IPv4 Format oder enthält ungültige Zeichen.';
+                outputMsg += '<br><br>Beispiel: 192.168.0.123';
                 outputMsg += '<br><br>Bitte Prüfen.';
                 dialog(outputMsg, titleMsg, width);
                 return false;
@@ -146,7 +207,11 @@
 
     function reloadBottomFrame()
     {
-        parent.document.getElementById("bottom-frame").contentWindow.location.reload();
+        let frame = parent.document.getElementById("bottom-frame");
+        if (frame && frame.contentWindow)
+        {
+            frame.contentWindow.location.reload();
+        }
     }
 
 </script>

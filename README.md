@@ -42,7 +42,12 @@ Eine Umstellung auf **PHP >= 8.x** ist daher empfohlen.
 - Restore-Funktion eines zuvor gesicherten Backups
 - Darstellung der Nachrichten im Bubble-Style
 - Upload und Anzeige von Sound-/Skriptdateien
-- Integration eines HF-Reichweitentests
+- HF-Reichweitentest zur Analyse der Funkabdeckung
+- Upload von Sound- /Skripten für Benachrichtigungen und Keyword-Aktionen
+- Dyn. erweiterbare Call-/Keyword-Definitionen (keine Feldbegrenzung mehr)
+- Remote-Aktivierung der Bake via OTP
+- Call-basierte Notizfunktion
+- UDP-Datagramm Weiterleitung
 
 Das Projekt ist inzwischen aus der Beta-Phase, kann aber weiterhin Fehler enthalten.  
 Wenn Probleme auftreten, bitte im GitHub-Issue-Bereich melden – falls das Problem  
@@ -67,8 +72,8 @@ Die Dateien befinden sich unter **Assets** – bitte darauf klicken, um die List
 ![ASSETS](/docs/assets.jpg)
 
 ### In MeshDash ist nun ein Abruf der aktuellen Release-Version möglich.
-#### Die letzte Release kann direkt geladen werden, um auf dem neuesten Stand zu bleiben.
-#### Der Changelog ist ebenfalls direkt einsehbar.
+#### Die aktuelle Version kann direkt über MeshDash geladen werden, um auf dem neuesten Stand zu bleiben.
+#### Der Changelog ist ebenfalls direkt abrufbar.
 ![FILES](/docs/update_menu.jpg)
 
 #### Hier wird das Changelog in einem Dialog-Fenster angezeigt.
@@ -152,12 +157,16 @@ Ein Klick auf ein Datumsfeld öffnet einen Datums- und Zeit-Dialog zur einfachen
 Die Hintergrundfarbe der Tabs sowie Soundbenachrichtigungen lassen sich individuell pro Tab-Gruppe einstellen.
 ![FILES](/docs/60_desktop_tab_alert.jpg)
 
-### HF-Reichenweitentestst via Intervall-Baken.
-Wir können über Intervall-Baken nun auch HF-Reichweitentests Ausführen.  
+### HF-Reichenweitentest via Intervall-Baken.
+Wir können über Intervall-Baken nun auch einen HF-Reichweitentest ausführen.  
 Einstellbar sind Intervallzeiten/Stop-Count sowie ein Freitext.  
-Gesendet wird im Präfix der Counter wie auch die eingestellte Intervallzeit.
-![FILES](/docs/set_Beacon.jpg)
-![FILES](/docs/msg_Beacon.jpg)
+Gesendet wird im Präfix der Counter wie auch die eingestellte Intervallzeit.  
+Die Bake kann auch aus der Ferne über ein OTP (One-Time-Password) gestartet werden. 
+![FILES](/docs/set_beacon.jpg)
+![FILES](/docs/msg_beacon.jpg)
+
+### Notizfunktion für Calls.
+![FILES](/docs/call_notice.jpg)
 
 ### Mobile Ansicht auf einem Smartphone 
 ![FILES](/docs/61_handy_Tab_alert.jpg)

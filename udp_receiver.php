@@ -8,6 +8,7 @@ require_once 'include/func_php_core.php';
 $errorCode      = '';
 $errorMsg       = '';
 $file           = 'log/udp_msg_data_' . date('Ymd') . '.log';
+$fileUdpForward = 'log/udp_forward_msg_data_' . date('Ymd') . '.log';
 $errorFile      = 'log/udp_receiver_error_' . date('Ymd') . '.log';
 $callMsgLogFile = 'log/call_message_' . date('Ymd') . '.log';
 $udpPidFile     = UPD_PID_FILE;
@@ -112,15 +113,26 @@ else
     }
 }
 
-#Create Socket
-if (!($sock = socket_create(AF_INET, SOCK_DGRAM, 0)))
+#Create Socket Receive UDP
+if (!($receiveSock = socket_create(AF_INET, SOCK_DGRAM, 0)))
 {
     $errorCode = socket_last_error();
     $errorMsg  = socket_strerror($errorCode);
 
-    $errorText = "Couldn't create socket: [$errorCode] $errorMsg at " . date('Y-m-d H:i:s') . "\n";
+    $errorText = "Couldn't create Receive-Socket: [$errorCode] $errorMsg at " . date('Y-m-d H:i:s') . "\n";
     file_put_contents($errorFile, $errorText,FILE_APPEND);
-    die("<br>Couldn't create socket: [$errorCode] $errorMsg");
+    die("<br>Couldn't create Receive-Socket: [$errorCode] $errorMsg");
+}
+
+#Create Socket Receive UDP
+if (!($sendSock = socket_create(AF_INET, SOCK_DGRAM, 0)))
+{
+    $errorCode = socket_last_error();
+    $errorMsg  = socket_strerror($errorCode);
+
+    $errorText = "Couldn't create Send-Socket: [$errorCode] $errorMsg at " . date('Y-m-d H:i:s') . "\n";
+    file_put_contents($errorFile, $errorText,FILE_APPEND);
+    die("<br>Couldn't create Send-Socket: [$errorCode] $errorMsg");
 }
 
 // Socket Option
@@ -130,7 +142,7 @@ if (!($sock = socket_create(AF_INET, SOCK_DGRAM, 0)))
 #socket_set_option ($sock, SOL_SOCKET, 15, 1);
 
 // Bind the source address to Socket and listen on all Ip at POrt 1799
-if (!@socket_bind($sock, "0.0.0.0", 1799))
+if (!@socket_bind($receiveSock, "0.0.0.0", 1799))
 {
     $errorCode = socket_last_error();
     $errorMsg  = socket_strerror($errorCode);
@@ -153,14 +165,42 @@ while (true)
     $errorFile      = 'log/udp_receiver_error_' . date('Ymd') . '.log';
     $callMsgLogFile = 'log/call_message_' . date('Ymd') . '.log';
     $bufJson        = '';
-    $r              = socket_recvfrom($sock, $bufJson, 512, 0, $remote_ip, $remote_port);
+    $receivedBytes  = socket_recvfrom($receiveSock, $bufJson, 512, 0, $remote_ip, $remote_port);
 
-    if ($r === false)
+    if ($receivedBytes === false)
     {
-        $errorText = "Error in Receive UDP Data at " . date('Y-m-d H:i:s') . "\n";
+        $errorText  = "Error in Receive UDP-Data at " . date('Y-m-d H:i:s') . "\n";
+        $errorText .= "Failed MSG: " . socket_strerror(socket_last_error($receiveSock)) . "\n";
         file_put_contents($errorFile, $errorText, FILE_APPEND);
 
         die("<br>Error in Receive UDP Data");
+    }
+
+    #Hole Daten für UPD-Weiterleitung
+    $udpForwardingEnable = getParamData('udpForwardingEnable') ?? 0; // UDP-Weiterleitung
+    $udpFwIp             = getParamData('udpFwIp') ?? ''; // UDP-Weiterleitung IP
+    $udpFwPort           = getParamData('udpFwPort') ?? 0; // UDP-Weiterleitung Port
+
+    # Wenn aktiv dann weiterleiten
+    if ($udpForwardingEnable == 1 && $udpFwIp != '' && $udpFwPort != 0)
+    {
+        // Datagram weiterleiten
+        $sent = socket_sendto($sendSock, $bufJson, $receivedBytes, 0, $udpFwIp, $udpFwPort);
+        if ($sent === false)
+        {
+            $errorText  = "Error in Forwarding UDP-Data to: $udpFwIp:$udpFwPort at " . date('Y-m-d H:i:s') . "\n";
+            $errorText .= "UDP-Forward failed: " . socket_strerror(socket_last_error($sendSock)) . "\n";
+            file_put_contents($errorFile, $errorText, FILE_APPEND);
+        }
+        else
+        {
+            #Prüfe ob Logging aktiv ist
+            if (getParamData('doLogEnable') == 1)
+            {
+                $bufJsonLog = $bufJson . ",\n";
+                file_put_contents($fileUdpForward, $bufJsonLog, FILE_APPEND);
+            }
+        }
     }
 
     #Add Timestamp to JSON
@@ -286,7 +326,8 @@ while (true)
 
     if (file_exists($udpStopFile))
     {
-        socket_close($sock);
+        socket_close($receiveSock);
+        socket_close($sendSock);
 
         $errorText = "UDP-Listener beendet via udp_stop! at " . date('Y-m-d H:i:s') . "\n";
         file_put_contents($errorFile, $errorText,FILE_APPEND);

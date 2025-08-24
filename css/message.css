@@ -41,6 +41,14 @@ body {
     margin-bottom: 2px;
 }
 
+.imageCallNotice {
+    width: 20px;  /* Größe anpassen */
+    height: auto; /* Seitenverhältnis beibehalten */
+    vertical-align: middle; /* Vertikale Ausrichtung im Text */
+    margin-left: 5px; /* Abstand zum Text */
+    margin-bottom: 4px;
+}
+
 .searchInfo {
     font-size: 16px;
     font-weight: bold;

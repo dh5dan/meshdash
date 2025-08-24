@@ -34,8 +34,7 @@ $osIssWindows = chkOsIsWindows();
 $osName       = $osIssWindows === true ? 'Windows' : 'Linux';
 $loraIp       = getParamData('loraIp');
 
-$ips = $osIssWindows ? getLocalIpAddressesWin() : getLocalIpAddressesLinux();
-
+$ips      = $osIssWindows ? getLocalIpAddressesWin() : getLocalIpAddressesLinux();
 $countIps = count($ips);
 
 if ($sendData === '1')

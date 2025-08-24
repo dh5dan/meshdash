@@ -76,29 +76,20 @@ function sendCommand($loraCmd, $loraIp): bool
 
     return true;
 }
-
 function getLocalIpAddressesLinux(): array
 {
     $ips = [];
 
-    // Alle Netzwerkinterfaces durchgehen
-    $interfaces = shell_exec("ip -o -4 addr show | awk '{print $4}'");
-    $interfaces = explode("\n", trim($interfaces));
+    $sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+    if (!$sock) return $ips;
 
-    foreach ($interfaces as $interface)
-    {
-        if (strpos($interface, '127.0.0.1') === false)
-        {
-            // Netzmaske (z.B. /24) entfernen und IP zur Liste hinzufügen
-            $ip = explode('/', $interface)[0];
+    // beliebige IP (es werden keine Pakete gesendet)
+    @socket_connect($sock, '10.255.255.255', 1);
 
-            // Doppelte IPs vermeiden
-            if (!in_array($ip, $ips))
-            {
-                $ips[] = $ip;
-            }
-        }
-    }
+    socket_getsockname($sock, $local_ip);
+    socket_close($sock);
+
+    $ips[0] = $local_ip;
 
     return $ips;
 }

@@ -122,6 +122,11 @@ $offset  = ($page - 1) * $perPage;
 $searchTsFromUrl = $searchTsFrom;
 $searchTsToUrl   = $searchTsTo;
 
+#Ermittel vorhandene Notizen zum Call
+$arrayGetCallNotices = getCallNotices();
+$arrayGetCallNotices = $arrayGetCallNotices === false ? array() : $arrayGetCallNotices;
+
+
 if ($totalRows != 0)
 {
     echo '<span class="setFontMsg searchInfo">';
@@ -661,7 +666,7 @@ if ($result !== false)
                 $soundFileId = str_replace('.', '_', $arrayNotificationData[$firstCall]['notifySoundFile']);
 
                 echo '<script>';
-                echo 'document.getElementById("'.$soundFileId.'").play();'; // Ton abspielen
+                echo 'document.getElementById("' . $soundFileId . '").play();'; // Ton abspielen
                 echo '</script>';
 
                 updateMeshDashData($msgId,'alertExecutedSrc', 1, $doSearchQuery);
@@ -673,7 +678,7 @@ if ($result !== false)
             {
                 $soundFileId = str_replace('.', '_', $arrayNotificationData[$dst]['notifySoundFile']);
                 echo '<script>';
-                echo 'document.getElementById("'.$soundFileId.'").play();'; // Ton abspielen
+                echo 'document.getElementById("' . $soundFileId . '").play();'; // Ton abspielen
                 echo '</script>';
 
                 updateMeshDashData($msgId,'alertExecutedDst', 1, $doSearchQuery);
@@ -701,6 +706,13 @@ if ($result !== false)
             $replace    = '<a href="$0" target="_blank">$0</a>';
             $linkedText = preg_replace($pattern, $replace, $msg);
 
+            $noticeCall = trim(explode('-', $firstCall)[0]);
+            $noticeIcon = '';
+            if (in_array($noticeCall, $arrayGetCallNotices))
+            {
+                $noticeIcon = '<img src="image/call_notice.png" alt="callNotice" class="imageCallNotice">';
+            }
+
             if ($clickOnCall == 0)
             {
                 # Call in DM-Feld
@@ -709,7 +721,7 @@ if ($result !== false)
                 $linkedTextClickOnCall = preg_replace($patternClickOnCall, $replaceClickOnCall, $firstCall);
 
                 echo '<span class="' . $fromToSquare . '">'
-                    . '<span class="' . $alertSrcCss . '">' . $linkedTextClickOnCall. '</span> > '
+                    . '<span class="' . $alertSrcCss . '">' . $linkedTextClickOnCall . $noticeIcon .  '</span> > '
                     . '<span class="' . $alertDstCss . '">' . $dstTxt
                     . '</span> :</span> ' . $linkedText;
             }
@@ -722,7 +734,7 @@ if ($result !== false)
 
                 echo '<span class="' . $fromToSquare . '">'
                     . '<span class="' . $alertSrcCss . '">' . $linkedTextClickOnCall
-                    . '</span>' . ' > ' . '<span class="' . $alertDstCss . '">' . $dstTxt
+                    . $noticeIcon .  '</span>' . ' > ' . '<span class="' . $alertDstCss . '">' . $dstTxt
                     . '</span> :</span> ' . $linkedText;
             }
             else if ($clickOnCall == 2)
@@ -733,7 +745,7 @@ if ($result !== false)
                 $linkedTextClickOnCall = preg_replace($patternClickOnCall, $replaceClickOnCall, $firstCall);
 
                 echo '<span class="' . $fromToSquare . '">'
-                    . '<span class="' . $alertSrcCss . '">' . $linkedTextClickOnCall. '</span> > '
+                    . '<span class="' . $alertSrcCss . '">' . $linkedTextClickOnCall . $noticeIcon .  '</span> > '
                     . '<span class="' . $alertDstCss . '">' . $dstTxt
                     . '</span> :</span> ' . $linkedText;
             }
@@ -741,12 +753,11 @@ if ($result !== false)
             {
                 #popup Notizfeld
                 $patternClickOnCall    = '/\b([A-Za-z0-9]{3,})(?:-\d+)?\b/i';
-              #  $replaceClickOnCall    = '<span onclick="callNotice(\'$1\')" style="cursor: pointer;color:#0000ee" class="' . $alertSrcCss . '">$0</span>';
-                $replaceClickOnCall    = '<span class="callNotice" data-callsign = "\'$1\'" style="cursor: pointer;color:#0000ee" class="' . $alertSrcCss . '">$0</span>';
+                $replaceClickOnCall    = '<span class="callNotice" data-callsign = "$1" style="cursor: pointer;color:#0000ee" class="' . $alertSrcCss . '">$0</span>';
                 $linkedTextClickOnCall = preg_replace($patternClickOnCall, $replaceClickOnCall, $firstCall);
 
                 echo '<span class="' . $fromToSquare . '">'
-                    . '<span class="' . $alertSrcCss . '">' . $linkedTextClickOnCall. '</span> > '
+                    . '<span class="' . $alertSrcCss . '">' . $linkedTextClickOnCall . $noticeIcon . '</span> > '
                     . '<span class="' . $alertDstCss . '">' . $dstTxt
                     . '</span> :</span> ' . $linkedText;
             }

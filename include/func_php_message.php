@@ -381,7 +381,6 @@ function sendMheard($msgId, $src): bool
 
     return true;
 }
-
 function hasKeywordTimePassed(string $startTs, string $endTs, int $limitSeconds): bool
 {
     try
@@ -400,4 +399,79 @@ function hasKeywordTimePassed(string $startTs, string $endTs, int $limitSeconds)
     {
         return false;
     }
+}
+function getCallNotices()
+{
+    $arrayCallSign      = array();
+    $arrayCleanCallSign = array(); //zu korrigierende CallSign mit Hochkomma
+
+    $db = new SQLite3('database/call_notice.db', SQLITE3_OPEN_READONLY);
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+
+    $sql = "SELECT callSign 
+              FROM callNotice
+          GROUP BY callSign;
+         ";
+
+    $logArray   = array();
+    $logArray[] = "getCallNotices: Database: database/call_notice.db";
+
+    $result = safeDbRun($db, $sql, 'query', $logArray);
+
+    if ($result === false)
+    {
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+
+        return false;
+    }
+
+    if ($result !== false)
+    {
+        while ($row = $result->fetchArray(SQLITE3_ASSOC))
+        {
+            $callSign = $row['callSign'];
+
+            // Prüfen, ob Hochkomma am Anfang/Ende
+            if (substr($callSign, 0, 1) === "'" && substr($callSign, -1) === "'")
+            {
+
+                #Hochkomma CallSign vorher sichern für später
+                $arrayCleanCallSign[$callSign] = $callSign;
+
+                // Hochkommas entfernen
+                $callSign = trim($callSign, "'");
+            }
+
+            $arrayCallSign[$callSign] = $callSign;
+        }
+    }
+
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
+    if (count($arrayCleanCallSign) > 0)
+    {
+        updateCallNoticeDb($arrayCleanCallSign);
+    }
+
+    return $arrayCallSign;
+}
+function updateCallNoticeDb(array $arrayCleanCallSign)
+{
+    $db = new SQLite3('database/call_notice.db', SQLITE3_OPEN_READWRITE);
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT);
+
+    foreach ($arrayCleanCallSign as $oldCall) {
+        $cleanCall = trim($oldCall, "'");
+        $stmt = $db->prepare("UPDATE callNotice SET callSign = :cleanCall WHERE callSign = :oldCall");
+        $stmt->bindValue(':cleanCall', $cleanCall, SQLITE3_TEXT);
+        $stmt->bindValue(':oldCall', $oldCall, SQLITE3_TEXT);
+        $stmt->execute();
+    }
+
+    $db->close();
+    unset($db);
 }

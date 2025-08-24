@@ -21,9 +21,9 @@ echo '<link rel="stylesheet" href="../css/loader.css?' . microtime() . '">';
 echo '</head>';
 echo '<body>';
 
-
 require_once '../include/func_js_config_generally.php';
 require_once '../include/func_php_config_generally.php';
+require_once '../include/func_php_send_command.php';
 require_once '../include/func_js_core.php';
 
 #Show all Errors for debugging
@@ -40,6 +40,12 @@ $osName       = $osIssWindows === true ? 'Windows' : 'Linux';
 $isMobile     = isMobile();
 $architecture = php_uname('m');
 
+$ips      = $osIssWindows ? getLocalIpAddressesWin() : getLocalIpAddressesLinux();
+$countIps = count($ips);
+
+#Prüfliste um zu vermeiden das eine lokale Adresse wür UDP-Weiterleitung genutzt wird.
+echo '<div id="ipContainer" data-ips=\'' . json_encode($ips) . '\'></div>';
+
 #Wenn Mobile, Linebreak zur besseren Lesbarkeit einfügen
 if ($isMobile === true)
 {
@@ -53,8 +59,6 @@ if ($sendData === '1')
     if ($resSaveGenerallySetting)
     {
         echo '<span class="successHint">'.date('H:i:s').'-<span data-i18n="submenu.config_generally.msg.save-settings-success">Settings wurden erfolgreich abgespeichert!</span></span>';
-
-        echo "<script>reloadBottomFrame();</script>";
     }
     else
     {
@@ -85,42 +89,46 @@ else
     $osName .= ' ' . (int) php_uname('r') . ' (' . $osBuild[0] . ' ' . $osBuild[1] . ')';
 }
 
-$noPosData         = getParamData('noPosData');
-$noDmAlertGlobal   = getParamData('noDmAlertGlobal');
-$noTimeSyncMsg     = getParamData('noTimeSyncMsg');
-$loraIp            = getParamData('loraIp');
-$callSign          = getParamData('callSign');
-$newMsgBgColor     = getParamData('newMsgBgColor');
-$maxScrollBackRows = getParamData('maxScrollBackRows');
-$doLogEnable       = getParamData('doLogEnable');
-$doNotBackupDb     = getParamData('doNotBackupDb');
-$clickOnCall       = getParamData('clickOnCall');
-$chronLogEnable    = getParamData('chronLogEnable');
-$retentionDays     = getParamData('retentionDays'); //Tage logs behalten
-$chronMode         = getParamData('chronMode'); // zip|delete
-$strictCallEnable  = getParamData('strictCallEnable'); // Strict Call Flag
-$selTzName         = getParamData('timeZone') ?? 'Europe/Berlin'; // ZeitZone
-$selLanguage       = getParamData('language') ?? 'de'; // Sprache
-$mheardGroup       = getParamData('mheardGroup') ?? 0; // 0= egal welche Gruppe
-$bubbleStyleView   = getParamData('bubbleStyleView') ?? 0; // 1= Bubble Style aktiv
-$bubbleMaxWidth    = getParamData('bubbleMaxWidth') ?? 40;
+$noPosData           = getParamData('noPosData');
+$noDmAlertGlobal     = getParamData('noDmAlertGlobal');
+$noTimeSyncMsg       = getParamData('noTimeSyncMsg');
+$loraIp              = getParamData('loraIp');
+$callSign            = getParamData('callSign');
+$newMsgBgColor       = getParamData('newMsgBgColor');
+$maxScrollBackRows   = getParamData('maxScrollBackRows');
+$doLogEnable         = getParamData('doLogEnable');
+$doNotBackupDb       = getParamData('doNotBackupDb');
+$clickOnCall         = getParamData('clickOnCall');
+$chronLogEnable      = getParamData('chronLogEnable');
+$retentionDays       = getParamData('retentionDays'); //Tage logs behalten
+$chronMode           = getParamData('chronMode'); // zip|delete
+$strictCallEnable    = getParamData('strictCallEnable'); // Strict Call Flag
+$udpForwardingEnable = getParamData('udpForwardingEnable') ?? 0; // UDP-Weiterleitung
+$udpFwIp             = getParamData('udpFwIp') ?? ''; // UDP-Weiterleitung IP
+$udpFwPort           = getParamData('udpFwPort') ?? 0; // UDP-Weiterleitung Port
+$selTzName           = getParamData('timeZone') ?? 'Europe/Berlin'; // ZeitZone
+$selLanguage         = getParamData('language') ?? 'de'; // Sprache
+$mheardGroup         = getParamData('mheardGroup') ?? 0; // 0= egal welche Gruppe
+$bubbleStyleView     = getParamData('bubbleStyleView') ?? 0; // 1= Bubble Style aktiv
+$bubbleMaxWidth      = getParamData('bubbleMaxWidth') ?? 40;
 
 $openStreetTileServerUrl = trim(getParamData('openStreetTileServerUrl')) ?? 'tile.openstreetmap.org';
 $openStreetTileServerUrl = $openStreetTileServerUrl == '' ? 'tile.openstreetmap.org' : $openStreetTileServerUrl;
 
-$selTzName                = $selTzName == '' ? 'Europe/Berlin' : $selTzName;
-$selLanguage              = $selLanguage == '' ? 'de' : $selLanguage;
-$noPosDataChecked         = $noPosData == 1 ? 'checked' : '';
-$noDmAlertGlobalChecked   = $noDmAlertGlobal == 1 ? 'checked' : '';
-$noTimeSyncMsgChecked     = $noTimeSyncMsg == 1 ? 'checked' : '';
-$doLogEnableChecked       = $doLogEnable == 1 ? 'checked' : '';
-$doNotBackupDbChecked     = $doNotBackupDb == 1 ? 'checked' : '';
-$bubbleStyleViewChecked   = $bubbleStyleView == 1 ? 'checked' : '';
-$chronLogEnableChecked    = $chronLogEnable == 1 ? 'checked' : '';
-$retentionDays            = $retentionDays == '' ? 7 : $retentionDays;
-$chronMode                = $chronMode == '' ? 'zip' : $chronMode;
-$strictCallEnableChecked  = $strictCallEnable == 1 ? 'checked' : '';
-$bubbleMaxWidth           = $bubbleMaxWidth == '' ? 40 : $bubbleMaxWidth;
+$selTzName                  = $selTzName == '' ? 'Europe/Berlin' : $selTzName;
+$selLanguage                = $selLanguage == '' ? 'de' : $selLanguage;
+$noPosDataChecked           = $noPosData == 1 ? 'checked' : '';
+$noDmAlertGlobalChecked     = $noDmAlertGlobal == 1 ? 'checked' : '';
+$noTimeSyncMsgChecked       = $noTimeSyncMsg == 1 ? 'checked' : '';
+$doLogEnableChecked         = $doLogEnable == 1 ? 'checked' : '';
+$doNotBackupDbChecked       = $doNotBackupDb == 1 ? 'checked' : '';
+$bubbleStyleViewChecked     = $bubbleStyleView == 1 ? 'checked' : '';
+$chronLogEnableChecked      = $chronLogEnable == 1 ? 'checked' : '';
+$retentionDays              = $retentionDays == '' ? 7 : $retentionDays;
+$chronMode                  = $chronMode == '' ? 'zip' : $chronMode;
+$strictCallEnableChecked    = $strictCallEnable == 1 ? 'checked' : '';
+$udpForwardingEnableChecked = $udpForwardingEnable == 1 ? 'checked' : '';
+$bubbleMaxWidth             = $bubbleMaxWidth == '' ? 40 : $bubbleMaxWidth;
 
 $onClickChronModeCheckedZip    = $chronMode == 'zip' ? 'checked' : '';
 $onClickChronModeCheckedDelete = $chronMode == 'delete' ? 'checked' : '';
@@ -132,6 +140,7 @@ $onClickOnCallChecked3 = $clickOnCall == 3 ? 'checked' : '';
 
 $newMsgBgColor = $newMsgBgColor == '' ? '#FFFFFF' : $newMsgBgColor;
 $mheardGroup   = $mheardGroup == 0 ? '' : $mheardGroup;
+$udpFwPort     = $udpFwPort == 0 ? '' : $udpFwPort;
 
 echo '<h2><span data-i18n="submenu.config_generally.lbl.title">Basiseinstellungen</span></h2>';
 
@@ -268,6 +277,30 @@ echo '<tr>';
 echo '<td>&nbsp;- <span data-i18n="submenu.config_generally.lbl.notice-call-on-click">Notizfunktion zum Call</span>:</td>';
 echo '<td><input type="radio" name="clickOnCall" ' . $onClickOnCallChecked3 . ' id="clickOnCall3" value="3" /></td>';
 echo '</tr>';
+
+echo '<tr>';
+echo '<td colspan="2"><hr></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td><span data-i18n="submenu.config_generally.lbl.udp-fw_enable">Aktiviere UDP-Forwarding &#10140;[AN]</span>:</td>';
+echo '<td><input type="checkbox" name="udpForwardingEnable" ' . $udpForwardingEnableChecked . ' id="udpForwardingEnable" value="1" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td><span data-i18n="submenu.config_generally.lbl.udp-fw-ipv4">UDP-Weiterleitung IPv4</span>:</td>';
+echo '<td>';
+echo '<input type="text" name="udpFwIp" size="16" maxlength="15" id="udpFwIp" value="' . $udpFwIp . '" placeholder="AAA.BBB.CCC.DDD.EEE" />';
+echo '</td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td><span data-i18n="submenu.config_generally.lbl.udp-fw-port">UDP-Weiterleitung PORT</span>:</td>';
+echo '<td>';
+echo '<input type="text" name="udpFwPort" maxlength="5" id="udpFwPort" value="' . $udpFwPort . '" placeholder="1025-65535" />';
+echo '</td>';
+echo '</tr>';
+
 
 echo '<tr>';
 echo '<td colspan="2"><hr></td>';

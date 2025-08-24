@@ -1,9 +1,22 @@
+Version 1.10.64 SQL
+
+FEATURE UDP-Forwarding
+        Weiterleiten der UDP-Datagramme von Port 1799 an andere(n) IP/Port.
+        Falls es hier wider Erwarten haken sollte, einmal einen reboot ausführen.
+
+FEATURE Füge Notiz-Icon an Call, wenn eine Notiz dazu hinterlegt wurde.
+BUGFIX Schliesse Submenü nun auch bei Klick auf Submenü.
+BUGFIX Call wurde mit Hochkomma gespeichert in Call-Notiz.
+       Fehlerhafte Datensätze werden autom. korrigiert.
+       Es gehen keine schon gespeicherten Informationen verloren.
+BUGFIX Ermittlung der lokalen IP unter Trixie angepasst.
+####################################
 Version 1.10.62 SQL
 
 FEATURE Call-basierte Notizfunktion.
         Es können nun optional Notizen zu einem Call gespeichert werden.
 
-##########################
+####################################
 Version 1.10.60 SQL
 
 FEATURE Remote-Start der Bake via OTP
