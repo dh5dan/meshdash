@@ -2970,57 +2970,6 @@ function autoPurgeData(): bool
 
     return true;
 }
-function setBeaconCronIntervalBAK($beaconInterval,$beaconEnabled): bool
-{
-    $delete    = $beaconEnabled == 0; // Wenn 0 = true
-    $debugFlag = false;
-
-    $skriptPfad = '/usr/bin/wget -q -O /dev/null ' . BASE_PATH_URL . 'send_beacon.php';
-
-    $cronJobsNeu = [];
-
-    if ($beaconInterval == '' || $beaconInterval < 5)
-    {
-        if ($debugFlag)
-        {
-            echo "Intervall ungültig!.\n";
-        }
-
-        return false;
-    }
-
-    if ($beaconInterval <= 60)
-    {
-        // Einfache Minuten-Intervalle
-        $cronJobsNeu[] = "*/$beaconInterval * * * * $skriptPfad";
-    }
-
-    // Bestehende Crontab einlesen
-    exec('crontab -l 2>/dev/null', $cronJobsAlt);
-
-    // Löschen aller Jobs, die dieses Skript enthalten
-    $cronJobsAlt = array_filter($cronJobsAlt, function ($zeile) use ($skriptPfad) {
-        return strpos($zeile, $skriptPfad) === false;
-    });
-
-    if (!$delete)
-    {
-        $cronJobsAlt = array_merge($cronJobsAlt, $cronJobsNeu);
-    }
-
-    file_put_contents('/tmp/crontab.txt', implode("\n", $cronJobsAlt) . "\n");
-    exec('crontab /tmp/crontab.txt');
-
-    if ($debugFlag)
-    {
-        echo "<pre>";
-        echo "Generiere Baken Cronjob für Intervall: {$beaconInterval} Minuten\n";
-        print_r($cronJobsNeu);
-        echo "</pre>";
-    }
-
-    return true;
-}
 function setBeaconCronInterval($beaconInterval,$beaconEnabled): bool
 {
     $delete                         = $beaconEnabled == 0; // Wenn 0 = true
@@ -3055,3 +3004,58 @@ function setBeaconCronInterval($beaconInterval,$beaconEnabled): bool
 
     return true;
 }
+function sqliteWALCheckpoint(string $database): bool
+{
+    $database = $database . '.db';
+
+    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    $basename              = pathinfo(getcwd())['basename'];
+    $dbFilenameSub         = '../database/' . $database;
+    $dbFilenameRoot        = 'database/' . $database;
+    $dbFilename            = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+    $getCheckPointedValues = false;
+
+    if (!file_exists($dbFilename))
+    {
+        return false;
+    }
+
+    // DB readonly öffnen, nur für Lesezugriff
+    $db = new SQLite3($dbFilename, SQLITE3_OPEN_READWRITE); // Checkpoint braucht Schreibrechte!
+    if (!$db)
+    {
+        return false;
+    }
+
+    // WAL-Checkpoint durchführen
+    $result = $db->query("PRAGMA wal_checkpoint(FULL);");
+
+    #liest nur die Rückgabewerte des PRAGMA aus (busy, log, checkpointed).
+    if ($result && $getCheckPointedValues === true)
+    {
+        while ($row = $result->fetchArray(SQLITE3_ASSOC))
+        {
+            // Optional: Werte ausgeben oder loggen
+            // busy, log, checkpointed
+
+            echo "<pre>";
+            print_r($row);
+            echo "</pre>";
+
+            //Könnte so aussehen.
+            // Array
+            // (
+            //    [busy] => 0          // Anzahl der Verbindungen, die die WAL blockieren.
+            //    [log] => 5           // Anzahl der Seiten, die noch im WAL-Log stehen.
+            //    [checkpointed] => 20 // Anzahl der Seiten, die gerade zurück in die Haupt-DB geschrieben wurden.
+            // )
+        }
+    }
+
+    // DB schließen
+    $db->close();
+    unset($db);
+
+    return true;
+}
+

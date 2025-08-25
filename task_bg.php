@@ -21,17 +21,18 @@ if ($execDir != '')
 
 if (substr($taskFile,-3) == 'cmd' || substr($taskFile,-3) == 'bat')
 {
-    exec('start /B ' . $taskFile);
+    #exec('start /B ' . $taskFile);
+
+    //Verhindert Timeout unter Windows
+    pclose(popen('start /B ' . escapeshellarg($taskFile), 'r'));
 }
 
 if (substr($taskFile,-3) == 'php')
 {
     #Starte Background task für UDP-Receive
     #in Windows. Wichtig! start /B nutzen!
-    exec('start /B php -f ' . $taskFile);
+    #exec('start /B php -f ' . $taskFile);
+
+    //Verhindert Timeout unter Windows
+    pclose(popen('start /B php -f ' . escapeshellarg($taskFile), 'r'));
 }
-
-
-
-
-

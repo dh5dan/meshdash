@@ -377,7 +377,6 @@
            $('#menu').toggle();
        });
 
-
        // Klick auf ein Menüelement (li), um das Submenü ein- oder auszublenden
        $('#menu > ul > li').on("click", function (e)
        {
@@ -524,8 +523,10 @@
 
            if (iframeSrc !== '')
            {
-               $('#menu').hide();
-               $('#menu li').removeClass('active'); // Alle Menüs schließen
+               setTimeout(() => {
+                   $('#menu li').removeClass('active'); // wirklich alle
+                   $('#menu').hide();
+               }, 50); // 50ms reichen
 
                // Setze das src-Attribut des Iframes
                let iframe = $('#message-frame')[0]; // Zugriff auf das Iframe-Element

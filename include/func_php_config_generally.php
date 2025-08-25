@@ -26,6 +26,9 @@ function saveGenerallySettings(): bool
     $bubbleMaxWidth          = $bubbleMaxWidth == '' ? 40 : $bubbleMaxWidth;
     $language                = $_REQUEST['selLanguage'] ?? 'de';
     $language                = $language == '' ? 'de' : $language;
+    $udpForwardingEnable     = $_REQUEST['udpForwardingEnable'] ?? 0;
+    $udpFwIp                 = $_REQUEST['udpFwIp'] ?? 0;
+    $udpFwPort               = $_REQUEST['udpFwPort'] ?? 0;
 
     setParamData('noPosData', $noPosData);
     setParamData('noDmAlertGlobal', $noDmAlertGlobal);
@@ -47,6 +50,10 @@ function saveGenerallySettings(): bool
     setParamData('bubbleStyleView', $bubbleStyleView);
     setParamData('bubbleMaxWidth', $bubbleMaxWidth);
     setParamData('language', $language, 'txt');
+
+    setParamData('udpForwardingEnable', $udpForwardingEnable);
+    setParamData('udpFwIp', $udpFwIp, 'txt');
+    setParamData('udpFwPort', $udpFwPort);
 
     return true;
 }
