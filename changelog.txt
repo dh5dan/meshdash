@@ -1,4 +1,4 @@
-Version 1.10.64 SQL
+Version 1.10.66 SQL
 
 BUGFIX: Bei Neuinstallation wird auf eine noch nicht existente parameter.db zugriffen.
 
