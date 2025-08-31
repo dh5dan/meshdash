@@ -213,7 +213,7 @@ function setPermissions($dir)
         if ($file->isDir())
         {
             // Verzeichnisse auf 755 setzen
-            chmod($file, 0755);
+            @chmod($file, 0755);
 
             // Falls das Verzeichnis "execute" heißt, setze auch seinen Inhalt auf 755
             if ($file->getFilename() === 'execute')
@@ -225,14 +225,14 @@ function setPermissions($dir)
 
                 foreach ($subIterator as $subFile)
                 {
-                    chmod($subFile->getPathname(), 0755);
+                    @chmod($subFile->getPathname(), 0755);
                 }
             }
         }
         else
         {
             // Dateien auf 644 setzen
-            chmod($file, 0644);
+            @chmod($file, 0644);
         }
     }
 }

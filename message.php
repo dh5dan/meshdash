@@ -126,6 +126,24 @@ $searchTsToUrl   = $searchTsTo;
 $arrayGetCallNotices = getCallNotices();
 $arrayGetCallNotices = $arrayGetCallNotices === false ? array() : $arrayGetCallNotices;
 
+$checkTaskCmdUdpReceiver = getTaskCmd('udp');
+$taskResultUdpReceiver   = shell_exec($checkTaskCmdUdpReceiver); //Prüfe Hintergrundprozess
+$statusImageUpdReceiver  = $taskResultUdpReceiver != '' ? '' : '<span class="failureHint">Achtung: Background-Task UDP-Receiver ist inaktiv!</span>';
+
+if ($statusImageUpdReceiver != '')
+{
+    echo '<script>
+              $(parent.document).find("#bgTask").attr("src", "image/punkt_red.png");
+              $(parent.document).find("#taskStatusFlag").val(0);
+          </script>';
+}
+else
+{
+    echo '<script>
+              $(parent.document).find("#bgTask").attr("src", "image/punkt_green.png");
+              $(parent.document).find("#taskStatusFlag").val(1);
+          </script>';
+}
 
 if ($totalRows != 0)
 {
@@ -405,6 +423,8 @@ else
     $logArray[] = "Message_Normal: maxScrollBackRows: $maxScrollBackRows";
 
     $result = safeDbRun($db, $sql, 'query', $logArray);
+
+    echo $statusImageUpdReceiver;
 }
 
 #Get Keywords

@@ -1,7 +1,14 @@
+Version 1.10.68 SQL
+
+FEATURE UDP-Forward auf localhost nun möglich, wenn Zielport nicht 1799 ist.
+FEATURE Health-Check für UDP-Receiver im Message-Fenster, wenn Prozess down ist.
+FEATURE Diverse deprecate Anpassungen für PHP 8.4.x und MeshDash für Docker.
+FEATURE udp_forward_msg_data in die Log-Rotation aufgenommen.
+
+####################################
 Version 1.10.66 SQL
 
-BUGFIX: Bei Neuinstallation wird auf eine noch nicht existente parameter.db zugriffen.
-
+BUGFIX: Bei Neuinstallation wird auf eine noch nicht existente parameter.db zugegriffen.
 ####################################
 Version 1.10.64 SQL
 
