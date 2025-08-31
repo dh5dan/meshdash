@@ -1559,6 +1559,7 @@ function logRotate()
         "send_queue_mheard_",
         "send_mheard_",
         "db_integrity_",
+        "udp_forward_msg_data_",
     ]; // Präfixe der Log-Dateien
 
     $retentionDays = getParamData('retentionDays') ?? 7;

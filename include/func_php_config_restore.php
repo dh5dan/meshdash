@@ -13,9 +13,6 @@ function unzipRestore($zipFile, $tempDir): bool
 
     return false;
 }
-
-
-
 function checkValidRestorePackage($uploadFile, $debugFlag): bool
 {
     $uploadFileFullPath = "../$uploadFile";

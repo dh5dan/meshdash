@@ -72,7 +72,7 @@
         $("#btnConfigUpdateReload").on("click", function ()
         {
             // Ermittelt die Base-URL dynamisch
-            window.top.location.href = window.location.origin + window.location.pathname.replace(/\/[^\/]+\/[^\/]+\/?$/, '');
+            window.top.location.href = window.location.origin + window.location.pathname.replace(/\/[^\/]+\/[^\/]+\/?$/, '') + '/';
         });
 
         $(".imageDelete").on("click", function ()

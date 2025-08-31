@@ -46,9 +46,9 @@
                 return false;
             }
 
-            if (udpFwIp !== '' && (ipList.includes(udpFwIp) || udpFwIp === '127.0.0.1'))
+            if (udpFwIp !== '' && ((ipList.includes(udpFwIp) || udpFwIp === '127.0.0.1' || udpFwIp === '0.0.0.0') && udpFwPort === '1799'))
             {
-                outputMsg = 'Für die UDP-Weiterleitung darf nicht die lokale IPv4 ('+udpFwIp+') verwendet werden.';
+                outputMsg = 'Für eine lokale UDP-Weiterleitung darf der Zielport nicht 1799 sein.';
                 outputMsg += '<br><br>Bitte Prüfen.';
                 dialog(outputMsg, titleMsg, width);
                 return false;
