@@ -1,5 +1,10 @@
 Version 1.10.64 SQL
 
+BUGFIX: Bei Neuinstallation wird auf eine noch nicht existente parameter.db zugriffen.
+
+####################################
+Version 1.10.64 SQL
+
 FEATURE UDP-Forwarding
         Weiterleiten der UDP-Datagramme von Port 1799 an andere(n) IP/Port.
         Falls es hier wider Erwarten haken sollte, einmal einen reboot ausführen.

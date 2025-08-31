@@ -23,7 +23,7 @@ require_once 'include/func_php_core.php';
 require_once 'include/func_php_bottom.php';
 require_once 'include/func_js_bottom.php';
 
-$errMsg  = utf8_decode($_REQUEST['errMsg'] ?? '');
+$errMsg  = @utf8_decode($_REQUEST['errMsg'] ?? '');
 $msgText = $_REQUEST['msgText'] ?? '';
 $dm      = $_REQUEST['dm'] ?? '';
 $loraIP  = getParamData('loraIp');
