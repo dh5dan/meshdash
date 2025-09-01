@@ -52,6 +52,7 @@ Eine Umstellung auf **PHP >= 8.x** ist daher empfohlen.
 - Dyn. erweiterbare Call-/Keyword-Definitionen (keine Feldbegrenzung mehr)
 - [Unterstützung der Anzeige auf mobilen Geräten Smartphone/Tablett](#mobile-ansicht-auf-einem-smartphone-)
 - [Call-basierte Notizfunktion](#notizfunktion-für-calls)
+- [Mehrsprachenunterstützung (DE/EN/FR/ES/NL/IT)](#mehrsprachenunterstützung-von-meshdash)
 - [UDP-Datagramm Weiterleitung](#hier-noch-ein-paar-bilder-aus-den-menüpunkten)
 - [MeshDash in Docker-Umgebung](#meshdash-auf-docker)
   
@@ -161,12 +162,27 @@ Es wird regelmäßig aktualisiert.
 
 ---
 
+### Mehrsprachenunterstützung von MeshDash
+MeshDash ist nun in 6 Sprachen verfügbar:  
+Deutsch, Englisch, Französisch Spanisch, Niederländisch und Italienisch.  
+Die Übersetzungen wurde mit Hilfe einer KI erstellt und können ggf. noch unvollständig sein.  
+In Meshdash besteht jedoch die Möglichkeit, diese Übersetzungen individuell anzupassen.
+
+![FILES](/docs/language.jpg)
+
+![FILES](/docs/language_edit_menu.jpg)
+
+![FILES](/docs/language_edit.jpg)
+
+---
+
 ### Debug-Informationen sofort auf einen Blick
 Ideal zur Fehleranalyse als Screenshot.  
 Hier können außerdem unkompliziert Logdateien heruntergeladen werden,  
 die zusätzliche hilfreiche Informationen liefern.
 
 ![FILES](/docs/33_debug_info.jpg)
+
 ![FILES](/docs/33_debug_info_logs.jpg)
 
 ---
