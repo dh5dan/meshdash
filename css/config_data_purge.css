@@ -1,26 +1,28 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
+    background-color: var(--config-data-purge-bg-color-body);
+    color: var(--config-data-purge-text-color-body)
 }
 
 .submitParamLoraIp {
     font-size: 14px;
     padding: 8px 15px;
     border: none;
-    background-color: #0056b3;
-    color: white;
+    background-color: var(--config-data-purge-bg-color-btn);
+    color: var(--config-data-purge-text-color-btn);
     cursor: pointer;
     border-radius: 5px;
 }
 
 .successHint {
-    background-color: darkgreen;
-    color: whitesmoke;
+    background-color: var( --config-data-purge-bg-color-success);
+    color: var( --config-data-purge-text-color-success);
     font-weight: bold;
 }
 
 .failureHint {
-    background-color: crimson;
-    color: whitesmoke;
+    background-color: var( --config-data-purge-bg-color-failure);
+    color: var( --config-data-purge-text-color-failure);
     font-weight: bold;
 }
 
@@ -48,8 +50,8 @@ body {
 
     input[type="button"] {
         display: inline-block;
-        background: #0056b3;
-        color: white;
+        background-color: var(--config-data-purge-bg-color-btn);
+        color: var(--config-data-purge-text-color-btn);
         /*padding: 5px 10px;*/
         border-radius: 5px;
         cursor: pointer;

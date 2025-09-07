@@ -16,6 +16,16 @@ echo '<script type="text/javascript" src="../jquery/jquery.min.js"></script>';
 echo '<script type="text/javascript" src="../jquery/jquery-ui.js"></script>';
 echo '<link rel="stylesheet" href="../jquery/jquery-ui.css">';
 echo '<link rel="stylesheet" href="../jquery/css/jq_custom.css">';
+
+if ((getParamData('darkMode') ?? 0) == 1)
+{
+    echo '<link rel="stylesheet" href="../css/dark_mode.css?' . microtime() . '">';
+}
+else
+{
+    echo '<link rel="stylesheet" href="../css/normal_mode.css?' . microtime() . '">';
+}
+
 echo '<link rel="stylesheet" href="../css/config_generally.css?' . microtime() . '">';
 echo '<link rel="stylesheet" href="../css/loader.css?' . microtime() . '">';
 echo '</head>';
@@ -59,6 +69,7 @@ if ($sendData === '1')
     if ($resSaveGenerallySetting)
     {
         echo '<span class="successHint">'.date('H:i:s').'-<span data-i18n="submenu.config_generally.msg.save-settings-success">Settings wurden erfolgreich abgespeichert!</span></span>';
+        echo '<br><span class="warningHint">Ggf. ist ein Browser-Refresh notwendig damit Änderungen wirksam werden!</span>';
     }
     else
     {
@@ -111,6 +122,7 @@ $selLanguage         = getParamData('language') ?? 'de'; // Sprache
 $mheardGroup         = getParamData('mheardGroup') ?? 0; // 0= egal welche Gruppe
 $bubbleStyleView     = getParamData('bubbleStyleView') ?? 0; // 1= Bubble Style aktiv
 $bubbleMaxWidth      = getParamData('bubbleMaxWidth') ?? 40;
+$darkMode            = getParamData('darkMode') ?? 0; // 1= Dark-Mode aktiv
 
 $openStreetTileServerUrl = trim(getParamData('openStreetTileServerUrl')) ?? 'tile.openstreetmap.org';
 $openStreetTileServerUrl = $openStreetTileServerUrl == '' ? 'tile.openstreetmap.org' : $openStreetTileServerUrl;
@@ -118,6 +130,7 @@ $openStreetTileServerUrl = $openStreetTileServerUrl == '' ? 'tile.openstreetmap.
 $selTzName                  = $selTzName == '' ? 'Europe/Berlin' : $selTzName;
 $selLanguage                = $selLanguage == '' ? 'de' : $selLanguage;
 $noPosDataChecked           = $noPosData == 1 ? 'checked' : '';
+$darkModeChecked            = $darkMode == 1 ? 'checked' : '';
 $noDmAlertGlobalChecked     = $noDmAlertGlobal == 1 ? 'checked' : '';
 $noTimeSyncMsgChecked       = $noTimeSyncMsg == 1 ? 'checked' : '';
 $doLogEnableChecked         = $doLogEnable == 1 ? 'checked' : '';
@@ -149,7 +162,7 @@ echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
 echo '<table>';
 
 echo '<tr>';
-    echo '<td>OS :</td>';
+    echo '<td>OS:</td>';
     echo '<td>'. $osName . '</td>';
 echo '</tr>';
 
@@ -193,6 +206,11 @@ echo '</tr>';
 echo '<tr>';
 echo '<td><span data-i18n="submenu.config_generally.lbl.bubble-style">Bubble-Style &#10140;[AN]</span>:</td>';
 echo '<td><input type="checkbox" name="bubbleStyleView" ' . $bubbleStyleViewChecked . ' id="bubbleStyleView" value="1" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td><span data-i18n="submenu.config_generally.lbl.dark-mode">Dark-Mode &#10140;[AN]</span>:</td>';
+echo '<td><input type="checkbox" name="darkMode" ' . $darkModeChecked . ' id="darkMode" value="1" /></td>';
 echo '</tr>';
 
 echo '<tr>';

@@ -1,17 +1,19 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
     padding: 0;
+    background-color: var(--debug-info-bg-color-body);
+    color: var(--debug-info-text-color-body);
 }
 
 .successHint {
-    background-color: darkgreen;
-    color: whitesmoke;
+    background-color: var(--debug-info-bg-color-success);
+    color: var(--debug-info-text-color-success);
     font-weight: bold;
 }
 
 .failureHint {
-    background-color: crimson;
-    color: whitesmoke;
+    background-color: var(--debug-info-bg-color-failure);
+    color: var(--debug-info-text-color-failure);
     font-weight: bold;
 }
 
@@ -46,8 +48,8 @@ input[type="checkbox"] {
     font-size: 14px;
     padding: 8px 15px;
     border: none;
-    background-color: #0056b3;
-    color: white;
+    background-color: var(--debug-info-bg-color-btn);
+    color: var(--debug-info-text-color-btn);
     cursor: pointer;
     border-radius: 5px;
     /*width: 100%;*/
@@ -59,13 +61,11 @@ input[type="checkbox"] {
     width: 20px;
 }
 
-
 /* backup Tabelle */
-
 .scrollable-container {
     max-height: 400px;
     overflow-y: auto;
-    border: 1px solid #ddd;
+    border: 1px solid var(--debug-info-border-color-tableScroll);
     margin-bottom: 20px;
     width: 496px;  /* Container-Breite anpassen */
 
@@ -82,17 +82,17 @@ table.logTable {
     width: 30%;
 }
 table.logTable th, table.logTable td {
-    border: 1px solid #ddd;
+    border: 1px solid var(--debug-info-border-color-table);
     padding: 8px;
 }
-table.logTable tr:nth-child(even) {background-color: #f2f2f2;}
-table.logTable tr:hover {background-color: #ddd;}
+table.logTable tr:nth-child(even) {background-color: var(--debug-info-bg-color-tableChild);}
+table.logTable tr:hover {background-color: var(--debug-info-bg-color-tableTrHover);}
 table.logTable th {
     padding-top: 12px;
     padding-bottom: 12px;
     text-align: left;
-    background-color: #4CAF50;
-    color: white;
+    background-color: var(--debug-info-bg-color-table);
+    color: var(--debug-info-text-color-table);
 }
 
 .imageDownload {
@@ -105,13 +105,13 @@ table.logTable th {
 }
 
 .log-today {
-    color: green; /* hellgrün */
+    color: var(--debug-info-text-color-log-today); /* hellgrün */
 }
 .log-yesterday {
-    color: blue; /* hellgelb */
+    color: var(--debug-info-text-color-log-log-yesterday); /* hellgelb */
 }
 .log-old {
-    color: crimson; /* hellgrau */
+    color: var(--debug-info-text-color-log-old); /* hellgrau */
 }
 
 
@@ -183,8 +183,8 @@ table.logTable th {
 
     input[type="button"] {
         display: inline-block;
-        background: #0056b3;
-        color: white;
+        background-color: var(--debug-info-bg-color-btn);
+        color: var(--debug-info-text-color-btn);
         /*padding: 5px 10px;*/
         border-radius: 5px;
         cursor: pointer;

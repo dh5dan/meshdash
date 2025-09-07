@@ -1,5 +1,5 @@
 <?php
-const VERSION = '1.10.68';
+const VERSION = '1.10.70';
 date_default_timezone_set('Europe/Berlin');
 
 if (PHP_SAPI === 'cli')

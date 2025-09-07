@@ -1,17 +1,19 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
     padding: 0;
+    background-color: var(--sensor-data-threshold-bg-color-body);
+    color: var(--sensor-data-threshold-text-color-body);
 }
 
 .successHint {
-    background-color: darkgreen;
-    color: whitesmoke;
+    background-color: var(--sensor-data-threshold-bg-color-success);
+    color: var(--sensor-data-threshold-text-color-success);
     font-weight: bold;
 }
 
 .failureHint {
-    background-color: crimson;
-    color: whitesmoke;
+    background-color: var(--sensor-data-threshold-bg-color-failure);
+    color: var(--sensor-data-threshold-text-color-failure);
     font-weight: bold;
 }
 
@@ -49,8 +51,8 @@ td input[type="text"][name*="sensorThIna226IntervallSec"] {
     font-size: 14px;
     padding: 8px 15px;
     border: none;
-    background-color: #0056b3;
-    color: white;
+    background-color: var(--sensor-data-threshold-bg-color-btn);
+    color: var(--sensor-data-threshold-text-color-btn);
     cursor: pointer;
     border-radius: 5px;
 }
@@ -93,8 +95,8 @@ td input[type="text"][name*="sensorThIna226IntervallSec"] {
         padding: 10px;
         font-size: 16px;
         display: inline-block;
-        background: #0056b3;
-        color: white;
+        background-color: var(--sensor-data-threshold-bg-color-btn);
+        color: var(--sensor-data-threshold-text-color-btn);
         /*padding: 5px 10px;*/
         border-radius: 5px;
         cursor: pointer;

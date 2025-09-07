@@ -1,17 +1,19 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
     padding: 0;
+    background-color: var(--send-command-bg-color-body);
+    color: var(--send-command-text-color-body);
 }
 
 .successHint {
-    background-color: darkgreen;
-    color: whitesmoke;
+    background-color: var(--send-command-bg-color-success);
+    color: var(--send-command-text-color-success);
     font-weight: bold;
 }
 
 .failureHint {
-    background-color: crimson;
-    color: whitesmoke;
+    background-color: var(--send-command-bg-color-failure);
+    color: var(--send-command-text-color-failure);
     font-weight: bold;
     display: block;
 }
@@ -47,8 +49,8 @@ input[type="checkbox"] {
     font-size: 14px;
     padding: 8px 15px;
     border: none;
-    background-color: #0056b3;
-    color: white;
+    background-color: var(--send-command-bg-color-btn);
+    color: var(--send-command-text-color-btn);
     cursor: pointer;
     border-radius: 5px;
 }
@@ -71,7 +73,6 @@ input[type="checkbox"] {
         cursor: pointer;
         margin-bottom: 0;
     }
-
 
     .successHint, .failureHint {
         display: block;
@@ -104,8 +105,8 @@ input[type="checkbox"] {
 
     input[type="button"] {
         display: inline-block;
-        background: #0056b3;
-        color: white;
+        background-color: var(--send-command-bg-color-btn);
+        color: var(--send-command-text-color-btn);
         /*padding: 5px 10px;*/
         border-radius: 5px;
         cursor: pointer;

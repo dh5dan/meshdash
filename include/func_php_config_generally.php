@@ -29,6 +29,7 @@ function saveGenerallySettings(): bool
     $udpForwardingEnable     = $_REQUEST['udpForwardingEnable'] ?? 0;
     $udpFwIp                 = $_REQUEST['udpFwIp'] ?? 0;
     $udpFwPort               = $_REQUEST['udpFwPort'] ?? 0;
+    $darkMode                = $_REQUEST['darkMode'] ?? 0;
 
     setParamData('noPosData', $noPosData);
     setParamData('noDmAlertGlobal', $noDmAlertGlobal);
@@ -54,6 +55,7 @@ function saveGenerallySettings(): bool
     setParamData('udpForwardingEnable', $udpForwardingEnable);
     setParamData('udpFwIp', $udpFwIp, 'txt');
     setParamData('udpFwPort', $udpFwPort);
+    setParamData('darkMode', $darkMode);
 
     return true;
 }

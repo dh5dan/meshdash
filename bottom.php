@@ -1,9 +1,22 @@
 <?php
+require_once 'dbinc/param.php';
+require_once 'include/func_php_core.php';
+
 echo '<!DOCTYPE html>';
 echo '<html lang="de">';
 echo '<meta charset="UTF-8">';
 echo '<head><title>Bottom</title>';
 echo '<meta http-equiv="content-type" content="text/html; charset=utf-8">';
+
+if ((getParamData('darkMode') ?? 0) == 1)
+{
+    echo '<link rel="stylesheet" href="css/dark_mode.css?' . microtime() . '">';
+}
+else
+{
+    echo '<link rel="stylesheet" href="css/normal_mode.css?' . microtime() . '">';
+}
+
 echo '<link rel="stylesheet" href="css/bottom.css?' . microtime() . '">';
 
 echo '<script type="text/javascript" src="jquery/jquery.min.js"></script>';
@@ -17,11 +30,9 @@ ini_set( 'default_charset', 'UTF-8' );
 echo '</head>';
 echo '<body>';
 
-require_once 'dbinc/param.php';
-require_once 'include/func_php_core.php';
-require_once 'include/func_php_core.php';
 require_once 'include/func_php_bottom.php';
 require_once 'include/func_js_bottom.php';
+
 
 $errMsg  = @utf8_decode($_REQUEST['errMsg'] ?? '');
 $msgText = $_REQUEST['msgText'] ?? '';

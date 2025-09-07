@@ -69,8 +69,8 @@ function saveTranslationItem($columns)
 function deleteTranslationItem()
 {
     $dbFile = 'database/translation.db';
-    $db = new SQLite3($dbFile);
-    $stmt = $db->prepare("DELETE FROM translation WHERE key = :key");
+    $db     = new SQLite3($dbFile);
+    $stmt   = $db->prepare("DELETE FROM translation WHERE key = :key");
     $stmt->bindValue(':key', $_GET['delete'], SQLITE3_TEXT);
     $stmt->execute();
 

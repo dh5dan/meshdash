@@ -9,8 +9,8 @@ body {
 }
 
 .successHint {
-    background-color: darkgreen;
-    color: whitesmoke;
+    background-color: var(--index-bg-color-successHint);
+    color: var(--index-text-color-successHint);
     font-weight: bold;
     display: inline; /* das ist Standard */
     padding: 2px 4px; /* optional für etwas Abstand */
@@ -19,8 +19,8 @@ body {
 }
 
 .failureHint {
-    background-color: crimson;
-    color: whitesmoke;
+    background-color: var(--index-bg-color-failureHint);
+    color: var(--index-text-color-failureHint);
     font-weight: bold;
     display: inline; /* das ist Standard */
     padding: 2px 4px; /* optional für etwas Abstand */
@@ -30,12 +30,12 @@ body {
 
 /* Top Section */
 .top {
-    background-color: #2e9afe;
+    background-color: var(--index-bg-color-top);
     position: relative;
 }
 
 .topText {
-    color: white;
+    color: var(--index-text-color-top);
     text-align: center;
 }
 
@@ -56,7 +56,7 @@ body {
     right: 10px;
     top: 50%;
     transform: translateY(-50%);
-    color: white;
+    color: var(--index-text-color-topRight);
     font-size: 16px;
     font-weight: bold;
     white-space: nowrap;
@@ -84,7 +84,7 @@ iframe {
     overflow-y: auto; /* Scrollbar aktivieren */
 
     margin: 0;
-    background-color: #E6E6E6;
+    background-color: var(--index-bg-color-messageFrame);
     padding: 20px;
     font-family: Arial, sans-serif;
 }
@@ -114,7 +114,7 @@ iframe {
 }
 
 ::placeholder {
-    color:navy;
+    color:var(--index-text-color-placeHolder);
     opacity:1;
     transition: opacity 1s;
     font-weight: bold;
@@ -122,7 +122,7 @@ iframe {
 
 /*   DateTimePicker */
 .searchDbDialog::placeholder {
-    color:navy;
+    color:var(--index-text-color-placeHolderSearch);
     opacity:0.5;
     transition: opacity 1s;
     font-size: 14px;
@@ -159,8 +159,8 @@ iframe {
     position: absolute; /* Overlay-Effekt */
     top: 70px;   /* Abstand von oben */
     left: 10px;  /* Abstand von links */
-    background-color: #2e9afe;
-    border: 1px solid #ccc;
+    background-color: var(--index-bg-color-menu);
+    border: 1px solid var(--index-text-color-menuBorder);
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     z-index: 1000;
     min-width: 150px;
@@ -175,13 +175,13 @@ iframe {
 #menu li {
     padding: 10px;
     cursor: pointer;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--index-border-color-menuLiBorderBottom);
     font-size: 16px; /* Schriftgröße Hauptmenü */
     position: relative; /* Wichtige Positionierung für Submenu */
 }
 
 #menu li:hover {
-    background-color: lightblue;
+    background-color: var(--index-bg-color-menuLiHover);
 }
 
 .iconBgColor {
@@ -225,24 +225,25 @@ iframe {
 /*    Top Tabs */
 #top-tabs {
     text-align: center;
-    background-color: #2e9afe;
+    background-color: var(--index-bg-color-topTabs);
 }
 
 #top-tabs .tab {
     display: inline-block;
     margin: 0 5px;
     padding: 5px 10px;
-    background-color: #fff;
-    border: 1px solid #ccc;
+    background-color: var(--index-bg-color-topTabsTab);
+    border: 1px solid var(--index-border-color-topTabsTab);
     border-radius: 3px;
     cursor: pointer;
     font-size: 14px;
+    color: var(--index-text-color-topTabsTab);
 }
 
 #top-tabs .tab.active {
-    background-color: #4CAF50;
-    color: #fff;
-    border-color: #4CAF50;
+    background-color: var(--index-bg-color-topTabsTabActive);
+    color: var(--index-text-color-topTabsTabActive);
+    border-color: var(--index-border-color-topTabsTabActive);
 }
 
 .tab {
@@ -253,7 +254,7 @@ iframe {
 
 .new-message-indicator::after {
     content: "•";
-    color: red;
+    color: var(--index-text-color-newMessageIndicator);
     font-size: 2.2em;  /* Verwenden von relativer Schriftgröße */
     position: absolute;
     top: 2px;  /* Etwas anpassen, um den Punkt korrekt im Tab zu platzieren */

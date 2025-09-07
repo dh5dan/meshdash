@@ -1,6 +1,8 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
     padding: 0;
+    background-color: var(--lora-info-bg-color-body);
+    color: var(--lora-info-text-color-body)
 }
 
 .table {
@@ -9,49 +11,49 @@ body {
     margin: 20px 0;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 16px;
-    color: #333;
+    color: var(--lora-info-text-color-tableTd);
 }
 
 .table th,
 .table td {
-    border: 1px solid #ddd;
+    border: 1px solid var(--lora-info-border-color-tableTd);
     padding: 10px;
     text-align: left;
 }
 
 .table th {
-    background-color: #f4f4f4;
+    background-color: var(--lora-info-bg-color-tableTh);
     font-weight: bold;
 }
 
 .table tr:nth-child(even) {
-    background-color: #f9f9f9;
+    background-color: var(--lora-info-bg-color-tableChild);
 }
 
 .table tr:hover {
-    background-color: #f1f1f1;
+    background-color: var(--lora-info-bg-color-tableTrHover);
 }
 
 .btnLoadLoraInfo {
     font-size: 14px;
     padding: 8px 15px;
     border: none;
-    background-color: #0056b3;
-    color: white;
+    background-color: var(--lora-info-bg-color-btn);
+    color: var(--lora-info-text-color-btn);
     cursor: pointer;
     border-radius: 5px;
     width: 100%;
 }
 
 .successHint {
-    background-color: darkgreen;
-    color: whitesmoke;
+    background-color: var(--lora-info-bg-color-success);
+    color: var(--lora-info-text-color-success);
     font-weight: bold;
 }
 
 .failureHint {
-    background-color: crimson;
-    color: whitesmoke;
+    background-color: var(--lora-info-bg-color-failure);
+    color: var(--lora-info-text-color-failure);
     font-weight: bold;
     display: block;
 }
@@ -93,8 +95,8 @@ body {
 
     input[type="button"] {
         display: inline-block;
-        background: #0056b3;
-        color: white;
+        background-color: var(--lora-info-bg-color-btn);
+        color: var(--lora-info-text-color-btn);
         /*padding: 5px 10px;*/
         border-radius: 5px;
         cursor: pointer;
