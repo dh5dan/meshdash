@@ -1,6 +1,8 @@
 body {
     font-family: sans-serif;
     margin: 20px;
+    background-color: var(--translation-editor-bg-color-body);
+    color: var(--translation-editor-text-color-body);
 }
 
 table {
@@ -9,8 +11,14 @@ table {
     margin-bottom: 0px;
 }
 
-th {
-    background: #eee;
+th, tr, td {
+    background: var(--translation-editor-bg-color-tableThTrTd);
+    color: var(--translation-editor-text-color-tableThTrTd);
+}
+
+input[type="text"] {
+    background-color: var(--translation-editor-bg-color-inputText);
+    color: var(--translation-editor-text-color-inputText);
 }
 
 input[type=text] {

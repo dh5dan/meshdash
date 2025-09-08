@@ -4,6 +4,8 @@ require_once '../include/func_php_core.php';
 
 $userLang = getParamData('language');
 $userLang = $userLang == '' ? 'de' : $userLang;
+echo '<!DOCTYPE html>';
+echo '<html lang="' . $userLang . '">';
 echo '<head><title data-i18n="submenu.send_command.lbl.title">Befehl an Lora senden</title>';
 
 #Prevnts UTF8 Errors on misconfigured php.ini
@@ -13,6 +15,16 @@ echo '<script type="text/javascript" src="../jquery/jquery.min.js"></script>';
 echo '<script type="text/javascript" src="../jquery/jquery-ui.js"></script>';
 echo '<link rel="stylesheet" href="../jquery/jquery-ui.css">';
 echo '<link rel="stylesheet" href="../jquery/css/jq_custom.css">';
+
+if ((getParamData('darkMode') ?? 0) == 1)
+{
+    echo '<link rel="stylesheet" href="../css/dark_mode.css?' . microtime() . '">';
+}
+else
+{
+    echo '<link rel="stylesheet" href="../css/normal_mode.css?' . microtime() . '">';
+}
+
 echo '<link rel="stylesheet" href="../css/send_command.css?' . microtime() . '">';
 echo '<link rel="stylesheet" href="../css/loader.css?' . microtime() . '">';
 echo '</head>';

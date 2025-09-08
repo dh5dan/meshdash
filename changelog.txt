@@ -1,3 +1,8 @@
+Version 1.10.70 SQL
+
+FEATURE: Dark-Mode-Ansicht
+
+####################################
 Version 1.10.68 SQL
 
 FEATURE UDP-Forward auf localhost nun möglich, wenn Zielport nicht 1799 ist.

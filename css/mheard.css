@@ -1,13 +1,14 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
+    background-color: var(--mheard-bg-color-body);
 }
 
 .table, th, td {
-    border: 1px solid white;
+    border: 1px solid var(--mheard-border-color-tableThTd);
     border-collapse: collapse;
 }
 .table {
-    background-color: #FCEDF0;
+    background-color: var(--mheard-bg-color-table);
     width: max(25%, min(801px, 100%));
     margin-bottom: 0;
 }
@@ -15,7 +16,7 @@ body {
 html {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 16px;
-    color: #a2182f;
+    color: var(--mheard-text-color-html);
     text-align: left;
 }
 
@@ -31,8 +32,8 @@ html {
     font-size: 14px;
     padding: 8px 15px;
     border: none;
-    background-color: #0056b3;
-    color: white;
+    background-color: var(--mheard-bg-color-btn);
+    color: var(--mheard-text-color-btn);
     cursor: pointer;
     border-radius: 5px;
     width: 100%;
@@ -59,14 +60,14 @@ html {
 }
 
 .successHint {
-    background-color: darkgreen;
-    color: whitesmoke;
+    background-color: var(--mheard-bg-color-success);
+    color: var(--mheard-text-color-success);
     font-weight: bold;
 }
 
 .failureHint {
-    background-color: crimson;
-    color: whitesmoke;
+    background-color: var(--mheard-bg-color-failure);
+    color: var(--mheard-text-color-failure);
     font-weight: bold;
 }
 
@@ -86,8 +87,8 @@ html {
 
     input[type="button"] {
         display: inline-block;
-        background: #0056b3;
-        color: white;
+        background: var(--mheard-bg-color-btn);
+        color: var(--mheard-text-color-btn);
         padding: 5px 10px;
         border-radius: 5px;
         cursor: pointer;

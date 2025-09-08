@@ -1,10 +1,15 @@
 <?php
+require_once 'dbinc/param.php';
+require_once 'include/func_php_core.php';
+
 header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1.
 header("Pragma: no-cache"); // HTTP 1.0.
 header("Expires: 0"); // Proxies.
 
+$userLang = getParamData('language');
+$userLang = $userLang == '' ? 'de' : $userLang;
 echo '<!DOCTYPE html>';
-echo '<html lang="de">';
+echo '<html lang="' . $userLang . '">';
 echo '<head><title>Übersetzungseditor</title>';
 echo '<meta charset="UTF-8">';
 echo '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
@@ -15,6 +20,15 @@ echo '<script type="text/javascript" src="jquery/jquery.min.js"></script>';
 echo '<link rel="stylesheet" href="jquery/jquery-ui-1.13.3/jquery-ui.css">';
 echo '<link rel="stylesheet" href="jquery/css/jq_custom.css">';
 
+if ((getParamData('darkMode') ?? 0) == 1)
+{
+    echo '<link rel="stylesheet" href="css/dark_mode.css?' . microtime() . '">';
+}
+else
+{
+    echo '<link rel="stylesheet" href="css/normal_mode.css?' . microtime() . '">';
+}
+
 echo '<link rel="stylesheet" href="css/translation_editor.css?' . microtime() . '">';
 echo '<link rel="icon" type="image/png" sizes="16x16" href="favicon.png">';
 
@@ -24,7 +38,6 @@ echo '<body>';
 #Prevents UTF8 Errors on misconfigured php.ini
 ini_set('default_charset', 'UTF-8' );
 
-require_once 'dbinc/param.php';
 require_once 'include/func_php_translation_editor.php';
 require_once 'include/func_js_translation_editor.php';
 

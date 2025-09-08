@@ -1,17 +1,19 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
     padding: 0;
+    background-color: var(--config-beacon-bg-color-body);
+    color: var(--config-beacon-text-color-body)
 }
 
 .successHint {
-    background-color: darkgreen;
-    color: whitesmoke;
+    background-color: var(--config-beacon-bg-color-success);
+    color: var(--config-beacon-text-color-success);
     font-weight: bold;
 }
 
 .failureHint {
-    background-color: crimson;
-    color: whitesmoke;
+    background-color: var(--config-beacon-bg-color-failure);
+    color: var(--config-beacon-text-color-success);
     font-weight: bold;
 }
 
@@ -47,8 +49,8 @@ input[type="checkbox"] {
     font-size: 14px;
     padding: 8px 15px;
     border: none;
-    background-color: #0056b3;
-    color: white;
+    background-color: var(--config-beacon-bg-color-btn);
+    color: var(--config-beacon-text-color-btn);
     cursor: pointer;
     border-radius: 5px;
     width: 100%;
@@ -110,8 +112,8 @@ input[type="checkbox"] {
 
     input[type="button"] {
         display: inline-block;
-        background: #0056b3;
-        color: white;
+        background-color: var(--config-beacon-bg-color-btn);
+        color: var(--config-beacon-text-color-btn);
         /*padding: 5px 10px;*/
         border-radius: 5px;
         cursor: pointer;

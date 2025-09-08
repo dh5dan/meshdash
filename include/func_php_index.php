@@ -220,7 +220,8 @@ function initSQLiteDatabase($database): bool
                                        ('enableMsgPurge', 0, ''),
                                        ('daysMsgPurge', 30, ''),
                                        ('daysSensorPurge', 30, ''),
-                                       ('language', '', 'de')
+                                       ('language', '', 'de'),
+                                       ('darkMode', 0, '')
            ");
 
         #Close and write Back WAL
@@ -716,7 +717,7 @@ function initSQLiteDatabase($database): bool
                                        ('submenu.config_update.lbl.backup-file', 'Backup-Datei', 'Backup-File', 'Fichier de sauvegarde', 'Archivo de respaldo', 'File di backup', 'Backup-bestand'),
                                        ('submenu.config_update.lbl.reload', 'MeshDash hier neu laden!', 'Reload MeshDash now!', 'Recharger MeshDash maintenant !', '¡Recargar MeshDash ahora!', 'Ricarica MeshDash ora!', 'MeshDash nu herladen!'),
 
-                                       ('submenu.config_restore.lbl.title', 'MeshDash-SQL restore', 'MeshDash-SQL Restore', 'Restauration MeshDash-SQL', 'Restauración MeshDash-SQL', 'Ripristino MeshDash-SQL', 'MeshDash-SQL herstel'),
+                                       ('submenu.config_restore.lbl.title', 'MeshDash-SQL Restore', 'MeshDash-SQL Restore', 'Restauration MeshDash-SQL', 'Restauración MeshDash-SQL', 'Ripristino MeshDash-SQL', 'MeshDash-SQL herstel'),
                                        ('submenu.config_restore.lbl.subtitle', '(Restore-Datei muss im MeshDash-SQL Format ###REPLACE###als Zip vorliegen.)', '(Restore-File must be in MeshDash-SQL Format ###REPLACE###as Zip-File.)', '(Le fichier de restauration doit être au format MeshDash-SQL ###REPLACE###en tant que fichier zip.)', '(El archivo de restauración debe estar en formato MeshDash-SQL ###REPLACE###como archivo zip.)', '(Il file di restore deve essere nel formato MeshDash-SQL ###REPLACE###come file zip.)', '(Restore-bestand moet in MeshDash-SQL-formaat ###REPLACE###als zip-bestand liggen.)'),
                                        ('submenu.config_restore.lbl.choose-zip-file', 'Wähle die Restore (Zip-Datei)', 'Select the restore (zip file)', 'Sélectionnez la restauration (fichier zip)', 'Seleccione la restauración (archivo zip)', 'Seleziona il restore (file zip)', 'Selecteer de restore (zip-bestand)'),
                                        ('submenu.config_restore.lbl.reload', 'MeshDash hier neu laden!', 'Reload MeshDash now!', 'Recharger MeshDash maintenant !', '¡Recargar MeshDash ahora!', 'Ricarica MeshDash ora!', 'MeshDash nu herladen!'),

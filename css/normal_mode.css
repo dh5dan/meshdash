@@ -1,0 +1,440 @@
+:root {
+    /* =======================================
+       Modul: bottom.php
+       ======================================= */
+    --bottom-bg-color-body: #2E9AFE;
+    --bottom-text-color-body: whitesmoke;
+    --bottom-bg-color-input: #0056b3;
+    --bottom-text-color-input: whitesmoke;
+
+    --bottom-bg-color-error: crimson;
+    --bottom-text-color-error: whitesmoke;
+
+    --bottom-bg-color-icon-active: rgba(255, 255, 255, 0.2);
+    --bottom-img-icon-active: yellow;
+
+    /* =======================================
+       Modul: index.php
+       ======================================= */
+    /* Success / Failure Hints */
+    --index-bg-color-successHint: darkgreen;
+    --index-text-color-successHint: whitesmoke;
+
+    --index-bg-color-failureHint: crimson;
+    --index-text-color-failureHint: whitesmoke;
+
+    /* Topbar */
+    --index-bg-color-top: #2e9afe;
+    --index-text-color-top: whitesmoke;
+    --index-text-color-topRight: whitesmoke;
+
+    /* Message Frame */
+    --index-bg-color-messageFrame: #E6E6E6;
+
+    /* Placeholders */
+    --index-text-color-placeHolder: navy;
+    --index-text-color-placeHolderSearch: navy;
+
+    /* Menu */
+    --index-text-color-menuBorder: #ccc;
+    --index-bg-color-menu: #2e9afe;
+    --index-border-color-menuLiBorderBottom: #ddd;
+    --index-bg-color-menuLiHover: lightblue;
+
+    /* Top Tabs */
+    --index-bg-color-topTabs: #2e9afe;
+    --index-bg-color-topTabsTab: #fff;
+    --index-border-color-topTabsTab: #ccc;
+    --index-text-color-topTabsTab: black;
+
+    --index-bg-color-topTabsTabActive: #4CAF50;
+    --index-text-color-topTabsTabActive: #fff;
+    --index-border-color-topTabsTabActive: #4CAF50;
+
+    /* New message indicator */
+    --index-text-color-newMessageIndicator: red;
+
+    /* =======================================
+       Modul: mheard.php
+       ======================================= */
+    /* Body */
+    --mheard-bg-color-body: white;
+    --mheard-text-color-body: black;
+
+    --mheard-border-color-tableThTd: white;
+    --mheard-bg-color-table: #FCEDF0;
+
+    --mheard-text-color-html: #a2182f;
+
+    --mheard-bg-color-btn: #0056b3;
+    --mheard-text-color-btn: whitesmoke;
+
+    --mheard-bg-color-success: darkgreen;
+    --mheard-text-color-success: whitesmoke;
+
+    --mheard-bg-color-failure: crimson;
+    --mheard-text-color-failure: whitesmoke;
+
+    /* =======================================
+       Modul: config_generally.php
+       ======================================= */
+    /* Body */
+    --config-generally-bg-color-body: white;
+    --config-generally-text-color-body: black;
+
+    --config-generally-bg-color-success: darkgreen;
+    --config-generally-text-color-success: whitesmoke;
+
+    --config-generally-bg-color-failure: crimson;
+    --config-generally-text-color-failure: whitesmoke;
+
+    --config-generally-bg-color-btn: #0056b3;
+    --config-generally-text-color-btn: whitesmoke;
+
+    /* =======================================
+       Modul: config_send_queue.php
+       ======================================= */
+    --config-send-queue-bg-color-body: white;
+    --config-send-queue-text-color-body: black;
+
+    --config-send-queue-bg-color-success: darkgreen;
+    --config-send-queue-text-color-success: whitesmoke;
+
+    --config-send-queue-bg-color-failure: crimson;
+    --config-send-queue-text-color-failure: whitesmoke;
+
+    --config-send-queue-bg-color-btn: #0056b3;
+    --config-send-queue-text-color-btn: whitesmoke;
+
+    /* =======================================
+       Modul: config_alerting.php
+       ======================================= */
+    --config-alerting-bg-color-body: white;
+    --config-alerting-text-color-body: black;
+
+    --config-alerting-bg-color-success: darkgreen;
+    --config-alerting-text-color-success: whitesmoke;
+
+    --config-alerting-bg-color-failure: crimson;
+    --config-alerting-text-color-failure: whitesmoke;
+
+    --config-alerting-bg-color-btn: #0056b3;
+    --config-alerting-text-color-btn: whitesmoke;
+
+    --config-alerting-bg-color-table: #4CAF50;
+    --config-alerting-text-color-table: whitesmoke;
+    --config-alerting-border-color-table: #ddd;
+    --config-alerting-border-color-tableScroll: #ddd;
+
+    --config-alerting-bg-color-tableChild: #f2f2f2;
+    --config-alerting-bg-color-tableTrHover: #ddd;
+
+    /* =======================================
+       Modul: config_keyword.php
+       ======================================= */
+    --config-keyword-bg-color-body: white;
+    --config-keyword-text-color-body: black;
+
+    --config-keyword-bg-color-success: darkgreen;
+    --config-keyword-text-color-success: whitesmoke;
+
+    --config-keyword-bg-color-failure: crimson;
+    --config-keyword-text-color-failure: whitesmoke;
+
+    --config-keyword-bg-color-btn: #0056b3;
+    --config-keyword-text-color-btn: whitesmoke;
+
+    --config-keyword-border-color-tableScroll: #ddd;
+    --config-keyword-border-color-table: #ddd;
+    --config-keyword-bg-color-tableChild: #f2f2f2;
+    --config-keyword-bg-color-tableTrHover: #ddd;
+
+    --config-keyword-bg-color-table: #4CAF50;
+    --config-keyword-text-color-table: whitesmoke;
+
+    /* =======================================
+       Modul: config_update.php
+       ======================================= */
+    --config-update-bg-color-body: white;
+    --config-update-text-color-body: black;
+
+    --config-update-bg-color-success: darkgreen;
+    --config-update-text-color-success: whitesmoke;
+
+    --config-update-bg-color-failure: crimson;
+    --config-update-text-color-failure: whitesmoke;
+
+    --config-update-bg-color-btn: #0056b3;
+    --config-update-text-color-btn: whitesmoke;
+
+    --config-update-border-color-tableScroll: #ddd;
+    --config-update-border-color-table: #ddd;
+    --config-update-bg-color-tableChild: #f2f2f2;
+    --config-update-bg-color-tableTrHover: #ddd;
+
+    --config-update-bg-color-table: #4CAF50;
+    --config-update-text-color-table: whitesmoke;
+
+    /* =======================================
+       Modul: config_restore.php
+       ======================================= */
+    --config-restore-bg-color-body: white;
+    --config-restore-text-color-body: black;
+
+    --config-restore-bg-color-success: darkgreen;
+    --config-restore-text-color-success: whitesmoke;
+
+    --config-restore-bg-color-failure: crimson;
+    --config-restore-text-color-failure: whitesmoke;
+
+    --config-restore-bg-color-btn: #0056b3;
+    --config-restore-text-color-btn: whitesmoke;
+
+    --config-restore-border-color-tableScroll: #ddd;
+    --config-restore-border-color-table: #ddd;
+    --config-restore-bg-color-tableChild: #f2f2f2;
+    --config-restore-bg-color-tableTrHover: #ddd;
+
+    --config-restore-bg-color-table: #4CAF50;
+    --config-restore-text-color-table: whitesmoke;
+
+    /* =======================================
+      Modul: lora_info.php
+      ======================================= */
+    --lora-info-bg-color-body: white;
+    --lora-info-text-color-body: black;
+
+    --lora-info-bg-color-success: darkgreen;
+    --lora-info-text-color-success: whitesmoke;
+
+    --lora-info-bg-color-failure: crimson;
+    --lora-info-text-color-failure: whitesmoke;
+
+    --lora-info-bg-color-btn: #0056b3;
+    --lora-info-text-color-btn: whitesmoke;
+
+    --lora-info-border-color-tableTd: #ddd;
+    --lora-info-text-color-tableTd: #333;
+    --lora-info-bg-color-tableTh: #f4f4f4;
+    --lora-info-bg-color-tableChild: #f9f9f9;
+    --lora-info-bg-color-tableTrHover: #f1f1f1;
+
+    /* =======================================
+      Modul: config_ping_lora.php
+      ======================================= */
+    --config-ping-lora-bg-color-body: white;
+    --config-ping-lora-text-color-body: black;
+
+    --config-ping-lora-bg-color-btn: #0056b3;
+    --config-ping-lora-text-color-btn: whitesmoke;
+
+    /* =======================================
+      Modul: debug_info.php
+      ======================================= */
+    --debug-info-bg-color-body: white;
+    --debug-info-text-color-body: black;
+
+    --debug-info-bg-color-btn: #0056b3;
+    --debug-info-text-color-btn: whitesmoke;
+
+    --debug-info-bg-color-success: darkgreen;
+    --debug-info-text-color-success: whitesmoke;
+
+    --debug-info-bg-color-failure: crimson;
+    --debug-info-text-color-failure: whitesmoke;
+
+    --debug-info-border-color-tableScroll: #ddd;
+    --debug-info-border-color-table: #ddd;
+    --debug-info-bg-color-tableChild: #f2f2f2;
+    --debug-info-bg-color-tableTrHover: #f1f1f1;
+
+    --debug-info-bg-color-table: #4CAF50;
+    --debug-info-text-color-table: whitesmoke;
+
+    --debug-info-text-color-log-today: green;
+    --debug-info-text-color-log-log-yesterday: blue;
+    --debug-info-text-color-log-old: crimson;
+
+    /* =======================================
+      Modul: grp_definition.php
+      ======================================= */
+    --grp-definition-bg-color-body: white;
+    --grp-definition-text-color-body: black;
+
+    --grp-definition-bg-color-success: darkgreen;
+    --grp-definition-text-color-success: whitesmoke;
+
+    --grp-definition-bg-color-failure: crimson;
+    --grp-definition-text-color-failure: whitesmoke;
+
+    --grp-definition-bg-color-btn: #0056b3;
+    --grp-definition-text-color-btn: whitesmoke;
+
+    --grp-definition-border-color-tableScroll: #ddd;
+    --grp-definition-border-color-table: #ddd;
+    --grp-definition-bg-color-tableChild: #f2f2f2;
+    --grp-definition-bg-color-tableTrHover: #ddd;
+
+    --grp-definition-bg-color-table: #4CAF50;
+    --grp-definition-text-color-table: whitesmoke;
+
+    /* =======================================
+     Modul: config_beacon.php
+     ======================================= */
+    --config-beacon-bg-color-body: white;
+    --config-beacon-text-color-body: black;
+
+    --config-beacon-bg-color-success: darkgreen;
+    --config-beacon-text-color-success: whitesmoke;
+
+    --config-beacon-bg-color-failure: crimson;
+    --config-beacon-text-color-failure: whitesmoke;
+
+    --config-beacon-bg-color-btn: #0056b3;
+    --config-beacon-text-color-btn: whitesmoke;
+
+    /* =======================================
+     Modul: config_data_purge.php
+     ======================================= */
+    --config-data-purge-bg-color-body: white;
+    --config-data-purge-text-color-body: black;
+
+    --config-data-purge-bg-color-success: darkgreen;
+    --config-data-purge-text-color-success: whitesmoke;
+
+    --config-data-purge-bg-color-failure: crimson;
+    --config-data-purge-text-color-failure: whitesmoke;
+
+    --config-data-purge-bg-color-btn: #0056b3;
+    --config-data-purge-text-color-btn: whitesmoke;
+
+    /* =======================================
+     Modul: config_data_purge_auto.php
+     ======================================= */
+    --config-data-purge-auto-bg-color-body: white;
+    --config-data-purge-auto-text-color-body: black;
+
+    --config-data-purge-auto-bg-color-success: darkgreen;
+    --config-data-purge-auto-text-color-success: whitesmoke;
+
+    --config-data-purge-auto-bg-color-failure: crimson;
+    --config-data-purge-auto-text-color-failure: whitesmoke;
+
+    --config-data-purge-auto-bg-color-btn: #0056b3;
+    --config-data-purge-auto-text-color-btn: whitesmoke;
+
+    /* =======================================
+       Modul: send_command.php
+       ======================================= */
+    --send-command-bg-color-body: white;
+    --send-command-text-color-body: black;
+
+    --send-command-bg-color-success: darkgreen;
+    --send-command-text-color-success: whitesmoke;
+
+    --send-command-bg-color-failure: crimson;
+    --send-command-text-color-failure: whitesmoke;
+
+    --send-command-bg-color-btn: #0056b3;
+    --send-command-text-color-btn: whitesmoke;
+
+    /* =======================================
+      Modul: sensor_data.php
+      ======================================= */
+    --sensor-data-bg-color-body: white;
+    --sensor-data-text-color-body: black;
+
+    --sensor-data-bg-color-success: darkgreen;
+    --sensor-data-text-color-success: whitesmoke;
+
+    --sensor-data-bg-color-failure: crimson;
+    --sensor-data-text-color-failure: whitesmoke;
+
+    --sensor-data-bg-color-btn: #0056b3;
+    --sensor-data-text-color-btn: whitesmoke;
+
+    --sensor-data-color-tableThTd: white;
+    --sensor-data-bg-color-table: #FCEDF0;
+    --sensor-data-text-color-html: #a2182f;
+    --sensor-data-text-color-tableTd: black;
+
+    /* =======================================
+       Modul: sensor_data_threshold.php
+       ======================================= */
+    --sensor-data-threshold-bg-color-body: white;
+    --sensor-data-threshold-text-color-body: black;
+
+    --sensor-data-threshold-bg-color-success: darkgreen;
+    --sensor-data-threshold-text-color-success: whitesmoke;
+
+    --sensor-data-threshold-bg-color-failure: crimson;
+    --sensor-data-threshold-text-color-failure: whitesmoke;
+
+    --sensor-data-threshold-bg-color-btn: #0056b3;
+    --sensor-data-threshold-text-color-btn: whitesmoke;
+
+    /* =======================================
+       Modul: gps_info.php
+       ======================================= */
+    --gps-info-bg-color-body: white;
+    --gps-info-text-color-body: black;
+
+    --gps-info-bg-color-success: darkgreen;
+    --gps-info-text-color-success: whitesmoke;
+
+    --gps-info-bg-color-failure: crimson;
+    --gps-info-text-color-failure: whitesmoke;
+
+    --gps-info-bg-color-btn: #0056b3;
+    --gps-info-text-color-btn: whitesmoke;
+
+    --gps-info-border-color-tableTd: #ddd;
+    --gps-info-text-color-tableTd: #333;
+    --gps-info-bg-color-tableTh: #f4f4f4;
+    --gps-info-bg-color-tableChild: #f9f9f9;
+    --gps-info-bg-color-tableTrHover: #f1f1f1;
+
+    /* =======================================
+       Modul: translation_editor.php
+       ======================================= */
+    --translation-editor-bg-color-body: white;
+    --translation-editor-text-color-body: black;
+
+    --translation-editor-bg-color-tableThTrTd: #eee;
+    --translation-editor-text-color-tableThTrTd: black;
+
+    --translation-editor-bg-color-inputText: whitesmoke;
+    --translation-editor-text-color-inputText: black;
+
+    /* =======================================
+      Modul: message.php
+      ======================================= */
+    --message-bg-color-body: white;
+
+    --message-bg-color-success: darkgreen;
+    --message-text-color-success: whitesmoke;
+
+    --message-bg-color-failure: crimson;
+    --message-text-color-failure: whitesmoke;
+
+    --message-bg-color-btn: #0056b3;
+    --message-text-color-btn: whitesmoke;
+
+    --message-bg-color-btnTop: #0056b3;
+    --message-text-color-btnTop: whitesmoke;
+
+    --message-bg-color-msgIncoming: lightgray;
+    --message-bg-color-msgOutgoing: cadetblue;
+
+    --message-bg-color-msgBubbleIncoming: lightblue;
+    --message-text-color-msgBubbleIncoming: #000;
+    --message-text-color-msgBubbleIncomingPath: #242424;
+
+    --message-bg-color-msgBubbleOutgoing: #2e9afe;
+    --message-text-color-msgBubbleOutgoing: whitesmoke;
+    --message-text-color-msgBubbleOutgoingPath: #242424;
+
+    --message-text-color-msgBubbleClickOnCall: #0000ee;
+
+
+}

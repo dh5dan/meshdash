@@ -2,6 +2,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: Arial, Helvetica, sans-serif;
+    background-color: var(--message-bg-color-body);
 }
 
 .setFontMsgHeader {
@@ -15,14 +16,14 @@ body {
 }
 
 .successHint {
-    background-color: darkgreen;
-    color: whitesmoke;
+    background-color: var(--message-bg-color-success);
+    color: var(--message-text-color-success);
     font-weight: bold;
 }
 
 .failureHint {
-    background-color: crimson;
-    color: whitesmoke !important;
+    background-color: var(--message-bg-color-failure);
+    color: var(--message-text-color-failure) !important;
     font-weight: bold;
 }
 
@@ -59,8 +60,8 @@ body {
     font-size: 14px;
     padding: 8px 15px;
     border: none;
-    background-color: #0056b3;
-    color: white;
+    background-color: var(--message-bg-color-btn);
+    color: var(--message-text-color-btn);
     cursor: pointer;
     border-radius: 5px;
 }
@@ -93,7 +94,7 @@ body {
 
 
 .fromToSquareIncoming {
-    background-color: lightgray;
+    background-color: var(--message-bg-color-msgIncoming);
 }
 
 .fromToSquareIncoming a {
@@ -101,7 +102,7 @@ body {
 }
 
 .fromToSquareOutgoing {
-    background-color: cadetblue;
+    background-color: var(--message-bg-color-msgOutgoing);
 }
 
 .fromToSquareOutgoing a {
@@ -136,15 +137,15 @@ body {
     /*padding: 10px 15px;*/
     padding: 0 15px;
     border-radius: 15px;
-    background-color: lightblue;
-    color: #000;
+    background-color: var(--message-bg-color-msgBubbleIncoming);
+    color: var(--message-text-color-msgBubbleIncoming);
     word-wrap: break-word;
     white-space: pre-wrap;
     display: inline-block;
 }
 
 .message-row.outgoing .message-bubble {
-    background-color: #2e9afe;;
+    background-color: var(--message-bg-color-msgBubbleOutgoing);
 }
 
 .message-bubble::after {
@@ -158,30 +159,39 @@ body {
 
 .message-row.incoming .message-bubble::after {
     left: -20px;
-    border-right-color: lightblue;
+    border-right-color: var(--message-bg-color-msgBubbleIncoming);
 }
 
 .message-row.outgoing .message-bubble::after {
     right: -20px;
-    border-left-color: #2e9afe;
+    border-left-color: var(--message-bg-color-msgBubbleOutgoing);
 }
 
 .bubbleFontMsgHeaderIncoming {
     font-size: 18px;
-    color: #242424 !important;
+    color: var(--message-text-color-msgBubbleIncomingPath) !important;
 }
 
 .bubbleFontMsgHeaderOutgoing {
     font-size: 18px;
-    color: #242424 !important;
+    color: var(--message-text-color-msgBubbleoutgoingPath) !important;
 }
 
 .bubbleFontMsgOutgoing {
-    color: whitesmoke;
+    color: var(--message-text-color-msgBubbleoutgoing);
 }
 
 .bubbleFontMsgIncoming {
 
+}
+
+.bubbleMsgClickToCall {
+    cursor: pointer;
+    color: var(--message-text-color-msgBubbleClickOnCall);
+}
+
+a:link{
+    color: var(--message-text-color-msgBubbleClickOnCall);
 }
 
 /* Scroll To Top*/
@@ -190,8 +200,8 @@ body {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    background-color: #0056b3;
-    color: white;
+    background-color: var(--message-bg-color-btnTop);
+    color: var(--message-text-color-btnTop);
     border: none;
     border-radius: 4px;
     padding: 10px 15px;
@@ -252,8 +262,8 @@ body {
 
     input[type="button"] {
         display: inline-block;
-        background: #0056b3;
-        color: white;
+        background-color: var(--message-bg-color-btn);
+        color: var(--message-text-color-btn);
         /*padding: 5px 10px;*/
         border-radius: 5px;
         cursor: pointer;

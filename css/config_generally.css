@@ -1,18 +1,29 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
     padding: 0;
+    background-color: var(--config-generally-bg-color-body);
+    color: var(--config-generally-text-color-body);
 }
 
 .successHint {
-    background-color: darkgreen;
-    color: whitesmoke;
+    background-color: var(--config-generally-bg-color-success);
+    color: var(--config-generally-text-color-success);
     font-weight: bold;
 }
 
 .failureHint {
-    background-color: crimson;
-    color: whitesmoke;
+    background-color: var(--config-generally-bg-color-failure);
+    color: var(--config-generally-text-color-failure);
     font-weight: bold;
+}
+
+.warningHint {
+    display: inline-block; /* Element bleibt „inline“, kann aber Padding/Margin annehmen */
+    max-width: 100%;       /* optional, falls du Zeilenumbruch bei sehr langen Texten willst */
+    background-color: crimson; /* Beispiel, sichtbar machen */
+    padding: 2px 4px;      /* optional, Abstand zum Text */
+    border-radius: 3px;    /* optional, rundes Eck */
+    text-align: center;
 }
 
 table {
@@ -47,8 +58,8 @@ input[type="checkbox"] {
     font-size: 14px;
     padding: 8px 15px;
     border: none;
-    background-color: #0056b3;
-    color: white;
+    background-color: var(--config-generally-bg-color-btn);
+    color: var(--config-generally-text-color-btn);
     cursor: pointer;
     border-radius: 5px;
     width: 100%;
@@ -118,8 +129,8 @@ select {
 
     input[type="button"] {
         display: inline-block;
-        background: #0056b3;
-        color: white;
+        background: var(--config-generally-bg-color-btn);
+        color: var(--config-generally-text-color-btn);
         /*padding: 5px 10px;*/
         border-radius: 5px;
         cursor: pointer;

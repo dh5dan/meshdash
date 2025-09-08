@@ -1,4 +1,7 @@
 <?php
+require_once 'dbinc/param.php';
+require_once 'include/func_php_core.php';
+
 echo '<!DOCTYPE html>';
 echo '<html lang="de">';
 echo '<head><title>Mheard</title>';
@@ -11,6 +14,16 @@ echo '<script type="text/javascript" src="jquery/jquery-ui.js"></script>';
 echo '<link rel="stylesheet" href="jquery/jquery-ui.css">';
 echo '<link rel="stylesheet" href="jquery/css/jq_custom.css">';
 echo '<link rel="stylesheet" href="css/loader.css?' . microtime() . '">';
+
+if ((getParamData('darkMode') ?? 0) == 1)
+{
+    echo '<link rel="stylesheet" href="css/dark_mode.css?' . microtime() . '">';
+}
+else
+{
+    echo '<link rel="stylesheet" href="css/normal_mode.css?' . microtime() . '">';
+}
+
 echo '<link rel="stylesheet" href="css/mheard.css?' . microtime() . '">';
 
 #<!-- Leaflet CSS -->
@@ -22,8 +35,7 @@ echo'<script src="jquery/leaflet/leaflet.js"></script>';
 echo '</head>';
 echo '<body>';
 
-require_once 'dbinc/param.php';
-require_once 'include/func_php_core.php';
+
 require_once 'include/func_php_mheard.php';
 require_once 'include/func_js_mheard.php';
 

@@ -1,16 +1,18 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
+    background-color: var(--config-restore-bg-color-body);
+    color: var(--config-restore-text-color-body)
 }
 
 .successHint {
-    background-color: darkgreen;
-    color: whitesmoke;
+    background-color: var(--config-restore-bg-color-success);
+    color: var(--config-restore-text-color-success);
     font-weight: bold;
 }
 
 .failureHint {
-    background-color: crimson;
-    color: whitesmoke;
+    background-color: var(--config-restore-bg-color-failure);
+    color: var(--config-restore-text-color-failure);
     font-weight: bold;
 }
 
@@ -19,7 +21,7 @@ body {
 .scrollable-container {
     max-height: 400px;
     overflow-y: auto;
-    border: 1px solid #ddd;
+    border: 1px solid var(--config-restore-border-color-tableScroll);
     margin-bottom: 20px;
     width: 573px;  /* Container-Breite anpassen */
 
@@ -36,17 +38,17 @@ table.backupTable {
     width: 30%;
 }
 table.backupTable th, table.backupTable td {
-    border: 1px solid #ddd;
+    border: 1px solid var(--config-restore-border-color-table);
     padding: 8px;
 }
-table.backupTable tr:nth-child(even) {background-color: #f2f2f2;}
-table.backupTable tr:hover {background-color: #ddd;}
+table.backupTable tr:nth-child(even) {background-color: var(--config-restore-bg-color-tableChild);}
+table.backupTable tr:hover {background-color: var(--config-restore-bg-color-tableTrHover);}
 table.backupTable th {
     padding-top: 12px;
     padding-bottom: 12px;
     text-align: left;
-    background-color: #4CAF50;
-    color: white;
+    background-color: var(--config-restore-bg-color-table);
+    color: var(--config-restore-text-color-table);
 }
 
 /* table Backup End */
@@ -72,8 +74,8 @@ table.backupTable th {
     font-size: 14px;
     padding: 8px 15px;
     border: none;
-    background-color: #0056b3;
-    color: white;
+    background-color: var(--config-restore-bg-color-btn);
+    color: var(--config-restore-text-color-btn);
     cursor: pointer;
     border-radius: 5px;
 }
@@ -133,8 +135,8 @@ table.backupTable th {
         content: "Restore Datei auswählen";
         font-size: 14px;
         display: inline-block;
-        background: #0056b3;
-        color: white;
+        background-color: var(--config-restore-bg-color-btn);
+        color: var(--config-restore-text-color-btn);
         padding: 5px 10px;
         border-radius: 5px;
         cursor: pointer;
@@ -143,8 +145,8 @@ table.backupTable th {
     input[type="button"] {
         display: inline-block;
         font-size: 11px;
-        background: #0056b3;
-        color: white;
+        background-color: var(--config-restore-bg-color-btn);
+        color: var(--config-restore-text-color-btn);
         border-radius: 5px;
         cursor: pointer;
     }

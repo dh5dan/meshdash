@@ -1,4 +1,7 @@
 <?php
+require_once 'dbinc/param.php';
+require_once 'include/func_php_core.php';
+
 header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1.
 header("Pragma: no-cache"); // HTTP 1.0.
 header("Expires: 0"); // Proxies.
@@ -16,6 +19,17 @@ echo '<link rel="stylesheet" href="jquery/css/jq_custom.css">';
 
 # Achtung das ist V jquery-ui-1.13.3 weil nur die mit dem DateTimePicker Addon funktioniert
 echo '<script type="text/javascript" src="jquery/jquery-ui-1.13.3/jquery-ui.min.js"></script>';
+$scrollToTopImage = 'scroll_to_top_md50.png';
+
+if ((getParamData('darkMode') ?? 0) == 1)
+{
+    echo '<link rel="stylesheet" href="css/dark_mode.css?' . microtime() . '">';
+    $scrollToTopImage = 'scroll_to_top_md50dark.png';
+}
+else
+{
+    echo '<link rel="stylesheet" href="css/normal_mode.css?' . microtime() . '">';
+}
 
 #Wenn Snapshot Abfrage, dann CSS in HTML Inline einbetten und UTF-8 Charset Meta-Tag setzen
 if (isset($_GET['isSnapshot']) && $_GET['isSnapshot'] == 1)
@@ -32,8 +46,6 @@ else
 echo '</head>';
 echo '<body>';
 
-require_once 'dbinc/param.php';
-require_once 'include/func_php_core.php';
 require_once 'include/func_js_message.php';
 require_once 'include/func_php_message.php';
 require_once 'include/func_php_index.php';
@@ -737,7 +749,9 @@ if ($result !== false)
             {
                 # Call in DM-Feld
                 $patternClickOnCall    = '/\b([a-zA-Z0-9]+(?:-\d+)?)\b/';
-                $replaceClickOnCall    = '<span onclick="sendToBottomFrame(\'$1\')" style="cursor: pointer;color:#0000ee" class="' . $alertSrcCss . '" >$0</span>';
+                #$replaceClickOnCall    = '<span onclick="sendToBottomFrame(\'$1\')" style="cursor: pointer;color:#0000ee" class="' . $alertSrcCss . '" >$0</span>';
+                $replaceClickOnCall    = '<span class="bubbleMsgClickToCall "' . $alertSrcCss . '" onclick="sendToBottomFrame(\'$1\')">$0</span>';
+
                 $linkedTextClickOnCall = preg_replace($patternClickOnCall, $replaceClickOnCall, $firstCall);
 
                 echo '<span class="' . $fromToSquare . '">'
@@ -749,7 +763,7 @@ if ($result !== false)
             {
                 # Öffne QRZ.com
                 $patternClickOnCall    = '/\b([a-zA-Z0-9]+)(?:-\d+)?\b/';
-                $replaceClickOnCall    = '<a href="https://qrz.com/db/$1" target="_blank" class="' . $alertSrcCss . '">$0</a>';
+                $replaceClickOnCall    = '<a href="https://qrz.com/db/$1" target="_blank" class="bubbleMsgClickToCall ' . $alertSrcCss . '">$0</a>';
                 $linkedTextClickOnCall = preg_replace($patternClickOnCall, $replaceClickOnCall, $firstCall);
 
                 echo '<span class="' . $fromToSquare . '">'
@@ -761,7 +775,8 @@ if ($result !== false)
             {
                 #Setze Call mit @ in MSG Feld ohne SSID
                 $patternClickOnCall    = '/\b([A-Za-z0-9]{3,})(?:-\d+)?\b/i';
-                $replaceClickOnCall    = '<span onclick="sendToBottomMsgFrame(\'$1\')" style="cursor: pointer;color:#0000ee" class="' . $alertSrcCss . '">$0</span>';
+                #$replaceClickOnCall    = '<span onclick="sendToBottomMsgFrame(\'$1\')" style="cursor: pointer;color:#0000ee" class="' . $alertSrcCss . '">$0</span>';
+                $replaceClickOnCall    = '<span class="bubbleMsgClickToCall "' . $alertSrcCss . '" onclick="sendToBottomMsgFrame(\'$1\')" >$0</span>';
                 $linkedTextClickOnCall = preg_replace($patternClickOnCall, $replaceClickOnCall, $firstCall);
 
                 echo '<span class="' . $fromToSquare . '">'
@@ -773,7 +788,8 @@ if ($result !== false)
             {
                 #popup Notizfeld
                 $patternClickOnCall    = '/\b([A-Za-z0-9]{3,})(?:-\d+)?\b/i';
-                $replaceClickOnCall    = '<span class="callNotice" data-callsign = "$1" style="cursor: pointer;color:#0000ee" class="' . $alertSrcCss . '">$0</span>';
+                #$replaceClickOnCall    = '<span class="callNotice" data-callsign = "$1" style="cursor: pointer;color:#0000ee" class="' . $alertSrcCss . '">$0</span>';
+                $replaceClickOnCall    = '<span class="callNotice bubbleMsgClickToCall "' . $alertSrcCss . '" data-callsign="$1" >$0</span>';
                 $linkedTextClickOnCall = preg_replace($patternClickOnCall, $replaceClickOnCall, $firstCall);
 
                 echo '<span class="' . $fromToSquare . '">'
@@ -806,7 +822,7 @@ if ($result !== false)
 }
 
 echo '<button id="scrollTopBtn" title="Nach oben">
-        <img src="image/scroll_to_top_md50.png" class="pictureScrollToTop" alt="Nach oben">
+        <img src="image/' . $scrollToTopImage . '" class="pictureScrollToTop" alt="Nach oben">
       </button>
      ';
 

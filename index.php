@@ -33,6 +33,18 @@ echo '<head><title>MeshDash-SQL</title>';
   echo '<script type="text/javascript" src="jquery/jquery-ui-timepicker-addon/jquery-ui-sliderAccess.js"></script>';
   echo '<link rel="stylesheet" href="jquery/jquery-ui-timepicker-addon/jquery-ui-timepicker-addon.min.css">';
 
+if (file_exists('database/parameter.db'))
+{
+    if ((getParamData('darkMode') ?? 0) == 1)
+    {
+        echo '<link rel="stylesheet" href="css/dark_mode.css?' . microtime() . '">';
+    }
+    else
+    {
+        echo '<link rel="stylesheet" href="css/normal_mode.css?' . microtime() . '">';
+    }
+}
+
   echo '<link rel="stylesheet" href="css/index.css?' . microtime() . '">';
   echo '<link rel="icon" type="image/png" sizes="16x16" href="favicon.png">';
 

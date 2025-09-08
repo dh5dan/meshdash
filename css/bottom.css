@@ -1,7 +1,7 @@
 body {
     margin: 0;
-    background-color: #2E9AFE;
-    color: white;
+    background-color: var(--bottom-bg-color-body);
+    color: var(--bottom-text-color-body);
     text-align: center;
     font-family: Arial, Helvetica, sans-serif;
     overflow-x: hidden; /* Verhindert horizontalen Overflow */
@@ -31,8 +31,8 @@ body {
     font-size: 20px;
     padding: 8px 15px;
     border: none;
-    background-color: #0056b3;
-    color: white;
+    background-color: var(--bottom-bg-color-input);
+    color: var(--bottom-text-color-input);
     cursor: pointer;
     border-radius: 5px;
 }
@@ -90,8 +90,8 @@ body {
 
 /* Fehlernachricht */
 .bottomErrorMsg {
-    color: white;
-    background: crimson;
+    color: var(--bottom-text-color-error);
+    background: var(--bottom-bg-color-error);
     padding: 5px 10px;
     border-radius: 5px;
     display: inline-block;
@@ -117,11 +117,12 @@ body {
 }
 
 .bottomImgIcons.active {
-    border: 2px solid yellow;
+    border: 2px solid var(--bottom-img-icon-active);
     border-radius: 5px;
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: var(--bottom-bg-color-icon-active);
     /*padding: 2px;*/
 }
+
 .statusImageBottom {
     vertical-align: -3px;
     margin-left: 5px; /* Abstand zwischen Text und Bild */

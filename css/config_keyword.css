@@ -1,17 +1,19 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
     padding: 0;
+    background-color: var(--config-keyword-bg-color-body);
+    color: var(--config-keyword-text-color-body)
 }
 
 .successHint {
-    background-color: darkgreen;
-    color: whitesmoke;
+    background-color: var(--config-keyword-bg-color-success);
+    color: var(--config-keyword-text-color-success);
     font-weight: bold;
 }
 
 .failureHint {
-    background-color: crimson;
-    color: whitesmoke;
+    background-color: var(--config-keyword-bg-color-failure);
+    color: var(--config-keyword-text-color-failure);
     font-weight: bold;
 }
 
@@ -38,8 +40,8 @@ input[type="checkbox"] {
     font-size: 14px;
     padding: 8px 15px;
     border: none;
-    background-color: #0056b3;
-    color: white;
+    background-color: var(--config-keyword-bg-color-btn);
+    color: var(--config-keyword-text-color-btn);
     cursor: pointer;
     border-radius: 5px;
     width: 100%;
@@ -50,7 +52,7 @@ input[type="checkbox"] {
 .scrollable-container {
     max-height: 400px;
     overflow-y: auto;
-    border: 1px solid #ddd;
+    border: 1px solid var(--config-keyword-border-color-tableScroll);
     margin-bottom: 20px;
     width: 496px;  /* Container-Breite anpassen */
 
@@ -67,17 +69,17 @@ table.backupTable {
     width: 30%;
 }
 table.backupTable th, table.backupTable td {
-    border: 1px solid #ddd;
+    border: 1px solid var(--config-keyword-border-color-table);
     padding: 8px;
 }
-table.backupTable tr:nth-child(even) {background-color: #f2f2f2;}
-table.backupTable tr:hover {background-color: #ddd;}
+table.backupTable tr:nth-child(even) {background-color: var(--config-keyword-bg-color-tableChild);}
+table.backupTable tr:hover {background-color: var(--config-keyword-bg-color-tableTrHover);}
 table.backupTable th {
     padding-top: 12px;
     padding-bottom: 12px;
     text-align: left;
-    background-color: #4CAF50;
-    color: white;
+    background-color: var(--config-keyword-bg-color-table);
+    color: var(--config-keyword-text-color-table);
 }
 
 .imageDownload {
@@ -93,8 +95,8 @@ table.backupTable th {
     font-size: 14px;
     padding: 8px 15px;
     border: none;
-    background-color: #0056b3;
-    color: white;
+    background-color: var(--config-keyword-bg-color-btn);
+    color: var(--config-keyword-text-color-btn);
     cursor: pointer;
     border-radius: 5px;
 }
@@ -153,8 +155,8 @@ table.backupTable th {
         padding: 10px;
         font-size: 16px;
         display: inline-block;
-        background: #0056b3;
-        color: white;
+        background-color: var(--config-keyword-bg-color-btn);
+        color: var(--config-keyword-text-color-btn);
         /*padding: 5px 10px;*/
         border-radius: 5px;
         cursor: pointer;
@@ -186,8 +188,8 @@ table.backupTable th {
         content: "Datei auswählen";
         font-size: 14px;
         display: inline-block;
-        background: #0056b3;
-        color: white;
+        background-color: var(--config-keyword-bg-color-btn);
+        color: var(--config-keyword-text-color-btn);
         padding: 5px 10px;
         border-radius: 5px;
         cursor: pointer;

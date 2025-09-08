@@ -1,6 +1,8 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
     padding: 0;
+    background-color: var(--gps-info-bg-color-body);
+    color: var(--gps-info-text-color-body);
 }
 
 .table {
@@ -14,44 +16,45 @@ body {
 
 .table th,
 .table td {
-    border: 1px solid #ddd;
+    border: 1px solid var(--gps-info-border-color-tableTd);
     padding: 10px;
     text-align: left;
+    color: var(--gps-info-text-color-tableTd);
 }
 
 .table th {
-    background-color: #f4f4f4;
+    background-color: var(--gps-info-bg-color-tableTh);
     font-weight: bold;
 }
 
 .table tr:nth-child(even) {
-    background-color: #f9f9f9;
+    background-color: var(--gps-info-bg-color-tableChild);
 }
 
 .table tr:hover {
-    background-color: #f1f1f1;
+    background-color: var(--gps-info-bg-color-tableTrHover);
 }
 
 .btnLoadLoraGpsInfo {
     font-size: 14px;
     padding: 8px 15px;
     border: none;
-    background-color: #0056b3;
-    color: white;
+    background-color: var(--gps-info-bg-color-btn);
+    color: var(--gps-info-text-color-btn);
     cursor: pointer;
     border-radius: 5px;
     width: 100%;
 }
 
 .successHint {
-    background-color: darkgreen;
-    color: whitesmoke;
+    background-color: var( --gps-info-bg-color-success);
+    color: var( --gps-info-text-color-success);
     font-weight: bold;
 }
 
 .failureHint {
-    background-color: crimson;
-    color: whitesmoke;
+    background-color: var( --gps-info-bg-color-failure);
+    color: var( --gps-info-text-color-failure);
     font-weight: bold;
     display: block;
 }
@@ -93,8 +96,8 @@ body {
 
     input[type="button"] {
         display: inline-block;
-        background: #0056b3;
-        color: white;
+        background-color: var(--gps-info-bg-color-btn);
+        color: var(--gps-info-text-color-btn);
         /*padding: 5px 10px;*/
         border-radius: 5px;
         cursor: pointer;

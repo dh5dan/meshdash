@@ -4,6 +4,8 @@ require_once '../include/func_php_core.php';
 
 $userLang = getParamData('language');
 $userLang = $userLang == '' ? 'de' : $userLang;
+echo '<!DOCTYPE html>';
+echo '<html lang="' . $userLang . '">';
 echo '<head><title data-i18n="submenu.sensor_data.lbl.title">Lokale Sensordaten</title>';
 
 #Prevnts UTF8 Errors on misconfigured php.ini
@@ -14,6 +16,16 @@ echo '<script type="text/javascript" src="../jquery/jquery-ui.js"></script>';
 echo '<link rel="stylesheet" href="../jquery/jquery-ui.css">';
 echo '<link rel="stylesheet" href="../jquery/css/jq_custom.css">';
 echo '<link rel="stylesheet" href="../css/loader.css?' . microtime() . '">';
+
+if ((getParamData('darkMode') ?? 0) == 1)
+{
+    echo '<link rel="stylesheet" href="../css/dark_mode.css?' . microtime() . '">';
+}
+else
+{
+    echo '<link rel="stylesheet" href="../css/normal_mode.css?' . microtime() . '">';
+}
+
 echo '<link rel="stylesheet" href="../css/sensor_data.css?' . microtime() . '">';
 echo '</head>';
 echo '<body>';
@@ -33,8 +45,6 @@ $sendData  = $_REQUEST['sendData'] ?? 0;
 $lineBreak = '<span class="lineBreak">';
 
 echo '<h2><span data-i18n="submenu.sensor_data.lbl.header-text">Lokale Sensordaten von IP</span>:' . $loraIp .'</h2>';
-
-#echo '<h2>Lokale Sensordaten'.$lineBreak.'von Lora-IP: ' . $loraIp . '</span></h2>';
 
 echo '<form id="frmSensorData" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
