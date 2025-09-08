@@ -53,7 +53,7 @@ Eine Umstellung auf **PHP >= 8.x** ist daher empfohlen.
 - [Unterstützung der Anzeige auf mobilen Geräten Smartphone/Tablett](#mobile-ansicht-auf-einem-smartphone-)
 - [Call-basierte Notizfunktion](#notizfunktion-für-calls)
 - [Mehrsprachenunterstützung (DE/EN/FR/ES/NL/IT)](#mehrsprachenunterstützung-von-meshdash)
-- MeshDash mit Dark-Mode Funktion
+- [MeshDash mit Dark-Mode-Ansicht](#meshdash-mit-dark-mode-ansicht)
 - [UDP-Datagramm Weiterleitung](#hier-noch-ein-paar-bilder-aus-den-menüpunkten)
 - [MeshDash in Docker-Umgebung](#meshdash-auf-docker)
   
@@ -133,8 +133,8 @@ Das Manual unterstützt dabei, MeshDash schnell zu installieren und effektiv zu 
 Es wird regelmäßig aktualisiert.
 
 ---
-## MeshDash mit Dark-Mode Funktion
-MeshDash unterstützt nun b V 1.10.70 auch den Dark-Mode
+## MeshDash mit Dark-Mode-Ansicht
+MeshDash unterstützt nun ab V 1.10.70 auch die Dark-Mode-Ansicht
 
 Nachrichten-Fenster
 ![FILES](/docs/dark_mode1.jpg)
