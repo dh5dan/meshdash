@@ -24,6 +24,8 @@ body {
     padding: 2px 4px;      /* optional, Abstand zum Text */
     border-radius: 3px;    /* optional, rundes Eck */
     text-align: center;
+    color: whitesmoke;
+    font-weight: bold;
 }
 
 table {

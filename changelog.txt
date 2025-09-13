@@ -1,7 +1,15 @@
+Version 1.10.72 SQL
+
+BUGFIX Anpassung der Farbwerte für abgehende Nachrichten
+       im Dark-Mode zur besseren Lesbarkeit.
+
+BUGFIX Mheard-Listen die > 150 Zeichen haben, werden nun in mehrere Pakete aufgeteilt.
+FEATURE Rückgabewerte bei Skriptausführung werden jetzt auch ausgesendet.
+
+####################################
 Version 1.10.70 SQL
 
 FEATURE: Dark-Mode-Ansicht
-
 ####################################
 Version 1.10.68 SQL
 

@@ -424,15 +424,16 @@
     --message-text-color-btnTop: whitesmoke;
 
     --message-bg-color-msgIncoming: lightgray;
-    --message-bg-color-msgOutgoing: cadetblue;
-
     --message-bg-color-msgBubbleIncoming: lightblue;
     --message-text-color-msgBubbleIncoming: #000;
     --message-text-color-msgBubbleIncomingPath: #242424;
+    --message-text-color-font-msg: inherit;
 
+    --message-bg-color-msgOutgoing: cadetblue;
     --message-bg-color-msgBubbleOutgoing: #2e9afe;
     --message-text-color-msgBubbleOutgoing: whitesmoke;
     --message-text-color-msgBubbleOutgoingPath: #242424;
+    --message-text-color-msgOutgoing: black;
 
     --message-text-color-msgBubbleClickOnCall: #0000ee;
 

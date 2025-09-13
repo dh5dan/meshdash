@@ -423,16 +423,18 @@
     --message-bg-color-btnTop: #0056b3;
     --message-text-color-btnTop: whitesmoke;
 
-    --message-bg-color-msgIncoming: lightsteelblue; /* Hintergrund vom src Call */
-    --message-bg-color-msgOutgoing: #666f7a;   /* Hintergrund vom src Call lightslategray*/
-
     --message-bg-color-msgBubbleIncoming: #3a3a3a;
     --message-text-color-msgBubbleIncoming: #e0e0e0;
     --message-text-color-msgBubbleIncomingPath: #999999;
+    --message-bg-color-msgIncoming: lightsteelblue; /* Hintergrund vom src Call */
+    --message-text-color-font-msg: whitesmoke;
+    --message-text-color-msgIncoming: black;
 
     --message-bg-color-msgBubbleOutgoing: #555555;     /* etwas heller als Incoming */
-    --message-text-color-msgBubbleoutgoing: #f5f5f5;   /* sehr hell, gute Lesbarkeit */
-    --message-text-color-msgBubbleoutgoingPath: #aaaaaa; /* feiner Kontrast zum Text */
+    --message-text-color-msgBubbleOutgoing: #f5f5f5;   /* sehr hell, gute Lesbarkeit */
+    --message-text-color-msgBubbleOutgoingPath: #aaaaaa; /* feiner Kontrast zum Text */
+    --message-bg-color-msgOutgoing: lightsteelblue;   /* Hintergrund vom src Call lightslategray*/
+    --message-text-color-msgOutgoing: black;
 
     --message-text-color-msgBubbleClickOnCall: color-mix;
 }
