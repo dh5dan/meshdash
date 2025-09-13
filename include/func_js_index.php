@@ -484,6 +484,9 @@
                case 'sensor_threshold':
                    iframeSrc = 'menu/sensor_threshold.php';
                    break;
+               case 'sensor_plot':
+                   iframeSrc = 'menu/sensor_plot.php';
+                   break;
                case 'gps_info':
                    iframeSrc = 'menu/gps_info.php';
                    break;

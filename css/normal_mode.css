@@ -437,5 +437,11 @@
 
     --message-text-color-msgBubbleClickOnCall: #0000ee;
 
+    /* =======================================
+     Modul: sensor_plot.php
+     ======================================= */
+    --config-sensor-plot-bg-color-btn: #0056b3;
+    --config-sensor-plot-text-color-btn: whitesmoke;
+
 
 }

@@ -1,0 +1,174 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: var(--sensor-data-bg-color-body);
+    color: var(--sensor-data-text-color-body);
+}
+
+.table, th, td {
+    border: 1px solid var(--sensor-data-color-tableThTd);
+    border-collapse: collapse;
+    white-space: nowrap;
+    color: var(--sensor-data-text-color-tableTd);
+}
+.table {
+    background-color: var(--sensor-data-bg-color-table);
+    width: max(25%, min(801px, 100%));
+    margin-bottom: 0;
+}
+
+html {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    color: var(--sensor-data-text-color-html);
+    text-align: left;
+}
+
+.thCenter {
+    text-align: center;
+}
+
+.lineBreak {
+    display: block;
+}
+
+#sensorChart {
+    width: 100%;
+    height: 300px;
+}
+
+.infoImagePoint {
+    margin-left: 10px;
+    margin-bottom: -8px;
+    cursor: pointer;
+    width: 23px;
+}
+
+.tableBtn {
+    width: 23%;
+}
+
+.btnPlotSensorChart {
+    font-size: 14px;
+    padding: 4px 10px;
+    border: none;
+    background-color: var(--config-sensor-plot-bg-color-btn);
+    color: var(--config-sensor-plot-text-color-btn);
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+input[type="date"] {
+    width: 48%;          /* zwei Felder nebeneinander, passen in eine Zeile */
+    max-width: 48%;
+    box-sizing: border-box;
+    font-size: 14px;     /* optional: kleinere Schrift */
+    margin-right: 2%;    /* Abstand zwischen den Feldern */
+}
+
+input[type="date"]:last-child {
+    margin-right: 0;     /* letztes Feld keinen Abstand rechts */
+}
+
+select {
+    width: 100px;       /* schmaler Kasten */
+    font-size: 14px;    /* kleinere Schrift */
+    padding: 2px 4px;
+}
+
+/* <<< ANPASSUNG >>> nur für mobile */
+@media (max-width: 768px) {
+
+    .infoImagePoint {
+        margin-left: 10px;
+        width: 20px;
+        cursor: pointer;
+        margin-bottom: -6px;
+    }
+
+    #sensorChart {
+        width: 100%;          /* passt sich Containerbreite an */
+        height: 68vh !important;  /* 60% der Viewport-Höhe */
+        max-width: 100%;      /* verhindert Überlaufen */
+        box-sizing: border-box;
+    }
+
+    input[type="date"] {
+        width: 48%;          /* zwei Felder nebeneinander, passen in eine Zeile */
+        max-width: 48%;
+        box-sizing: border-box;
+        font-size: 14px;     /* optional: kleinere Schrift */
+        margin-right: 2%;    /* Abstand zwischen den Feldern */
+    }
+
+    input[type="date"]:last-child {
+        margin-right: 0;     /* letztes Feld keinen Abstand rechts */
+    }
+}
+
+@media screen and (max-width: 768px) {
+
+    .tableBtn {
+        width: 100%;  /* Nutzt die komplette Breite */
+   }
+
+    td {
+        padding: 2px 1px 2px 1px;
+        white-space: normal;
+    }
+
+    h2 {
+        font-size: medium !important;
+        margin: 0;
+    }
+
+    .table {
+        width: max-content;
+    }
+
+    .table {
+        width: 100%;  /* Nutzt die komplette Breite */
+        table-layout: auto;
+        max-width: 100%;  /* Verhindert, dass sie größer als der Bildschirm wird */
+    }
+
+    .table th, .table td {
+        white-space: normal;  /* Zeilenumbruch erlauben */
+        word-wrap: break-word;
+        text-align: center;
+    }
+
+
+    input[type="button"] {
+        width: 100% !important;
+        display: inline-block;
+        background-color: var(--sensor-data-bg-color-btn);
+        color: var(--sensor-data-text-color-btn);
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+
+    .btnPlotSensorChart {
+        /*margin-top: 10px;*/
+    }
+
+    td {
+        padding: 2px 1px 2px 1px;
+        white-space: normal;
+    }
+
+    .ui-dialog {
+        width: 90% !important;
+        left: 5% !important;
+        right: 5% !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    .ui-dialog .ui-dialog-content {
+        overflow-x: auto;
+    }
+}

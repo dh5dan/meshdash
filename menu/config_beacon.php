@@ -26,7 +26,6 @@ else
     echo '<link rel="stylesheet" href="../css/normal_mode.css?' . microtime() . '">';
 }
 
-
 echo '<link rel="stylesheet" href="../css/config_beacon.css?' . microtime() . '">';
 echo '<link rel="stylesheet" href="../css/loader.css?' . microtime() . '">';
 echo '</head>';
