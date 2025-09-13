@@ -1,3 +1,3 @@
 timestamp=$(date +"%d-%m-%Y %H:%M:%S")
 
-echo "$timestamp Test2 Execute Scipt OK" >> ../log/test2_execute.log
+echo "$timestamp Test2. Execute Script OK" >> ../log/test2_execute.log

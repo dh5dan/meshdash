@@ -11,7 +11,7 @@ body {
 }
 
 .setFontMsg {
-    color: black;
+    color: var(--message-text-color-font-msg);
     font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -95,6 +95,7 @@ body {
 
 .fromToSquareIncoming {
     background-color: var(--message-bg-color-msgIncoming);
+    color: var(--message-text-color-msgIncoming);
 }
 
 .fromToSquareIncoming a {
@@ -103,6 +104,7 @@ body {
 
 .fromToSquareOutgoing {
     background-color: var(--message-bg-color-msgOutgoing);
+    color: var(--message-text-color-msgOutgoing);
 }
 
 .fromToSquareOutgoing a {
@@ -174,11 +176,11 @@ body {
 
 .bubbleFontMsgHeaderOutgoing {
     font-size: 18px;
-    color: var(--message-text-color-msgBubbleoutgoingPath) !important;
+    color: var(--message-text-color-msgBubbleOutgoingPath) !important;
 }
 
 .bubbleFontMsgOutgoing {
-    color: var(--message-text-color-msgBubbleoutgoing);
+    color: var(--message-text-color-msgBubbleOutgoing);
 }
 
 .bubbleFontMsgIncoming {

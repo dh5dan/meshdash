@@ -2525,7 +2525,7 @@ function callWindowsBackgroundTask($taskFile, $execDir = ''): bool
     // Holt den Projekt-Root aus SCRIPT_NAME (NICHT SCRIPT_FILENAME!)
     $protocol    = (empty($_SERVER['HTTPS']) ? 'http' : 'https');
     $host        = $_SERVER['HTTP_HOST'];
-    $scriptName  = $_SERVER['SCRIPT_NAME']; // z. B. /meshdash/menu/index.php
+    $scriptName  = $_SERVER['SCRIPT_NAME']; // z.B. /meshdash/menu/index.php
     $projectRoot = explode('/', trim($scriptName, '/'))[0]; // ergibt 'meshdash'
     $baseUrl     = $protocol . '://' . $host . '/' . $projectRoot;
     $triggerLink = $baseUrl . '/task_bg.php';
@@ -2564,11 +2564,11 @@ function callWindowsBackgroundTask($taskFile, $execDir = ''): bool
         echo "<br>triggerLink:$triggerLink";
         echo "<br>taskFile:$taskFile";
 
-        echo "<pre>";
+        echo "<br>#Postfields#<br><pre>";
         print_r($postFields);
         echo "</pre>";
 
-        echo "<pre>";
+        echo "<br>#curlResult#<br><pre>";
         print_r($ch);
         echo "</pre>";
 
@@ -3043,13 +3043,13 @@ function sqliteWALCheckpoint(string $database): bool
             print_r($row);
             echo "</pre>";
 
-            //Könnte so aussehen.
-            // Array
-            // (
-            //    [busy] => 0          // Anzahl der Verbindungen, die die WAL blockieren.
-            //    [log] => 5           // Anzahl der Seiten, die noch im WAL-Log stehen.
-            //    [checkpointed] => 20 // Anzahl der Seiten, die gerade zurück in die Haupt-DB geschrieben wurden.
-            // )
+             #Könnte so aussehen.
+             #Array
+             #(
+             #   [busy] => 0          // Anzahl der Verbindungen, die die WAL blockieren.
+             #   [log] => 5           // Anzahl der Seiten, die noch im WAL-Log stehen.
+             #   [checkpointed] => 20 // Anzahl der Seiten, die gerade zurück in die Haupt-DB geschrieben wurden.
+             #)
         }
     }
 
