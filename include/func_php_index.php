@@ -106,6 +106,7 @@ function initDatabases()
     if (!file_exists('database/translation.db'))
     {
         initSQLiteDatabase('translation');
+        checkDbUpgrade('translation');
     }
 
     if (!file_exists('database/call_notice.db'))
@@ -621,6 +622,7 @@ function initSQLiteDatabase($database): bool
                                        ('menu.sensoren', 'Sensoren', 'Sensors', 'Capteurs', 'Sensores', 'Sensori', 'Sensoren'),
                                        ('menu.sensordaten', 'Sensordaten', 'Sensor Data', 'Données capteurs', 'Datos de sensores', 'Dati sensore', 'Sensorgegevens'),
                                        ('menu.schwellwerte', 'Schwellwerte', 'Thresholds', 'Seuils', 'Umbrales', 'Soglie', 'Drempels'),
+                                       ('menu.plot', 'Auswertung', 'Analysis', 'Analyse', 'Evaluación', 'Valutazione', 'Analyse'),
                                        ('menu.gps-info', 'GPS-Info', 'GPS Info', 'Infos GPS', 'Info GPS', 'Info GPS', 'GPS-info'),
                                         
                                        ('menu.mheard', 'MHeard', 'MHeard', 'MHeard', 'MHeard', 'MHeard', 'MHeard'),
@@ -904,6 +906,7 @@ function showMenuIcons()
             echo '<ul class="submenuIcon">';
                 echo '<li data-action="sensor_data">' . getStatusIcon('sensordata', true) . '</li>';
                 echo '<li data-action="sensor_threshold">' . getStatusIcon('threshold', true) . '</li>';
+                echo '<li data-action="sensor_plot">' . getStatusIcon('plot', true) . '</li>';
                 echo '<li data-action="gps_info">' . getStatusIcon('gps', true) . '</li>';
             echo '</ul>';
         echo '</li>';
