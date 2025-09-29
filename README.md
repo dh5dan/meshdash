@@ -56,6 +56,7 @@ Eine Umstellung auf **PHP >= 8.x** ist daher empfohlen.
 - [MeshDash mit Dark-Mode-Ansicht](#meshdash-mit-dark-mode-ansicht)
 - [UDP-Datagramm Weiterleitung](#hier-noch-ein-paar-bilder-aus-den-menüpunkten)
 - [MeshDash in Docker-Umgebung](#meshdash-auf-docker)
+- [Sensordaten-Diagramm](#sensordaten-diagramm)
   
 Sollten Probleme auftreten, bitte im GitHub-Issue-Bereich melden – falls das Problem  
 noch nicht dort beschrieben ist.
@@ -253,6 +254,14 @@ Die Bake kann auch aus der Ferne über ein OTP (One-Time-Password) gestartet wer
 
 ### Mobile Ansicht auf einem Smartphone 
 ![FILES](/docs/61_handy_Tab_alert.jpg)
+
+---
+
+### Sensordaten-Diagramm
+Sensordaten können nun grafisch als Diagramm dargestellt werden.
+
+![FILES](/docs/sensor_plot0.jpg)
+![FILES](/docs/sensor_plot1.jpg)
 
 ---
 

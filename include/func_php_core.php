@@ -1299,6 +1299,24 @@ function checkDbUpgrade($database)
         }
     }
 
+    if (checkVersion(VERSION,'1.10.72','>='))
+    {
+        insertIfNotExists(
+            'database/translation.db',
+            'translation',
+            'key',
+            'menu.plot',
+            [
+                'de' => 'Auswertung',
+                'en' => 'Evaluation',
+                'fr' => 'Analyse',
+                'es' => 'Evaluación',
+                'it' => 'Valutazione',
+                'nl' => 'Analyse'
+            ]
+        );
+    }
+
     if ($doRestartBgProcess === true)
     {
         ## Prozess neu laden damit Feld befüllt wird
@@ -2304,6 +2322,7 @@ function getStatusIcon(string $status, bool $withLabel = false): string
         'sensors'    => ['symbol' => '&#127777;&#65039;', 'label' => 'menu.sensoren'],  // 🌡️
         'sensordata' => ['symbol' => '&#128202;', 'label' => 'menu.sensordaten'],  // 📊
         'threshold'  => ['symbol' => '&#129514;', 'label' => 'menu.schwellwerte'],  // 🧪
+        'plot'       => ['symbol' => '&#128201;', 'label' => 'menu.plot'],  // 📉
         'gps'        => ['symbol' => '&#x1F6F0;&#65039;', 'label' => 'menu.gps-info'],  // 🛰️
 
         'mheard'      => ['symbol' => '&#128066;&#65039;', 'label' => 'MHeard'],  // 👂
@@ -3007,6 +3026,7 @@ function setBeaconCronInterval($beaconInterval,$beaconEnabled): bool
 }
 function sqliteWALCheckpoint(string $database): bool
 {
+    #Schreibe Daten aus WAL sofort in DB zurück.
     $database = $database . '.db';
 
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
@@ -3059,4 +3079,46 @@ function sqliteWALCheckpoint(string $database): bool
 
     return true;
 }
+function insertIfNotExists($dbFile, $table, $keyColumn, $keyValue, array $data)
+{
+    // SQLite öffnen
+    $db = new SQLite3($dbFile);
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+
+    // Prüfen, ob Key existiert
+    $stmt = $db->prepare("SELECT 1 FROM $table WHERE $keyColumn = :key LIMIT 1");
+    $stmt->bindValue(':key', $keyValue, SQLITE3_TEXT);
+    $res    = $stmt->execute();
+    $exists = $res->fetchArray();
+    $res->finalize();
+    $stmt->close();
+
+    // Insert-Statement falls nicht existiert
+    if (!$exists)
+    {
+        $dataWithKey             = $data;
+        $dataWithKey[$keyColumn] = $keyValue; // sicherstellen, dass keyColumn immer drin ist
+
+        $columns      = array_keys($dataWithKey);
+        $placeholders = array_map(fn($c) => ':' . $c, $columns);
+
+        $sql    = "INSERT INTO $table (" . implode(',', $columns) . ") VALUES (" . implode(',', $placeholders) . ")";
+        $insert = $db->prepare($sql);
+
+        foreach ($dataWithKey as $col => $val)
+        {
+            $insert->bindValue(':' . $col, $val, SQLITE3_TEXT);
+        }
+
+        $insert->execute();
+        $insert->close();
+    }
+
+
+    // DB schließen
+    $db->close();
+    unset($db);
+}
+
+
 

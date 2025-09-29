@@ -1,12 +1,12 @@
 Version 1.10.72 SQL
 
+FEATURE Sensordaten können nun als Diagram angezeigt werden.
+
 BUGFIX Anpassung der Farbwerte für abgehende Nachrichten
        im Dark-Mode zur besseren Lesbarkeit.
 
-BUGFIX Mheard-Listen die > 150 Zeichen haben, werden nun in mehrere Pakete aufgeteilt.
 BUGFIX Batch-Scripte via Keyword wurden unter Windows nicht korrekt ausgeführt.
 
-FEATURE Rückgabewerte bei Skriptausführung werden jetzt auch ausgesendet.
 
 ####################################
 Version 1.10.70 SQL
