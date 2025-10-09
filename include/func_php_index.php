@@ -106,6 +106,10 @@ function initDatabases()
     if (!file_exists('database/translation.db'))
     {
         initSQLiteDatabase('translation');
+    }
+    else
+    {
+        checkDbIntegrity('translation');
         checkDbUpgrade('translation');
     }
 
@@ -833,8 +837,6 @@ function initSQLiteDatabase($database): bool
                                        ('submenu.send_command.btn.send-command', 'Sende Befehl', 'Send command', 'Envoyer commande', 'Enviar comando', 'Invia comando', 'Verstuur commando'),
                                        ('submenu.send_command.msg.save-settings-success', 'Settings wurden erfolgreich abgespeichert!', 'Settings saved successfully!', 'Paramètres enregistrés avec succès !', '¡Configuración guardada con éxito!', 'Impostazioni salvate con successo!', 'Instellingen succesvol opgeslagen!'),
                                        ('submenu.send_command.msg.save-settings-failed', 'Es gab einen Fehler beim Abspeichern der Settings!', 'There was an error saving the settings!', 'Une erreur s''est produite lors de l''enregistrement des paramètres !', '¡Hubo un error al guardar la configuración!', 'Si è verificato un errore durante il salvataggio delle impostazioni!', 'Er trad zich een fout op bij het opslaan van instellingen!');
-
-                                       
            ");
 
         #Close and write Back WAL

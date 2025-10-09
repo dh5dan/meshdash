@@ -1133,6 +1133,11 @@ function remoteStartBeacon(): bool
 }
 function columnExists($database, $tabelle, $spalte): bool
 {
+    if (!file_exists('database/' . $database . '.db'))
+    {
+        return false;
+    }
+
     // SQLite3-Datenbank öffnen
     $db = new SQLite3('database/' . $database . '.db');
     $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
@@ -3079,8 +3084,13 @@ function sqliteWALCheckpoint(string $database): bool
 
     return true;
 }
-function insertIfNotExists($dbFile, $table, $keyColumn, $keyValue, array $data)
+function insertIfNotExists($dbFile, $table, $keyColumn, $keyValue, array $data): bool
 {
+    if (!file_exists($dbFile))
+    {
+        return false;
+    }
+
     // SQLite öffnen
     $db = new SQLite3($dbFile);
     $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
@@ -3114,10 +3124,11 @@ function insertIfNotExists($dbFile, $table, $keyColumn, $keyValue, array $data)
         $insert->close();
     }
 
-
     // DB schließen
     $db->close();
     unset($db);
+
+    return true;
 }
 
 
