@@ -1,3 +1,8 @@
+Version 1.10.74 SQL
+
+BUGFIX: Fehler beim Update einer MshDash-Version ohne Übersetzungstabelle.
+
+####################################
 Version 1.10.72 SQL
 
 FEATURE Sensordaten können nun als Diagram angezeigt werden.
@@ -6,8 +11,6 @@ BUGFIX Anpassung der Farbwerte für abgehende Nachrichten
        im Dark-Mode zur besseren Lesbarkeit.
 
 BUGFIX Batch-Scripte via Keyword wurden unter Windows nicht korrekt ausgeführt.
-
-
 ####################################
 Version 1.10.70 SQL
 
