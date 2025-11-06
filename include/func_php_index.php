@@ -117,6 +117,11 @@ function initDatabases()
     {
         initSQLiteDatabase('call_notice');
     }
+
+    if (!file_exists('database/send_cmd_favorites.db'))
+    {
+        initSQLiteDatabase('send_cmd_favorites');
+    }
 }
 function initSQLiteDatabase($database): bool
 {
@@ -865,6 +870,37 @@ function initSQLiteDatabase($database): bool
         $db->close();
         unset($db);
     }
+    elseif ($database == 'send_cmd_favorites')
+    {
+        #Open Database
+        $db = new SQLite3('database/send_cmd_favorites.db');
+        $db->exec('PRAGMA journal_mode = wal;');
+        $db->exec('PRAGMA synchronous = NORMAL;');
+
+        // Tabelle erstellen wenn nicht vorhanden
+        $db->exec("CREATE TABLE IF NOT EXISTS sendCmdFavorites 
+                                (
+                                  cmd TEXT NOT NULL UNIQUE,              
+                                  cmdDesc TEXT,
+                                  PRIMARY KEY(cmd)
+                                )
+                        ");
+
+        $db->exec("REPLACE INTO sendCmdFavorites (
+                                          cmd, 
+                                          cmdDesc
+                                       ) VALUES 
+                                       ('--extudp on', 'Aktiviere UDP'),
+                                       ('--extudp off', 'Deaktiviere UDP'),
+                                       ('--gateway on', 'Gateway ON'),
+                                       ('--gateway off', 'Gateway OFF'),
+                                       ('--reboot', 'Reboot Node')
+           ");
+
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+    }
 
     return true;
 }
@@ -1170,4 +1206,3 @@ function setNewMsgAudioItems(): bool
 
     return true;
 }
-

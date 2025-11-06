@@ -183,6 +183,7 @@
                "margin-top": "5px",      // weniger Abstand nach oben
                "height": "auto"          // Höhe an Inhalt anpassen (default ist meist auto)
            });
+
            $(".ui-dialog-buttonset button").css({
                "padding": "2px 6px",     // kleinerer Button
                "font-size": "12px"       // kleinere Schrift

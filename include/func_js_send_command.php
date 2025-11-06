@@ -34,6 +34,9 @@
             outputMsg += '<b>--extudp on/off</b> Aktiviere/Deaktiviere die Aussendung <span class="indented">von UDP-Paketen an das eingestelltes Ziel.</span><br>';
 
             outputMsg += '<b>--gateway on/off</b> start/stop Gateway zum <span class="indented">MeshCom-Server via WIFI/ETH-connect</span><br>';
+            outputMsg += '<b>--gateway srv dl</b> Gateway-Svr DL<span class="indented">MeshCom-Gateway-Server DL gesetzt</span><br>';
+            outputMsg += '<b>--gateway srv oe</b> Gateway-Svr OE<span class="indented">MeshCom-Gateway-Server OE gesetzt (default)</span><br>';
+
             outputMsg += '<b>--gps on/off</b> aktiviert GPS-Abfragen <span class="indented">(notwendig, wenn GPS-Zusatzhardware verwendet wird)</span><br>';
 
             outputMsg += '<b>--msg</b> bringt nur Meldungen am Display <span class="indented">(ab der nächsten Meldung)</span><br>';
@@ -76,6 +79,8 @@
 
             outputMsg += '<b>--webpwd xxxxx</b> setzt das Password (max. 19) für die Web-GUI<br>';
             outputMsg += '<b>--webserver on/off</b> start/stop WEBService <span class="indented">via Wi-Fi/ETH IP-Verbindung</span><br>';
+            outputMsg += '<b>--wifitxpower [db]</b> Setze Wifi TX-Power in dB <span class="indented">Default: 8.5db (max. 20db)</span><br>';
+
             outputMsg += '<b>--wx</b> Zeigt Wetterdaten an <span class="indented">(BME280/BMP280 muss vorhanden sein)</span><br>';
 
             dialog(outputMsg, titleMsg, width)
@@ -84,10 +89,10 @@
 
         $("#btnSendCommand").on("click", function ()
         {
-            let titleMsg          = 'Hinweis';
-            let outputMsg         = '';
-            let sendData          = 1;
-            let width             = 400;
+            let titleMsg    = 'Hinweis';
+            let outputMsg   = '';
+            let sendData    = 1;
+            let width       = 400;
             let sendCommand = $("#sendCommand").val();
 
             if (sendCommand === '')
@@ -105,22 +110,51 @@
             return false;
         });
 
-        $(".btnPreCmd").on("click", function ()
+        $("#btnPreCmd").on("change", function ()
         {
-            let sendCommandData = $(this).data('cmd');
-            let sendData        = 1;
-            let loraIp = $("#loraIp").val();
-            let titleMsg = 'OTA-Update';
-            let maxHeight = '300';
+            let selectedOption      = $('#btnPreCmd option:selected');
+            let sendCommandData     = selectedOption.val();           // cmd
+            let sendCommandDataDesc = selectedOption.data('cmddesc'); // cmdDesc
+
+            let sendData            = 1;
+            let loraIp              = $("#loraIp").val();
+            let titleMsg            = 'OTA-Update';
+            let maxHeight           = '300';
             let outputMsg;
-            let width = 700;
+            let width               = 700;
+
+            if (sendCommandDataDesc === -1 || sendCommandDataDesc === -2)
+            {
+                if (sendCommandDataDesc === -2)
+                {
+                    $("#btnFavoriteDelete").show();
+                    $("#btnFavoriteSave").show();
+                    $("#btnFavoriteSave").html('Favorit hinzufügen');
+                }
+                else
+                {
+                    $("#btnFavoriteDelete").hide();
+                    $("#btnFavoriteSave").hide();
+                }
+
+                $("#newFavoriteDesc").val('');
+                $("#newFavoriteCmd").val('');
+                $("#sendCommand").val(sendCommandData);
+                return false;
+            }
+            else
+            {
+                $("#btnFavoriteDelete").show();
+                $("#btnFavoriteSave").show();
+                $("#btnFavoriteSave").html('Favorit ändern');
+            }
 
             if (sendCommandData === '--ota-update')
             {
                 outputMsg ='<b>Ota-Update erkannt!</b><br>'
                 outputMsg +='Sie werden im Anschluss auf die Webseite in einem neuen Tab<br>';
                 outputMsg +='zum Lora Gerät umgeleitet, um dort das Update auszuführen.<br><br>'
-                outputMsg +='<b><u>Wichtig!</u></b><br><span style="color: red">Sollte ein PopUp-Blocker aktiv sein,<br>'
+                outputMsg +='<b><u>Wichtig!</u></b><br><span style="color: red">Sollte ein Pop-up-Blocker aktiv sein,<br>'
                 outputMsg +='muss die Lora Seite <u><b>http://'+loraIp +'</b></u><br>manuell geöffnet werden!</span><br><br>'
                 outputMsg +='Die Umleitung erfolgt ca 5sek. nach Ausführung des Befehls,<br>'
                 outputMsg +='da das Gerät etwas Zeit braucht um den OTA-Mode zu starten.<br>'
@@ -136,10 +170,70 @@
                 return false;
             }
 
-            $("#sendCommand").val(sendCommandData);
-            $("#sendData").val(sendData);
-            $("#frmSendCommand").trigger('submit');
+            $("#newFavoriteDesc").val(sendCommandDataDesc);
+            $("#deleteFavoriteDesc").val(sendCommandDataDesc);
 
+            $("#newFavoriteCmd").val(sendCommandData);
+            $("#deleteFavoriteCmd").val(sendCommandData);
+
+            $("#sendCommand").val(sendCommandData);
+
+            return false;
+        });
+
+        $("#btnFavoriteDelete").on("click", function ()
+        {
+            let selectedOption = $('#btnPreCmd option:selected');
+            let favoriteCmd    = $("#deleteFavoriteCmd").val();           // cmd
+            let favoriteDesc   = selectedOption.data('cmddesc'); // cmdDesc
+
+            let titleMsg    = 'Hinweis';
+            let outputMsg   = '';
+            let sendData    = 11;
+            let width       = 500;
+
+            if (favoriteCmd === '')
+            {
+                outputMsg = 'Zum Löschen zuerst einen Favoriten auswählen.';
+                dialog(outputMsg, titleMsg, width);
+                return false;
+            }
+
+            outputMsg = 'Favorit:<br>' + favoriteDesc + ': ' + favoriteCmd + "<br><br>jetzt löschen?";
+
+            dialogConfirmNormal(outputMsg, titleMsg, width, sendData);
+            return false;
+        });
+
+        $("#btnFavoriteSave").on("click", function ()
+        {
+            let selectedOption   = $('#btnPreCmd option:selected');
+            let selectedOptionId = selectedOption.data('cmddesc'); // cmdDesc
+
+            let favoriteKey     = $("#deleteFavoriteCmd").val();           // cmd
+            let favoriteNewCmd  = $("#newFavoriteCmd").val();           // cmd
+            let favoriteNewDesc = $("#newFavoriteDesc").val(); // cmdDesc
+
+            let titleMsg    = 'Hinweis';
+            let outputMsg   = '';
+            let sendData    = 12;
+            let width       = 500;
+
+            outputMsg = 'Favorit:<br>' + favoriteNewDesc + ': ' + favoriteNewCmd + "<br><br>jetzt ändern?";
+
+            if (selectedOptionId === -2)
+            {
+                outputMsg = 'Favorit:<br>' + favoriteNewDesc + ': ' + favoriteNewCmd + "<br><br>jetzt neu hinzufügen?";
+            }
+
+            if (favoriteNewCmd === '' || favoriteNewDesc === '')
+            {
+                outputMsg = 'Es müssen beide Felder ausgefüllt sein.';
+                dialog(outputMsg, titleMsg, width);
+                return false;
+            }
+
+            dialogConfirmNormal(outputMsg, titleMsg, width, sendData);
             return false;
         });
 
@@ -165,7 +259,7 @@
                 resizable: true,
                 modal: true,
                 width: width,
-                maxWidth: isMobile ? "90%" : null, // Max 90% der Bildschirmbreite
+                maxWidth: isMobile ? "90%" : null, // Max. 90 % der Bildschirmbreite
                 minWidth: isMobile ? "200px" : "300px", // Mindestbreite setzen
                 maxHeight: maxHeight, // Maximale Höhe setzen
                 overflow: "auto", // Scrollbar aktivieren, falls nötig
@@ -261,7 +355,7 @@
                 resizable: true,
                 modal: true,
                 width: width,
-                maxWidth: isMobile ? "90%" : null, // Max 90% der Bildschirmbreite
+                maxWidth: isMobile ? "90%" : null, // Max. 90 % der Bildschirmbreite
                 minWidth: isMobile ? "200px" : "300px", // Mindestbreite setzen
                 maxHeight: maxHeight, // Maximale Höhe setzen
                 overflow: "auto", // Scrollbar aktivieren, falls nötig
@@ -277,6 +371,30 @@
 
             // Schriftgröße direkt in .ui-widget setzen (wichtig, da jQuery UI das überschreibt)
             $(".ui-widget").css("font-size", fontSize);
+        }
+
+        function dialogConfirmNormal(output_msg, title_msg, width, sendData) {
+            width      = !width ? 300 : width;
+            title_msg  = !title_msg ? '' : title_msg;
+            output_msg = !output_msg ? '' : output_msg;
+            sendData   = !sendData ? 0 : sendData;
+
+            $("<div></div>").html(output_msg).dialog({
+                title: title_msg,
+                resizable: true,
+                modal: true,
+                width: width,
+                buttons: {
+                    'OK': function () {
+                        $("#sendData").val(sendData);
+                        $("#frmSendCommand").trigger('submit');
+                        $("#pageLoading").show();
+                        $(this).dialog('close');
+                    }, 'Abbruch': function () {
+                        $(this).dialog("close");
+                    }
+                }
+            }).prev(".ui-dialog-titlebar").css("background", "red");
         }
 
 

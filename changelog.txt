@@ -1,3 +1,9 @@
+Version 1.10.76 SQL
+
+BUGFIX Fehler bei Mheard Distance wenn Wert = NULL. Zeigt dann keine Positionen an.
+FEATURE Favoritenliste für Send-Befehl dyn. erstellen.
+FEATURE Aktualisierung der Befehlsliste im Popup (Info button)
+####################################
 Version 1.10.74 SQL
 
 BUGFIX: Fehler beim Update einer MshDash-Version ohne Übersetzungstabelle.

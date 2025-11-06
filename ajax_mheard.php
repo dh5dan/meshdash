@@ -80,15 +80,15 @@ if (!empty($dsData) === true)
         {
             ###############################################
             #Common
-            $callSign = $row['mhCallSign'];
-            $type     = $row['mhType'];
-            $hardware = $row['mhHardware'];
-            $mod      = $row['mhMod'];
-            $rssi     = $row['mhRssi'];
-            $snr      = $row['mhSnr'];
-            $dist     = $row['mhDist'];
-            $pl       = $row['mhPl'];
-            $m        = $row['mhM'];
+            $callSign = $row['mhCallSign'] ?? 0;
+            $type     = $row['mhType'] ?? 0;
+            $hardware = $row['mhHardware'] ?? 0;
+            $mod      = $row['mhMod'] ?? 0;
+            $rssi     = $row['mhRssi'] ?? 0;
+            $snr      = $row['mhSnr'] ?? 0;
+            $dist     = $row['mhDist'] ?? 0;
+            $pl       = $row['mhPl'] ?? 0;
+            $m        = $row['mhM'] ?? 0;
 
             $dbMd1 = new SQLite3('database/meshdash.db', SQLITE3_OPEN_READONLY);
             $dbMd1->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
@@ -134,12 +134,12 @@ if (!empty($dsData) === true)
             if (!empty($dsDataMd1) === true)
             {
                 $returnArray[$callSign]['timestamps'] = $dsDataMd1['timestamps'];
-                $returnArray[$callSign]['latitude']   = substr($dsDataMd1['latitude'],0,7);
-                $returnArray[$callSign]['longitude']  = substr($dsDataMd1['longitude'],0,6);
-                $returnArray[$callSign]['altitude']   = number_format($dsDataMd1['altitude'] * 0.3048); // Umrechnung Fuss -> Meter;
-                $returnArray[$callSign]['firmware']   = $dsDataMd1['firmware'];
-                $returnArray[$callSign]['fw_sub']     = $dsDataMd1['fw_sub'];
-                $returnArray[$callSign]['batt']       = $dsDataMd1['batt'];
+                $returnArray[$callSign]['latitude']   = substr($dsDataMd1['latitude'] ?? 0,0,7);
+                $returnArray[$callSign]['longitude']  = substr($dsDataMd1['longitude'] ?? 0,0,6);
+                $returnArray[$callSign]['altitude']   = number_format((($dsDataMd1['altitude'] ?? 0) * 0.3048)); // Umrechnung Fuss -> Meter;
+                $returnArray[$callSign]['firmware']   = $dsDataMd1['firmware'] ?? 0;
+                $returnArray[$callSign]['fw_sub']     = $dsDataMd1['fw_sub'] ?? 0;
+                $returnArray[$callSign]['batt']       = $dsDataMd1['batt'] ?? 0;
                 $returnArray[$callSign]['dist']       = substr($dist,0,5);
                 $returnArray[$callSign]['callSign']   = $callSign;
                 $returnArray[$callSign]['hardware']   = $hardware;
@@ -194,14 +194,14 @@ if (!empty($dsData) === true)
 
     if (!empty($dsDataMdOwn) === true)
     {
-        $returnArray[$ownCallSign]['timestamps'] = $dsDataMdOwn['timestamps'];
-        $returnArray[$ownCallSign]['latitude']   = substr($dsDataMdOwn['latitude'],0,7);
-        $returnArray[$ownCallSign]['longitude']  = substr($dsDataMdOwn['longitude'],0,6);
-        $returnArray[$ownCallSign]['altitude']   = number_format($dsDataMdOwn['altitude'] * 0.3048); // Umrechnung Fuss -> Meter;
-        $returnArray[$ownCallSign]['firmware']   = $dsDataMdOwn['firmware'];
-        $returnArray[$ownCallSign]['fw_sub']     = $dsDataMdOwn['fw_sub'];
-        $returnArray[$ownCallSign]['batt']       = $dsDataMdOwn['batt'];
-        $returnArray[$ownCallSign]['dist']       = substr($dsDataMdOwn['dist'],0,5);
+        $returnArray[$ownCallSign]['timestamps'] = $dsDataMdOwn['timestamps'] ?? 0;
+        $returnArray[$ownCallSign]['latitude']   = substr($dsDataMdOwn['latitude'] ?? 0,0,7);
+        $returnArray[$ownCallSign]['longitude']  = substr($dsDataMdOwn['longitude'] ?? 0,0,6);
+        $returnArray[$ownCallSign]['altitude']   = number_format((($dsDataMdOwn['altitude'] ?? 0) * 0.3048)); // Umrechnung Fuss -> Meter;
+        $returnArray[$ownCallSign]['firmware']   = $dsDataMdOwn['firmware'] ?? 0;
+        $returnArray[$ownCallSign]['fw_sub']     = $dsDataMdOwn['fw_sub'] ?? 0;
+        $returnArray[$ownCallSign]['batt']       = $dsDataMdOwn['batt'] ?? 0;
+        $returnArray[$ownCallSign]['dist']       = substr($dsDataMdOwn['dist'] ?? 0,0,5);
         $returnArray[$ownCallSign]['callSign']   = $ownCallSign;
 
         if ($debugFlag === true)
