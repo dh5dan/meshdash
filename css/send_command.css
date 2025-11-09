@@ -55,6 +55,13 @@ input[type="checkbox"] {
     border-radius: 5px;
 }
 
+td input[type="text"] {
+    box-sizing: border-box;      /* sorgt dafür, dass padding/border eingerechnet werden */
+    width: 100%;                 /* nutzt gesamte Zellbreite */
+    max-width: 100%;             /* überschreitet nicht die TD-Breite */
+    display: block;              /* verhindert inline spacing */
+}
+
 @media (max-width: 600px) {
 
     .indented  {
@@ -83,6 +90,21 @@ input[type="checkbox"] {
 
     table {
         font-size: 14px;
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+
+    .tdMin {
+        width: 90px !important;
+    }
+
+    .tdMaxDesc {
+        width: -webkit-fill-available;
+    }
+
+    .tdMaxCmd {
+        width: -webkit-fill-available;
     }
 
     td:first-child {
@@ -90,7 +112,7 @@ input[type="checkbox"] {
     }
 
     input[type="text"] {
-        max-width: 162px; /* Oder andere passende Breite */
+        max-width: 95%; /* Oder andere passende Breite */
     }
 
     input[type="button"] {

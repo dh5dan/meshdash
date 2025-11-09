@@ -93,7 +93,6 @@ function getLocalIpAddressesLinux(): array
 
     return $ips;
 }
-
 function getLocalIpAddressesWin(): array
 {
     $ips = [];
@@ -105,4 +104,128 @@ function getLocalIpAddressesWin(): array
         }
     }
     return $ips;
+}
+function getSendCmdFavorites()
+{
+    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    $basename       = pathinfo(getcwd())['basename'];
+    $dbFilenameSub  = '../database/send_cmd_favorites.db';
+    $dbFilenameRoot = 'database/send_cmd_favorites.db';
+    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+
+    $db  = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+
+    $sql = "SELECT * 
+              FROM sendCmdFavorites;
+           ";
+
+    $logArray   = array();
+    $logArray[] = "getSendCmdFavorites: Database: $dbFilename";
+
+    $res = safeDbRun( $db,  $sql, 'query', $logArray);
+
+    if ($res === false)
+    {
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+
+        return false;
+    }
+
+    # Iteration über alle Datensätze
+    $favorites = [];
+    while ($row = $res->fetchArray(SQLITE3_ASSOC))
+    {
+        $favorites[] = [
+            'cmd'     => $row['cmd'],
+            'cmdDesc' => $row['cmdDesc']
+        ];
+    }
+
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
+    return $favorites;
+}
+function deleteFavorite($favoriteCmd): bool
+{
+    if($favoriteCmd == '')
+    {
+        return false;
+    }
+
+    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    $basename       = pathinfo(getcwd())['basename'];
+    $dbFilenameSub  = '../database/send_cmd_favorites.db';
+    $dbFilenameRoot = 'database/send_cmd_favorites.db';
+    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+
+    $db = new SQLite3($dbFilename);
+    $db->exec('PRAGMA synchronous = NORMAL;');
+
+    $sql = "DELETE FROM sendCmdFavorites 
+                   WHERE cmd = '$favoriteCmd';
+           ";
+
+    $logArray   = array();
+    $logArray[] = "deleteFavorite: Database: $dbFilename";
+    $logArray[] = "deleteFavorite: favoriteCmd: $favoriteCmd";
+
+    $res = safeDbRun( $db,  $sql, 'exec', $logArray);
+
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
+    return true;
+}
+function addFavorite($deleteFavoriteCmd, $favoriteCmd, $favoriteCmdDesc): bool
+{
+    if($favoriteCmd == '' || $favoriteCmdDesc == '')
+    {
+        return false;
+    }
+
+    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    $basename       = pathinfo(getcwd())['basename'];
+    $dbFilenameSub  = '../database/send_cmd_favorites.db';
+    $dbFilenameRoot = 'database/send_cmd_favorites.db';
+    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+
+    $db = new SQLite3($dbFilename);
+    $db->exec('PRAGMA synchronous = NORMAL;');
+
+    $sql = "REPLACE INTO sendCmdFavorites (
+                                          cmd, 
+                                          cmdDesc
+                                       ) VALUES 
+                                       (      
+                                        '$favoriteCmd', 
+                                        '$favoriteCmdDesc'
+                                       );
+         ";
+
+    if ($deleteFavoriteCmd != '')
+    {
+        $sql = "UPDATE sendCmdFavorites SET cmd = '$favoriteCmd', 
+                                            cmdDesc = '$favoriteCmdDesc'
+                                      WHERE cmd = '$deleteFavoriteCmd';
+         ";
+    }
+
+    $logArray   = array();
+    $logArray[] = "addFavorite: Database: $dbFilename";
+    $logArray[] = "addFavorite: favoriteCmd: $favoriteCmd";
+    $logArray[] = "addFavorite: favoriteCmdDesc: $favoriteCmdDesc";
+
+    $res = safeDbRun( $db,  $sql, 'exec', $logArray);
+
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
+    return true;
 }
