@@ -144,6 +144,7 @@ if (!empty($dsData) === true)
                 $returnArray[$callSign]['callSign']   = $callSign;
                 $returnArray[$callSign]['hardware']   = $hardware;
                 $returnArray[$callSign]['rssi']       = $rssi;
+                $returnArray[$callSign]['snr']        = $snr;
 
                 if ($debugFlag === true)
                 {

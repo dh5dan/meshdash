@@ -1,3 +1,7 @@
+Version 1.10.78 SQL
+BUG: SNR Angabe fehlt in Map-Info. dBm Bezeichnung doppelt.
+
+####################################
 Version 1.10.76 SQL
 
 BUGFIX Fehler bei Mheard Distance wenn Wert = NULL. Zeigt dann keine Positionen an.

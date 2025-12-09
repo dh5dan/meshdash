@@ -121,7 +121,8 @@
                                        popupHtml = `
                                                     <b>${item.callSign}</b><br>
                                                     Hardware: ${item.hardware}<br>
-                                                    RSSI: ${item.rssi} dBm<br>
+                                                    RSSI: ${item.rssi}<br>
+                                                    SNR: ${item.snr}<br>
                                                     Altitude: ${item.altitude} m<br>
                                                     Battery: ${item.batt} %<br>
                                                     Distance: ${item.dist} Km<br>
