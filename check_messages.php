@@ -2,13 +2,22 @@
 require_once 'dbinc/param.php';
 require_once 'include/func_php_core.php';
 
-$debugFlag = false;
+$debugFlag         = false;
 
 if ($debugFlag === true)
 {
     echo "<br>lastChecked vor:" . $_GET['lastChecked'];
     $_GET['lastChecked'] = 1740291656; // '2025-02-23 07:20:56'
     echo "<br>lastChecked nach:" . $_GET['lastChecked'];
+}
+
+#Wenn Purge auf meshDash db, dann nichts machen so lange
+if (isPurgeDue('meshdash', 2) === false) {
+    echo "<br>islocked";
+
+    $errorText = "autopurge is locked at " . date('Y-m-d H:i:s') . "\n";
+    file_put_contents('autopurge.log', $errorText,FILE_APPEND);
+    exit();
 }
 
 #Wenn Datei nicht existiert, dann exit.
@@ -18,15 +27,58 @@ if (!file_exists('database/parameter.db') || !file_exists('database/groups.db') 
     exit();
 }
 
+// Prüfen, ob Lock existiert
+//if (file_exists(AUTO_PURGE_LOCK_FILE)) {
+//    $lockAge = time() - filemtime(AUTO_PURGE_LOCK_FILE);
+//
+//    if ($lockAge > AUTO_PURGE_LOCK_TIMEOUT) {
+//        // Lock abgelaufen, alte Datei entfernen
+//        unlink(AUTO_PURGE_LOCK_FILE);
+//    } else {
+//        // Lock noch gültig → AutoPurge läuft bereits
+//        echo "<br>AutoPurge LOCK vorhanden, noch gültig!";
+//        exit();
+//    }
+//}
+
+if (is_file(AUTO_PURGE_LOCK_FILE)) { // is_file() prüft existenz und dass es eine Datei ist
+    $lockAge = @filemtime(AUTO_PURGE_LOCK_FILE);
+    if ($lockAge === false) {
+        // Datei existiert nicht mehr oder Zugriff verweigert, ignorieren
+    } else {
+        $lockAge = time() - $lockAge;
+        if ($lockAge > AUTO_PURGE_LOCK_TIMEOUT) {
+            @unlink(AUTO_PURGE_LOCK_FILE); // Fehler ignorieren, ggf. Log
+        } else {
+            echo "<br>AutoPurge LOCK vorhanden, noch gültig!";
+            exit();
+        }
+    }
+}
+
+// Lock erstellen
+file_put_contents(AUTO_PURGE_LOCK_FILE, date('Y-m-d H:i:s'), LOCK_EX);
+
+#Trigger AutoPurgeData
+try
+{
+    autoPurgeData();
+}
+finally
+{
+    // Lock wieder entfernen
+    if (file_exists(AUTO_PURGE_LOCK_FILE))
+    {
+        @unlink(AUTO_PURGE_LOCK_FILE);
+    }
+}
+
 #Trigger LogRotate
 logRotate();
 
-#Trigger AutoPurgeData
-autoPurgeData();
-
 // Verbindung zur ersten DB (groups)
 $db1 = new SQLite3('database/groups.db', SQLITE3_OPEN_READONLY);
-$db1->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+$db1->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
 $callSign = SQLite3::escapeString(getParamData('callSign'));
 
 $sql1 = "SELECT groupNumber 
@@ -81,7 +133,7 @@ if ($debugFlag === true)
 
 // Verbindung zur zweiten DB (meshdash)
 $db2 = new SQLite3('database/meshdash.db', SQLITE3_OPEN_READONLY);
-$db2->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+$db2->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
 
 // Zeitstempel des letzten Checks abrufen
 $lastChecked          = isset($_GET['lastChecked']) ? intval($_GET['lastChecked']) : 0;

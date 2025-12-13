@@ -4,7 +4,7 @@ require_once 'include/func_php_core.php';
 
 echo '<!DOCTYPE html>';
 echo '<html lang="de">';
-echo '<head><title>Mheard</title>';
+echo '<head><title>FullSize Node-Map OpenStreet</title>';
 
 #Prevnts UTF8 Errors on misconfigured php.ini
 ini_set( 'default_charset', 'UTF-8' );
@@ -14,16 +14,7 @@ echo '<script type="text/javascript" src="jquery/jquery-ui.js"></script>';
 echo '<link rel="stylesheet" href="jquery/jquery-ui.css">';
 echo '<link rel="stylesheet" href="jquery/css/jq_custom.css">';
 echo '<link rel="stylesheet" href="css/loader.css?' . microtime() . '">';
-
-if ((getParamData('darkMode') ?? 0) == 1)
-{
-    echo '<link rel="stylesheet" href="css/dark_mode.css?' . microtime() . '">';
-}
-else
-{
-    echo '<link rel="stylesheet" href="css/normal_mode.css?' . microtime() . '">';
-}
-
+echo '<link rel="stylesheet" href="css/normal_mode.css?' . microtime() . '">';
 echo '<link rel="stylesheet" href="css/mheard.css?' . microtime() . '">';
 
 #<!-- Leaflet CSS -->
@@ -33,6 +24,7 @@ echo '<link rel="stylesheet" href="jquery/leaflet/leaflet.css" />';
 echo'<script src="jquery/leaflet/leaflet.js"></script>';
 echo'<script src="jquery/leaflet/plugin/custom_control/leaflet.control.custom.js"></script>';
 
+echo '<link rel="icon" type="image/png" sizes="16x16" href="favicon.png">';
 echo '</head>';
 echo '<body>';
 
@@ -45,17 +37,10 @@ error_reporting(E_ALL);
 ini_set('display_errors',1);
 
 $debugFlag               = false;
-$loraIp                  = getParamData('loraIp');
 $callSign                = trim(getParamData('callSign'));
 $resGetOwnPosition       = getOwnPosition($callSign); // Für Init OpenStreet View
 $openStreetTileServerUrl = trim(getParamData('openStreetTileServerUrl')) ?? 'tile.openstreetmap.org';
 $openStreetTileServerUrl = $openStreetTileServerUrl == '' ? 'tile.openstreetmap.org' : $openStreetTileServerUrl;
-$sendData                = $_REQUEST['sendData'] ?? 0;
-
-$showOsm = $_GET['osm'] ?? 0;
-$groupId = $_GET['group'] ?? -1;
-echo '<input type="hidden" id="showOsm" value="' . $showOsm . '" />';
-echo '<input type="hidden" id="group" value="' . $groupId . '" />';
 
 if ($resGetOwnPosition !== false)
 {
@@ -72,53 +57,32 @@ else
     echo '<input type="hidden" id="longitude" value="7.3" />';
 }
 
-if ($showOsm === 0)
-{
-    echo '<h2>Lokale Mheard-Liste<span class="lineBreak">von ' . $callSign . ' mit Lora-IP: ' . $loraIp . '</span></h2>';
-}
-
-echo '<form id="frmMheard" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
 echo '<input type="hidden" id="ownCallSign" value="' . $callSign . '" />';
 echo '<input type="hidden" id="openStreetTileServerUrl" value="' . $openStreetTileServerUrl . '" />';
-echo '<table>';
 
-if ($showOsm === 0)
-{
-    echo '<tr>';
-    echo '<td colspan="2"><input type="button" class="btnGetMheard" id="btnGetMheard" value="Lokale Mheard-Liste abfragen"  /></td>';
-    echo '</tr>';
-    echo '<tr>';
-    echo '<td colspan="2"><input type="button" class="btnGetMheard" id="btnGetMheardOpenStreet" value="Nodes hier in OpenStreet anzeigen"  /></td>';
-    echo '</tr>';
-    echo '<tr>';
-    echo '<td colspan="2"><input type="button" class="btnGetMheard" id="btnGetMheardOpenStreetFullSize" value="FullSize Node-Map"  /></td>';
-    echo '</tr>';
-}
-else
-{
-    echo '<input type="button" style="display: none" id="btnGetMheardOpenStreet" />';
-}
+echo '<div id="map" style="width:100vw; height:100vh;"></div>';
 
-echo '</table>';
-echo '</form>';
+// Defaultwerte: Heute und 7 Tage zurück
+$dateFrom = $_POST['date_from'] ?? date('Y-m-d', strtotime('-7 days'));
+$dateTo   = $_POST['date_to'] ?? date('Y-m-d');
 
-if($sendData == 1)
-{
-    $resGetMheard = getMheard($loraIp);
+echo '<script>';
+echo "
+$(function () {
+    dialogOpenStreet(
+        '<div id=\"map\"></div>',
+        'Nodes in OpenStreetMap',
+        window.innerWidth,
+        '$dateFrom',
+        '$dateTo',
+        'fullscreen'
+    );
+});
+";
 
-    if ($resGetMheard === true)
-    {
-        echo '<span class="successHint">' . date('H:i:s') . '-MHeard wurden erfolgreich abgespeichert!</span>';
-    }
-}
+echo '</script>';
 
-if ($showOsm === 0)
-{
-    showMheard($callSign);
-}
-
-echo '<div id="pageLoading" class="pageLoadingSub"></div>';
 echo '</body>';
 echo '</html>';
 

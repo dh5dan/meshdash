@@ -486,6 +486,14 @@ function doDatabaseCopyForBackup(): bool
             $db->close();
             unset($db);
 
+            #BackupDB in WAL Modus schalten.
+            #Gibt sonst DB-Locks, wenn die getauscht wird, da sie bei vacuum im DELETE Mode ist.
+            $backupDb = new SQLite3($backupPath);
+            $backupDb->exec("PRAGMA journal_mode=WAL;");
+            $backupDb->close();
+            unset($backupDb);
+
+
             // Plausibilitätsprüfung: Größe muss minimal > 1 KB sein
             if (!file_exists($backupPath) || filesize($backupPath) < 1024)
             {

@@ -14,7 +14,7 @@ function getParamData($key)
     }
 
     $db  = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
 
     $sql = "SELECT * 
               FROM parameter AS pa 
@@ -56,7 +56,7 @@ function setParamData($key, $value, $mode = 'int'): bool
     $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
 
     $db = new SQLite3($dbFilename);
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
     $db->exec('PRAGMA synchronous = NORMAL;');
 
     #Escape Value
@@ -113,7 +113,7 @@ function getBeaconData($key)
     }
 
     $db  = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
 
     $sql = "SELECT * 
               FROM beacon AS pa 
@@ -155,7 +155,7 @@ function setBeaconData($key, $value, $mode = 'int'): bool
     $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
 
     $db = new SQLite3($dbFilename);
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
     $db->exec('PRAGMA synchronous = NORMAL;');
 
     #Escape Value
@@ -208,7 +208,7 @@ function setThTempData($arrayParam): bool
     $timeStamps     = date('Y-m-d H:i:s');
 
     $db = new SQLite3($dbFilename);
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
     $db->exec('PRAGMA synchronous = NORMAL;');
 
     $sensorThTempIntervallMin = $arrayParam['sensorThTempIntervallMin'];
@@ -295,7 +295,7 @@ function setThIna226Data($arrayParam): bool
     $timeStamps     = date('Y-m-d H:i:s');
 
     $db = new SQLite3($dbFilename);
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
     $db->exec('PRAGMA synchronous = NORMAL;');
 
     $sensorThIna226IntervallMin = $arrayParam['sensorThIna226IntervallMin'] ?? 60;
@@ -424,7 +424,7 @@ function disableAllIna226Sensors(): bool
     $timeStamps     = date('Y-m-d H:i:s');
 
     $db = new SQLite3($dbFilename);
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
     $db->exec('PRAGMA synchronous = NORMAL;');
 
     $sql = "REPLACE INTO sensorThIna226 (sensorThIna226Id,
@@ -469,7 +469,7 @@ function getThTempData()
     $arrayReturn    = array();
 
     $db = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
     $db->exec('PRAGMA synchronous = NORMAL;');
 
     $sql = "SELECT * 
@@ -534,7 +534,7 @@ function getThIna226Data()
     $arrayReturn    = array();
 
     $db = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
     $db->exec('PRAGMA synchronous = NORMAL;');
 
     $sql = "SELECT * 
@@ -620,7 +620,7 @@ function getKeywordsData($msgId)
     }
 
     $db  = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
 
     $sql = "SELECT * 
               FROM keywords AS kw 
@@ -1057,7 +1057,7 @@ function updateMeshDashData($msgId, $key, $value, $doNothing = false): bool
 
     $db = new SQLite3($dbFilename);
     $db->exec('PRAGMA synchronous = NORMAL;');
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
     #Escape Value
     $value = trim(SQLite3::escapeString($value));
 
@@ -1095,7 +1095,7 @@ function remoteStartBeacon(): bool
 
     $db = new SQLite3($dbFilename);
     $db->exec('PRAGMA synchronous = NORMAL;');
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
 
     $sql = "UPDATE beacon
                SET 
@@ -1140,7 +1140,7 @@ function columnExists($database, $tabelle, $spalte): bool
 
     // SQLite3-Datenbank öffnen
     $db = new SQLite3('database/' . $database . '.db');
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
 
     $query  = "PRAGMA table_info('$tabelle')";
 
@@ -1322,6 +1322,15 @@ function checkDbUpgrade($database)
         );
     }
 
+    if (checkVersion(VERSION, '1.10.78', '>='))
+    {
+        if (!columnExists($database, 'purge_lock', 'proc_name') && $database === 'write_mutex')
+        {
+            // Spalte hinzufügen
+            addColumn('write_mutex', 'purge_lock', 'proc_name');
+        }
+    }
+
     if ($doRestartBgProcess === true)
     {
         ## Prozess neu laden damit Feld befüllt wird
@@ -1341,7 +1350,7 @@ function addColumn($database, $tabelle, $spalte, $typ = 'TEXT', $default = null)
 
     // SQLite3-Datenbank öffnen
     $db = new SQLite3('database/' . $database . '.db');
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
 
     // Sicherstellen, dass der Typ gültig ist
     if (empty($typ))
@@ -1385,7 +1394,7 @@ function addIndex($database, $tabelle, $IndexName, $indexField): bool
 {
     // SQLite3-Datenbank öffnen
     $db = new SQLite3('database/' . $database . '.db');
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
 
     // SQL Befehl zum Hinzufügen des Index
     $indexFields = implode(',', array_map('trim', explode(',', $indexField)));
@@ -1414,7 +1423,7 @@ function delIndex($database, $IndexName): bool
 {
     // SQLite3-Datenbank öffnen
     $db = new SQLite3('database/' . $database . '.db');
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
 
     // SQL Befehl zum Löschen des Index
     $query = "DROP INDEX IF EXISTS '$IndexName';";
@@ -1445,6 +1454,10 @@ function getTaskCmd($mode)
     $cronLoopPidFile       = 'log/' . CRON_PID_FILE;
     $cronBeaconLoopPid     = getParamData('cronBeaconLoopPid');
     $cronBeaconLoopPidFile = 'log/' . CRON_BEACON_PID_FILE;
+
+    $cronMheardLoopPid     = getParamData('cronLoopMheardPid');
+    $cronMheardLoopPidFile = 'log/' . MHEARD_CRON_PID_FILE;
+
     $mode                  = $mode == '' ? 'udp' : $mode;  // default UDP
 
     if ($mode == 'udp')
@@ -1500,6 +1513,26 @@ function getTaskCmd($mode)
         }
     }
 
+    if ($mode == 'cronMheard')
+    {
+        #Hinweis Pgrep -x funktioniert nicht, wenn man die PHP Datei ermitteln muss
+        if ($cronMheardLoopPid == '')
+        {
+            # Wenn keine Pid, dann über Pid-File Status ermitteln.
+            # Wenn Pid-File fehlt, dann unter Windows über Dummy einen leeren Eintrag zurückgeben lassen mittels Dummy
+            if (!file_exists($cronMheardLoopPidFile))
+            {
+                return $osIssWindows === true ? 'tasklist | find "dummyFile.exe"' : "pgrep -a -f " . MHEARD_CRON_PROC_FILE . " | grep -v pgrep | awk '{print $1}'";
+            }
+
+            return $osIssWindows === true ? 'tasklist | find "php.exe"' : "pgrep -a -f " . MHEARD_CRON_PROC_FILE . " | grep -v pgrep | awk '{print $1}'";
+        }
+        else
+        {
+            return $osIssWindows === true ? 'tasklist /FI "PID eq ' . $cronMheardLoopPid . '" | findstr /I "php.exe"' : "pgrep -a -f " . MHEARD_CRON_PROC_FILE . " | grep -v pgrep | awk '{print $1}'";
+        }
+    }
+
     return false;
 }
 function getTaskKillCmd($mode = 'udp')
@@ -1509,6 +1542,7 @@ function getTaskKillCmd($mode = 'udp')
     $udpReceiverPid  = getParamData('udpReceiverPid');
     $cronLoopPid     = getParamData('cronLoopPid');
     $cronBeaconPid   = getParamData('cronBeaconLoopPid');
+    $cronMheardPid   = getParamData('cronLoopMheardPid');
 
     if ($mode == 'udp')
     {
@@ -1530,7 +1564,6 @@ function getTaskKillCmd($mode = 'udp')
         {
             # Wenn keine Pid, dann All-Kill für Windows.
             return $osIssWindows === true ? 'taskkill /f /fi "imagename eq php.exe"' : 'pkill -9 -f "' . CRON_PROC_FILE . '"';
-
         }
         else
         {
@@ -1545,11 +1578,24 @@ function getTaskKillCmd($mode = 'udp')
         {
             # Wenn keine Pid, dann All-Kill für Windows.
             return $osIssWindows === true ? 'taskkill /f /fi "imagename eq php.exe"' : 'pkill -9 -f "' . CRON_BEACON_PROC_FILE . '"';
-
         }
         else
         {
             return $osIssWindows === true ? 'taskkill /F /PID ' . $cronBeaconPid : 'pkill -9 -f "' . CRON_BEACON_PROC_FILE . '"';
+        }
+    }
+
+    if ($mode == 'cronMheard')
+    {
+        #Hinweis Pgrep -x funktioniert nicht, wenn man die PHP Datei ermitteln muss
+        if ($cronMheardPid == '')
+        {
+            # Wenn keine Pid, dann All-Kill für Windows.
+            return $osIssWindows === true ? 'taskkill /f /fi "imagename eq php.exe"' : 'pkill -9 -f "' . MHEARD_CRON_PROC_FILE . '"';
+        }
+        else
+        {
+            return $osIssWindows === true ? 'taskkill /F /PID ' . $cronMheardPid : 'pkill -9 -f "' . MHEARD_CRON_PROC_FILE . '"';
         }
     }
 
@@ -1558,8 +1604,15 @@ function getTaskKillCmd($mode = 'udp')
 
 function logRotate()
 {
+    $debugFlag = false;
+
     if ((int) getParamData('chronLogEnable') === 0)
     {
+        if ($debugFlag === true)
+        {
+            echo "<br>chronLogEnable ist False. Abbruch.";
+        }
+
         return false;
     }
 
@@ -1577,13 +1630,14 @@ function logRotate()
         "tx_data_",
         "tx_json_data_",
         "tx_queue_json_data_",
-        "tx_queue_json_data_",
         "udp_msg_data_",
         "send_queue_mheard_",
         "send_mheard_",
         "db_integrity_",
         "udp_forward_msg_data_",
     ]; // Präfixe der Log-Dateien
+
+    $prefixes = array_unique($prefixes); // falls doch mal eine Dublette drin sein sollte
 
     $retentionDays = getParamData('retentionDays') ?? 7;
     $retentionDays = $retentionDays == '' ? 7 : $retentionDays; // Wie viele Tage die Logs behalten werden sollen
@@ -1610,6 +1664,11 @@ function logRotate()
 
     foreach (scandir($logDir) as $file)
     {
+        if ($debugFlag === true)
+        {
+            echo "<br>logDir:$logDir file:$file";
+        }
+
         foreach ($prefixes as $prefix)
         {
             if (strpos($file, $prefix) === 0)
@@ -1626,18 +1685,40 @@ function logRotate()
                     continue;
                 }
 
+                if ($debugFlag === true)
+                {
+                    echo "<br><b>Praefixcheck: prefix:$prefix file:$file</b>";
+                }
+
                 $fileTimestamp = $fileDate->getTimestamp();
                 $age           = floor(($now - $fileTimestamp) / (60 * 60 * 24));
+
+                if ($debugFlag === true)
+                {
+                    echo "<br>   if ($age > $retentionDays)";
+                    echo "<br><b>Add $chronMode: $chronMode logDir:$logDir file: $file</b>";
+                }
 
                 if ($age > $retentionDays)
                 {
                     $filePath = $logDir . "/" . $file;
 
+                    if ($debugFlag === true)
+                    {
+                        echo "<br><b>Add $chronMode: $chronMode filePath:$filePath</b>";
+                    }
+
+                    if (!is_file($filePath)) {
+                        // Datei wurde zwischenzeitlich gelöscht → überspringen
+                        continue;
+                    }
+
                     if ($chronMode === "zip")
                     {
-                        $zip->addFile($filePath, $file);
-                        $toDelete[] = $filePath; // Datei erst nach dem ZIP-Schließen löschen
-                        $archivedFiles++;
+                        if ($zip->addFile($filePath, $file) === true) {
+                            $toDelete[] = $filePath; // Datei merken und erst nach dem ZIP-Schließen löschen
+                            $archivedFiles++;
+                        }
                     }
                     elseif ($chronMode === "delete")
                     {
@@ -1651,7 +1732,16 @@ function logRotate()
 
     if ($chronMode === "zip")
     {
-        $zip->close(); // ZIP-Archiv schließen, bevor Dateien gelöscht werden
+        if ($zip->numFiles > 0)
+        {
+            $zip->close(); // ZIP-Archiv schließen, bevor Dateien gelöscht werden
+        }
+        else
+        {
+            // nichts archiviert → ZIP verwerfen
+            $zip->close();
+            @unlink($zipName);
+        }
 
         //Fallback
         //Dateien aus dem Archiv löschen, wenn nicht schon vorher gelöscht
@@ -1896,7 +1986,7 @@ function setTxQueue($txQueueData): bool
     $txQueueData['txMsg'] = str_replace('"', '``', $txQueueData['txMsg']); // tausche mit Accent-Aigu
 
     $db = new SQLite3($dbFilename);
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
     $db->exec('PRAGMA synchronous = NORMAL;');
 
     $txTimestamp     = '0000-00-00 00:00:00';
@@ -1960,7 +2050,7 @@ function getTxQueue()
     }
 
     $db = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
 
     $sql = "SELECT * 
               FROM txQueue AS tx
@@ -2034,7 +2124,7 @@ function updateTxQueue($txQueueId): bool
     $timeStamps     = date('Y-m-d H:i:s');
 
     $db = new SQLite3($dbFilename);
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
     $db->exec('PRAGMA synchronous = NORMAL;');
 
     $txQueueId = SQLite3::escapeString($txQueueId);
@@ -2075,7 +2165,7 @@ function setSensorAlertCounter($sensor, $sensorType): bool
         $timeStamps     = date('Y-m-d H:i:s');
 
         $db = new SQLite3($dbFilename);
-        $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+        $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
         $db->exec('PRAGMA synchronous = NORMAL;');
 
         $queryTemp = " UPDATE sensorThTemp SET sensorThTempAlertCount = sensorThTempAlertCount + 1,
@@ -2117,7 +2207,7 @@ function setSensorAlertCounter($sensor, $sensorType): bool
         $timeStampIna226      = date('Y-m-d H:i:s');
 
         $dbIna266 = new SQLite3($dbFilenameIna226);
-        $dbIna266->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+        $dbIna266->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
         $dbIna266->exec('PRAGMA synchronous = NORMAL;');
 
         $queryIna226 = " UPDATE sensorThIna226 SET sensorThIna226vBusAlertCount = sensorThIna226vBusAlertCount + 1,
@@ -2182,7 +2272,7 @@ function resetSensorAlertCounter($sensor, $sensorType): bool
         $timeStamps     = date('Y-m-d H:i:s');
 
         $db = new SQLite3($dbFilename);
-        $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+        $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
         $db->exec('PRAGMA synchronous = NORMAL;');
 
         $queryTemp = " UPDATE sensorThTemp SET sensorThTempAlertCount = 0,
@@ -2224,7 +2314,7 @@ function resetSensorAlertCounter($sensor, $sensorType): bool
         $timeStamps     = date('Y-m-d H:i:s');
 
         $dbIna226 = new SQLite3($dbFilename);
-        $dbIna226->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+        $dbIna226->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
         $dbIna226->exec('PRAGMA synchronous = NORMAL;');
 
         $queryIna226vBus = " UPDATE sensorThIna226 SET sensorThIna226vBusAlertCount = 0,
@@ -2333,11 +2423,18 @@ function getStatusIcon(string $status, bool $withLabel = false): string
         'mheard'      => ['symbol' => '&#128066;&#65039;', 'label' => 'MHeard'],  // 👂
         'mheard-page' => ['symbol' => '&#x1F3A7;&#65039;', 'label' => 'MHeard-Lokal'],  // 🎧
         'mheard-osm'  => ['symbol' => '&#x1F5FA;&#xFE0F;', 'label' => 'MHeard-Map'],  // 🗺️
+        'mheard-osm-full'  => ['symbol' => '&#x1F5BC;&#xFE0F;', 'label' => 'Fullsize-Map'],  // 🖼️
 
         'beacon'   => ['symbol' => ' &#x1F9ED;&#65039;', 'label' => 'Bake'],  // 🧭
         'send-cmd' => ['symbol' => '&#128228;', 'label' => 'menu.sende-befehl'],  // 📤
         'message'  => ['symbol' => '&#128172;&#65039;', 'label' => 'menu.message'],  // 💬
         'about'    => ['symbol' => '&#8505;&#65039;', 'label' => 'menu.about'],  // ℹ️
+
+        # https://www.amp-what.com/unicode/search/lock
+        'key'                 => ['symbol' => '&#128273;', 'label' => 'key'],  //🔑
+        'closedLockKey'       => ['symbol' => '&#128272;', 'label' => 'closedLockKey'],  //🔐
+        'chartUpwardsTrend'   => ['symbol' => '&#128200;', 'label' => 'chartUpwardsTrend'],  //📈
+        'chartDownwardsTrend' => ['symbol' => '&#128201;', 'label' => 'chartDownwardsTrend'],  //📉
 
         'de'   => ['symbol' => '&#x1F1E9;&#x1F1EA;', 'label' => 'Deutsch'],
         'en'   => ['symbol' => '&#x1F1EC;&#x1F1E7;', 'label' => 'Englisch'],
@@ -2383,12 +2480,17 @@ function stopBgProcess($paramBgProcess)
             $bgPidFile = CRON_BEACON_PID_FILE;
             $bgTaskPid = getParamData('cronBeaconLoopPid');
             break;
+        case 'cronMheard':
+            $bgPidFile = MHEARD_CRON_PID_FILE;
+            $bgTaskPid = getParamData('cronLoopMheardPid');
+            break;
         default:
             $bgPidFile = CRON_PID_FILE;
             $bgTaskPid = getParamData('cronLoopPid');
     }
 
-    if ($taskBg  == 'cron' || $taskBg == 'cronBeacon')
+    #Pidfile liegt im Log Verzeichnis
+    if ($taskBg  == 'cron' || $taskBg == 'cronBeacon' || $taskBg == 'cronMheard')
     {
         $execDir         = 'log';
         $basename        = pathinfo(getcwd())['basename'];
@@ -2402,12 +2504,13 @@ function stopBgProcess($paramBgProcess)
 
     if ($debugFlag === true)
     {
-        echo "<br>bgTaskPid:$bgTaskPid";
-        echo "<br>#652#bgTask:$taskBg";
-        echo "<br>#652#bgPidFile:$bgPidFile";
-        echo "<br>#652#checkBgTaskCmd:$checkBgTaskCmd";
-        echo "<br>#652#bgTaskKillCmd:$bgTaskKillCmd";
-        echo "<br>#652#taskResultBg:$taskResultBg";
+        echo "<br>bgTaskPid: $bgTaskPid";
+        echo "<br>#652#bgTask: $taskBg";
+        echo "<br>#652#bgPidFile: $bgPidFile";
+        echo "<br>#652#checkBgTaskCmd: $checkBgTaskCmd";
+        echo "<br>#652#bgTaskKillCmd: $bgTaskKillCmd";
+        echo "<br>#652#taskResultBg: $taskResultBg<br>vardump: ";
+        var_dump($taskResultBg);
     }
 
     #Process is offline
@@ -2487,6 +2590,9 @@ function startBgProcess($paramStartBgProcess)
         case 'cron':
             $bgProcFile = CRON_PROC_FILE;
             break;
+        case 'cronMheard':
+            $bgProcFile = MHEARD_CRON_PROC_FILE;
+            break;
         case 'cronBeacon':
             $bgProcFile = CRON_BEACON_PROC_FILE;
             break;
@@ -2515,9 +2621,9 @@ function startBgProcess($paramStartBgProcess)
     {
         if ($debugFlag === true)
         {
-            echo "<br>#1956#startBgProcess#Taskresult EMpty: task:" . $taskBg . ' Task-Result:' . $taskResult;
-            echo "<br>#1956#startBgProcess#Taskresult taskCmd:" . $taskCmd;
-            echo "<br>#1956#startBgProcess#Taskresult bgProcFile:" . $bgProcFile;
+            echo "<br>#2609#startBgProcess#Taskresult EMpty: task:" . $taskBg . ' Task-Result:' . $taskResult;
+            echo "<br>#2610#startBgProcess#Taskresult taskCmd:" . $taskCmd;
+            echo "<br>#2611#startBgProcess#Taskresult bgProcFile:" . $bgProcFile;
         }
 
         if($osIsWindows === true)
@@ -2538,7 +2644,7 @@ function startBgProcess($paramStartBgProcess)
 
         if ($debugFlag === true)
         {
-            echo "<br>#1956#startBgProcess#Taskresult taskResult:" . $taskResult;
+            echo "<br>#2632#startBgProcess#Taskresult taskResult:" . $taskResult;
         }
     }
 
@@ -2885,116 +2991,93 @@ function showBackups()
     echo '</table>';
     echo '</div>';
 }
+function autoPurgeTable(string $tableName, string $paramEnable, string $paramDaysParam, string $procName, string $dbFile): void
+{
+    if ((int) getParamData($paramEnable) !== 1) {
+        return; // Purge für diese Tabelle deaktiviert
+    }
+
+    // Prüfen, ob Purge fällig ist
+    if (!isPurgeDue($tableName)) {
+        return;
+    }
+
+    $daysPurge = (int) getParamData($paramDaysParam);
+
+    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    $basename       = pathinfo(getcwd())['basename'];
+    $dbFilenameSub  = '../database/' . $dbFile;
+    $dbFilenameRoot = 'database/' . $dbFile;
+    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+
+    $db = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT);
+
+    $anzahlPurgeSel = 0;
+
+    $sqlSelect = "SELECT COUNT(*) AS anzahl
+                    FROM $tableName
+                   WHERE rowid IN (
+                           SELECT rowid
+                             FROM $tableName
+                            WHERE timestamps < datetime('now', '-$daysPurge days')
+                        );";
+
+    $sqlDelete = "DELETE FROM $tableName
+                     WHERE rowid IN (
+                             SELECT rowid
+                               FROM $tableName
+                              WHERE timestamps < datetime('now', '-$daysPurge days')
+                          );";
+
+    $logArray = ["AutoPurge $tableName Select"];
+    $result   = safeDbRun($db, $sqlSelect, 'query', $logArray);
+
+    if ($result !== false) {
+        $row = $result->fetchArray(SQLITE3_ASSOC);
+        $anzahlPurgeSel = $row['anzahl'] ?? 0;
+    }
+
+    $db->close();
+    unset($db);
+
+    if ($anzahlPurgeSel > 0) {
+        if (!tryAcquirePurgeLock($tableName, $paramEnable)) {
+            return; // anderer Prozess hält Lock
+        }
+
+        $dbWrite = new SQLite3("database/$dbFile");
+        $dbWrite->exec('PRAGMA synchronous = NORMAL;');
+
+        $logArray = ["AutoPurge $tableName DELETE"];
+        $res      = safeDbRun($dbWrite, $sqlDelete, 'exec', $logArray);
+
+//        $errorText = "Führe $tableName autopurge aus #3061# EXEC at " . date('Y-m-d H:i:s') . "\n";
+//        file_put_contents('autopurge.log', $errorText,FILE_APPEND);
+
+        $dbWrite->close();
+        unset($dbWrite);
+
+        releasePurgeLock($tableName);
+
+        if ($res === false) {
+            return; // Fehler beim Löschen
+        }
+    } else {
+        markPurgeChecked($tableName, $procName);
+    }
+}
+
+// Aufruf
 function autoPurgeData(): bool
 {
-    if ((int) getParamData('enableMsgPurge') == 1)
-    {
-        $db = new SQLite3('database/meshdash.db', SQLITE3_OPEN_READONLY);
-        $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
-
-        $daysMsgPurge      = (int) getParamData('daysMsgPurge');
-        $anzahlPurgeMsgSel = 0;
-
-        $sqlPurgeMsgSelect = "SELECT COUNT(*) AS anzahl 
-                                FROM meshdash
-                               WHERE timestamps < datetime('now', '-$daysMsgPurge days');
-                             ";
-
-        $sqlPurgeMsg = "DELETE FROM meshdash
-                              WHERE timestamps < datetime('now', '-$daysMsgPurge days');
-                       ";
-
-        $logArray   = array();
-        $logArray[] = "AutoPurge MSG Select";
-        $result     = safeDbRun($db, $sqlPurgeMsgSelect, 'query', $logArray);
-
-        if ($result !== false)
-        {
-            while ($row = $result->fetchArray(SQLITE3_ASSOC))
-            {
-                $anzahlPurgeMsgSel = $row['anzahl'] ?? 0;
-            }
-        }
-
-        #Close and write Back WAL
-        $db->close();
-        unset($db);
-
-        if ($anzahlPurgeMsgSel > 0)
-        {
-            $dbWrite = new SQLite3('database/meshdash.db');
-            $dbWrite->exec('PRAGMA synchronous = NORMAL;');
-
-            $logArray   = array();
-            $logArray[] = "AutoPurge MSG DELETE";
-            $res = safeDbRun( $dbWrite,  $sqlPurgeMsg, 'exec', $logArray);
-
-            if ($res === false)
-            {
-                #Close and write Back WAL
-                $dbWrite->close();
-                unset($dbWrite);
-
-                return false;
-            }
-        }
-    }
-
-    if ((int) getParamData('enableSensorPurge') == 1)
-    {
-        $db = new SQLite3('database/sensordata.db', SQLITE3_OPEN_READONLY);
-        $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
-
-        $daysSensorPurge      = (int) getParamData('daysSensorPurge');
-        $anzahlPurgeSensorSel = 0;
-
-        $sqlPurgeSensorSelect = "SELECT count(*) AS anzahl 
-                                   FROM sensordata
-                                  WHERE timestamps < datetime('now', '-$daysSensorPurge days');
-                             ";
-
-        $sqlPurgeSensor = "DELETE FROM sensordata
-                                 WHERE timestamps < datetime('now', '-$daysSensorPurge days');
-                       ";
-
-        $logArray   = array();
-        $logArray[] = "AutoPurge Sensor Select";
-        $result     = safeDbRun($db, $sqlPurgeSensorSelect, 'query', $logArray);
-
-        if ($result !== false)
-        {
-            while ($row = $result->fetchArray(SQLITE3_ASSOC))
-            {
-                $anzahlPurgeSensorSel = $row['anzahl'] ?? 0;
-            }
-        }
-
-        #Close and write Back WAL
-        $db->close();
-        unset($db);
-
-        if ($anzahlPurgeSensorSel > 0)
-        {
-            $dbWrite = new SQLite3('database/sensordata.db');
-            $dbWrite->exec('PRAGMA synchronous = NORMAL;');
-
-            $logArray   = array();
-            $logArray[] = "AutoPurge SENSOR DELETE";
-            $res        = safeDbRun($dbWrite, $sqlPurgeSensor, 'exec', $logArray);
-
-            if ($res === false)
-            {
-                #Close and write Back WAL
-                $dbWrite->close();
-                unset($dbWrite);
-
-                return false;
-            }
-        }
-    }
+    autoPurgeTable('meshdash', 'enableMsgPurge', 'daysMsgPurge', 'enableMsgPurge', 'meshdash.db');
+    autoPurgeTable('sensordata', 'enableSensorPurge', 'daysSensorPurge', 'enableSensorPurge', 'sensordata.db');
 
     return true;
 }
+
+
 function setBeaconCronInterval($beaconInterval,$beaconEnabled): bool
 {
     $delete                         = $beaconEnabled == 0; // Wenn 0 = true
@@ -3093,7 +3176,7 @@ function insertIfNotExists($dbFile, $table, $keyColumn, $keyValue, array $data):
 
     // SQLite öffnen
     $db = new SQLite3($dbFile);
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
 
     // Prüfen, ob Key existiert
     $stmt = $db->prepare("SELECT 1 FROM $table WHERE $keyColumn = :key LIMIT 1");
@@ -3130,6 +3213,209 @@ function insertIfNotExists($dbFile, $table, $keyColumn, $keyValue, array $data):
 
     return true;
 }
+function tryAcquirePurgeLock(string $tableName, string $procName): bool
+{
+    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    $basename       = pathinfo(getcwd())['basename'];
+    $dbFilenameSub  = '../database/write_mutex.db';
+    $dbFilenameRoot = 'database/write_mutex.db';
+    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+
+    $db = new SQLite3($dbFilename);
+    $db->busyTimeout(5000);
+
+    $now = time();
+
+    // Prüfen, ob Lock gesetzt oder letzte Purge <24h
+    $stmt = $db->prepare(
+        "
+        SELECT is_locked, last_purge_ts
+          FROM purge_lock
+         WHERE name = :name
+    "
+    );
+    $stmt->bindValue(':name', $tableName, SQLITE3_TEXT);
+    $row = $stmt->execute()->fetchArray(SQLITE3_ASSOC);
+
+    if ($row)
+    {
+        if ((int) $row['is_locked'] === 1 || $now - (int) $row['last_purge_ts'] < 86400)
+        {
+            $db->close();
+
+            return false;
+        }
+        // Lock setzen
+        $db->exec("UPDATE purge_lock SET is_locked = 1 WHERE name = '$tableName'");
+    }
+    else
+    {
+        // Neuen Eintrag anlegen und lock setzen
+        $db->exec(
+            "INSERT OR IGNORE INTO purge_lock (name, is_locked, last_purge_ts, proc_name) VALUES ('$tableName', 1, 0, '$procName')"
+        );
+
+        // Prüfen, ob wir jetzt den Lock haben
+        $stmt = $db->prepare(
+            "
+                        SELECT is_locked FROM purge_lock WHERE name = :name
+                    "
+        );
+        $stmt->bindValue(':name', $tableName, SQLITE3_TEXT);
+        $row = $stmt->execute()->fetchArray(SQLITE3_ASSOC);
+
+        if (!$row || (int) $row['is_locked'] !== 1)
+        {
+            $db->close();
+
+            return false; // Lock konnte nicht gesetzt werden
+        }
+    }
+
+    $db->close();
+    unset($db);
+
+    return true;
+}
+function releasePurgeLock(string $tableName): void
+{
+    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    $basename       = pathinfo(getcwd())['basename'];
+    $dbFilenameSub  = '../database/write_mutex.db';
+    $dbFilenameRoot = 'database/write_mutex.db';
+    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+
+    $db = new SQLite3($dbFilename);
+    $db->busyTimeout(5000);
+
+    $now = time();
+
+    // Lock freigeben und Timestamp aktualisieren
+    $stmt = $db->prepare(
+        "
+        UPDATE purge_lock
+           SET is_locked = 0,
+               last_purge_ts = :ts
+         WHERE name = :name
+    "
+    );
+    $stmt->bindValue(':ts', $now, SQLITE3_INTEGER);
+    $stmt->bindValue(':name', $tableName, SQLITE3_TEXT);
+    $stmt->execute();
+
+    $db->close();
+    unset($db);
+}
+function isPurgeDue(string $tableName, int $mode = 1): bool
+{
+    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    $basename       = pathinfo(getcwd())['basename'];
+    $dbFilenameSub  = '../database/write_mutex.db';
+    $dbFilenameRoot = 'database/write_mutex.db';
+    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+
+    $db = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
+    $db->busyTimeout(5000);
+
+    $stmt = $db->prepare(
+        "
+        SELECT is_locked, last_purge_ts
+          FROM purge_lock
+         WHERE name = :name
+    "
+    );
+    $stmt->bindValue(':name', $tableName, SQLITE3_TEXT);
+    $row = $stmt->execute()->fetchArray(SQLITE3_ASSOC);
+    $db->close();
+    unset($db);
+
+    $now = time();
+
+    if (!$row)
+    {
+        // Kein Eintrag = KEIN Purge fällig
+        return true;
+    }
+
+    if ((int) $row['is_locked'] === 1)
+    {
+        // Gerade ein Purge läuft
+        return false;
+    }
+
+    if ($mode === 2)
+    {
+        if ((int) $row['is_locked'] === 0)
+        {
+            // Gerade läuft kein Purge
+            return true;
+        }
+    }
+
+    if ($mode === 1)
+    {
+        if (!empty($row['last_purge_ts']) && ($now - (int) $row['last_purge_ts'] >= 86400))
+        {
+            // 24h vergangen → Purge fällig
+            return true;
+        }
+    }
+
+    return false; // noch nicht fällig
+}
+function markPurgeChecked(string $tableName, string $procName): void
+{
+    # DB-Pfad ermitteln
+    $basename       = pathinfo(getcwd())['basename'];
+    $dbFilenameSub  = '../database/write_mutex.db';
+    $dbFilenameRoot = 'database/write_mutex.db';
+    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+
+    $db = new SQLite3($dbFilename);
+    $db->busyTimeout(5000);
+
+    $now = time();
+
+    // 1) Prüfen ob Eintrag existiert
+    $stmt = $db->prepare("
+        SELECT 1
+          FROM purge_lock
+         WHERE name = :name
+         LIMIT 1
+    ");
+    $stmt->bindValue(':name', $tableName, SQLITE3_TEXT);
+    $exists = $stmt->execute()->fetchArray(SQLITE3_NUM);
+
+    if ($exists === false)
+    {
+        // 2a) Kein Eintrag → INSERT
+        $stmt = $db->prepare("
+            INSERT  OR IGNORE INTO purge_lock (name, is_locked, last_purge_ts, proc_name)
+            VALUES (:name, 0, :ts, :procName)
+        ");
+
+        $stmt->bindValue(':procName', $procName, SQLITE3_TEXT);
+    }
+    else
+    {
+        // 2b) Eintrag vorhanden → UPDATE
+        $stmt = $db->prepare("
+            UPDATE purge_lock
+               SET last_purge_ts = :ts,
+                   is_locked = 0
+             WHERE name = :name
+        ");
+    }
+
+    $stmt->bindValue(':name', $tableName, SQLITE3_TEXT);
+    $stmt->bindValue(':ts', $now, SQLITE3_INTEGER);
+    $stmt->execute();
+
+    $db->close();
+    unset($db);
+}
+
+
 
 
 

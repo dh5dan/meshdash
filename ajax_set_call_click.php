@@ -7,7 +7,7 @@ if (isset($_POST['icon_index']))
     $index = (int) $_POST['icon_index'];
 
     $db   = new SQLite3('database/parameter.db');
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
     $db->exec('PRAGMA synchronous = NORMAL;');
 
     $index = SQLite3::escapeString($index);

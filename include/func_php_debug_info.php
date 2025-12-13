@@ -112,7 +112,6 @@ function getCronEntries()
         echo '</tr>';
     }
 }
-
 function getServerSoftware()
 {
     return $_SERVER['SERVER_SOFTWARE'] ?? 'Nicht verfügbar';
@@ -483,4 +482,94 @@ function getLoadAverage()
 
         return $load;
     }
+}
+function getWriteMutex()
+{
+    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    $basename       = pathinfo(getcwd())['basename'];
+    $dbFilenameSub  = '../database/write_mutex.db';
+    $dbFilenameRoot = 'database/write_mutex.db';
+    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+
+    $db = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
+
+    // Zählen, wie viele zu löschende Datensätze vorhanden sind
+    $sqlWriteMutexSelect = "SELECT datetime(last_purge_ts, 'unixepoch') AS purgeTs,
+                                   last_purge_ts,
+                                   is_locked,
+                                   name AS procName,
+                                   proc_name AS procFlagName
+                                   FROM purge_lock ;
+
+                             ";
+
+    $logArray   = array();
+    $logArray[] = "getWriteMutex Select";
+    $result     = safeDbRun($db, $sqlWriteMutexSelect, 'query', $logArray);
+    $rowCount   = 0;
+
+    if ($result !== false)
+    {
+        echo '<table class="writeMutex-table">';
+        echo '<thead>';
+        echo '<tr>';
+        echo '<th>Purge-Prozess</th>';
+        echo '<th>Sperr-Status</th>';
+        echo '<th>Letzter-Zugriff</th>';
+        echo '<th>Prozess-Status</th>';
+        echo '</tr>';
+        echo '</thead>';
+
+        echo '<tbody>';
+
+        while ($row = $result->fetchArray(SQLITE3_ASSOC))
+        {
+            $isLocked                = $row['is_locked'] ? getStatusIcon('blocked') : getStatusIcon('ok');
+            $procFlagName            = $row['procFlagName'] ?? '';
+            $procFlagNameStatusValue = 0;
+            $lockNotReleased         = '';
+            $rowCount++;
+
+            if ($procFlagName != '')
+            {
+                $procFlagNameStatusValue = getParamData($procFlagName);
+            }
+
+            // --- Neu: prüfen, ob Lock länger als normal gehalten wird ---
+            $now         = time();
+            $lockTimeout = 300; // Nach 5 Minuten als Hanging erkennen
+
+            if ((int) $row['is_locked'] === 1 && !empty($row['last_purge_ts']) && ($now - (int) $row['last_purge_ts']) > $lockTimeout)
+            {
+                $lockNotReleased = getStatusIcon('warning') . ' hängt';  // Hinweis in der Tabelle
+                $lockNotReleased .= '&nbsp;&nbsp;&nbsp;<input type="button" class="purgeBlockRelease" data-proc-flag-name ="' . $row['procName'] . '" value="Sperre entfernen">';
+            }
+
+            $procFlagNameStatus = $procFlagNameStatusValue == 1
+                ? getStatusIcon('active') . $lockNotReleased
+                : getStatusIcon('inactive');
+
+            echo '<tr>';
+
+            echo '<td>'. $row['procName'] . '</td>';
+            echo '<td>'. $isLocked . '</td>';
+            echo '<td>'. $row['purgeTs'] . '</td>';
+            echo '<td>'. $procFlagNameStatus . '</td>';
+
+            echo '</tr>';
+        }
+
+        if ($rowCount === 0) {
+            echo '<tr><td colspan="4">Keine Auto-Purge Write-Mutex Datensätze vorhanden.</td></tr>';
+        }
+
+        echo '</tbody>';
+
+        echo '</table>';
+    }
+
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
 }

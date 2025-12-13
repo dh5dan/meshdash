@@ -30,6 +30,11 @@ function saveGenerallySettings(): bool
     $udpFwIp                 = $_REQUEST['udpFwIp'] ?? 0;
     $udpFwPort               = $_REQUEST['udpFwPort'] ?? 0;
     $darkMode                = $_REQUEST['darkMode'] ?? 0;
+    $mheardCronEnable        = (int)($_REQUEST['mheardCronEnable'] ?? 0);
+    $mheardCronIntervall     = (int)($_REQUEST['mheardCronIntervall'] ?? 1);
+
+    $mheardCronEnableCheck    = (int)(getParamData('mheardCronEnable') ?? 0); // 1= Aktiviere Mheard-Cron und frage MH im Intervall ab
+    $mheardCronIntervallCheck = (int)(getParamData('mheardCronIntervall') ?? 1); // Intervall in vollen Stunden 1-4
 
     setParamData('noPosData', $noPosData);
     setParamData('noDmAlertGlobal', $noDmAlertGlobal);
@@ -56,6 +61,57 @@ function saveGenerallySettings(): bool
     setParamData('udpFwIp', $udpFwIp, 'txt');
     setParamData('udpFwPort', $udpFwPort);
     setParamData('darkMode', $darkMode);
+    setParamData('mheardCronEnable', $mheardCronEnable);
+    setParamData('mheardCronIntervall', $mheardCronIntervall);
+
+    #Hintergrundprozess für Mheard-Cron
+    $paramBgProcess['task'] = 'cronMheard';
+
+    #Kill Task, wenn abgeschaltet wird
+    if ($mheardCronEnableCheck === 1 && $mheardCronEnable === 0)
+    {
+        $stopBgProcessMhCron = stopBgProcess($paramBgProcess);
+
+        if ($stopBgProcessMhCron === true)
+        {
+            echo '<br><span class="successHint">Mheard-Cron Prozess erfolgreich beendet.</span>';
+        }
+        else
+        {
+            echo '<br><span class="successFail">Fehler beim Beenden von Mheard-Cron Prozess.</span>';
+        }
+        echo "<br>";
+    }
+    else  if ($mheardCronEnableCheck === 0 && $mheardCronEnable === 1)
+    {
+        $startBgProcessMhCron = startBgProcess($paramBgProcess);
+
+        if (!empty($startBgProcessMhCron))
+        {
+            echo '<br><span class="successHint">Mheard-Cron Prozess erfolgreich gestartet.</span>';
+        }
+        else
+        {
+            echo '<br><span class="successFail">Fehler beim Starten von Mheard-Cron Prozess.</span>';
+        }
+        echo "<br>";
+    }
+
+    if ($mheardCronEnableCheck === 1 && $mheardCronEnable === 1 && $mheardCronIntervallCheck !== $mheardCronIntervall)
+    {
+        $stopBgProcessMhCron  = stopBgProcess($paramBgProcess);
+        $startBgProcessMhCron = startBgProcess($paramBgProcess);
+
+        if (!empty($startBgProcessMhCron) && $stopBgProcessMhCron === true)
+        {
+            echo '<br><span class="successHint">Intervall-Änderung. Mheard-Cron Prozess erfolgreich neu gestartet.</span>';
+        }
+        else
+        {
+            echo '<br><span class="successFail">Intervall-Änderung. Fehler beim Neustart von Mheard-Cron Prozess.</span>';
+        }
+        echo "<br>";
+    }
 
     return true;
 }

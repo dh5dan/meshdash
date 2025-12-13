@@ -73,6 +73,12 @@ select {
     box-sizing: border-box;
 }
 
+.selectMhIntervall {
+    max-width: 100% !important;
+    width: 70px !important;
+    box-sizing: border-box !important;
+}
+
 @media (max-width: 600px) {
 
     select {

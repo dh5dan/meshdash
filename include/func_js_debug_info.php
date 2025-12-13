@@ -14,6 +14,20 @@
             return false;
         });
 
+        $(".purgeBlockRelease").on("click", function ()
+        {
+            let blockedProcName = $(this).data('procFlagName');
+            let titleMsg          = 'Hinweis';
+            let outputMsg         = 'Geblockten Prozess: '+blockedProcName+' jetzt freigeben?';
+            let width             = 300;
+            let sendData          = 2;
+
+
+            dialogConfirmRelease(outputMsg, titleMsg, width, sendData, blockedProcName)
+
+            return false;
+        });
+
         $(".imageDelete").on("click", function ()
         {
             let titleMsg = 'Hinweis';
@@ -30,6 +44,31 @@
 
             return false;
         });
+
+        function dialogConfirmRelease(output_msg, title_msg, width, sendData, blockedProcName) {
+            width      = !width ? 300 : width;
+            title_msg  = !title_msg ? '' : title_msg;
+            output_msg = !output_msg ? '' : output_msg;
+            sendData   = !sendData ? 0 : sendData;
+
+            $("<div></div>").html(output_msg).dialog({
+                title: title_msg,
+                resizable: true,
+                modal: true,
+                width: width,
+                buttons: {
+                    'OK': function () {
+                        $("#sendData").val(sendData);
+                        $("#purgeBlockReleaseProcName").val(blockedProcName);
+                        $("#frmDebugInfo").trigger('submit');
+                        $("#pageLoading").show();
+                        $(this).dialog('close');
+                    }, 'Abbruch': function () {
+                        $(this).dialog("close");
+                    }
+                }
+            }).prev(".ui-dialog-titlebar").css("background", "red");
+        }
 
         function dialogConfirm(output_msg, title_msg, width, sendData) {
             width      = !width ? 300 : width;

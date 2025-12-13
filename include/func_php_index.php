@@ -122,6 +122,15 @@ function initDatabases()
     {
         initSQLiteDatabase('send_cmd_favorites');
     }
+
+    if (!file_exists('database/write_mutex.db'))
+    {
+        initSQLiteDatabase('write_mutex');
+    }
+    else
+    {
+        checkDbUpgrade('write_mutex');
+    }
 }
 function initSQLiteDatabase($database): bool
 {
@@ -176,6 +185,7 @@ function initSQLiteDatabase($database): bool
         addIndex('meshdash', 'meshdash','idx_check_msg', 'type, dst, timestamps');
         addIndex('meshdash', 'meshdash','idx_ack_ts', 'msgIsAck, timestamps DESC');
         addIndex('meshdash', 'meshdash','idx_ack_dst_ts', 'msgIsAck, dst, timestamps DESC');
+        addIndex('meshdash', 'meshdash','idx_meshdash_src_type_ts_desc', 'src, type, timestamps DESC');
     }
     elseif ($database == 'parameter')
     {
@@ -231,7 +241,9 @@ function initSQLiteDatabase($database): bool
                                        ('daysMsgPurge', 30, ''),
                                        ('daysSensorPurge', 30, ''),
                                        ('language', '', 'de'),
-                                       ('darkMode', 0, '')
+                                       ('darkMode', 0, ''),
+                                       ('mheardCronEnable', 0, ''),
+                                       ('mheardCronIntervall', 1, ''),
            ");
 
         #Close and write Back WAL
@@ -901,6 +913,30 @@ function initSQLiteDatabase($database): bool
         $db->close();
         unset($db);
     }
+    elseif ($database == 'write_mutex')
+    {
+        #Open Database an Insert Write-Mutex Table for MeshDash
+        #Used for AutoPurge
+        $db = new SQLite3('database/write_mutex.db');
+        $db->exec('PRAGMA journal_mode = wal;');
+        $db->exec('PRAGMA synchronous = NORMAL;');
+
+        #name          -- z.B. 'meshdash' oder 'sensordata'
+        #is_locked     -- 0 = frei, 1 = gerade purgen
+        #last_purge_ts -- Unix Timestamp des letzten erfolgreichen Purges
+
+        // Tabelle erstellen wenn nicht vorhanden
+        $db->exec("CREATE TABLE IF NOT EXISTS purge_lock (
+                            name TEXT PRIMARY KEY,       
+                            is_locked INTEGER,
+                            last_purge_ts INTEGER,
+                            proc_name TEXT        
+                        ); 
+                           ");
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+    }
 
     return true;
 }
@@ -956,6 +992,7 @@ function showMenuIcons()
             echo '<ul class="submenuIcon">';
                 echo '<li class="menuitem" data-action="mHeard">' . getStatusIcon('mheard-page', true) . '</li>';
                 echo '<li data-action="mHeard-osm">' . getStatusIcon('mheard-osm', true) . '</li>';
+                echo '<li data-action="mHeard-osm-full">' . getStatusIcon('mheard-osm-full', true) . '</li>';
             echo '</ul>';
         echo '</li>';
 

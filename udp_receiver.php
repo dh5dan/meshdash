@@ -7,10 +7,7 @@ require_once 'include/func_php_core.php';
 
 $errorCode      = '';
 $errorMsg       = '';
-$file           = 'log/udp_msg_data_' . date('Ymd') . '.log';
-$fileUdpForward = 'log/udp_forward_msg_data_' . date('Ymd') . '.log';
 $errorFile      = 'log/udp_receiver_error_' . date('Ymd') . '.log';
-$callMsgLogFile = 'log/call_message_' . date('Ymd') . '.log';
 $udpPidFile     = UPD_PID_FILE;
 $udpStopFile    = UPD_STOP_FILE;
 $outDataArray   = array();
@@ -164,6 +161,7 @@ while (true)
     $file           = 'log/udp_msg_data_' . date('Ymd') . '.log';
     $errorFile      = 'log/udp_receiver_error_' . date('Ymd') . '.log';
     $callMsgLogFile = 'log/call_message_' . date('Ymd') . '.log';
+    $fileUdpForward = 'log/udp_forward_msg_data_' . date('Ymd') . '.log';
     $bufJson        = '';
     $receivedBytes  = socket_recvfrom($receiveSock, $bufJson, 512, 0, $remote_ip, $remote_port);
 
@@ -231,12 +229,12 @@ while (true)
     $aprsSymbolGroup = $dbArraySqliteJson['aprs_symbol_group'] ?? ''; // /
     $hwId            = $dbArraySqliteJson['hw_id'] ?? ''; // 3
     $altitude        = $dbArraySqliteJson['alt'] ?? ''; // 344 (Höhe in m)
-    $battery         = $dbArraySqliteJson['batt'] ?? '';  // Batt Kapazität in %
+    $battery         = $dbArraySqliteJson['batt'] ?? '';  // Batterie-Kapazität in %
     $dst             = $dbArraySqliteJson['dst'] ?? ''; // 995 | call
     $firmware        = $dbArraySqliteJson['firmware'] ?? ''; // Firmware 4.34
     $fwSubVersion    = $dbArraySqliteJson['fw_sub'] ?? ''; // FirmwareSUb Version: v
 
-    #Wenn keine Daten vorhanden, dann nicht Speichern und auf nächste Msg warten
+    #Wenn keine Daten vorhanden, dann nicht speichern und auf nächste Msg warten
     if ($msgId == '' && $src == '' && $type == '')
     {
         continue;
@@ -244,7 +242,7 @@ while (true)
 
     #Open Database
     $db = new SQLite3('database/meshdash.db');
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
     $db->exec('PRAGMA synchronous = NORMAL;');
 
     #Escape Msg
@@ -300,7 +298,7 @@ while (true)
     $db->close();
     unset($db);
 
-    #Trigger MessageSeite um Keywords abzuarbeiten
+    #Trigger Message-Seite um Keywords abzuarbeiten
     $resCallMessagePage = callMessagePage();
 
     #Prüfe ob Logging aktiv ist

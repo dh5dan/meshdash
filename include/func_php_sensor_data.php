@@ -990,39 +990,41 @@ function checkSensorAlertCount(): bool
     $dbIna226->close();
     unset($dbIna226);
 
-    $Ina226vBusTimeDiff           = $dsDataIna226['Ina226vBusTimeDiff'];
-    $sensorThIna226vBusAlertCount = $dsDataIna226['sensorThIna226vBusAlertCount'];
-
-    if ($sensorThIna226vBusAlertCount > 0 && $Ina226vBusTimeDiff >= 3600)
+    #Nur wenn Daten vorhanden sind, dann auch Array auslesen
+    if ($dsDataIna226 !== false)
     {
-        resetSensorAlertCounter('ina226', 'vBus');
+        $Ina226vBusTimeDiff           = $dsDataIna226['Ina226vBusTimeDiff'];
+        $sensorThIna226vBusAlertCount = $dsDataIna226['sensorThIna226vBusAlertCount'];
+
+        if ($sensorThIna226vBusAlertCount > 0 && $Ina226vBusTimeDiff >= 3600)
+        {
+            resetSensorAlertCounter('ina226', 'vBus');
+        }
+
+        $Ina226vShuntTimeDiff           = $dsDataIna226['Ina226vShuntTimeDiff'];
+        $sensorThIna226vShuntAlertCount = $dsDataIna226['sensorThIna226vShuntAlertCount'];
+
+        if ($sensorThIna226vShuntAlertCount > 0 && $Ina226vShuntTimeDiff >= 3600)
+        {
+            resetSensorAlertCounter('ina226', 'vShunt');
+        }
+
+        $Ina226vCurrentTimeDiff           = $dsDataIna226['Ina226vCurrentTimeDiff'];
+        $sensorThIna226vCurrentAlertCount = $dsDataIna226['sensorThIna226vCurrentAlertCount'];
+
+        if ($sensorThIna226vCurrentAlertCount > 0 && $Ina226vCurrentTimeDiff >= 3600)
+        {
+            resetSensorAlertCounter('ina226', 'vCurrent');
+        }
+
+        $Ina226vPowerTimeDiff           = $dsDataIna226['Ina226vPowerTimeDiff'];
+        $sensorThIna226vPowerAlertCount = $dsDataIna226['sensorThIna226vPowerAlertCount'];
+
+        if ($sensorThIna226vPowerAlertCount > 0 && $Ina226vPowerTimeDiff >= 3600)
+        {
+            resetSensorAlertCounter('ina226', 'vPower');
+        }
     }
-
-    $Ina226vShuntTimeDiff           = $dsDataIna226['Ina226vShuntTimeDiff'];
-    $sensorThIna226vShuntAlertCount = $dsDataIna226['sensorThIna226vShuntAlertCount'];
-
-    if ($sensorThIna226vShuntAlertCount > 0 && $Ina226vShuntTimeDiff >= 3600)
-    {
-        resetSensorAlertCounter('ina226', 'vShunt');
-    }
-
-    $Ina226vCurrentTimeDiff           = $dsDataIna226['Ina226vCurrentTimeDiff'];
-    $sensorThIna226vCurrentAlertCount = $dsDataIna226['sensorThIna226vCurrentAlertCount'];
-
-    if ($sensorThIna226vCurrentAlertCount > 0 && $Ina226vCurrentTimeDiff >= 3600)
-    {
-        resetSensorAlertCounter('ina226', 'vCurrent');
-    }
-
-    $Ina226vPowerTimeDiff           = $dsDataIna226['Ina226vPowerTimeDiff'];
-    $sensorThIna226vPowerAlertCount = $dsDataIna226['sensorThIna226vPowerAlertCount'];
-
-    if ($sensorThIna226vPowerAlertCount > 0 && $Ina226vPowerTimeDiff >= 3600)
-    {
-        resetSensorAlertCounter('ina226', 'vPower');
-    }
-
-
 
     ################ Temp
 
@@ -1099,22 +1101,25 @@ function checkSensorAlertCount(): bool
     $dbTemp->close();
     unset($dbTemp);
 
-    $tempTimeDiff           = $dsDataTemp['tempTimeDiff'];
-    $sensorThTempAlertCount = $dsDataTemp['sensorThTempAlertCount'];
-
-    if ($sensorThTempAlertCount > 0 && $tempTimeDiff >= 3600)
+    #Nur wenn Daten vorhanden sind, dann auch Array auslesen
+    if ($dsDataTemp !== false)
     {
-        resetSensorAlertCounter('temp', 'temp');
+        $tempTimeDiff           = $dsDataTemp['tempTimeDiff'];
+        $sensorThTempAlertCount = $dsDataTemp['sensorThTempAlertCount'];
+
+        if ($sensorThTempAlertCount > 0 && $tempTimeDiff >= 3600)
+        {
+            resetSensorAlertCounter('temp', 'temp');
+        }
+
+        $toutTimeDiff           = $dsDataTemp['toutTimeDiff'];
+        $sensorThToutAlertCount = $dsDataTemp['sensorThToutAlertCount'];
+
+        if ($sensorThToutAlertCount > 0 && $toutTimeDiff >= 3600)
+        {
+            resetSensorAlertCounter('temp', 'Tout');
+        }
     }
-
-    $toutTimeDiff           = $dsDataTemp['toutTimeDiff'];
-    $sensorThToutAlertCount = $dsDataTemp['sensorThToutAlertCount'];
-
-    if ($sensorThToutAlertCount > 0 && $toutTimeDiff >= 3600)
-    {
-        resetSensorAlertCounter('temp', 'Tout');
-    }
-
 
 
     return true;

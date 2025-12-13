@@ -496,6 +496,16 @@
                case 'mHeard-osm':
                    iframeSrc = 'mheard.php?osm=1&group=' + activeGroupId;
                    break;
+               case 'mHeard-osm-full':
+                   iframeSrc = '';
+                   isTabClick = false;
+                   // Menü komplett schließen, inkl. aller Submenüs
+                   setTimeout(() => {
+                       $('#menu li').removeClass('active'); // wirklich alle
+                       $('#menu').hide();
+                   }, 50); // 50ms reichen
+                   window.open('mheard_map_fullsize.php', '_blank');
+                   break;
                case 'beacon':
                    iframeSrc = 'menu/config_beacon.php';
                    break;

@@ -92,7 +92,6 @@ body {
     text-align: left;
 }
 
-
 .fromToSquareIncoming {
     background-color: var(--message-bg-color-msgIncoming);
     color: var(--message-text-color-msgIncoming);
@@ -194,6 +193,15 @@ body {
 
 a:link{
     color: var(--message-text-color-msgBubbleClickOnCall);
+}
+
+a.auto-link {
+    color: var(--message-text-color-msgBubbleClickOnLink);
+    text-decoration: underline;
+}
+
+a.auto-link:visited {
+    color: var(--message-text-color-msgBubbleClickOnLinkVisit);
 }
 
 /* Scroll To Top*/
