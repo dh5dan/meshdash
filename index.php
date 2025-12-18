@@ -60,11 +60,9 @@ require_once 'include/func_js_index.php';
 require_once 'include/func_js_core.php';
 require_once 'include/func_php_grp_definition.php';
 
-
 #Show all Errors for debugging
 error_reporting(E_ALL);
 ini_set('display_errors',1);
-
 
 $autostartBgProcess = true;
 $sendData           = $_REQUEST['sendData'] ?? '0';
@@ -95,7 +93,7 @@ $sendQueueEnabled = (int) getParamData('sendQueueMode');
 echo '<input type="hidden" id="version" value="' . VERSION . '"/>';
 echo '<input type="hidden" id="callSign" value="' . getParamData('callSign') . '"/>';
 
-#Prüfen, ob schreibrechte für Datenbank und Log existieren
+#Prüfen, ob Schreibrechte für Datenbank und Log existieren
 if (!is_writable('database') || !is_writable('log') || !is_writable('execute') || !is_writable('sound'))
 {
     echo '<span class="unsetDisplayFlex">';
@@ -109,13 +107,13 @@ if (!is_writable('database') || !is_writable('log') || !is_writable('execute') |
     exit();
 }
 
-#Setzte Leere LoraIp neu in param.php
+#Setzte die Leere LoraIp neu in param.php
 if ($sendData === '11')
 {
     initSetBaseParam();
 }
 
-#Prüfe ob Lora Ip gesetzt wurde in param.php
+#Prüfe, ob Lora Ip gesetzt wurde in param.php
 if ($doCheckLoraIp === true)
 {
     echo '<span class="unsetDisplayFlex">';
@@ -154,13 +152,13 @@ deleteOldCron();
 #Setzte flag wenn neue MeshCom Gui erkannt wurde
 checkLoraNewGui();
 
-// Beispiel-Daten, die du aus der SQLite-Datenbank holen könntest
+// Hier definierte Menü-Tabs aus der SQLite-Datenbank im JSON-Format holen.
 $tabsJson = getGroupTabsJson();
 
-#Hidden Field damit Jquery die JSON-Daten der Tabs auswerten kann
+#Hidden Field, damit Jquery die JSON-Daten der Tabs auswerten kann
 echo '<input type="hidden" id="tabConfig" value=\'' . $tabsJson . '\' />';
 
-#Starte Automatisch background Prozess
+#Starte automatisch den Background-Prozess
 if ($autostartBgProcess === true && $sendData !== '1')
 {
     $paramStartUdpBgProcess['task'] = 'udp';

@@ -8,13 +8,13 @@ $action   = $_POST['action'] ?? '';
 header('Content-Type: application/json');
 
 if (!$callSign) {
-    echo json_encode(['error'=>'kein CallSign übergeben']);
+    echo json_encode(['error'=>'Kein CallSign übergeben']);
     exit;
 }
 
 if ($action === 'get') {
     $db = new SQLite3('database/call_notice.db', SQLITE3_OPEN_READONLY);
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
 
     $stmt = $db->prepare("SELECT callNotice FROM callNotice WHERE callSign = :cs");
     $stmt->bindValue(':cs', $callSign, SQLITE3_TEXT);
@@ -34,7 +34,7 @@ if ($action === 'set') {
     $db = new SQLite3('database/call_notice.db');
     $db->exec('PRAGMA journal_mode = wal;');
     $db->exec('PRAGMA synchronous = NORMAL;');
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
 
     $lastHeard = '0000-00-00 00:00:00';
     $timestamps = DATE('Y-m-d H:i:s');
@@ -55,4 +55,4 @@ if ($action === 'set') {
     echo json_encode(['success'=>true]);
     exit;
 }
-echo json_encode(['error'=>'ungültige Aktion']);
+echo json_encode(['error'=>'Ungültige Aktion']);

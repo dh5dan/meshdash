@@ -55,6 +55,17 @@ input[type="checkbox"] {
     /*width: 100%;*/
 }
 
+.purgeBlockRelease {
+    font-size: 14px;
+    padding: 8px 15px;
+    border: none;
+    background-color: var(--debug-info-bg-color-btn);
+    color: var(--debug-info-text-color-btn);
+    cursor: pointer;
+    border-radius: 5px;
+    /*width: 100%;*/
+}
+
 .cronStatusPoint {
     /*margin-top: 7px;*/
     /*cursor: pointer;*/
@@ -114,6 +125,42 @@ table.logTable th {
     color: var(--debug-info-text-color-log-old); /* hellgrau */
 }
 
+/* ================================
+   Scoped Table Style: md-table
+   ================================ */
+
+table.writeMutex-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+/* Kopfzeile */
+table.writeMutex-table thead th {
+    text-align: left;
+    font-weight: 600;
+    padding: 8px 10px;
+    border-bottom: 2px solid var(--debug-info-table-write-mutex-thead-th-border-bottom);
+    background-color: var(--debug-info-table-write-mutex-thead-th-background-color);
+}
+
+/* Zellen */
+table.writeMutex-table tbody td {
+    padding: 7px 10px;
+    border-bottom: 1px solid var(--debug-info-table-write-mutex-tbody-td-border-bottom);
+    vertical-align: top;
+}
+
+/* Zebra */
+table.writeMutex-table tbody tr:nth-child(even) {
+    background-color: var(--debug-info-table-write-mutex-tbody-tr-child);
+}
+
+/* Hover */
+table.writeMutex-table tbody tr:hover {
+    background-color: var(--debug-info-table-write-mutex-tbody-tr-hover) ;
+}
 
 @media (max-width: 600px) {
 
@@ -149,7 +196,6 @@ table.logTable th {
     td:first-child {
         white-space: nowrap;
     }
-
 
     input[type="text"], input[type="checkbox"] {
         width: 100%;

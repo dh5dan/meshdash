@@ -123,6 +123,8 @@ $mheardGroup         = getParamData('mheardGroup') ?? 0; // 0= egal welche Grupp
 $bubbleStyleView     = getParamData('bubbleStyleView') ?? 0; // 1= Bubble Style aktiv
 $bubbleMaxWidth      = getParamData('bubbleMaxWidth') ?? 40;
 $darkMode            = getParamData('darkMode') ?? 0; // 1= Dark-Mode aktiv
+$mheardCronEnable    = getParamData('mheardCronEnable') ?? 0; // 1= Aktiviere Mheard-Cron und frage MH im Intervall ab
+$mheardCronIntervall = getParamData('mheardCronIntervall') ?? 1; // Intervall in vollen Stunden 1-4
 
 $openStreetTileServerUrl = trim(getParamData('openStreetTileServerUrl')) ?? 'tile.openstreetmap.org';
 $openStreetTileServerUrl = $openStreetTileServerUrl == '' ? 'tile.openstreetmap.org' : $openStreetTileServerUrl;
@@ -142,6 +144,8 @@ $chronMode                  = $chronMode == '' ? 'zip' : $chronMode;
 $strictCallEnableChecked    = $strictCallEnable == 1 ? 'checked' : '';
 $udpForwardingEnableChecked = $udpForwardingEnable == 1 ? 'checked' : '';
 $bubbleMaxWidth             = $bubbleMaxWidth == '' ? 40 : $bubbleMaxWidth;
+$mheardCronIntervall        = (int)($mheardCronIntervall ?? 1); // Fallback 1
+$mheardCronEnableChecked    = $mheardCronEnable == 1 ? 'checked' : '';
 
 $onClickChronModeCheckedZip    = $chronMode == 'zip' ? 'checked' : '';
 $onClickChronModeCheckedDelete = $chronMode == 'delete' ? 'checked' : '';
@@ -294,6 +298,33 @@ echo '</tr>';
 echo '<tr>';
 echo '<td>&nbsp;- <span data-i18n="submenu.config_generally.lbl.notice-call-on-click">Notizfunktion zum Call</span>:</td>';
 echo '<td><input type="radio" name="clickOnCall" ' . $onClickOnCallChecked3 . ' id="clickOnCall3" value="3" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td colspan="2"><hr></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td><span data-i18n="submenu.config_generally.lbl.mheard_cron_enable">Mheard-Cron Aktualisierung &#10140;[AN]</span>:</td>';
+echo '<td><input type="checkbox" name="mheardCronEnable" ' . $mheardCronEnableChecked . ' id="mheardCronEnable" value="1" /></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td><span data-i18n="submenu.config_generally.lbl.mheard_cron_intervall">Mheard-Cron Intervall (volle Stunde)</span>:</td>';
+
+echo '<td>';
+echo '<select class="selectMhIntervall" name="mheardCronIntervall" id="mheardCronIntervall">';
+
+for ($i = 0; $i <= 4; $i++)
+{
+    $mhIntervall = $i == 0 ? '30min' : $i . 'h';
+
+    $selected = ($i === $mheardCronIntervall) ? ' selected' : '';
+    echo "<option value=\"$i\"$selected>$mhIntervall</option>";
+}
+
+echo '</select>';
+echo '</td>';
 echo '</tr>';
 
 echo '<tr>';

@@ -734,9 +734,10 @@ if ($result !== false)
             $dstTxt = $dst == '*' ? 'all' : $dst;
 
             // URL in der Text-Variable suchen und als Link umwandeln
-            $pattern    = '/https?:\/\/[a-zA-Z0-9\.-]+\.[a-zA-Z]{2,3}(\/\S*)?/';
-            $replace    = '<a href="$0" target="_blank">$0</a>';
+            $pattern = '~https?://[^\s<]+~i';
+            $replace = '<a href="$0" class="auto-link" target="_blank" rel="noopener noreferrer">$0</a>';
             $linkedText = preg_replace($pattern, $replace, $msg);
+
 
             $noticeCall = trim(explode('-', $firstCall)[0]);
             $noticeIcon = '';

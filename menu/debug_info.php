@@ -98,8 +98,18 @@ $checkTaskCmdCronBeacon = getTaskCmd('cronBeacon');
 $taskResultCronBeacon   = shell_exec($checkTaskCmdCronBeacon); //Prüfe Hintergrundprozess
 $statusCronBeacon       = $taskResultCronBeacon != '' ? getStatusIcon('active') : getStatusIcon('inactive');
 
+$checkTaskCmdCronMheard = getTaskCmd('cronMheard');
+$taskResultCronMheard   = shell_exec($checkTaskCmdCronMheard); //Prüfe Hintergrundprozess
+$statusCronMheard       = $taskResultCronMheard != '' ? getStatusIcon('active') : getStatusIcon('inactive');
+
 $resExtensionPdoSqlite3  = extension_loaded('pdo_sqlite') == 1 ? getStatusIcon('active') : getStatusIcon('inactive');
 $resExtensionSqlite3     = extension_loaded('sqlite3') == 1 ? getStatusIcon('active') : getStatusIcon('inactive');
+
+if ($sendData === '2')
+{
+    releasePurgeLock(trim($_REQUEST['purgeBlockReleaseProcName']));
+    echo '<br><span class="successHint">'.date('H:i:s').'-Sperre für Prozess ' . trim($_REQUEST['purgeBlockReleaseProcName']) . ' erfolgreich gelöscht.</span>';
+}
 
 #Delete Logfile
 if ($sendData === '3')
@@ -111,16 +121,16 @@ if ($sendData === '3')
     {
         if(unlink($deleteLogFileFullPath))
         {
-            echo '<br><span class="successHint">Logfile ' . $deleteLogFile . ' erfolgreich gelöscht.</span>';
+            echo '<br><span class="successHint">'.date('H:i:s').'-Logfile ' . $deleteLogFile . ' erfolgreich gelöscht.</span>';
         }
         else
         {
-            echo '<br><span class="failureHint">Fehler beim Löschen von Logfile ' . $deleteLogFile . '</span>';
+            echo '<br><span class="failureHint">'.date('H:i:s').'-Fehler beim Löschen von Logfile ' . $deleteLogFile . '</span>';
         }
     }
     else
     {
-        echo '<br><span class="failureHint">Das Logfile: ' . $deleteLogFile . ' wurde nicht im Log-Verzeichnis gefunden.</span>';
+        echo '<br><span class="failureHint">'.date('H:i:s').'-Das Logfile: ' . $deleteLogFile . ' wurde nicht im Log-Verzeichnis gefunden.</span>';
     }
 }
 
@@ -129,6 +139,7 @@ echo '<h2><span data-i18n="submenu.debug_info.lbl.title">Debug-Info zu MeshDash-
 echo '<form id="frmDebugInfo" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
 echo '<input type="hidden" name="deleteFileImage" id="deleteFileImage" value="" />';
+echo '<input type="hidden" name="purgeBlockReleaseProcName" id="purgeBlockReleaseProcName" value="" />';
 echo '<table>';
 
 echo '<tr>';
@@ -277,7 +288,6 @@ echo  getParamData('cronLoopTs') ?? '0000-00-00 00:00';
 echo '</td>';
 echo '</tr>';
 
-#
 echo '<tr>';
 echo '<td colspan="2"><hr></td>';
 echo '</tr>';
@@ -300,6 +310,42 @@ echo '<tr>';
 echo '<td><span data-i18n="submenu.debug_info.lbl.cron-beacon-bg-timestamp">Cron-Beacon BG-Timestamp</span>:</td>';
 echo '<td>';
 echo  getParamData('cronLoopBeaconTs') ?? '0000-00-00 00:00';
+echo '</td>';
+echo '</tr>';
+
+#
+echo '<tr>';
+echo '<td colspan="2"><hr></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td><span data-i18n="submenu.debug_info.lbl.cron-mheard-bg-status">Cron-Mheard BG-Status</span>:</td>';
+echo '<td>';
+echo  $statusCronMheard;
+echo '</td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td><span data-i18n="submenu.debug_info.lbl.cron-mheard-bg-task">Cron-Mheard BG-Task</span>:</td>';
+echo '<td>';
+echo  $taskResultCronMheard;
+echo '</td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td><span data-i18n="submenu.debug_info.lbl.cron-mheard-bg-timestamp">Cron-Mheard BG-Timestamp</span>:</td>';
+echo '<td>';
+echo  getParamData('cronLoopMheardPidTs') ?? '0000-00-00 00:00';
+echo '</td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td colspan="2"><hr></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td colspan="2">';
+getWriteMutex();
 echo '</td>';
 echo '</tr>';
 

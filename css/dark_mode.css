@@ -255,6 +255,13 @@
     --debug-info-text-color-log-log-yesterday: deepskyblue;
     --debug-info-text-color-log-old: orangered;
 
+    --debug-info-table-write-mutex-thead-th-border-bottom: brown;
+    --debug-info-table-write-mutex-thead-th-background-color: darkslategray;
+    --debug-info-table-write-mutex-tbody-td-border-bottom: #2a2a2a;
+
+    --debug-info-table-write-mutex-tbody-tr-child: steelblue;
+    --debug-info-table-write-mutex-tbody-tr-hover: darkcyan;
+
     /* =======================================
       Modul: grp_definition.php
       ======================================= */
@@ -309,7 +316,7 @@
     --config-data-purge-text-color-btn: whitesmoke;
 
     /* =======================================
-      Modul: config_data_purge.php
+      Modul: config_data_purge_auto.php
       ======================================= */
     --config-data-purge-auto-bg-color-body: #1c1c1c;
     --config-data-purge-auto-text-color-body:  whitesmoke;
@@ -437,6 +444,9 @@
     --message-text-color-msgOutgoing: black;
 
     --message-text-color-msgBubbleClickOnCall: color-mix;
+
+    --message-text-color-msgBubbleClickOnLink: #8ab4f8;
+    --message-text-color-msgBubbleClickOnLinkVisit: #c58af9;
 
     /* =======================================
     Modul: sensor_plot.php

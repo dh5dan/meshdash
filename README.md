@@ -177,7 +177,7 @@ Aktivierung des Dark-Mode in den Basiseinstellungen
 ### Mehrsprachenunterstützung von MeshDash
 MeshDash ist nun in 6 Sprachen verfügbar:  
 Deutsch, Englisch, Französisch Spanisch, Niederländisch und Italienisch.  
-Die Übersetzungen wurde mit Hilfe einer KI erstellt und können ggf. noch unvollständig sein.  
+Die Übersetzungen wurde mithilfe einer KI erstellt und können ggf. noch unvollständig sein.  
 In Meshdash besteht jedoch die Möglichkeit, diese Übersetzungen individuell anzupassen.
 
 ![FILES](/docs/language.jpg)
@@ -248,6 +248,12 @@ Die Bake kann auch aus der Ferne über ein OTP (One-Time-Password) gestartet wer
 ---
 
 ### Grafische Anzeige der MHEARD
+Die Anzeige ist auch als Fullsize-Map verfügbar.  
+Ein-/Ausblenden von Verbindungen oder aller indirekten Nodes (via Repeater).  
+Filtermöglichkeit über das Datum (nur in Fullsize-Map).  
+Eine Legende über die Bedeutung der farblichen Node-Icons.  
+PopUp zu jedem Icon/Verbindung mit weiteren Informationen sofern verfügbar.
+
 ![FILES](/docs/mheard_osm.jpg)
 
 ---
@@ -339,7 +345,7 @@ Das "D" muss hier großgeschrieben werden.
 Die Datei liegt im Sub-Verzeichnis zur compose.yaml in /php-addon
 
 hier werden die Module Sockets, Zip, Unzip und Netzwerk-Tools installiert,   
-welche meshDsh benötigt.  
+welche MeshDash benötigt.  
 ### Dockerfile
 ```dockerfile
 FROM php:8.4.12-fpm-trixie

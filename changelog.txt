@@ -1,3 +1,30 @@
+Version 1.10.80 SQL
+
+BUGFIX: BG-Task Exec führte unter Windows den udp_receiver nicht aus.
+BUGFIX: Logrotate-Funktion angepasst – Warning im Log, wenn die Datei zwischenzeitlich entfernt wurde.
+BUGFIX: CheckSensorData verursachte Warnings, wenn keine Sensordaten vorhanden waren.
+BUGFIX: Forwarding-Log verwendete immer das BG-Startdatum → PHP-Warnings bei Tageswechsel behoben.
+BUGFIX: Datenbank-Backup war nicht im WAL-Mode. Erzeugt DB-Lock bei Wiederherstellung behoben.
+BUGFIX: URL-Umwandlung in Links war nicht immer vollständig.
+BUGFIX: Autopurge verursachte DB-Locks → Lock-System implementiert, mehrfache Ausführung verhindert.
+
+FEATURE: Erweiterte Node-Visualisierung
+         – Anzeige von Nodes über Repeater der letzten 7 Tage (violett)
+         – Visualisierung direkter Verbindungen zwischen Nodes
+         – Klick auf Verbindung zeigt die verbundenen Nodes
+         – Farbliche Kennzeichnung der Node-Typen (lokal / indirekt via Repeater)
+         – Ein- und Ausblenden der Verbindungslinien
+
+FEATURE: Fullsize-Map der Node-Verbindungen als separater Tab.
+FEATURE: Performance-Optimierung der Node-Map Abfrage.
+FEATURE: Fullsize-Map nun auch mit Datumsfilter
+FEATURE: Intervall-Aktualisierung der mHeard-Liste (30 min / 1 h / 2 h / 3 h / 4 h).
+FEATURE: Background-Status des mHeard-Intervall-Tasks in den Debug-Infos aufgenommen.
+FEATURE: Background-Status des Auto-Purge Intervall-Tasks in den Debug-Infos aufgenommen.
+         Möglichkeit des Release-Locks, wenn ein Prozess hängen sollte.
+FEATURE: Anpassung der Linkfarben im Dark-Mode
+
+####################################
 Version 1.10.78 SQL
 BUG: SNR Angabe fehlt in Map-Info. dBm Bezeichnung doppelt.
 
@@ -128,7 +155,7 @@ Visuelle Rückmeldung:
  - Nach Update oder Wiederherstellung wird ein notwendiger Reload nun optisch hervorgehoben.
 
 Keyword-Auslösung:
- - 10Sekunden Verzögerung bei der Aussendung von Nachrichten nach Keyword-Auslösung,
+ - 10 Sekunden Verzögerung bei der Aussendung von Nachrichten nach Keyword-Auslösung,
    um Verluste durch Gateways zu minimieren.
 
 
@@ -616,7 +643,7 @@ Menübelegung
 - Data Purge
 - Ping Lora
 Parameter DB auf SQLite angelegt
-Refreshtime Message-Fenster auf 5 sek eingestellt (vorher 1sek).
+Refresh-Time Message-Fenster auf 5 sek eingestellt (vorher 1sek).
 Dieses erzeugte leichtes flackern im Edge Browser
 ##################################################################
 Version 1.09.16
@@ -630,7 +657,7 @@ Upgrade jquery auf jquery-3.7.1.min.js
 Version 1.09.12
 Prüfen ob Lora Ip gesetzt
 Angabe der Lora Ip und setzten der Ip via WebApp
-Prüfen ob Meshdash.db als Datei existiert, wenn nein neu initiieren
+Prüfen ob Meshdash.db als Datei existiert, wenn Nein, dann neu initiieren
 ##################################################################
 Version 1.09.10
 Erkenne, wenn Zugriff SQLITE3 Datenbank gelockt ist.

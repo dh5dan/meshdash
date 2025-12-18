@@ -1,8 +1,11 @@
 <?php
 
+require_once 'include/func_php_core.php';
+
 $taskFile = trim($_REQUEST['taskFile']);
 $execDir  = trim($_REQUEST['execDir']);
 
+$osIsWindows = chkOsIsWindows();
 $debugFlag = false;
 
 #Muss hier stehen da chdir sonst das BaseDir verschiebt
@@ -28,10 +31,16 @@ if (substr($taskFile,-3) == 'cmd' || substr($taskFile,-3) == 'bat')
 
 if (substr($taskFile,-3) == 'php')
 {
-    #Starte Background task für UDP-Receive
-    #in Windows. Wichtig! start /B nutzen!
-    #exec('start /B php -f ' . $taskFile);
-
-    //Verhindert Timeout unter Windows
-    pclose(popen('start /B php -f ' . escapeshellarg($taskFile), 'r'));
+    if ($osIsWindows === true)
+    {
+        #Starte Background task für UDP-Receive
+        #in Windows. Wichtig! start /B nutzen!
+        exec('start /B php -f ' . $taskFile);
+    }
+    else
+    {
+        //Verhindert Timeout unter Windows.
+        //Funktioniert aber nicht unter windows
+        pclose(popen('start /B php -f ' . escapeshellarg($taskFile), 'r'));
+    }
 }
