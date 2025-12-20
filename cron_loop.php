@@ -1,6 +1,12 @@
 <?php
+# Wichtig!
+# Gewährleistet, das das Skript immer aus dem Verzeichnis ausgeführt ist, wo es liegt.
+# Alle relativen Pfade bleiben somit erhalten, auch wenn es aus dem SubMenü aufgerufen wird.
+chdir(__DIR__);
+
 require_once 'dbinc/param.php';
 require_once 'include/func_php_core.php';
+
 ignore_user_abort(true);
 set_time_limit(0);
 
@@ -16,8 +22,7 @@ $execDir     = 'log';
 $pidFile     = "$basePath/$execDir/" . CRON_PID_FILE;
 $configFile  = "$basePath/$execDir/" . CRON_CONF_FILE;
 $stopFile    = "$basePath/$execDir/" . CRON_STOP_FILE; // Stop-Datei
-$debugFile   = "log/cron_loop_debug_log.txt";
-$debugTime   = date('Y-m-d H:i:s');
+$debugFile   = "$basePath/$execDir/" . 'debug_cron_loop_' . date('Ymd') . '.log';
 $triggerLink = TRIGGER_LINK_SEND_QUEUE;
 
 #Check what oS is running

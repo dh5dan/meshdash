@@ -57,7 +57,42 @@ td input[type="text"][name*="sensorThIna226IntervallSec"] {
     border-radius: 5px;
 }
 
+.infoImagePoint {
+    margin-left: 10px;
+    margin-bottom: -7px;
+    cursor: pointer;
+    width: 23px;
+    margin-right: 8px;
+}
+
+.interval-table {
+    border-collapse: collapse;
+    font-size: 13px;
+    border: 1px solid black; /* äußerer Rand */
+}
+
+.interval-table th,
+.interval-table td {
+    border: 1px solid black; /* innere Zellenränder */
+    padding: 4px 6px; /* optional: Abstand */
+}
+
+.interval-table thead tr {
+    background-color: #f0f0f0;
+}
+
+input.number-field {
+    width: 75px; /* passend für deine Zahlen */
+}
+
 @media (max-width: 600px) {
+
+    .infoImagePoint {
+        margin-left: 10px;
+        width: 20px;
+        cursor: pointer;
+        margin-bottom: -6px;
+    }
 
     .lineBreak {
         display: block;

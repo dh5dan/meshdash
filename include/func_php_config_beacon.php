@@ -45,7 +45,7 @@ function saveBeaconSettings(): bool
 
     return true;
 }
-function selectBeaconIntervall($beaconInterval)
+function selectBeaconIntervall($beaconInterval): void
 {
     $arrayIntervall = array(
         5,
@@ -67,87 +67,6 @@ function selectBeaconIntervall($beaconInterval)
             echo '<option value="' . $intervall . '">' . $intervall . '</option>';
         }
     }
-}
-
-function getBeaconCronEntries(array $scriptsToCheck = []): bool
-{
-    $debugFlag = false;
-
-    if (count($scriptsToCheck) === 0)
-    {
-        echo '<br><span style="color: red; font-weight: bold;">✖ '
-            . ' Kein Prüfscript übergeben!</span>';
-        return false;
-    }
-
-    exec('crontab -l 2>/dev/null', $cronJobs); // Crontab auslesen
-
-    $foundScripts = [];
-
-    if (!empty($cronJobs))
-    {
-        foreach ($cronJobs as $index => $cronJob)
-        {
-            $match = false;
-
-            // Prüfung, ob eines der übergebenen Scripte im Crontab-Eintrag vorkommt
-            foreach ($scriptsToCheck as $script)
-            {
-                if (stripos($cronJob, $script) !== false)
-                {
-                    $foundScripts[] = $script;
-                    $match = true;
-                    break; // Ein Treffer reicht
-                }
-            }
-
-            if ($debugFlag === true)
-            {
-                echo "Listed Cron: ". ($index === 0 ? 'CronJobs (www-data):' : '&nbsp;')
-                    . htmlspecialchars($cronJob);
-            }
-
-            // Wenn ein passendes Script enthalten ist, markieren wir den Eintrag
-            if ($match)
-            {
-                if ($debugFlag === true)
-                {
-                    echo '<br><span style="color: green; font-weight: bold;">✔ erkannt</span>';
-                }
-
-                return true;
-            }
-        }
-
-        // Nachlauf: Falls ein gesuchtes Script **nicht** gefunden wurde
-        foreach ($scriptsToCheck as $script)
-        {
-            if (!in_array($script, $foundScripts))
-            {
-                if ($debugFlag === true)
-                {
-                    echo '<br><span style="color: red; font-weight: bold;">✖ '
-                        . htmlspecialchars($script) . ' nicht gefunden</span>';
-                }
-
-                return false;
-            }
-        }
-    }
-    else
-    {
-        if ($debugFlag === true)
-        {
-            echo '<tr>';
-            echo '<td>CronJobs (www-data):</td>';
-            echo '<td>Kein Eintrag</td>';
-            echo '</tr>';
-        }
-
-        return false;
-    }
-
-    return false;
 }
 function hasBeaconTimePassed(string $startTs, string $endTs, float $limitHours): bool
 {

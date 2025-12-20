@@ -26,6 +26,7 @@ else
     echo '<link rel="stylesheet" href="../css/normal_mode.css?' . microtime() . '">';
 }
 
+echo '<link rel="stylesheet" href="../css/core.css?' . microtime() . '">';
 echo '<link rel="stylesheet" href="../css/config_generally.css?' . microtime() . '">';
 echo '<link rel="stylesheet" href="../css/loader.css?' . microtime() . '">';
 echo '</head>';
@@ -56,6 +57,12 @@ $countIps = count($ips);
 #Prüfliste um zu vermeiden das eine lokale Adresse wür UDP-Weiterleitung genutzt wird.
 echo '<div id="ipContainer" data-ips=\'' . json_encode($ips) . '\'></div>';
 
+echo '<h2 data-i18n="submenu.config_generally.lbl.title">Basiseinstellungen</h2>';
+
+echo '<form id="frmConfigGenerally" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
+echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
+echo '<table>';
+
 #Wenn Mobile, Linebreak zur besseren Lesbarkeit einfügen
 if ($isMobile === true)
 {
@@ -66,15 +73,23 @@ if ($sendData === '1')
 {
     $resSaveGenerallySetting = saveGenerallySettings();
 
+    echo '<tr>';
+    echo '<td colspan="2">';
     if ($resSaveGenerallySetting)
     {
-        echo '<span class="successHint">'.date('H:i:s').'-<span data-i18n="submenu.config_generally.msg.save-settings-success">Settings wurden erfolgreich abgespeichert!</span></span>';
+        echo '<span class="successHint">' .
+            date('H:i:s') .
+            '-<span data-i18n="submenu.config_generally.msg.save-settings-success">Settings wurden erfolgreich abgespeichert!</span></span>';
         echo '<br><span class="warningHint">Ggf. ist ein Browser-Refresh notwendig damit Änderungen wirksam werden!</span>';
     }
     else
     {
-        echo '<span class="failureHint">' . date('H:i:s') . '-<span data-i18n="submenu.config_generally.msg.save-settings-failed">Es gab einen Fehler beim Abspeichern der Settings!</span></span>';
+        echo '<span class="failureHint">' .
+            date('H:i:s') .
+            '-<span data-i18n="submenu.config_generally.msg.save-settings-failed">Es gab einen Fehler beim Abspeichern der Settings!</span></span>';
     }
+    echo '</td>';
+    echo '</tr>';
 }
 
 if ($osIssWindows === false)
@@ -88,7 +103,7 @@ if ($osIssWindows === false)
         $hardware     = $prodName;
     }
 
-    if ((strpos($cpuInfo, 'Raspberry Pi') !== false || strpos($cpuInfo, 'BCM') !== false) &&
+     if ((strpos($cpuInfo, 'Raspberry Pi') !== false || strpos($cpuInfo, 'BCM') !== false) &&
         ($architecture === 'armv7l' || $architecture === 'aarch64'))
     {
         $hardware = "Raspberry Pi";
@@ -123,6 +138,7 @@ $mheardGroup         = getParamData('mheardGroup') ?? 0; // 0= egal welche Grupp
 $bubbleStyleView     = getParamData('bubbleStyleView') ?? 0; // 1= Bubble Style aktiv
 $bubbleMaxWidth      = getParamData('bubbleMaxWidth') ?? 40;
 $darkMode            = getParamData('darkMode') ?? 0; // 1= Dark-Mode aktiv
+$festiveModeEnable   = getParamData('festiveModeEnable') ?? 1; // 1= Festive-Mode aktiv
 $mheardCronEnable    = getParamData('mheardCronEnable') ?? 0; // 1= Aktiviere Mheard-Cron und frage MH im Intervall ab
 $mheardCronIntervall = getParamData('mheardCronIntervall') ?? 1; // Intervall in vollen Stunden 1-4
 
@@ -133,6 +149,7 @@ $selTzName                  = $selTzName == '' ? 'Europe/Berlin' : $selTzName;
 $selLanguage                = $selLanguage == '' ? 'de' : $selLanguage;
 $noPosDataChecked           = $noPosData == 1 ? 'checked' : '';
 $darkModeChecked            = $darkMode == 1 ? 'checked' : '';
+$festiveModeEnableChecked   = $festiveModeEnable == 1 ? 'checked' : '';
 $noDmAlertGlobalChecked     = $noDmAlertGlobal == 1 ? 'checked' : '';
 $noTimeSyncMsgChecked       = $noTimeSyncMsg == 1 ? 'checked' : '';
 $doLogEnableChecked         = $doLogEnable == 1 ? 'checked' : '';
@@ -159,12 +176,6 @@ $newMsgBgColor = $newMsgBgColor == '' ? '#FFFFFF' : $newMsgBgColor;
 $mheardGroup   = $mheardGroup == 0 ? '' : $mheardGroup;
 $udpFwPort     = $udpFwPort == 0 ? '' : $udpFwPort;
 
-echo '<h2><span data-i18n="submenu.config_generally.lbl.title">Basiseinstellungen</span></h2>';
-
-echo '<form id="frmConfigGenerally" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
-echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
-echo '<table>';
-
 echo '<tr>';
     echo '<td>OS:</td>';
     echo '<td>'. $osName . '</td>';
@@ -183,38 +194,137 @@ echo '<td><span data-i18n="submenu.config_generally.lbl.architecture">Architektu
 echo '<td>' . $architecture . '</td>';
 echo '</tr>';
 
+if($osIssWindows === true)
+{
+    $winPhpCliPath = (string) (getParamData('winPhpCliPath') ?? ''); // Nur für Windows. Pfad zur php.exe CLI
+    $phpExe           = getPhpExeAndVersion($winPhpCliPath);
+    $winPhpCliVersion = '';
+    $isPhp8Up         = true;
+
+    if ($phpExe['path'] === null)
+    {
+        echo '<tr>';
+        echo '<td colspan="2">';
+        echo '<span class="failureHint  msg-compact">php.exe ist nicht im Windows-PATH vorhanden.<br>';
+        echo 'Pfad muss in Windows oder in MeshDash-Einstellungen gesetzt sein.<br>';
+        echo '</span>';
+        echo '</td>';
+        echo '</tr>';
+    }
+    else
+    {
+        $winPhpCliPath    = $phpExe['path'];
+        $winPhpCliVersion = $phpExe['version'];
+        $isPhp8Up         = $phpExe['isPhp8Up'];
+    }
+
+    echo '<tr>';
+    echo '<td colspan="2">';
+    echo '<div class="row-flex">';
+    echo '<span data-i18n="submenu.config_generally.lbl.php-path">Pfad zu php.exe</span>';
+    echo '<input type="text"
+            class="full-width-input"
+            name="winPhpCliPath"
+            id="winPhpCliPath"
+            value="' . htmlspecialchars($winPhpCliPath) . '">';
+
+    echo '</div>';
+    echo '</td>';
+    echo '</tr>';
+
+    if ($winPhpCliVersion != '')
+    {
+        echo '<tr>';
+        echo '<td><span data-i18n="submenu.config_generally.lbl.php-version">PHP-Version</span>:</td>';
+        echo '<td>' . $winPhpCliVersion . '</td>';
+        echo '</tr>';
+    }
+
+    if ($isPhp8Up === false)
+    {
+        echo '<td colspan="2"><span class="failureHint">Die ermittelte PHP Version muss >= V8.xx sein!</span></td>';
+    }
+}
+
 echo '<tr>';
 echo '<td colspan="2"><hr></td>';
 echo '</tr>';
 
 echo '<tr>';
     echo '<td><span data-i18n="submenu.config_generally.lbl.pos-msg">POS-Meldungen &#10140;[AUS]</span>:</td>';
-    echo '<td><input type="checkbox" name="noPosData" ' . $noPosDataChecked . ' id="noPosData" value="1" /></td>';
+
+    echo '<td>';
+    echo '<label class="switch">';
+    echo '<input type="checkbox" name="noPosData" ' . $noPosDataChecked . ' id="noPosData" value="1" />';
+    echo '<span class="slider"></span>';
+    echo '</label>';
+    echo '</td>';
+
 echo '</tr>';
 
 echo '<tr>';
     echo '<td><span data-i18n="submenu.config_generally.lbl.dm-alert-global">DM-Alert global &#10140;[AUS]</span>:</td>';
-    echo '<td><input type="checkbox" name="noDmAlertGlobal" ' . $noDmAlertGlobalChecked . ' id="noDmAlertGlobal" value="1" /></td>';
+
+    echo '<td>';
+    echo '<label class="switch">';
+    echo '<input type="checkbox" name="noDmAlertGlobal" ' . $noDmAlertGlobalChecked . ' id="noDmAlertGlobal" value="1" />';
+    echo '<span class="slider"></span>';
+    echo '</label>';
+    echo '</td>';
+
 echo '</tr>';
 
 echo '<tr>';
 echo '<td><span data-i18n="submenu.config_generally.lbl.time-sync-msg">Time Sync-Meldung &#10140;[AUS]</span>:</td>';
-echo '<td><input type="checkbox" name="noTimeSyncMsg" ' . $noTimeSyncMsgChecked . ' id="noTimeSyncMsg" value="1" /></td>';
+
+echo '<td>';
+echo '<label class="switch">';
+echo '<input type="checkbox" name="noTimeSyncMsg" ' . $noTimeSyncMsgChecked . ' id="noTimeSyncMsg" value="1" />';
+echo '<span class="slider"></span>';
+echo '</label>';
+echo '</td>';
+
 echo '</tr>';
 
 echo '<tr>';
 echo '<td><span data-i18n="submenu.config_generally.lbl.db-backup">DB-Backup &#10140;[AUS]</span>:</td>';
-echo '<td><input type="checkbox" name="doNotBackupDb" ' . $doNotBackupDbChecked . ' id="doNotBackupDb" value="1" /></td>';
+
+echo '<td>';
+echo '<label class="switch">';
+echo '<input type="checkbox" name="doNotBackupDb" ' . $doNotBackupDbChecked . ' id="doNotBackupDb" value="1" />';
+echo '<span class="slider"></span>';
+echo '</label>';
+echo '</td>';
 echo '</tr>';
 
 echo '<tr>';
 echo '<td><span data-i18n="submenu.config_generally.lbl.bubble-style">Bubble-Style &#10140;[AN]</span>:</td>';
-echo '<td><input type="checkbox" name="bubbleStyleView" ' . $bubbleStyleViewChecked . ' id="bubbleStyleView" value="1" /></td>';
+echo '<td>';
+echo '<label class="switch">';
+echo '<input type="checkbox" name="bubbleStyleView" ' . $bubbleStyleViewChecked . ' id="bubbleStyleView" value="1" />';
+echo '<span class="slider"></span>';
+echo '</label>';
+echo '</td>';
 echo '</tr>';
 
 echo '<tr>';
 echo '<td><span data-i18n="submenu.config_generally.lbl.dark-mode">Dark-Mode &#10140;[AN]</span>:</td>';
-echo '<td><input type="checkbox" name="darkMode" ' . $darkModeChecked . ' id="darkMode" value="1" /></td>';
+echo '<td>';
+echo '<label class="switch">';
+echo '<input type="checkbox" name="darkMode" ' . $darkModeChecked . ' id="darkMode" value="1" />';
+echo '<span class="slider"></span>';
+echo '</label>';
+echo '</td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td><span data-i18n="submenu.config_generally.lbl.festive-mode-enable">Festlicher Modus &#10140;[AN]</span>:</td>';
+echo '<td>';
+echo '<label class="switch">';
+echo '<input type="checkbox" name="festiveModeEnable" ' . $festiveModeEnableChecked . ' id="festiveModeEnable" value="1" />';
+echo '<span class="slider"></span>';
+echo '</label>';
+echo '</td>';
 echo '</tr>';
 
 echo '<tr>';
@@ -238,12 +348,22 @@ echo '</tr>';
 
 echo '<tr>';
 echo '<td><span data-i18n="submenu.config_generally.lbl.log-mode">Logfile-Erstellung &#10140;[AN]</span>:</td>';
-echo '<td><input type="checkbox" name="doLogEnable" ' . $doLogEnableChecked . ' id="doLogEnable" value="1" /></td>';
+echo '<td>';
+echo '<label class="switch">';
+echo '<input type="checkbox" name="doLogEnable" ' . $doLogEnableChecked . ' id="doLogEnable" value="1" />';
+echo '<span class="slider"></span>';
+echo '</label>';
+echo '</td>';
 echo '</tr>';
 
 echo '<tr>';
 echo '<td><span data-i18n="submenu.config_generally.lbl.log-rotation">Log-Rotation &#10140;[AN]</span>:</td>';
-echo '<td><input type="checkbox" name="chronLogEnable" ' . $chronLogEnableChecked . ' id="chronLogEnable" value="1" /></td>';
+echo '<td>';
+echo '<label class="switch">';
+echo '<input type="checkbox" name="chronLogEnable" ' . $chronLogEnableChecked . ' id="chronLogEnable" value="1" />';
+echo '<span class="slider"></span>';
+echo '</label>';
+echo '</td>';
 echo '</tr>';
 
 echo '<tr>';
@@ -272,7 +392,12 @@ echo '</tr>';
 
 echo '<tr>';
 echo '<td><span data-i18n="submenu.config_generally.lbl.filter-strict-call">Filter Strict-Call &#10140;[AN]</span>:</td>';
-echo '<td><input type="checkbox" name="strictCallEnable" ' . $strictCallEnableChecked . ' id="strictCallEnable" value="1" /></td>';
+echo '<td>';
+echo '<label class="switch">';
+echo '<input type="checkbox" name="strictCallEnable" ' . $strictCallEnableChecked . ' id="strictCallEnable" value="1" />';
+echo '<span class="slider"></span>';
+echo '</label>';
+echo '</td>';
 echo '</tr>';
 
 echo '<tr>';
@@ -306,7 +431,12 @@ echo '</tr>';
 
 echo '<tr>';
 echo '<td><span data-i18n="submenu.config_generally.lbl.mheard_cron_enable">Mheard-Cron Aktualisierung &#10140;[AN]</span>:</td>';
-echo '<td><input type="checkbox" name="mheardCronEnable" ' . $mheardCronEnableChecked . ' id="mheardCronEnable" value="1" /></td>';
+echo '<td>';
+echo '<label class="switch">';
+echo '<input type="checkbox" name="mheardCronEnable" ' . $mheardCronEnableChecked . ' id="mheardCronEnable" value="1" />';
+echo '<span class="slider"></span>';
+echo '</label>';
+echo '</td>';
 echo '</tr>';
 
 echo '<tr>';
@@ -333,7 +463,12 @@ echo '</tr>';
 
 echo '<tr>';
 echo '<td><span data-i18n="submenu.config_generally.lbl.udp-fw_enable">Aktiviere UDP-Forwarding &#10140;[AN]</span>:</td>';
-echo '<td><input type="checkbox" name="udpForwardingEnable" ' . $udpForwardingEnableChecked . ' id="udpForwardingEnable" value="1" /></td>';
+echo '<td>';
+echo '<label class="switch">';
+echo '<input type="checkbox" name="udpForwardingEnable" ' . $udpForwardingEnableChecked . ' id="udpForwardingEnable" value="1" />';
+echo '<span class="slider"></span>';
+echo '</label>';
+echo '</td>';
 echo '</tr>';
 
 echo '<tr>';

@@ -1,5 +1,5 @@
 <?php
-function showLogFiles()
+function showLogFiles(): void
 {
     $execDirLog    = 'log';
     $basename      = pathinfo(getcwd())['basename'];
@@ -91,7 +91,7 @@ function showLogFiles()
     echo '</table>';
     echo '</div>';
 }
-function getCronEntries()
+function getCronEntries(): void
 {
     exec('crontab -l 2>/dev/null', $cronJobs);// Die Crontab auslesen
     if (!empty($cronJobs))
@@ -116,7 +116,7 @@ function getServerSoftware()
 {
     return $_SERVER['SERVER_SOFTWARE'] ?? 'Nicht verfügbar';
 }
-function getPhpConfig()
+function getPhpConfig(): void
 {
     $phpIniArray = array(
         'memory_limit'        => ini_get('memory_limit'),
@@ -187,7 +187,7 @@ function getPhpConfig()
         echo '</tr>';
     }
 }
-function convertToInt($value)
+function convertToInt($value): float|int
 {
     # Hilfsfunktion zur Umwandlung von ini-Werten wie 128M, 2G in Integer (Bytes)
     $value = trim($value);
@@ -200,7 +200,8 @@ function convertToInt($value)
     $lastChar = strtoupper($value[strlen($value) - 1]);
     $numericValue = (int) rtrim($value, 'MKG');
 
-    switch ($lastChar) {
+    switch ($lastChar)
+    {
         case 'M':
             return $numericValue * 1024 * 1024; // Megabyte -> Bytes
         case 'G':
@@ -395,7 +396,7 @@ function getSqliteDatabases(string $basePath = 'database'): array
 
     return $databases;
 }
-function getSystemUptimeSeconds()
+function getSystemUptimeSeconds(): bool|int
 {
     if (strncasecmp(PHP_OS, 'WIN', 3) === 0)
     {
@@ -410,16 +411,18 @@ function getSystemUptimeSeconds()
     {
         // Linux: aus /proc/uptime lesen
         $uptimeContent = @file_get_contents('/proc/uptime');
+
         if ($uptimeContent === false)
         {
             return false;
         }
+
         $parts = explode(' ', $uptimeContent);
 
         return isset($parts[0]) ? (int) floatval($parts[0]) : false;
     }
 }
-function getLoadAverage()
+function getLoadAverage(): bool|array|string
 {
     if (strncasecmp(PHP_OS, 'WIN', 3) === 0)
     {
@@ -483,7 +486,7 @@ function getLoadAverage()
         return $load;
     }
 }
-function getWriteMutex()
+function getWriteMutex(): void
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
     $basename       = pathinfo(getcwd())['basename'];
@@ -572,4 +575,157 @@ function getWriteMutex()
     #Close and write Back WAL
     $db->close();
     unset($db);
+}
+
+/**
+ * Listet alle laufenden PHP-Prozesse und bietet Filtermöglichkeiten
+ *
+ * @param string|null $scriptName Optional: Nur Prozesse mit diesem Script name zurückgeben
+ *
+ * @return array
+ */
+function getWindowsPhpProcesses(?string $scriptName = null): array
+{
+    $processes = [];
+
+    // WMIC abfragen
+    $cmd = 'wmic process where "name=\'php.exe\'" get ProcessId,ParentProcessId,CommandLine,SessionId /FORMAT:CSV';
+    exec($cmd, $output);
+
+    // Erste Zeile ist Node Header, letzte eventuell leer
+    foreach ($output as $line)
+    {
+        $line = trim($line);
+        if ($line === '' || stripos($line, 'Node,CommandLine') !== false)
+        {
+            continue;
+        }
+
+        // CSV-Zeile in Felder aufsplitten
+        $parts = str_getcsv($line);
+        if (count($parts) < 5)
+        {
+            continue;
+        }
+
+        list($node, $commandLine, $parentPid, $pid, $sessionId) = $parts;
+
+        // Script name aus CommandLine extrahieren
+        if (preg_match('/-f\s+"?([^"\s]+)"/i', $commandLine, $matches))
+        {
+            $scriptFile = $matches[1];
+        }
+        else
+        {
+            $scriptFile = '';
+        }
+
+        $phpExePath = '';
+        if (preg_match('/^"?(.*?)php\.exe"?/i', $commandLine, $matchesExe))
+        {
+            $phpExePath = $matchesExe[0];
+        }
+
+        $process = [
+            'Node'        => $node,
+            'CommandLine' => $commandLine,
+            'ParentPID'   => (int) $parentPid,
+            'PID'         => (int) $pid,
+            'SessionId'   => (int) $sessionId,
+            'PHPExePath'  => $phpExePath,
+            'ScriptName'  => $scriptFile
+        ];
+
+        // Optional: Filtern nach Script name
+        if ($scriptName === null || stripos($scriptFile, $scriptName) !== false)
+        {
+            $processes[] = $process;
+        }
+    }
+
+    return $processes;
+}
+
+
+/**
+ * Listet alle laufenden PHP-Prozesse unter Linux
+ *
+ * @param string|null $scriptName Optional: Nur Prozesse mit diesem Scriptname zurückgeben
+ *
+ * @return array
+ */
+function getPhpProcessesLinux(?string $scriptName = null): array
+{
+    $processes = [];
+
+    // ps abfragen: PID, PPID, CMD
+    $cmd = "ps -eo pid,ppid,cmd --no-headers";
+    exec($cmd, $output);
+
+    foreach ($output as $line)
+    {
+        $line = trim($line);
+        if ($line === '')
+        {
+            continue;
+        }
+
+        // Zeile in Teile aufsplitten: PID, PPID, CMD
+        if (!preg_match('/^\s*(\d+)\s+(\d+)\s+(.*)$/', $line, $matches))
+        {
+            continue;
+        }
+
+        $pid         = (int) $matches[1];
+        $ppid        = (int) $matches[2];
+        $commandLine = $matches[3];
+
+        // Nur PHP-Prozesse berücksichtigen
+        if (stripos($commandLine, 'php') === false)
+        {
+            continue;
+        }
+
+        // Script name extrahieren (-f script.php)
+        if (preg_match('/-f\s+([^\s]+)/i', $commandLine, $mScript))
+        {
+            $scriptFile = $mScript[1];
+        }
+        else
+        {
+            $scriptFile = '';
+        }
+
+        // PHP-Exe-Pfad extrahieren
+        if (preg_match('/^\s*(\S*php)/i', $commandLine, $mExe))
+        {
+            $phpExePath = $mExe[1];
+
+            #nur wenn php vorhanden, ist es ein detached process
+            if ($phpExePath !== 'php')
+            {
+                continue;
+            }
+        }
+        else
+        {
+            $phpExePath = '';
+        }
+
+        $process = [
+            'PID'         => $pid,
+            'ParentPID'   => $ppid,
+            'CommandLine' => $commandLine,
+            'PHPExePath'  => $phpExePath,
+            'ScriptName'  => $scriptFile
+        ];
+
+        // Optional nach Script-Name filtern
+        if ($scriptName === null || stripos($scriptFile, $scriptName) !== false)
+        {
+            $processes[] = $process;
+        }
+    }
+
+    return $processes;
 }

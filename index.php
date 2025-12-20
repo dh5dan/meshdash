@@ -78,10 +78,28 @@ $phpVersionSplit = explode('.', phpversion());
 $phpVersionMajor = $phpVersionSplit[0];
 $phpVersionMinor = $phpVersionSplit[1];
 
-if ($phpVersionMajor < 7 || ($phpVersionMajor == 7 && $phpVersionMinor < 4))
+if ($phpVersionMajor < 8)
 {
-echo '<br><span class="failureHint">Die benötigte PHP-Version muss mind. PHP 7.4 sein!</span>';
-exit();
+    echo '<br><span class="failureHint">Die benötigte PHP-Version muss mind. PHP 8.x sein!</span>';
+    exit();
+}
+
+#betrifft nur Windows
+if(chkOsIsWindows() === true)
+{
+    $winPhpCliPath = (string) (getParamData('winPhpCliPath') ?? ''); // Nur für Windows. Pfad zur php.exe CLI
+    $phpExe = getPhpExeAndVersion($winPhpCliPath);
+
+    if ($phpExe['path'] === null)
+    {
+        echo '<span class="failureHint">php.exe ist nicht im Windows-PATH vorhanden.<br>';
+        echo 'Pfad muss in Windows oder in MeshDash-Einstellungen gesetzt sein.<br>';
+        echo '</span>';
+    }
+    else if ($phpExe['isPhp8Up'] === false)
+    {
+        echo '<span class="failureHint">Die ermittelte PHP Version muss >= V8.xx sein!</span>';
+    }
 }
 
 #Wenn Datenbank noch nicht existiert, dann neu initiieren.
@@ -145,6 +163,7 @@ if ($sendData === '1')
 }
 #Lösche alten Linux-Cron Eintrag, wenn vorhanden
 deleteOldCron();
+deleteAllSensorDataCronItems();
 
 #####################################################################################
 ##########  Top-Bereich
@@ -173,7 +192,7 @@ if ($autostartBgProcess === true && $sendData !== '1')
 }
 
 #Check TaskStatus
-$taskResultUdp = file_exists('udp.pid');
+$taskResultUdp = file_exists('log/' . UPD_PID_FILE);
 
 #Setzte Bild für UDP-Task gestoppt sonst bleibt er grün
 if (empty($taskResultUdp))
@@ -197,9 +216,9 @@ echo '<img src="' . $imgTaskStatusUdp . '" id="bgTask" class="topImagePoint" alt
 echo '<span class="dbSearchIcon" id="dbSearch">&#128270;</span>';
 echo '</div>';
 
-echo '<span class="topTitle">MeshDash-SQL V ' . VERSION . '</span>';
-#Oster-Edition
-#echo '<span class="topTitle" >&#128007;&#128007;&#128007; MeshDash-SQL V ' . VERSION.' &#128007;&#128007;&#128007;</span>';
+$festiveModeEnable = getParamData('festiveModeEnable') ?? 1; // 1= Festive-Mode aktiv
+echo '<input type="hidden" id="festiveModeEnable" value="' . $festiveModeEnable . '" />';
+echo '<span class="topTitle">' . getFestiveTitle('MeshDash-SQL V ' . VERSION, $festiveModeEnable) . '</span>';
 
 // Neues Div für Uhrzeit, ohne das Layout zu zerstören
 echo '<div class="topRight" id="datetime">Hole Zeit!</div>';

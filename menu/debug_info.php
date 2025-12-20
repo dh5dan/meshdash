@@ -45,6 +45,24 @@ $osIssWindows = chkOsIsWindows();
 $osName       = $osIssWindows === true ? 'Windows' : 'Linux';
 $hardware     = '';
 $architecture = php_uname('m');
+$debugFlag = true;
+
+if ($osIssWindows === true && $debugFlag === true)
+{
+    // Konvertiere Array in JSON: Alle Windows PHP-Prozesse
+    $allPhpProcesses = getWindowsPhpProcesses();
+    $jsonAllPhpProcesses = json_encode($allPhpProcesses);
+    echo '<input type="hidden" id="allPhpProcessesData" value="'. htmlspecialchars($jsonAllPhpProcesses, ENT_QUOTES).'">';
+    echo '<input type="hidden" id="osIsWindows" value="'. ($osIssWindows ? '1' : '0') .'">';
+}
+elseif ($osIssWindows === false && $debugFlag === true)
+{
+    // Konvertiere Array in JSON: Alle Windows PHP-Prozesse
+    $allPhpProcesses = getPhpProcessesLinux();
+    $jsonAllPhpProcesses = json_encode($allPhpProcesses);
+    echo '<input type="hidden" id="allPhpProcessesData" value="'. htmlspecialchars($jsonAllPhpProcesses, ENT_QUOTES).'">';
+    echo '<input type="hidden" id="osIsWindows" value="'. ($osIssWindows ? '1' : '0') .'">';
+}
 
 if ($osIssWindows === false)
 {
@@ -89,18 +107,27 @@ $sendQueueMode           = $sendQueueMode == '' || $sendQueueMode == 0 ? getStat
 $checkTaskCmdUdpReceiver = getTaskCmd('udp');
 $taskResultUdpReceiver   = shell_exec($checkTaskCmdUdpReceiver); //Prüfe Hintergrundprozess
 $statusImageUpdReceiver  = $taskResultUdpReceiver != '' ? getStatusIcon('active') : getStatusIcon('inactive');
+$pidUdpReceiver          = getPidFromCmd($taskResultUdpReceiver);
 
 $checkTaskCmdCronLoop = getTaskCmd('cron');
 $taskResultCronLoop   = shell_exec($checkTaskCmdCronLoop); //Prüfe Hintergrundprozess
 $statusCronLoop       = $taskResultCronLoop != '' ? getStatusIcon('active') : getStatusIcon('inactive');
+$pidCronLoop          = getPidFromCmd($taskResultCronLoop);
 
 $checkTaskCmdCronBeacon = getTaskCmd('cronBeacon');
 $taskResultCronBeacon   = shell_exec($checkTaskCmdCronBeacon); //Prüfe Hintergrundprozess
 $statusCronBeacon       = $taskResultCronBeacon != '' ? getStatusIcon('active') : getStatusIcon('inactive');
+$pidCronBeacon          = getPidFromCmd($taskResultCronBeacon);
 
 $checkTaskCmdCronMheard = getTaskCmd('cronMheard');
 $taskResultCronMheard   = shell_exec($checkTaskCmdCronMheard); //Prüfe Hintergrundprozess
 $statusCronMheard       = $taskResultCronMheard != '' ? getStatusIcon('active') : getStatusIcon('inactive');
+$pidCronMheard          = getPidFromCmd($taskResultCronMheard);
+
+$checkTaskCmdCronGetSensorData = getTaskCmd('cronGetSensorData');
+$taskResultCronGetSensorData   = shell_exec($checkTaskCmdCronGetSensorData); //Prüfe Hintergrundprozess
+$statusCronGetSensorData       = $taskResultCronGetSensorData != '' ? getStatusIcon('active') : getStatusIcon('inactive');
+$pidCronGetSensorData          = getPidFromCmd($taskResultCronGetSensorData);
 
 $resExtensionPdoSqlite3  = extension_loaded('pdo_sqlite') == 1 ? getStatusIcon('active') : getStatusIcon('inactive');
 $resExtensionSqlite3     = extension_loaded('sqlite3') == 1 ? getStatusIcon('active') : getStatusIcon('inactive');
@@ -245,7 +272,11 @@ echo '</tr>';
 echo '<tr>';
 echo '<td><span data-i18n="submenu.debug_info.lbl.udp-bg-status">UDP-Receiver BG-Status</span>:</td>';
 echo '<td>';
-echo  $statusImageUpdReceiver;
+echo $statusImageUpdReceiver;
+if ($pidUdpReceiver !== false)
+{
+    echo '<img src="..\image\info_blau.png" class="process-indicator" data-pid="' . $pidUdpReceiver . '">';
+}
 echo '</td>';
 echo '</tr>';
 
@@ -271,6 +302,10 @@ echo '<tr>';
 echo '<td><span data-i18n="submenu.debug_info.lbl.cron-bg-status">Cron-Loop BG-Status</span>:</td>';
 echo '<td>';
 echo  $statusCronLoop;
+if ($pidCronLoop !== false)
+{
+    echo '<img src="..\image\info_blau.png" class="process-indicator" data-pid="' . $pidCronLoop . '">';
+}
 echo '</td>';
 echo '</tr>';
 
@@ -296,6 +331,10 @@ echo '<tr>';
 echo '<td><span data-i18n="submenu.debug_info.lbl.cron-beacon-bg-status">Cron-Beacon BG-Status</span>:</td>';
 echo '<td>';
 echo  $statusCronBeacon;
+if ($pidCronBeacon !== false)
+{
+    echo '<img src="..\image\info_blau.png" class="process-indicator" data-pid="' . $pidCronBeacon . '">';
+}
 echo '</td>';
 echo '</tr>';
 
@@ -313,7 +352,6 @@ echo  getParamData('cronLoopBeaconTs') ?? '0000-00-00 00:00';
 echo '</td>';
 echo '</tr>';
 
-#
 echo '<tr>';
 echo '<td colspan="2"><hr></td>';
 echo '</tr>';
@@ -322,6 +360,10 @@ echo '<tr>';
 echo '<td><span data-i18n="submenu.debug_info.lbl.cron-mheard-bg-status">Cron-Mheard BG-Status</span>:</td>';
 echo '<td>';
 echo  $statusCronMheard;
+if ($pidCronMheard !== false)
+{
+    echo '<img src="..\image\info_blau.png" class="process-indicator" data-pid="' . $pidCronMheard . '">';
+}
 echo '</td>';
 echo '</tr>';
 
@@ -336,6 +378,36 @@ echo '<tr>';
 echo '<td><span data-i18n="submenu.debug_info.lbl.cron-mheard-bg-timestamp">Cron-Mheard BG-Timestamp</span>:</td>';
 echo '<td>';
 echo  getParamData('cronLoopMheardPidTs') ?? '0000-00-00 00:00';
+echo '</td>';
+echo '</tr>';
+
+#
+echo '<tr>';
+echo '<td colspan="2"><hr></td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td><span data-i18n="submenu.debug_info.lbl.cron-mheard-bg-status">Cron-SensorData BG-Status</span>:</td>';
+echo '<td>';
+echo  $statusCronGetSensorData;
+if ($pidCronGetSensorData !== false)
+{
+    echo '<img src="..\image\info_blau.png" class="process-indicator" data-pid="' . $pidCronGetSensorData . '">';
+}
+echo '</td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td><span data-i18n="submenu.debug_info.lbl.cron-mheard-bg-task">Cron-SensorData BG-Task</span>:</td>';
+echo '<td>';
+echo  $taskResultCronGetSensorData;
+echo '</td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td><span data-i18n="submenu.debug_info.lbl.cron-mheard-bg-timestamp">Cron-SensorData BG-Timestamp</span>:</td>';
+echo '<td>';
+echo  getParamData('cronLoopGetSensorDataPidTs') ?? '0000-00-00 00:00';
 echo '</td>';
 echo '</tr>';
 

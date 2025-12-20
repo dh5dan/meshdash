@@ -26,6 +26,7 @@ else
     echo '<link rel="stylesheet" href="../css/normal_mode.css?' . microtime() . '">';
 }
 
+echo '<link rel="stylesheet" href="../css/core.css?' . microtime() . '">';
 echo '<link rel="stylesheet" href="../css/config_beacon.css?' . microtime() . '">';
 echo '<link rel="stylesheet" href="../css/loader.css?' . microtime() . '">';
 echo '</head>';
@@ -50,11 +51,13 @@ if ($sendData === '1')
 
     if ($resSaveSendQueueSettings)
     {
-        echo '<span class="successHint">'.date('H:i:s').'-<span data-i18n="submenu.config_beacon.msg.save-settings-success">Settings wurden erfolgreich abgespeichert!</span></span>';
+        echo '<span class="successHint">'.date('H:i:s') .
+            '-<span data-i18n="submenu.config_beacon.msg.save-settings-success">Settings wurden erfolgreich abgespeichert!</span></span>';
     }
     else
     {
-        echo '<span class="failureHint">' . date('H:i:s') . '-<span data-i18n="submenu.config_beacon.msg.save-settings-failed">Es gab einen Fehler beim Abspeichern der Settings!</span></span>';
+        echo '<span class="failureHint">' . date('H:i:s') .
+            '-<span data-i18n="submenu.config_beacon.msg.save-settings-failed">Es gab einen Fehler beim Abspeichern der Settings!</span></span>';
     }
 }
 
@@ -116,7 +119,13 @@ echo '</tr>';
 
 echo '<tr>';
 echo '<td><span data-i18n="submenu.config_beacon.lbl.beacon-task-status">Task enabled</span>:</td>';
-echo '<td><input type="checkbox" name="beaconEnabled" ' . $beaconEnabledChecked . ' id="beaconEnabled" value="1" /></td>';
+
+echo '<td>';
+echo '<label class="switch">';
+echo '<input type="checkbox" name="beaconEnabled" ' . $beaconEnabledChecked . ' id="beaconEnabled" value="1" />';
+echo '<span class="slider"></span>';
+echo '</label>';
+echo '</td>';
 echo '</tr>';
 
 

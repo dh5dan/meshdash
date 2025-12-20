@@ -1,37 +1,50 @@
 <?php
 function saveGenerallySettings(): bool
 {
-    $noPosData               = $_REQUEST['noPosData'] ?? 0;
-    $noDmAlertGlobal         = $_REQUEST['noDmAlertGlobal'] ?? 0;
-    $noTimeSyncMsg           = $_REQUEST['noTimeSyncMsg'] ?? 0;
-    $doLogEnable             = $_REQUEST['doLogEnable'] ?? 0;
+    $noPosData               = $_REQUEST['noPosData'] ?? 0; // checkbox
+    $noDmAlertGlobal         = $_REQUEST['noDmAlertGlobal'] ?? 0; // checkbox
+    $noTimeSyncMsg           = $_REQUEST['noTimeSyncMsg'] ?? 0; // checkbox
+    $doLogEnable             = $_REQUEST['doLogEnable'] ?? 0; // checkbox
     $loraIp                  = trim($_REQUEST['loraIp']) ?? '0.0.0.0';
     $loraIp                  = $loraIp == '' ? '0.0.0.0' : $loraIp;
     $callSign                = trim($_REQUEST['callSign']) ?? '';
     $maxScrollBackRows       = trim($_REQUEST['maxScrollBackRows']) ?? 60;
     $maxScrollBackRows       = $maxScrollBackRows == '' ? 60 : $maxScrollBackRows;
-    $doNotBackupDb           = $_REQUEST['doNotBackupDb'] ?? 0;
-    $clickOnCall             = $_REQUEST['clickOnCall'] ?? 0;
-    $chronLogEnable          = $_REQUEST['chronLogEnable'] ?? 0;
+    $doNotBackupDb           = $_REQUEST['doNotBackupDb'] ?? 0; // checkbox
+    $clickOnCall             = $_REQUEST['clickOnCall'] ?? 0; // checkbox
+    $chronLogEnable          = $_REQUEST['chronLogEnable'] ?? 0; // checkbox
     $retentionDays           = trim($_REQUEST['retentionDays']) ?? 7;
     $retentionDays           = $retentionDays == '' ? 7 : $retentionDays;
     $chronMode               = $_REQUEST['chronMode'] == '' ? 'zip' : $_REQUEST['chronMode'];
-    $strictCallEnable        = $_REQUEST['strictCallEnable'] ?? 0;
+    $strictCallEnable        = $_REQUEST['strictCallEnable'] ?? 0; // checkbox
     $selTzName               = $_REQUEST['selTzName'] ?? 'Europe/Berlin';
     $newMsgBgColor           = $_REQUEST['newMsgBgColor'] ?? '#FFFFFF';
     $mheardGroup             = trim($_REQUEST['mheardGroup']) ?? 0;
     $openStreetTileServerUrl = trim($_REQUEST['openStreetTileServerUrl']) ?? 'tile.openstreetmap.org';
-    $bubbleStyleView         = $_REQUEST['bubbleStyleView'] ?? 0;
+    $bubbleStyleView         = $_REQUEST['bubbleStyleView'] ?? 0; // checkbox
     $bubbleMaxWidth          = trim($_REQUEST['bubbleMaxWidth']) ?? 40;
     $bubbleMaxWidth          = $bubbleMaxWidth == '' ? 40 : $bubbleMaxWidth;
     $language                = $_REQUEST['selLanguage'] ?? 'de';
     $language                = $language == '' ? 'de' : $language;
-    $udpForwardingEnable     = $_REQUEST['udpForwardingEnable'] ?? 0;
+    $udpForwardingEnable     = $_REQUEST['udpForwardingEnable'] ?? 0;// checkbox
     $udpFwIp                 = $_REQUEST['udpFwIp'] ?? 0;
-    $udpFwPort               = $_REQUEST['udpFwPort'] ?? 0;
-    $darkMode                = $_REQUEST['darkMode'] ?? 0;
+    $udpFwPort               = $_REQUEST['udpFwPort'] ?? 0;// checkbox
+    $darkMode                = $_REQUEST['darkMode'] ?? 0;// checkbox
+    $festiveModeEnable       = $_REQUEST['festiveModeEnable'] ?? 0; // checkbox
     $mheardCronEnable        = (int)($_REQUEST['mheardCronEnable'] ?? 0);
     $mheardCronIntervall     = (int)($_REQUEST['mheardCronIntervall'] ?? 1);
+    $winPhpCliPath           = trim($_REQUEST['winPhpCliPath']) ?? '';
+
+    if (!file_exists($winPhpCliPath))
+    {
+        echo '<tr>';
+        echo '<td colspan="2">';
+        echo '<span class="failureHint">Der Datei-Pfad zu php.exe ist nicht korrekt.<br>'.$winPhpCliPath.'</span>';
+        echo '</td>';
+        echo '</tr>';
+
+        return false;
+    }
 
     $mheardCronEnableCheck    = (int)(getParamData('mheardCronEnable') ?? 0); // 1= Aktiviere Mheard-Cron und frage MH im Intervall ab
     $mheardCronIntervallCheck = (int)(getParamData('mheardCronIntervall') ?? 1); // Intervall in vollen Stunden 1-4
@@ -61,8 +74,10 @@ function saveGenerallySettings(): bool
     setParamData('udpFwIp', $udpFwIp, 'txt');
     setParamData('udpFwPort', $udpFwPort);
     setParamData('darkMode', $darkMode);
+    setParamData('festiveModeEnable', $festiveModeEnable);
     setParamData('mheardCronEnable', $mheardCronEnable);
     setParamData('mheardCronIntervall', $mheardCronIntervall);
+    setParamData('winPhpCliPath', $winPhpCliPath, 'txt');
 
     #Hintergrundprozess für Mheard-Cron
     $paramBgProcess['task'] = 'cronMheard';
@@ -72,29 +87,41 @@ function saveGenerallySettings(): bool
     {
         $stopBgProcessMhCron = stopBgProcess($paramBgProcess);
 
+        echo '<tr>';
+        echo '<td colspan="2">';
+
         if ($stopBgProcessMhCron === true)
         {
-            echo '<br><span class="successHint">Mheard-Cron Prozess erfolgreich beendet.</span>';
+            echo '<span class="successHint">Mheard-Cron Prozess erfolgreich beendet.</span>';
         }
         else
         {
-            echo '<br><span class="successFail">Fehler beim Beenden von Mheard-Cron Prozess.</span>';
+            echo '<span class="failureHint">Fehler beim Beenden von Mheard-Cron Prozess.</span>';
+            setParamData('mheardCronEnable', 0); // setze EnableFlag auf Disable bei Fehler.
         }
-        echo "<br>";
+
+        echo '</td>';
+        echo '</tr>';
     }
-    else  if ($mheardCronEnableCheck === 0 && $mheardCronEnable === 1)
+    else if ($mheardCronEnableCheck === 0 && $mheardCronEnable === 1)
     {
         $startBgProcessMhCron = startBgProcess($paramBgProcess);
 
+        echo '<tr>';
+        echo '<td colspan="2">';
+
         if (!empty($startBgProcessMhCron))
         {
-            echo '<br><span class="successHint">Mheard-Cron Prozess erfolgreich gestartet.</span>';
+            echo '<span class="successHint">Mheard-Cron Prozess erfolgreich gestartet.</span>';
         }
         else
         {
-            echo '<br><span class="successFail">Fehler beim Starten von Mheard-Cron Prozess.</span>';
+            echo '<span class="failureHint">Fehler beim Starten von Mheard-Cron Prozess.</span>';
+            setParamData('mheardCronEnable', 0); // setze EnableFlag auf Disable bei Fehler.
         }
-        echo "<br>";
+
+        echo '</td>';
+        echo '</tr>';
     }
 
     if ($mheardCronEnableCheck === 1 && $mheardCronEnable === 1 && $mheardCronIntervallCheck !== $mheardCronIntervall)
@@ -102,20 +129,26 @@ function saveGenerallySettings(): bool
         $stopBgProcessMhCron  = stopBgProcess($paramBgProcess);
         $startBgProcessMhCron = startBgProcess($paramBgProcess);
 
+        echo '<tr>';
+        echo '<td colspan="2">';
+
         if (!empty($startBgProcessMhCron) && $stopBgProcessMhCron === true)
         {
-            echo '<br><span class="successHint">Intervall-Änderung. Mheard-Cron Prozess erfolgreich neu gestartet.</span>';
+            echo '<span class="successHint">Intervall-Änderung. Mheard-Cron Prozess erfolgreich neu gestartet.</span>';
         }
         else
         {
-            echo '<br><span class="successFail">Intervall-Änderung. Fehler beim Neustart von Mheard-Cron Prozess.</span>';
+            echo '<span class="successFail">Intervall-Änderung. Fehler beim Neustart von Mheard-Cron Prozess.</span>';
+            setParamData('mheardCronEnable', 0); // setze EnableFlag auf Disable bei Fehler.
         }
-        echo "<br>";
+
+        echo '</td>';
+        echo '</tr>';
     }
 
     return true;
 }
-function selectTimezone($selTzName)
+function selectTimezone($selTzName): void
 {
     $selTzName = $selTzName ?? 'Europe/Berlin';
 
@@ -164,7 +197,7 @@ function selectTimezone($selTzName)
     }
 }
 
-function selectLanguage($selLanguage)
+function selectLanguage($selLanguage): void
 {
     $selLanguage = $selLanguage == '' ? 'de' : $selLanguage;
 

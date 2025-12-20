@@ -196,7 +196,10 @@
        {
            if (serverTime)
            {
-               let now            = new Date(new Date().getTime() + offset); // Korrigierte Zeit
+               let now = new Date(new Date().getTime() + offset); // Korrigierte Zeit
+               //test
+               //now = new Date(new Date('2026-05-24').getTime() + offset); // Korrigierte Zeit
+
                let dateTimeString = now.toLocaleString("de-DE", {
                    day: "2-digit",
                    month: "2-digit",
@@ -205,7 +208,88 @@
                    minute: "2-digit",
                    second: "2-digit"
                });
-               $("#datetime").text(dateTimeString);
+
+               // Symbole je nach Fest
+               let prefix            = "", suffix = "";
+               let festiveModeEnable = $("#festiveModeEnable").val();
+
+               if (festiveModeEnable === '1')
+               {
+                   let month = now.getMonth() + 1;
+                   let day   = now.getDate();
+
+                   let year      = now.getFullYear();
+                   let easter    = getEasterDate(year);
+                   let pentecost = getPentecostDate(year);
+                   let carnival  = getCarnivalMonday(year);
+
+                   if (isMobileOrTablet())
+                   {
+                       // Neujahr
+                       if (month === 1 && day === 1) prefix = suffix = "🎆✨";
+
+                       // Valentinstag
+                       if (month === 2 && day === 14) prefix = suffix = "❤️💌";
+
+                       // Fasching / Karneval
+                       if (now.toDateString() === carnival.toDateString())
+                       {
+                           prefix = "🎭🤡";
+                           suffix = "🎭🤡";
+                       }
+
+                       // Ostern ±1 Tag
+                       let easterStart = new Date(easter);
+                       easterStart.setDate(easterStart.getDate() - 1);
+                       let easterEnd = new Date(easter);
+                       easterEnd.setDate(easterEnd.getDate() + 1);
+                       if (now >= easterStart && now <= easterEnd)
+                       {
+                           prefix = "🐇🌷🥚";
+                           suffix = "🐇🌷🥚";
+                       }
+
+                       // Tag der Arbeit
+                       if (month === 5 && day === 1) prefix = suffix = "🛠️🌹";
+
+                       // Muttertag (2. Sonntag im Mai)
+                       let secondSundayMay = new Date(now.getFullYear(), 4, 1);
+                       while (secondSundayMay.getDay() !== 0)
+                       {
+                           secondSundayMay.setDate(secondSundayMay.getDate() + 1);
+                       }
+                       secondSundayMay.setDate(secondSundayMay.getDate() + 7);
+                       if (month === 5 && day === secondSundayMay.getDate()) prefix = suffix = "💐❤️";
+
+                       // Pfingsten
+                       if (now.toDateString() === pentecost.toDateString())
+                       {
+                           prefix = "🔔🌿";
+                           suffix = "🔔🌿";
+                       }
+
+                       // Halloween
+                       if (month === 10 && day === 31) prefix = suffix = "🎃👻";
+
+                       // Reformationstag
+                       if (month === 10 && day === 31) prefix = suffix = "✝️📖";
+
+                       // Allerheiligen
+                       if (month === 11 && day === 1) prefix = suffix = "🕯️⛪";
+
+                       // Nikolaus
+                       if (month === 12 && day === 6) prefix = suffix = "🎅👢";
+
+                       // Weihnachten 24.–26. Dezember
+                       if (month === 12 && day >= 24 && day <= 26) prefix = suffix = "🎄❄️🎁";
+
+                       // Silvester
+                       if (month === 12 && day === 31) prefix = suffix = "🎆🥂";
+                   }
+               }
+
+               //$("#datetime").text(dateTimeString);
+               $("#datetime").text(prefix + " " + dateTimeString + " " + suffix);
            }
        }
 
@@ -843,6 +927,39 @@
            const [day, month, year] = date . split('.');
            return `${year}-${month . padStart(2, '0')}-${day . padStart(2, '0')}`;
        }
+
+       function getEasterDate(year) {
+           let a = year % 19;
+           let b = Math.floor(year / 100);
+           let c = year % 100;
+           let d = Math.floor(b / 4);
+           let e = b % 4;
+           let f = Math.floor((b + 8) / 25);
+           let g = Math.floor((b - f + 1) / 3);
+           let h = (19 * a + b - d - g + 15) % 30;
+           let i = Math.floor(c / 4);
+           let k = c % 4;
+           let l = (32 + 2 * e + 2 * i - h - k) % 7;
+           let m = Math.floor((a + 11 * h + 22 * l) / 451);
+           let month = Math.floor((h + l - 7 * m + 114) / 31); // 3=March, 4=April
+           let day = ((h + l - 7 * m + 114) % 31) + 1;
+           return new Date(year, month - 1, day);
+       }
+
+       function getPentecostDate(year) {
+           let easter = getEasterDate(year);
+           let pentecost = new Date(easter);
+           pentecost.setDate(pentecost.getDate() + 49);
+           return pentecost;
+       }
+
+       function getCarnivalMonday(year) {
+           let easter = getEasterDate(year);
+           let carnival = new Date(easter);
+           carnival.setDate(carnival.getDate() - 48);
+           return carnival;
+       }
+
    });
 
 </script>

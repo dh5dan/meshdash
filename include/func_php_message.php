@@ -475,3 +475,50 @@ function updateCallNoticeDb(array $arrayCleanCallSign)
     $db->close();
     unset($db);
 }
+
+function remoteStartBeacon(): bool
+{
+    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    $basename       = pathinfo(getcwd())['basename'];
+    $dbFilenameSub  = '../database/beacon.db';
+    $dbFilenameRoot = 'database/beacon.db';
+    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+
+    $db = new SQLite3($dbFilename);
+    $db->exec('PRAGMA synchronous = NORMAL;');
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
+
+    $sql = "UPDATE beacon
+               SET 
+                   param_text  = CASE WHEN param_key = 'beaconOtp'        THEN '' END,
+                   param_text  = CASE WHEN param_key = 'beaconInitSendTs' THEN '0000-00-00 00:00:00' END,
+                   param_text  = CASE WHEN param_key = 'beaconLastSendTs' THEN '0000-00-00 00:00:00' END,
+                   param_value = CASE WHEN param_key = 'beaconCount'      THEN 0 END,
+                   param_value = CASE WHEN param_key = 'beaconEnabled'    THEN 1 END
+             WHERE param_key IN ('beaconOtp', 'beaconEnabled');
+           ";
+
+    $logArray   = array();
+    $logArray[] = "updateBeaconOtp: OTP";
+    $logArray[] = "updateBeaconOtp: Enable Beacon";
+    $logArray[] = "updateBeaconOtp: Database: $dbFilename";
+
+    $res = safeDbRun( $db,  $sql, 'exec', $logArray);
+
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
+    if ($res === false)
+    {
+        return false;
+    }
+
+    #Aktiviere Bake
+    $beaconInterval = getBeaconData('beaconInterval') ?? 0;
+    $beaconInterval = $beaconInterval == '' ? 5 : $beaconInterval;
+
+    setBeaconCronInterval($beaconInterval, 1);
+
+    return true;
+}

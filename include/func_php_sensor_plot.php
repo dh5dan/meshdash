@@ -1,6 +1,6 @@
 <?php
 
-function selectSensorType()
+function selectSensorType($resGetSensorData): void
 {
     $allowedSensors = [
         'Temp IN' =>'temp',
@@ -22,8 +22,22 @@ function selectSensorType()
         'ina226vPower' => 'ina226vPower',
     ];
 
+    #Mapping allowedSensor => Node Sensor-Values
+    $sensorMapping = [
+        'bme280' => 'bme_p_280',
+        'bme680'  => 'bme680',
+        'mcu811'  => 'mcu811',
+        'lsp33'   => 'lsp33',
+        'oneWire'  => '1_wire',
+    ];
+
     foreach ($allowedSensors as $key => $value)
     {
+        if (isset($sensorMapping[$value]) && substr($resGetSensorData[$sensorMapping[$value]], 0, 3) === "off")
+        {
+            continue;
+        }
+
         echo '<option value="' . $value . '">' . $key . '</option>';
     }
 }

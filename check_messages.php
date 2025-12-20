@@ -2,8 +2,11 @@
 require_once 'dbinc/param.php';
 require_once 'include/func_php_core.php';
 
+$autoPurgeDebugLog = 'log/debug_auto_purge.log';
 $debugFlag         = false;
+$debugLog          = true;
 
+// --- Debug: optional lastChecked override
 if ($debugFlag === true)
 {
     echo "<br>lastChecked vor:" . $_GET['lastChecked'];
@@ -11,69 +14,68 @@ if ($debugFlag === true)
     echo "<br>lastChecked nach:" . $_GET['lastChecked'];
 }
 
-#Wenn Purge auf meshDash db, dann nichts machen so lange
-if (isPurgeDue('meshdash', 2) === false) {
-    echo "<br>islocked";
-
-    $errorText = "autopurge is locked at " . date('Y-m-d H:i:s') . "\n";
-    file_put_contents('autopurge.log', $errorText,FILE_APPEND);
-    exit();
-}
-
 #Wenn Datei nicht existiert, dann exit.
 #Verhindert das ein offener Browser eine 0 byte Datenbank-Datei erzeugt
-if (!file_exists('database/parameter.db') || !file_exists('database/groups.db') || !file_exists('database/meshdash.db'))
+if (!file_exists('database/parameter.db') ||
+    !file_exists('database/groups.db') ||
+    !file_exists('database/meshdash.db')
+)
 {
     exit();
 }
 
-// Prüfen, ob Lock existiert
-//if (file_exists(AUTO_PURGE_LOCK_FILE)) {
-//    $lockAge = time() - filemtime(AUTO_PURGE_LOCK_FILE);
-//
-//    if ($lockAge > AUTO_PURGE_LOCK_TIMEOUT) {
-//        // Lock abgelaufen, alte Datei entfernen
-//        unlink(AUTO_PURGE_LOCK_FILE);
-//    } else {
-//        // Lock noch gültig → AutoPurge läuft bereits
-//        echo "<br>AutoPurge LOCK vorhanden, noch gültig!";
-//        exit();
-//    }
-//}
-
-if (is_file(AUTO_PURGE_LOCK_FILE)) { // is_file() prüft existenz und dass es eine Datei ist
-    $lockAge = @filemtime(AUTO_PURGE_LOCK_FILE);
-    if ($lockAge === false) {
-        // Datei existiert nicht mehr oder Zugriff verweigert, ignorieren
-    } else {
-        $lockAge = time() - $lockAge;
-        if ($lockAge > AUTO_PURGE_LOCK_TIMEOUT) {
-            @unlink(AUTO_PURGE_LOCK_FILE); // Fehler ignorieren, ggf. Log
-        } else {
-            echo "<br>AutoPurge LOCK vorhanden, noch gültig!";
-            exit();
-        }
-    }
-}
-
-// Lock erstellen
-file_put_contents(AUTO_PURGE_LOCK_FILE, date('Y-m-d H:i:s'), LOCK_EX);
-
-#Trigger AutoPurgeData
-try
+// --- Prüfen, ob AutoPurge aktiv ist
+if ((int) getParamData('enableMsgPurge') === 1 || (int) getParamData('enableSensorPurge') === 1)
 {
-    autoPurgeData();
-}
-finally
-{
-    // Lock wieder entfernen
-    if (file_exists(AUTO_PURGE_LOCK_FILE))
+    #Wenn Purge auf meshDash db, dann nichts machen so lange
+    if (isPurgeDue('meshdash', 2) === false)
     {
-        @unlink(AUTO_PURGE_LOCK_FILE);
+        echo "<br>Ist gesperrt durch Auto-Purge";
+
+        if ($debugLog === true)
+        {
+            $errorText = date('Y-m-d H:i:s') . " - Ist gesperrt durch Auto-Purge" . "\n";
+            file_put_contents($autoPurgeDebugLog, $errorText, FILE_APPEND);
+        }
+
+        exit();
+    }
+
+    // --- Lock erstellen
+    if (!acquireAutoPurgeLock())
+    {
+        if ($debugLog)
+        {
+            file_put_contents(
+                $autoPurgeDebugLog,
+                date('Y-m-d H:i:s') . " - AutoPurge LOCK vorhanden, noch gültig.\n",
+                FILE_APPEND
+            );
+        }
+        exit();
+    }
+
+    // --- AutoPurge ausführen
+    try
+    {
+        autoPurgeData();
+    }
+    finally
+    {
+        if ($debugLog)
+        {
+            file_put_contents(
+                $autoPurgeDebugLog,
+                date('Y-m-d H:i:s') . " - releaseAutoPurgeLock.\n",
+                FILE_APPEND
+            );
+        }
+
+        releaseAutoPurgeLock();
     }
 }
 
-#Trigger LogRotate
+// --- LogRotate triggern
 logRotate();
 
 // Verbindung zur ersten DB (groups)

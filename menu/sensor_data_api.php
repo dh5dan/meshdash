@@ -59,10 +59,20 @@ $result = $stmt->execute();
 $data   = [];
 
 while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+    $raw = $row[$sensor];
+
+    // Float extrahieren: alles vor dem ersten nicht-numerischen Zeichen
+    if (preg_match('/-?\d+(\.\d+)?/', $raw, $matches)) {
+        $value = (float)$matches[0];
+    } else {
+        $value = null; // kein gültiger Wert
+    }
+
     $data[] = [
         'timestamp' => $row['timestamps'],
-        'value'     => is_numeric($row[$sensor]) ? (float)$row[$sensor] : intval($row[$sensor]),
+        'value'     => $value,
     ];
 }
+
 
 echo json_encode($data);

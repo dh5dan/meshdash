@@ -1,5 +1,5 @@
 <?php
-function backupApp($sourceDir, $backupDir)
+function backupApp($sourceDir, $backupDir): bool|string
 {
     $zip                   = new ZipArchive();
     $backupFullPath        = $backupDir . '/backup_' . date('Ymd_His') . '.zip';
@@ -15,6 +15,7 @@ function backupApp($sourceDir, $backupDir)
         'docs/',     // komplettes Verzeichnis
         'export/',     // komplettes Verzeichnis
         '.gitignore', // einzelne Datei
+        'auto_purge.lock', // einzelne Datei
     ];
 
     // Nur diese Dateitypen in "execute/" sichern

@@ -162,6 +162,18 @@ table.writeMutex-table tbody tr:hover {
     background-color: var(--debug-info-table-write-mutex-tbody-tr-hover) ;
 }
 
+.process-indicator {
+    cursor: pointer;        /* Maus wird zur Hand */
+    width: 20px;            /* Breite des Icons */
+    height: 20px;           /* Höhe des Icons */
+    display: inline-block;  /* damit es sich wie ein Icon verhält */
+    object-fit: contain;    /* skaliert das Bild, ohne es zu verzerren */
+}
+.menu-icon,
+.process-indicator {
+    vertical-align: middle; /* zentriert entlang der Textlinie */
+}
+
 @media (max-width: 600px) {
 
     td {

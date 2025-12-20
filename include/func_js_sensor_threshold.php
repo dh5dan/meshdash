@@ -1,394 +1,163 @@
 <script>
     $(function ($) {
 
+        $("#infoImagePoint").on("click", function ()
+        {
+            let titleMsg = 'Hinweis';
+            let width    = 600;
+            let outputMsg;
+
+            outputMsg  = '<b>Hinweis zum Intervall-Wert</b><br><br>';
+            outputMsg += 'Der Abfrage-Intervall-Wert muss:<ul>';
+            outputMsg += '<li>eine ganze Zahl sein</li>';
+            outputMsg += '<li>zwischen <b>1 und 1439</b> Minuten liegen</li>';
+            outputMsg += '</ul>';
+            outputMsg += '<b>Zulässige Beispielwerte:</b><br>';
+            outputMsg += '<table class="interval-table">';
+            outputMsg += '<thead><tr style="background-color: #f0f0f0;"><th>Minuten</th><th>Beschreibung</th><th>Messwerte/Tag</th></tr></thead>';
+            outputMsg += '<tbody>';
+
+            const examples = [
+                {min: 5, desc: 'Sehr häufig'},
+                {min: 15, desc: 'Standard für viele Sensoren'},
+                {min: 30, desc: 'Alle halbe Stunde'},
+                {min: 60, desc: 'Stündlich'},
+                {min: 90, desc: 'Alle 1,5 Stunden'},
+                {min: 120, desc: 'Alle 2 Stunden'},
+                {min: 180, desc: 'Alle 3 Stunden'},
+                {min: 240, desc: 'Alle 4 Stunden'},
+                {min: 1440, desc: 'Alle 24 Stunden'}
+            ];
+
+            examples.forEach(item => {
+                const countPerDay = Math.floor(1440 / item.min);
+                outputMsg += `<tr><td>${item.min}</td><td>${item.desc}</td><td>${countPerDay}</td></tr>`;
+            });
+
+            outputMsg += '</tbody></table>';
+
+
+            dialog(outputMsg, titleMsg, width);
+            return false;
+        });
+
         $("#btnSaveSensorThresholdTop, #btnSaveSensorThresholdBottom").on("click", function ()
         {
-            let titleMsg                 = 'Hinweis';
-            let outputMsg                = 'Jetzt alle Settings speichern?';
-            let width                    = 700;
-            let sendData                 = 1;
-            let regex                    = /^-?\d+(\.\d+)?$/; // Erlaubt ein Integer und Float mit Punkt
-            let callSignPattern          = /^[A-Z0-9]{1,2}[0-9][A-Z0-9]{1,4}-(?:[1-9][0-9]?)$/i
-            let sensorThTempIntervallMin = $("#sensorThTempIntervallMin").val();
+            let titleMsg                  = 'Hinweis';
+            let outputMsg                 = 'Jetzt alle Settings speichern?';
+            let width                     = 300;
+            let sendData                  = 1;
+            let regex                     = /^-?\d+(\.\d+)?$/; // Erlaubt ein Integer und Float mit Punkt
+            let callSignPattern           = /^[A-Z0-9]{1,2}[0-9][A-Z0-9]{1,4}-(?:[1-9][0-9]?)$/i
+            let sensorPollingIntervallMin = $("#sensorPollingIntervallMin").val();
 
-            let sensorThTempEnabled  = $("#sensorThTempEnabled").is(":checked");
-            let sensorThTempMinValue = $("#sensorThTempMinValue").val().trim();
-            let sensorThTempMaxValue = $("#sensorThTempMaxValue").val().trim();
-            let sensorThTempAlertMsg = $("#sensorThTempAlertMsg").val().trim();
-            let sensorThTempDmGrpId  = $("#sensorThTempDmGrpId").val().trim();
+            const basicSensors = [
+                {
+                    label: 'Temp',
+                    enabled: '#sensorThTempEnabled',
+                    min: '#sensorThTempMinValue',
+                    max: '#sensorThTempMaxValue',
+                    msg: '#sensorThTempAlertMsg',
+                    dm:  '#sensorThTempDmGrpId'
+                },
+                {
+                    label: 'Tout',
+                    enabled: '#sensorThToutEnabled',
+                    min: '#sensorThToutMinValue',
+                    max: '#sensorThToutMaxValue',
+                    msg: '#sensorThToutAlertMsg',
+                    dm:  '#sensorThToutDmGrpId'
+                }
+            ];
 
-            if (sensorThTempMinValue !== '' && !regex.test(sensorThTempMinValue)) {
-                width       = 500;
-                outputMsg = 'Temp Min-Wert ist keine Zahl oder nicht mit Punkt getrennt.';
-                outputMsg += '<br><br>Bitte prüfen.';
-
-                dialog(outputMsg, titleMsg, width);
-                return false;
+            for (const sensor of basicSensors) {
+                if (!validateBasicSensor(sensor, regex, callSignPattern, titleMsg)) {
+                    return false;
+                }
             }
 
-            if (sensorThTempMaxValue !== '' && !regex.test(sensorThTempMaxValue)) {
-                width       = 500;
-                outputMsg = 'Temp Max-Wert ist keine Zahl oder nicht mit Punkt getrennt.';
-                outputMsg += '<br><br>Bitte prüfen.';
 
-                dialog(outputMsg, titleMsg, width);
-                return false;
-            }
+            ///// INA226 Sensoren
 
-            if (sensorThTempMinValue !== '' && sensorThTempMaxValue !== '' && parseFloat(sensorThTempMinValue) > parseFloat(sensorThTempMaxValue))
-            {
-                width       = 500;
-                outputMsg = 'Der Temp Max-Wert ist kleiner als der Temp-Min Wert.';
-                outputMsg += '<br><br>Bitte prüfen.';
-
-                dialog(outputMsg, titleMsg, width);
-                return false;
-            }
-
-            if ((!$.isNumeric(sensorThTempDmGrpId) || sensorThTempDmGrpId <= 0) && !callSignPattern.test(sensorThTempDmGrpId))
-            {
-                width       = 500;
-                outputMsg = 'DM-Temp Gruppe muss eine Zahl sein und > 0';
-                outputMsg += '<br>oder ein gültiges Call mit SID 1-99.';
-                outputMsg += '<br><br>Bitte prüfen.';
-
-                dialog(outputMsg, titleMsg, width);
-                return false;
-            }
-
-            ////////                   Tout
-            let sensorThToutEnabled  = $("#sensorThToutEnabled").is(":checked");
-            let sensorThToutMinValue = $("#sensorThToutMinValue").val().trim();
-            let sensorThToutMaxValue = $("#sensorThToutMaxValue").val().trim();
-            let sensorThToutAlertMsg = $("#sensorThToutAlertMsg").val().trim();
-            let sensorThToutDmGrpId  = $("#sensorThToutDmGrpId").val().trim();
-
-            let sensorThIna226vBusEnabled     = false;
-            let sensorThIna226vShuntEnabled   = false;
-            let sensorThIna226vCurrentEnabled = false;
-            let sensorThIna226vPowerEnabled   = false;
-
-            let sensorThIna226vBusAlertMsg     = '';
-            let sensorThIna226vShuntAlertMsg   = '';
-            let sensorThIna226vCurrentAlertMsg = '';
-            let sensorThIna226vPowerAlertMsg   = '';
-
-            if (sensorThToutMinValue !== '' && !regex.test(sensorThToutMinValue)) {
-                width       = 500;
-                outputMsg = 'Tout Min-Wert ist keine Zahl oder nicht mit Punkt getrennt.';
-                outputMsg += '<br><br>Bitte prüfen.';
-
-                dialog(outputMsg, titleMsg, width);
-                return false;
-            }
-
-            if (sensorThToutMaxValue !== '' && !regex.test(sensorThToutMaxValue)) {
-                width       = 500;
-                outputMsg = 'Tout Max-Wert ist keine Zahl oder nicht mit Punkt getrennt.';
-                outputMsg += '<br><br>Bitte prüfen.';
-
-                dialog(outputMsg, titleMsg, width);
-                return false;
-            }
-
-            if (sensorThToutMinValue !== '' && sensorThToutMaxValue !== '' && parseFloat(sensorThToutMinValue) > parseFloat(sensorThToutMaxValue))
-            {
-                width       = 500;
-                outputMsg = 'Der Tout Max-Wert ist kleiner als der Tout-Min Wert.';
-                outputMsg += '<br><br>Bitte prüfen.';
-
-                dialog(outputMsg, titleMsg, width);
-                return false;
-            }
-
-            if ((!$.isNumeric(sensorThToutDmGrpId) || sensorThToutDmGrpId <= 0) && !callSignPattern.test(sensorThToutDmGrpId))
-            {
-                width       = 500;
-                outputMsg = 'DM-Tout Gruppe muss eine Zahl sein und > 0';
-                outputMsg += '<br>oder ein gültiges Call mit SID 1-99.';
-                outputMsg += '<br><br>Bitte prüfen.';
-
-                dialog(outputMsg, titleMsg, width);
-                return false;
-            }
-
-            //Prüfroutine nur durchlaufen, wenn INA226 Sensor vorhanden ist
-            if ($("#sensorThIna226vBusEnabled").length)
-            {
-                //////////////////// INA226 vBus
-                let sensorThIna226vBusEnabled  = $("#sensorThIna226vBusEnabled").is(":checked");
-                let sensorThIna226vBusMinValue = $("#sensorThIna226vBusMinValue").val().trim();
-                let sensorThIna226vBusMaxValue = $("#sensorThIna226vBusMaxValue").val().trim();
-                let sensorThIna226vBusAlertMsg = $("#sensorThIna226vBusAlertMsg").val().trim();
-                let sensorThIna226vBusDmGrpId  = $("#sensorThIna226vBusDmGrpId").val().trim();
-
-                if (sensorThIna226vBusMinValue !== '' && !regex.test(sensorThIna226vBusMinValue))
+            const inaSensors = [
                 {
-                    width     = 500;
-                    outputMsg = 'Ina226vBus Min-Wert ist keine Zahl oder nicht mit Punkt getrennt.';
-                    outputMsg += '<br><br>Bitte prüfen.';
+                    label: 'Ina226 vBus',
+                    enabled: '#sensorThIna226vBusEnabled',
+                    min: '#sensorThIna226vBusMinValue',
+                    max: '#sensorThIna226vBusMaxValue',
+                    msg: '#sensorThIna226vBusAlertMsg',
+                    dm:  '#sensorThIna226vBusDmGrpId'
+                },
+                {
+                    label: 'Ina226 vShunt',
+                    enabled: '#sensorThIna226vShuntEnabled',
+                    min: '#sensorThIna226vShuntMinValue',
+                    max: '#sensorThIna226vShuntMaxValue',
+                    msg: '#sensorThIna226vShuntAlertMsg',
+                    dm:  '#sensorThIna226vShuntDmGrpId'
+                },
+                {
+                    label: 'Ina226 Current',
+                    enabled: '#sensorThIna226vCurrentEnabled',
+                    min: '#sensorThIna226vCurrentMinValue',
+                    max: '#sensorThIna226vCurrentMaxValue',
+                    msg: '#sensorThIna226vCurrentAlertMsg',
+                    dm:  '#sensorThIna226vCurrentDmGrpId'
+                },
+                {
+                    label: 'Ina226 Power',
+                    enabled: '#sensorThIna226vPowerEnabled',
+                    min: '#sensorThIna226vPowerMinValue',
+                    max: '#sensorThIna226vPowerMaxValue',
+                    msg: '#sensorThIna226vPowerAlertMsg',
+                    dm:  '#sensorThIna226vPowerDmGrpId'
+                }
+            ];
 
-                    dialog(outputMsg, titleMsg, width);
-                    return false;
+            for (const sensor of inaSensors) {
+
+                // falls INA auf der Hardware nicht vorhanden ist
+                if (!$(sensor.enabled).length) {
+                    continue;
                 }
 
-                if (sensorThIna226vBusMaxValue !== '' && !regex.test(sensorThIna226vBusMaxValue))
-                {
-                    width     = 500;
-                    outputMsg = 'Ina226vBus Max-Wert ist keine Zahl oder nicht mit Punkt getrennt.';
-                    outputMsg += '<br><br>Bitte prüfen.';
-
-                    dialog(outputMsg, titleMsg, width);
-                    return false;
-                }
-
-                if (sensorThIna226vBusAlertMsg === '' && sensorThIna226vBusEnabled === true)
-                {
-                    width     = 500;
-                    outputMsg = 'Ina226vBus-Alertmeldung hat keine Statusrückmeldung.';
-                    outputMsg += '<br>Sie erhalten dann keine Rückmeldung.';
-                    outputMsg += '<br><br>Soll die Einstellung so wirklich aktiviert werden?';
-
-                    dialogConfirm(outputMsg, titleMsg, width, sendData)
-                    return false;
-                }
-
-                if (sensorThIna226vBusMinValue !== '' && sensorThIna226vBusMaxValue !== '' && parseFloat(sensorThIna226vBusMinValue) > parseFloat(sensorThIna226vBusMaxValue))
-                {
-                    width     = 500;
-                    outputMsg = 'Der Ina226vBus Max-Wert ist kleiner als der Ina226vBus-Min Wert.';
-                    outputMsg += '<br><br>Bitte prüfen.';
-
-                    dialog(outputMsg, titleMsg, width);
-                    return false;
-                }
-
-                if ((!$.isNumeric(sensorThIna226vBusDmGrpId) || sensorThIna226vBusDmGrpId <= 0) && !callSignPattern.test(sensorThIna226vBusDmGrpId))
-                {
-                    width     = 500;
-                    outputMsg = 'DM-Ina226vBus Gruppe muss eine Zahl sein und > 0.';
-                    outputMsg += '<br>oder ein gültiges Call mit SID 1-99.';
-                    outputMsg += '<br><br>Bitte prüfen.';
-
-                    dialog(outputMsg, titleMsg, width);
-                    return false;
-                }
-
-                /////////////////// VSHunt
-                let sensorThIna226vShuntEnabled  = $("#sensorThIna226vShuntEnabled").is(":checked");
-                let sensorThIna226vShuntMinValue = $("#sensorThIna226vShuntMinValue").val().trim();
-                let sensorThIna226vShuntMaxValue = $("#sensorThIna226vShuntMaxValue").val().trim();
-                let sensorThIna226vShuntAlertMsg = $("#sensorThIna226vShuntAlertMsg").val().trim();
-                let sensorThIna226vShuntDmGrpId  = $("#sensorThIna226vShuntDmGrpId").val().trim();
-
-                if (sensorThIna226vShuntMinValue !== '' && !regex.test(sensorThIna226vShuntMinValue))
-                {
-                    width     = 500;
-                    outputMsg = 'Ina226vShunt Min-Wert ist keine Zahl oder nicht mit Punkt getrennt.';
-                    outputMsg += '<br><br>Bitte prüfen.';
-
-                    dialog(outputMsg, titleMsg, width);
-                    return false;
-                }
-
-                if (sensorThIna226vShuntMaxValue !== '' && !regex.test(sensorThIna226vShuntMaxValue))
-                {
-                    width     = 500;
-                    outputMsg = 'Ina226vShunt Max-Wert ist keine Zahl oder nicht mit Punkt getrennt.';
-                    outputMsg += '<br><br>Bitte prüfen.';
-
-                    dialog(outputMsg, titleMsg, width);
-                    return false;
-                }
-
-                if (sensorThIna226vShuntAlertMsg === '' && sensorThIna226vShuntEnabled === true)
-                {
-                    width     = 500;
-                    outputMsg = 'Ina226vShunt-Alertmeldung hat keine Statusrückmeldung.';
-                    outputMsg += '<br>Sie erhalten dann keine Rückmeldung.';
-                    outputMsg += '<br><br>Soll die Einstellung so wirklich aktiviert werden?';
-
-                    dialogConfirm(outputMsg, titleMsg, width, sendData)
-                    return false;
-                }
-
-                if (sensorThIna226vShuntMinValue !== '' && sensorThIna226vShuntMaxValue !== '' && parseFloat(sensorThIna226vShuntMinValue) > parseFloat(sensorThIna226vShuntMaxValue))
-                {
-                    width     = 500;
-                    outputMsg = 'Der Ina226vShunt Max-Wert ist kleiner als der Ina226vShunt-Min Wert.';
-                    outputMsg += '<br><br>Bitte prüfen.';
-
-                    dialog(outputMsg, titleMsg, width);
-                    return false;
-                }
-
-                if ((!$.isNumeric(sensorThIna226vShuntDmGrpId) || sensorThIna226vShuntDmGrpId <= 0) && !callSignPattern.test(sensorThIna226vShuntDmGrpId))
-                {
-                    width     = 500;
-                    outputMsg = 'DM-Ina226vShunt Gruppe muss eine Zahl sein und > 0.';
-                    outputMsg += '<br>oder ein gültiges Call mit SID 1-99.';
-                    outputMsg += '<br><br>Bitte prüfen.';
-
-                    dialog(outputMsg, titleMsg, width);
-                    return false;
-                }
-
-                //// vCurrent
-                let sensorThIna226vCurrentEnabled  = $("#sensorThIna226vCurrentEnabled").is(":checked");
-                let sensorThIna226vCurrentMinValue = $("#sensorThIna226vCurrentMinValue").val().trim();
-                let sensorThIna226vCurrentMaxValue = $("#sensorThIna226vCurrentMaxValue").val().trim();
-                let sensorThIna226vCurrentAlertMsg = $("#sensorThIna226vCurrentAlertMsg").val().trim();
-                let sensorThIna226vCurrentDmGrpId  = $("#sensorThIna226vCurrentDmGrpId").val().trim();
-
-                if (sensorThIna226vCurrentMinValue !== '' && !regex.test(sensorThIna226vCurrentMinValue))
-                {
-                    width     = 500;
-                    outputMsg = 'Ina226vCurrent Min-Wert ist keine Zahl oder nicht mit Punkt getrennt.';
-                    outputMsg += '<br><br>Bitte prüfen.';
-
-                    dialog(outputMsg, titleMsg, width);
-                    return false;
-                }
-
-                if (sensorThIna226vCurrentMaxValue !== '' && !regex.test(sensorThIna226vCurrentMaxValue))
-                {
-                    width     = 500;
-                    outputMsg = 'Ina226vCurrent Max-Wert ist keine Zahl oder nicht mit Punkt getrennt.';
-                    outputMsg += '<br><br>Bitte prüfen.';
-
-                    dialog(outputMsg, titleMsg, width);
-                    return false;
-                }
-
-                if (sensorThIna226vCurrentAlertMsg === '' && sensorThIna226vCurrentEnabled === true)
-                {
-                    width     = 500;
-                    outputMsg = 'Ina226vCurrent-Alertmeldung hat keine Statusrückmeldung.';
-                    outputMsg += '<br>Sie erhalten dann keine Rückmeldung.';
-                    outputMsg += '<br><br>Soll die Einstellung so wirklich aktiviert werden?';
-
-                    dialogConfirm(outputMsg, titleMsg, width, sendData)
-                    return false;
-                }
-
-                if (sensorThIna226vCurrentMinValue !== '' && sensorThIna226vCurrentMaxValue !== '' && parseFloat(sensorThIna226vCurrentMinValue) > parseFloat(sensorThIna226vCurrentMaxValue))
-                {
-                    width     = 500;
-                    outputMsg = 'Der Ina226vCurrent Max-Wert ist kleiner als der Ina226vCurrent-Min Wert.';
-                    outputMsg += '<br><br>Bitte prüfen.';
-
-                    dialog(outputMsg, titleMsg, width);
-                    return false;
-                }
-
-                if ((!$.isNumeric(sensorThIna226vCurrentDmGrpId) || sensorThIna226vCurrentDmGrpId <= 0)  && !callSignPattern.test(sensorThTempDmGrpId))
-                {
-                    width     = 500;
-                    outputMsg = 'DM-Ina226vCurrent Gruppe muss eine Zahl sein und > 0.';
-                    outputMsg += '<br>oder ein gültiges Call mit SID 1-99.';
-                    outputMsg += '<br><br>Bitte prüfen.';
-
-                    dialog(outputMsg, titleMsg, width);
-                    return false;
-                }
-
-                ///// vPower
-                let sensorThIna226vPowerEnabled  = $("#sensorThIna226vPowerEnabled").is(":checked");
-                let sensorThIna226vPowerMinValue = $("#sensorThIna226vPowerMinValue").val().trim();
-                let sensorThIna226vPowerMaxValue = $("#sensorThIna226vPowerMaxValue").val().trim();
-                let sensorThIna226vPowerAlertMsg = $("#sensorThIna226vPowerAlertMsg").val().trim();
-                let sensorThIna226vPowerDmGrpId  = $("#sensorThIna226vPowerDmGrpId").val().trim();
-
-                if (sensorThIna226vPowerMinValue !== '' && !regex.test(sensorThIna226vPowerMinValue))
-                {
-                    width     = 500;
-                    outputMsg = 'Ina226vPower Min-Wert ist keine Zahl oder nicht mit Punkt getrennt.';
-                    outputMsg += '<br><br>Bitte prüfen.';
-
-                    dialog(outputMsg, titleMsg, width);
-                    return false;
-                }
-
-                if (sensorThIna226vPowerMaxValue !== '' && !regex.test(sensorThIna226vPowerMaxValue))
-                {
-                    width     = 500;
-                    outputMsg = 'Ina226vPower Max-Wert ist keine Zahl oder nicht mit Punkt getrennt.';
-                    outputMsg += '<br><br>Bitte prüfen.';
-
-                    dialog(outputMsg, titleMsg, width);
-                    return false;
-                }
-
-                if (sensorThIna226vPowerAlertMsg === '' && sensorThIna226vPowerEnabled === true)
-                {
-                    width     = 500;
-                    outputMsg = 'Ina226vPower-Alertmeldung hat keine Statusrückmeldung.';
-                    outputMsg += '<br>Sie erhalten dann keine Rückmeldung.';
-                    outputMsg += '<br><br>Soll die Einstellung so wirklich aktiviert werden?';
-
-                    dialogConfirm(outputMsg, titleMsg, width, sendData)
-                    return false;
-                }
-
-                if (sensorThIna226vPowerMinValue !== '' && sensorThIna226vPowerMaxValue !== '' && parseFloat(sensorThIna226vPowerMinValue) > parseFloat(sensorThIna226vPowerMaxValue))
-                {
-                    width     = 500;
-                    outputMsg = 'Der Ina226vPower Max-Wert ist kleiner als der Ina226vPower-Min Wert.';
-                    outputMsg += '<br><br>Bitte prüfen.';
-
-                    dialog(outputMsg, titleMsg, width);
-                    return false;
-                }
-
-                if ((!$.isNumeric(sensorThIna226vPowerDmGrpId) || sensorThIna226vPowerDmGrpId <= 0) && !callSignPattern.test(sensorThTempDmGrpId))
-                {
-                    width     = 500;
-                    outputMsg = 'DM-Ina226vPower Gruppe muss eine Zahl sein und > 0.';
-                    outputMsg += '<br>oder ein gültiges Call mit SID 1-99.';
-                    outputMsg += '<br><br>Bitte prüfen.';
-
-                    dialog(outputMsg, titleMsg, width);
-                    return false;
-                }
-
-                // Intervall prüfen, ob die Eingabe EINE ganze Zahl >= 1 ist und ob ein Sensor aktiv ist
-                if ((!/^\d+$/.test(sensorThTempIntervallMin) || parseInt(sensorThTempIntervallMin, 10) <= 0 || parseInt(sensorThTempIntervallMin, 10) > 1439) &&
-                    (sensorThIna226vBusEnabled === true || sensorThIna226vShuntEnabled === true || sensorThIna226vCurrentEnabled === true || sensorThIna226vPowerEnabled === true))
-                {
-                    width       = 600;
-                    outputMsg = 'Der Abfrage-Intervallwert muss eine ganze Zahl >= 1 - 1439 min. sein.';
-                    outputMsg += '<br><br>Bitte prüfen.';
-
-                    dialog(outputMsg, titleMsg, width);
+                if (!validateBasicSensor(sensor, regex, callSignPattern, titleMsg)) {
                     return false;
                 }
             }
 
             //////////////// Finale
             // Endprüfung: Ganze Zahl, Wertebereich 1–1439, muss 24h (1440 Minuten) ohne Rest teilen
-            if ((!/^\d+$/.test(sensorThTempIntervallMin) || parseInt(sensorThTempIntervallMin, 10) <= 0 || parseInt(sensorThTempIntervallMin, 10) > 1439) &&
-                (1440 % parseInt(sensorThTempIntervallMin, 10) !== 0) &&
-                (sensorThTempEnabled === true || sensorThToutEnabled === true))
+            if ((!/^\d+$/.test(sensorPollingIntervallMin) || parseInt(sensorPollingIntervallMin, 10) <= 0 || parseInt(sensorPollingIntervallMin, 10) > 1439))
             {
-                width       = 600;
-                outputMsg  = '<b>Ungültiger Intervallwert!</b><br><br>';
-                outputMsg += 'Der Abfrage-Intervallwert muss:<ul>';
+                width      = 600;
+                outputMsg  = '<b>Ungültiger Intervall-Wert!</b><br><br>';
+                outputMsg += 'Der Abfrage-Intervall-Wert muss:<ul>';
                 outputMsg += '<li>eine ganze Zahl sein</li>';
                 outputMsg += '<li>zwischen <b>1 und 1439</b> Minuten liegen</li>';
-                outputMsg += '<li>sich <b>exakt ohne Rest</b> in 24 Stunden (1440 Minuten) teilen lassen</li>';
                 outputMsg += '</ul>';
-                outputMsg += '<br><b>Zulässige Beispielwerte:</b><br>';
-                outputMsg += '<table border="1" cellpadding="4" cellspacing="0" style="border-collapse: collapse; font-size: 13px;">';
-                outputMsg += '<thead><tr style="background-color: #f0f0f0;"><th>Minuten</th><th>Beschreibung</th></tr></thead>';
+                outputMsg += '<b>Zulässige Beispielwerte:</b><br>';
+                outputMsg += '<table class="interval-table">';
+                outputMsg += '<thead><tr style="background-color: #f0f0f0;"><th>Minuten</th><th>Beschreibung</th><th>Messwerte/Tag</th></tr></thead>';
                 outputMsg += '<tbody>';
-                outputMsg += '<tr><td>5</td><td>Sehr häufig</td></tr>';
-                outputMsg += '<tr><td>15</td><td>Standard für viele Sensoren</td></tr>';
-                outputMsg += '<tr><td>30</td><td>Alle halbe Stunde</td></tr>';
-                outputMsg += '<tr><td>60</td><td>Stündlich</td></tr>';
-                outputMsg += '<tr><td>90</td><td>Alle 1,5 Stunden</td></tr>';
-                outputMsg += '<tr><td>120</td><td>Alle 2 Stunden</td></tr>';
-                outputMsg += '<tr><td>180</td><td>Alle 3 Stunden</td></tr>';
-                outputMsg += '<tr><td>240</td><td>Alle 4 Stunden</td></tr>';
+
+                const examples = [
+                    {min: 5, desc: 'Sehr häufig'},
+                    {min: 15, desc: 'Standard für viele Sensoren'},
+                    {min: 30, desc: 'Alle halbe Stunde'},
+                    {min: 60, desc: 'Stündlich'},
+                    {min: 90, desc: 'Alle 1,5 Stunden'},
+                    {min: 120, desc: 'Alle 2 Stunden'},
+                    {min: 180, desc: 'Alle 3 Stunden'},
+                    {min: 240, desc: 'Alle 4 Stunden'},
+                    {min: 1440, desc: 'Alle 24 Stunden'}
+                ];
+
+                examples.forEach(item => {
+                    const countPerDay = Math.floor(1440 / item.min);
+                    outputMsg += `<tr><td>${item.min}</td><td>${item.desc}</td><td>${countPerDay}</td></tr>`;
+                });
+
                 outputMsg += '</tbody></table>';
 
                 outputMsg += '<br>Bitte gültigen Wert auswählen.';
@@ -397,28 +166,94 @@
                 return false;
             }
 
-            if (
-                (sensorThTempAlertMsg === '' && sensorThTempEnabled === true) ||
-                (sensorThToutAlertMsg === '' && sensorThToutEnabled === true) ||
-                (sensorThIna226vBusAlertMsg === '' && sensorThIna226vBusEnabled === true) ||
-                (sensorThIna226vShuntAlertMsg === '' && sensorThIna226vShuntEnabled === true) ||
-                (sensorThIna226vCurrentAlertMsg === '' && sensorThIna226vCurrentEnabled === true) ||
-                (sensorThIna226vPowerAlertMsg === '' && sensorThIna226vPowerEnabled === true)
-            )
-            {
-                width     = 500;
-                outputMsg = 'Eine der aktivierten Sensoren hat keine Statusrückmeldung.';
-                outputMsg += '<br>Sie erhalten dann keine Rückmeldung.';
-                outputMsg += '<br><br>Soll die Einstellung so wirklich aktiviert werden?';
+            const sensorEnabledSelectors = [
+                '#sensorThTempEnabled',
+                '#sensorThToutEnabled',
 
-                dialogConfirm(outputMsg, titleMsg, width, sendData)
+                '#sensorThIna226vBusEnabled',
+                '#sensorThIna226vShuntEnabled',
+                '#sensorThIna226vCurrentEnabled',
+                '#sensorThIna226vPowerEnabled'
+            ];
+
+            const isAnySensorActive = isAnySensorEnabled(sensorEnabledSelectors);
+            const isPollingEnabled = $('#sensorPollingEnabled').is(':checked');
+
+            if (isAnySensorActive && !isPollingEnabled) {
+
+                width = 500;
+                outputMsg = 'Hinweis:<br><br>';
+                outputMsg += 'Mindestens ein Sensorblock ist aktiviert,<br>';
+                outputMsg += 'das Abfrage-Intervall ist jedoch aktuell deaktiviert.<br><br>';
+                outputMsg += 'Die Sensoren werden erst ausgewertet, <br>sobald das Intervall aktiviert wird.<br>';
+                outputMsg += 'Mit speichern der Settings fortfahren?';
+
+                dialogConfirm(outputMsg, titleMsg, width, sendData);
                 return false;
             }
 
-            dialogConfirm(outputMsg, titleMsg, width, sendData)
-
+            dialogConfirm(outputMsg, titleMsg, width, sendData);
             return false;
         });
+
+        function isValidNumberOrEmpty(val, regex) {
+            return val === '' || regex.test(val);
+        }
+
+        function isMinMaxValid(min, max) {
+            return min === '' || max === '' || parseFloat(min) <= parseFloat(max);
+        }
+
+        function isValidDmGroup(val, callSignPattern) {
+            return ($.isNumeric(val) && val > 0) || callSignPattern.test(val);
+        }
+
+        function validateBasicSensor(cfg, regex, callSignPattern, titleMsg) {
+
+            const enabled = $(cfg.enabled).is(':checked');
+            const min     = $(cfg.min).val().trim();
+            const max     = $(cfg.max).val().trim();
+            const msg     = $(cfg.msg).val().trim();
+            const dm      = $(cfg.dm).val().trim();
+
+            let width = 500;
+
+            if (!isValidNumberOrEmpty(min, regex)) {
+                dialog(`${cfg.label} Min-Wert ist keine Zahl oder nicht mit Punkt getrennt.<br><br>Bitte prüfen.`,
+                    titleMsg, width);
+                return false;
+            }
+
+            if (!isValidNumberOrEmpty(max, regex)) {
+                dialog(`${cfg.label} Max-Wert ist keine Zahl oder nicht mit Punkt getrennt.<br><br>Bitte prüfen.`,
+                    titleMsg, width);
+                return false;
+            }
+
+            if (!isMinMaxValid(min, max)) {
+                dialog(`Der ${cfg.label} Max-Wert ist kleiner als der ${cfg.label} Min-Wert.<br><br>Bitte prüfen.`,
+                    titleMsg, width);
+                return false;
+            }
+
+            if (!isValidDmGroup(dm, callSignPattern)) {
+                dialog(`DM-${cfg.label} Gruppe muss eine Zahl > 0 sein<br>oder ein gültiges Call mit SID 1–99.<br><br>Bitte prüfen.`,
+                    titleMsg, width);
+                return false;
+            }
+
+            if (enabled && (msg === '' || min === '' || max === '')) {
+                dialog(`Der aktivierte ${cfg.label}-Sensor hat unvollständige Daten.`,
+                    titleMsg, width);
+                return false;
+            }
+
+            return true;
+        }
+
+        function isAnySensorEnabled(selectors) {
+            return selectors.some(sel => $(sel).length && $(sel).is(':checked'));
+        }
 
         function dialogConfirm(output_msg, title_msg, width, sendData) {
             width      = !width ? 300 : width;
