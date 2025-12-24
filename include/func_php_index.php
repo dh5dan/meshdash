@@ -1002,7 +1002,7 @@ function initSQLiteDatabase($database): bool
 function checkDbUpgrade($database): void
 {
     $doRestartBgProcess = false;
-    $debugFlag          = true;
+    $debugFlag          = false;
 
     #Update Datenbank meshdash mit Tabelle Firmware ab > V 1.10.02
     if (checkVersion(VERSION,'1.10.02','>'))
