@@ -1,3 +1,35 @@
+Version 1.10.82 SQL
+
+BUGFIX:  Auswahlliste bei Sensordaten Plot zeigte auch inaktive Sensoren an.
+BUGFIX:  Intervallwechsel bei SensorThreshold löschte nicht alten Cron-Eintrag.
+BUGFIX:  Sensordaten-Plot zeigte Nachkommastellen aus der Datenbank nicht an.
+BUGFIX:  Bei Neuinstallation gab es einen Fehler beim Erzeugen der parameter.db
+BUGFIX:  Update startet nun alle vorher gestarteten Prozesse neu.
+BUGFIX:  Beim Update wurde der UDP_receiver nicht sofort neu gestartet.
+BUGFIX:  Es werden jetzt alle aktuell laufenden Tasks neu gestartet damit das Update greift.
+BUGFIX:  Hintergrundprozesse starten jetzt zuverlässig nach Update auch aus Subverzeichnissen.
+
+FEATURE: Mindestversion von PHP ist nun V 8.x
+FEATURE: Sensordaten werden jetzt ohne Cron abgeholt (Rechteproblem in Trixie behoben).
+FEATURE: Info-Button mit Beispielwerten hinzugefügt für Intervall-Zeiten und Messdaten die anfallen.
+FEATURE: Sensordaten können jetzt ohne Aktivierung eines Sensorblocks im intervall gespeichert werden.
+FEATURE: Checkboxen im Menü Sensor-Schwellwerte wurden durch Schiebeschalter ersetzt.
+FEATURE: Erweiterte Prozessinformationen im Debug-Info-Menü über Info-Button (Dialog) abrufbar.
+FEATURE: Robustere Logging- und PID-Verwaltung für Hintergrundprozesse.
+FEATURE: Auto-Purge Check läuft nur, wenn aktiviert → Performance verbessert.
+FEATURE: DB-Migrationen über zentrale Tabelle implementiert.
+FEATURE: Alle sinnvollen Checkboxen auf zentrales CSS-Switch-System umgestellt.
+FEATURE: Deaktivierbarer Festmodus für saisonale Symbolanzeigen.
+FEATURE: Code-Refactoring
+
+HINWEIS:
+Umstellung auf PHP-Version >= 8.0.0!
+
+Nur wenn die Sensordatenerfassung vor dem Update aktiv war,
+muss sie nach dem Update einmal komplett deaktiviert und wieder aktiviert werden.
+Erst dann wird der neue Cron-Dienst wirksam.
+
+##############
 Version 1.10.80 SQL
 
 BUGFIX: BG-Task Exec führte unter Windows den udp_receiver nicht aus.
@@ -9,7 +41,7 @@ BUGFIX: URL-Umwandlung in Links war nicht immer vollständig.
 BUGFIX: Autopurge verursachte DB-Locks → Lock-System implementiert, mehrfache Ausführung verhindert.
 
 FEATURE: Erweiterte Node-Visualisierung
-         – Anzeige von Nodes über Repeater der letzten 7 Tage (violett)
+         – Anzeige von Nodes über Repeater der letzten 7 Tage (grün)
          – Visualisierung direkter Verbindungen zwischen Nodes
          – Klick auf Verbindung zeigt die verbundenen Nodes
          – Farbliche Kennzeichnung der Node-Typen (lokal / indirekt via Repeater)

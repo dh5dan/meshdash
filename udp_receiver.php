@@ -1,15 +1,24 @@
 <?php
+# Wichtig!
+# Gewährleistet, das das Skript immer aus dem Verzeichnis ausgeführt ist, wo es liegt.
+# Alle relativen Pfade bleiben somit erhalten, auch wenn es aus dem SubMenü aufgerufen wird.
+chdir(__DIR__);
+
 #Prevnts UTF8 Errors on misconfigured php.ini
 ini_set( 'default_charset', 'UTF-8' );
 
 require_once 'dbinc/param.php';
 require_once 'include/func_php_core.php';
 
+// Relativer Pfad zu deinem Webverzeichnis
+$basePath     = __DIR__;
+$execDir      = 'log';
 $errorCode      = '';
 $errorMsg       = '';
-$errorFile      = 'log/udp_receiver_error_' . date('Ymd') . '.log';
-$udpPidFile     = UPD_PID_FILE;
-$udpStopFile    = UPD_STOP_FILE;
+$errorFile      = "$basePath/$execDir/" . 'error_udp_receiver_' . date('Ymd') . '.log';
+$debugLogFile   = "$basePath/$execDir/" . 'debug_udp_receiver_' . date('Ymd') . '.log';
+$udpPidFile     = "$basePath/$execDir/". UPD_PID_FILE;
+$udpStopFile    = "$basePath/$execDir/". UPD_STOP_FILE;
 $outDataArray   = array();
 $osTypeIsLinux  = true;
 $debugFlag      = false;
@@ -29,7 +38,16 @@ ini_set('precision', 14);
 #Check what oS is running
 $osIssWindows = chkOsIsWindows();
 
-#Check what oS is running
+if ($debugFlag === true)
+{
+    $debugText = date('Y-m-d H:i:s') . " - osIssWindows:$osIssWindows udpPidFile:$udpPidFile" . "\n";
+    file_put_contents($debugLogFile, $debugText, FILE_APPEND);
+
+    $debugText = date('Y-m-d H:i:s') . " - osIssWindows:$osIssWindows basePath:$basePath" . "\n";
+    file_put_contents($debugLogFile, $debugText, FILE_APPEND);
+}
+
+#Check if Windows-OS is running
 if (strtoupper(substr(php_uname('s'), 0, 3)) === 'WIN')
 {
     $osTypeIsLinux = false;
@@ -37,12 +55,10 @@ if (strtoupper(substr(php_uname('s'), 0, 3)) === 'WIN')
     #check if UDP Port is currently in Use from PHP
     $getPortInUse = shell_exec('netstat -a -n -b -o -P UDP | find "1799"');
 
-    #If in USe kill Process
+    #If port 1799 is in Use then kill Process
     if ($getPortInUse != '')
     {
-        echo "<br>ex: $getPortInUse";
-
-        $errorText = "Windows: Port In use [$getPortInUse] at " . date('Y-m-d H:i:s') . "\n";
+        $errorText = date('Y-m-d H:i:s') . " - Windows: Port In use [$getPortInUse]" . "\n";
         file_put_contents($errorFile, $errorText,FILE_APPEND);
 
         $splitOut = explode(' ', $getPortInUse);
@@ -55,31 +71,31 @@ if (strtoupper(substr(php_uname('s'), 0, 3)) === 'WIN')
             }
         }
 
+        #Setze Datenzeiger im Array auf den letzten Eintrag
         end($outDataArray);
 
         $pid = (current($outDataArray) !== false) ? current($outDataArray) : 0;
 
         if ($pid != 0)
         {
-            $resKillPid = shell_exec('taskkill /F /PID ' . $pid);
-
-            $errorText = "Windows: Kill Task  Pid: [$pid] at " . date('Y-m-d H:i:s') . "\n";
+            $errorText = date('Y-m-d H:i:s') . " - Windows: Kill Task  Pid: [$pid]" . "\n";
             file_put_contents($errorFile, $errorText,FILE_APPEND);
 
-            sleep(1);
+            $resKillPid = shell_exec('taskkill /F /PID ' . $pid);
+            exit();
         }
     }
 }
 else
 {
-    #Linux Part
+    #Part if OS is Linux
     $getPortInUse = shell_exec('netstat -nlpu|grep 1799');
 
-    #If in Use kill Process
+    #If UDP 1799 in Use then kill Process
     if ($getPortInUse != '')
     {
-        $errorText = "Linux: Port 1799 in use: [$getPortInUse] at " . date('Y-m-d H:i:s') . "\n";
-        $errorText .= "Try to kill process at " . date('Y-m-d H:i:s') . "\n";
+        $errorText  = date('Y-m-d H:i:s') . " - Linux: Port 1799 in use: [$getPortInUse]" . "\n";
+        $errorText .= date('Y-m-d H:i:s') . " - Try to kill process" . "\n";
         file_put_contents($errorFile, $errorText,FILE_APPEND);
 
         $splitOut = explode(' ', $getPortInUse);
@@ -94,42 +110,43 @@ else
 
         #Pointer to end of array
         end($outDataArray);
+
         $pid = (current($outDataArray) !== false) ? current($outDataArray) : 0;
 
         if ($pid != 0)
         {
             $pidSplit   = explode('/', $pid);
             $pidId      = $pidSplit[0];
-            $resKillPid = shell_exec('kill -9 ' . $pidId);
 
-            $errorText = "Linux: Kill process with pid: [$pidId] at " . date('Y-m-d H:i:s') . "\n";
+            $errorText = date('Y-m-d H:i:s') . " - Linux: Kill process with pid: [$pidId]" . "\n";
             file_put_contents($errorFile, $errorText,FILE_APPEND);
 
-            sleep(1);
+            $resKillPid = shell_exec('kill -9 ' . $pidId);
+            exit();
         }
     }
 }
 
-#Create Socket Receive UDP
+#Create RECEIVE (RX) UDP-Socket
 if (!($receiveSock = socket_create(AF_INET, SOCK_DGRAM, 0)))
 {
     $errorCode = socket_last_error();
     $errorMsg  = socket_strerror($errorCode);
 
-    $errorText = "Couldn't create Receive-Socket: [$errorCode] $errorMsg at " . date('Y-m-d H:i:s') . "\n";
+    $errorText = date('Y-m-d H:i:s') . " - Couldn't create Receive-Socket: [$errorCode] $errorMsg" . "\n";
     file_put_contents($errorFile, $errorText,FILE_APPEND);
-    die("<br>Couldn't create Receive-Socket: [$errorCode] $errorMsg");
+    exit();
 }
 
-#Create Socket Receive UDP
+#Create SEND (TX) UDP-Socket
 if (!($sendSock = socket_create(AF_INET, SOCK_DGRAM, 0)))
 {
     $errorCode = socket_last_error();
     $errorMsg  = socket_strerror($errorCode);
 
-    $errorText = "Couldn't create Send-Socket: [$errorCode] $errorMsg at " . date('Y-m-d H:i:s') . "\n";
+    $errorText = date('Y-m-d H:i:s') . " - Couldn't create Send-Socket: [$errorCode] $errorMsg" . "\n";
     file_put_contents($errorFile, $errorText,FILE_APPEND);
-    die("<br>Couldn't create Send-Socket: [$errorCode] $errorMsg");
+    exit();
 }
 
 // Socket Option
@@ -138,40 +155,60 @@ if (!($sendSock = socket_create(AF_INET, SOCK_DGRAM, 0)))
 #Reuse an existing Port SO_REUSEPort ->error
 #socket_set_option ($sock, SOL_SOCKET, 15, 1);
 
-// Bind the source address to Socket and listen on all Ip at POrt 1799
+// Bind the source address to Socket and listen on all Ip at Port 1799
 if (!@socket_bind($receiveSock, "0.0.0.0", 1799))
 {
     $errorCode = socket_last_error();
     $errorMsg  = socket_strerror($errorCode);
 
-    $errorText = "Could not bind socket: [$errorCode] $errorMsg at " . date('Y-m-d H:i:s') . "\n";
+    $errorText = date('Y-m-d H:i:s') . " - Could not bind socket: [$errorCode] $errorMsg" . "\n";
     file_put_contents($errorFile, $errorText,FILE_APPEND);
 
-    die("<br>Could not bind socket : [$errorCode] $errorMsg");
+    exit();
 }
 
-file_put_contents('udp.pid', getmypid());
+#Setze PID-File
+file_put_contents($udpPidFile, getmypid());
+
 // PID speichern in Parameter Datenbank.
 setParamData('udpReceiverPid', getmypid());
 setParamData('udpReceiverTs', date('Y-m-d H:i:s'),'txt');
 
+if ($debugFlag === true)
+{
+    $debugText = date('Y-m-d H:i:s') . " - osIssWindows:$osIssWindows Get PID:" . getmypid() . "\n";
+    file_put_contents($debugLogFile, $debugText, FILE_APPEND);
+}
+
 //Infinite Iteration to Receive UDP Data from Bind Port
 while (true)
 {
-    $file           = 'log/udp_msg_data_' . date('Ymd') . '.log';
+    if ($debugFlag === true)
+    {
+        $debugText = date('Y-m-d H:i:s') . " - In infinite Loop. Warte auf UDP-Nachrichten" . "\n";
+        file_put_contents($debugLogFile, $debugText, FILE_APPEND);
+    }
+
+    $logFileName    = 'log/udp_msg_data_' . date('Ymd') . '.log';
     $errorFile      = 'log/udp_receiver_error_' . date('Ymd') . '.log';
     $callMsgLogFile = 'log/call_message_' . date('Ymd') . '.log';
     $fileUdpForward = 'log/udp_forward_msg_data_' . date('Ymd') . '.log';
-    $bufJson        = '';
-    $receivedBytes  = socket_recvfrom($receiveSock, $bufJson, 512, 0, $remote_ip, $remote_port);
+
+    $receivedBytes  = socket_recvfrom($receiveSock, $udpBuffer, 512, 0, $remote_ip, $remote_port);
 
     if ($receivedBytes === false)
     {
-        $errorText  = "Error in Receive UDP-Data at " . date('Y-m-d H:i:s') . "\n";
-        $errorText .= "Failed MSG: " . socket_strerror(socket_last_error($receiveSock)) . "\n";
+        $errorText  = date('Y-m-d H:i:s') . " - Error in Receive UDP-Data" . "\n";
+        $errorText .= date('Y-m-d H:i:s') . " - Failed MSG: " . socket_strerror(socket_last_error($receiveSock)) . "\n";
         file_put_contents($errorFile, $errorText, FILE_APPEND);
 
-        die("<br>Error in Receive UDP Data");
+        exit();
+    }
+
+    if ($debugFlag === true)
+    {
+        $debugText = date('Y-m-d H:i:s') . " - UDP-Nachricht im RAW-Format empfangen:$udpBuffer<-----" . "\n";
+        file_put_contents($debugLogFile, $debugText, FILE_APPEND);
     }
 
     #Hole Daten für UPD-Weiterleitung
@@ -183,11 +220,12 @@ while (true)
     if ($udpForwardingEnable == 1 && $udpFwIp != '' && $udpFwPort != 0)
     {
         // Datagram weiterleiten
-        $sent = socket_sendto($sendSock, $bufJson, $receivedBytes, 0, $udpFwIp, $udpFwPort);
+        $sent = socket_sendto($sendSock, $udpBuffer, $receivedBytes, 0, $udpFwIp, $udpFwPort);
+
         if ($sent === false)
         {
-            $errorText  = "Error in Forwarding UDP-Data to: $udpFwIp:$udpFwPort at " . date('Y-m-d H:i:s') . "\n";
-            $errorText .= "UDP-Forward failed: " . socket_strerror(socket_last_error($sendSock)) . "\n";
+            $errorText  = date('Y-m-d H:i:s') . " - Error in Forwarding UDP-Data to: $udpFwIp:$udpFwPort" . "\n";
+            $errorText .= date('Y-m-d H:i:s') . " - UDP-Forward failed: " . socket_strerror(socket_last_error($sendSock)) . "\n";
             file_put_contents($errorFile, $errorText, FILE_APPEND);
         }
         else
@@ -195,25 +233,25 @@ while (true)
             #Prüfe ob Logging aktiv ist
             if (getParamData('doLogEnable') == 1)
             {
-                $bufJsonLog = $bufJson . ",\n";
-                file_put_contents($fileUdpForward, $bufJsonLog, FILE_APPEND);
+                $udpBufferLogText = date('Y-m-d H:i:s') . " - " . $udpBuffer . ",\n";
+                file_put_contents($fileUdpForward, $udpBufferLogText, FILE_APPEND);
             }
         }
     }
 
     #Add Timestamp to JSON
-    $bufJsonDecodedArray              = json_decode($bufJson, true);
-    $bufJsonDecodedArray['timestamp'] = date('Y-m-d H:i:s');
-    $bufJson                          = json_encode($bufJsonDecodedArray);
+    $bufJsonDecodedArray              = json_decode($udpBuffer, true); // Decode JSON aus udpBuffer
+    $bufJsonDecodedArray['timestamp'] = date('Y-m-d H:i:s'); // Füge Datum an
+    $bufJsonTs                        = json_encode($bufJsonDecodedArray); //Encode wieder als JSON
 
-    #Prüfe ob Logging aktiv ist
+    #Prüfe ob Logging aktiv ist und Logge empfangenes UDP-Packet + TimeStamp
     if (getParamData('doLogEnable') == 1)
     {
-        $bufJsonLog = $bufJson . ",\n";
-        file_put_contents($file, $bufJsonLog, FILE_APPEND);
+        $udpBufferLogText = date('Y-m-d H:i:s') . " - " . $bufJsonTs . ",\n";
+        file_put_contents($logFileName, $udpBufferLogText, FILE_APPEND);
     }
 
-    $dbArraySqliteJson = json_decode($bufJson, true);
+    $dbArraySqliteJson = json_decode($bufJsonTs, true);
 
     $msgId           = $dbArraySqliteJson['msg_id'] ?? rand(); // 72378728
     $timestamp       = $dbArraySqliteJson['timestamp'] ?? date('Y-m-d H:i:s');
@@ -235,9 +273,21 @@ while (true)
     $fwSubVersion    = $dbArraySqliteJson['fw_sub'] ?? ''; // FirmwareSUb Version: v
 
     #Wenn keine Daten vorhanden, dann nicht speichern und auf nächste Msg warten
-    if ($msgId == '' && $src == '' && $type == '')
+    if ($msgId == '' && $src == '' && $type == '' && $udpBuffer == '')
     {
+        if ($debugFlag === true)
+        {
+            $debugText = date('Y-m-d H:i:s') . " - UDP-Nachricht verworfen da msgID, SRC und Type leer." . "\n";
+            file_put_contents($debugLogFile, $debugText, FILE_APPEND);
+        }
+
         continue;
+    }
+
+    if ($debugFlag === true)
+    {
+        $debugText = date('Y-m-d H:i:s') . " - DB INSERT  DATA: "  . print_r($dbArraySqliteJson, true) . "\n";
+        file_put_contents($debugLogFile, $debugText, FILE_APPEND);
     }
 
     #Open Database
@@ -298,7 +348,7 @@ while (true)
     $db->close();
     unset($db);
 
-    #Trigger Message-Seite um Keywords abzuarbeiten
+    #Trigger Message-Seite via CURL um Keywords abzuarbeiten wenn Headless
     $resCallMessagePage = callMessagePage();
 
     #Prüfe ob Logging aktiv ist
@@ -306,31 +356,38 @@ while (true)
     {
         if ($resCallMessagePage === true)
         {
-            $callMsgText = "Message.php Triggered via Curl:" . BASE_PATH_URL . " at " . date('Y-m-d H:i:s') . "\n";
+            $callMsgText = date('Y-m-d H:i:s') . " - Message.php Triggered via Curl:" . BASE_PATH_URL . "\n";
         }
         else
         {
-            $callMsgText = "Error: Message.php NOT Triggered via Curl:" . BASE_PATH_URL . " at " . date('Y-m-d H:i:s') . "\n";
+            $callMsgText = date('Y-m-d H:i:s') . " - Error: Message.php NOT Triggered via Curl:" . BASE_PATH_URL . "\n";
         }
 
         file_put_contents($callMsgLogFile, $callMsgText, FILE_APPEND);
     }
 
-    #Rekonstruiere PID
+    #Rekonstruiere PID wenn nicht vorhanden
     if (!file_exists($udpPidFile))
     {
-        file_put_contents('udp.pid', getmypid());
+        file_put_contents($udpPidFile, getmypid());
+
+        if ($debugFlag === true)
+        {
+            $debugText = date('Y-m-d H:i:s') . " - Rekonstruiere PID-File weil es fehlt: Neue PID:" . getmypid() . "\n";
+            file_put_contents($debugLogFile, $debugText, FILE_APPEND);
+        }
     }
 
+    #Wenn Stop-File erkannt Prozess beenden
     if (file_exists($udpStopFile))
     {
         socket_close($receiveSock);
         socket_close($sendSock);
 
-        $errorText = "UDP-Listener beendet via udp_stop! at " . date('Y-m-d H:i:s') . "\n";
+        $errorText = date('Y-m-d H:i:s') . " - UDP-Listener beendet via udp_stop!" . "\n";
         file_put_contents($errorFile, $errorText,FILE_APPEND);
-        unlink($udpStopFile);
-        unlink($udpPidFile);
+        @unlink($udpStopFile);
+        @unlink($udpPidFile);
 
         exit();
     }

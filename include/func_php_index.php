@@ -1,6 +1,19 @@
 <?php
-function initDatabases()
+
+use JetBrains\PhpStorm\NoReturn;
+
+function initDatabases(): bool
 {
+    # Migrations.db muss als erstes erzeugt werden!
+    if (!file_exists('database/db_migrations'))
+    {
+        initSQLiteDatabase('db_migrations');
+    }
+    else
+    {
+        checkDbIntegrity('db_migrations');
+    }
+
     if (!file_exists('database/meshdash.db'))
     {
         initSQLiteDatabase('meshdash');
@@ -131,6 +144,8 @@ function initDatabases()
     {
         checkDbUpgrade('write_mutex');
     }
+
+    return true;
 }
 function initSQLiteDatabase($database): bool
 {
@@ -244,6 +259,13 @@ function initSQLiteDatabase($database): bool
                                        ('darkMode', 0, ''),
                                        ('mheardCronEnable', 0, ''),
                                        ('mheardCronIntervall', 1, ''),
+                                       ('cronLoopMheardPid', '', ''),
+                                       ('cronLoopMheardPidTs', '', ''),
+                                       ('cronLoopGetSensorDataPid', '', ''),
+                                       ('cronLoopGetSensorDataPidTs', '', ''),
+                                       ('getSensorDataIntervallMin', '5', ''),
+                                       ('sensorPollingIntervalEnabled', '0', ''),
+                                       ('festiveModeEnable', '1', '')
            ");
 
         #Close and write Back WAL
@@ -808,19 +830,31 @@ function initSQLiteDatabase($database): bool
                                        ('submenu.sensor_data.btn.get-sensor-data', 'Lokale Sensordaten abfragen', 'Request Sensor-Data', 'Récupérer les données capteurs locales', 'Solicitar datos de sensores locales', 'Richiedi dati sensore locali', 'Vraag lokale sensorgegevens op'),
                                         
                                        ('submenu.sensor_threshold.lbl.title', 'Sensorschwellwert', 'Sensor-Threshold', 'Seuil capteur', 'Umbral del sensor', 'Soglia sensore', 'Sensor-drempel'),
-                                       ('submenu.sensor_threshold.lbl.header-text', 'Sensorschwellwert-Definition ###REPLACE###zur Auslösung von Meldungen', 'Sensor threshold definition ###REPLACE###for triggering messages', 'Définition du seuil du capteur ###REPLACE###pour déclencher les messages', 'Definición del umbral del sensor ###REPLACE###para activar mensajes', 'Definizione soglia sensore ###REPLACE###per innescare messaggi', 'Sensor-drempeldefinitie ###REPLACE###voor het triggeren van meldingen'),
+                                       ('submenu.sensor_threshold.lbl.header-text', 'Sensor-Meldungen', 'Sensor messages', 'Messages du capteur', 'Mensajes del sensor', 'Messaggi del sensore', 'Sensor­meldingen'),
                                        ('submenu.sensor_threshold.lbl.tx-interval', 'Abfrage-Intervall', 'Abfrage-Intervall', 'Intervalle de requête', 'Intervalo de consulta', 'Intervallo di interrogazione', 'Query-interval'),
-                                       ('submenu.sensor_threshold.lbl.temp-status', 'Temp Enable/Disable', 'Temp Enable/Disable', 'Temp activé/désactivé', 'Temp habilitado/deshabilitado', 'Temp abilitato/disabilitato', 'Temp aan/uit'),
                                        ('submenu.sensor_threshold.lbl.temp-min-max', 'Min/Max', 'Min/Max', 'Min/Max', 'Min/Max', 'Min/Max', 'Min/Max'),
-                                       ('submenu.sensor_threshold.lbl.temp-alert-msg', 'Alert-Meldung', 'Alert-Message', 'Message d''alerte', 'Mensaje de alerta', 'Messaggio di allerta', 'Waarschuwing bericht'),
+                                       ('submenu.sensor_threshold.lbl.temp-alert-msg', 'Alarm-Meldung', 'Alert-Message', 'Message d''alerte', 'Mensaje de alerta', 'Messaggio di allerta', 'Waarschuwing bericht'),
                                        ('submenu.sensor_threshold.lbl.temp-dm-group', 'DM-Gruppe/Call', 'DM-Group/Call', 'Groupe DM/Appel', 'Grupo DM/Llamada', 'Gruppo DM/Chiamata', 'DM-groep/Call'),
-                                       ('submenu.sensor_threshold.lbl.tout-status', 'Tout Enable/Disable', 'Tout Enable/Disable', 'Tout activé/désactivé', 'Tout habilitado/deshabilitado', 'Tout abilitato/disabilitato', 'Tout aan/uit'),
+                                       ('submenu.sensor_threshold.lbl.temp-status', 'Temp', 'Temp', 'Temp', 'Temp', 'Temp', 'Temp'),
+                                       ('submenu.sensor_threshold.lbl.tout-status', 'Tout', 'Tout', 'Tout', 'Tout', 'Tout', 'Tout'),
+
+                                       
                                        ('submenu.sensor_threshold.lbl.tout-min-max', 'Min/Max', 'Min/Max', 'Min/Max', 'Min/Max', 'Min/Max', 'Min/Max'),
-                                       ('submenu.sensor_threshold.lbl.tout-alert-msg', 'Alert-Meldung', 'Alert-Message', 'Message d''alerte', 'Mensaje de alerta', 'Messaggio di allerta', 'Waarschuwing bericht'),
+                                       ('submenu.sensor_threshold.lbl.tout-alert-msg', 'Alarm-Meldung', 'Alert-Message', 'Message d''alerte', 'Mensaje de alerta', 'Messaggio di allerta', 'Waarschuwing bericht'),
                                        ('submenu.sensor_threshold.lbl.tout-dm-group', 'DM-Gruppe/Call', 'DM-Group/Call', 'Groupe DM/Appel', 'Grupo DM/Llamada', 'Gruppo DM/Chiamata', 'DM-groep/Call'),
                                        ('submenu.sensor_threshold.btn.save-settings', 'Settings speichern', 'Save Settings', 'Enregistrer les paramètres', 'Guardar configuración', 'Salva impostazioni', 'Instellingen opslaan'),
                                        ('submenu.sensor_threshold.msg.save-settings-success', 'Settings wurden erfolgreich abgespeichert!', 'Settings saved successfully!', 'Paramètres enregistrés avec succès !', '¡Configuración guardada con éxito!', 'Impostazioni salvate con successo!', 'Instellingen succesvol opgeslagen!'),
                                        ('submenu.sensor_threshold.msg.save-settings-failed', 'Es gab einen Fehler beim Abspeichern der Settings!', 'There was an error saving the settings!', 'Une erreur s''est produite lors de l''enregistrement des paramètres !', '¡Hubo un error al guardar la configuración!', 'Si è verificato un errore durante il salvataggio delle impostazioni!', 'Er trad zich een fout op bij het opslaan van instellingen!'),
+                                        
+                                       ('submenu.sensor_threshold.lbl.ina226vbus-alert-msg', 'Alarm-Meldung', 'Alert-Message', 'Message d''alerte', 'Mensaje de alerta', 'Messaggio di allerta', 'Waarschuwing bericht'),
+                                       ('submenu.sensor_threshold.lbl.ina226vshunt-alert-msg', 'Alarm-Meldung', 'Alert-Message', 'Message d''alerte', 'Mensaje de alerta', 'Messaggio di allerta', 'Waarschuwing bericht'),
+                                       ('submenu.sensor_threshold.lbl.ina226vcurrent-alert-msg', 'Alarm-Meldung', 'Alert-Message', 'Message d''alerte', 'Mensaje de alerta', 'Messaggio di allerta', 'Waarschuwing bericht'),
+                                       ('submenu.sensor_threshold.lbl.ina226vpower-alert-msg', 'Alarm-Meldung', 'Alert-Message', 'Message d''alerte', 'Mensaje de alerta', 'Messaggio di allerta', 'Waarschuwing bericht'), 
+                                        
+                                       ('submenu.sensor_threshold.lbl.ina226vbus-dm-group', 'DM-Gruppe/Call', 'DM-Group/Call', 'Groupe DM/Appel', 'Grupo DM/Llamada', 'Gruppo DM/Chiamata', 'DM-groep/Call'),
+                                       ('submenu.sensor_threshold.lbl.ina226vshunt-dm-group', 'DM-Gruppe/Call', 'DM-Group/Call', 'Groupe DM/Appel', 'Grupo DM/Llamada', 'Gruppo DM/Chiamata', 'DM-groep/Call'),
+                                       ('submenu.sensor_threshold.lbl.ina226vcurrent-dm-group', 'DM-Gruppe/Call', 'DM-Group/Call', 'Groupe DM/Appel', 'Grupo DM/Llamada', 'Gruppo DM/Chiamata', 'DM-groep/Call'),
+                                       ('submenu.sensor_threshold.lbl.ina226vpower-dm-group', 'DM-Gruppe/Call', 'DM-Group/Call', 'Groupe DM/Appel', 'Grupo DM/Llamada', 'Gruppo DM/Chiamata', 'DM-groep/Call'), 
                                         
                                        ('submenu.gps_info.lbl.title', 'GPS-Infoseite', 'GPS Info-Page', 'Page d''info GPS', 'Página de info GPS', 'Pagina info GPS', 'GPS-info pagina'),
                                        ('submenu.gps_info.lbl.load-page', 'GPS-Infoseite laden', 'Load GPS-Page', 'Charger la page GPS', 'Cargar página GPS', 'Carica pagina GPS', 'Laad GPS-pagina'),
@@ -937,10 +971,433 @@ function initSQLiteDatabase($database): bool
         $db->close();
         unset($db);
     }
+    elseif ($database == 'db_migrations')
+    {
+        #0: OFF – SQLite führt keine Synchronisierung durch (geringe Sicherheit, aber schnellere Schreiboperationen).
+        #1: NORMAL – Standardmodus, SQLite führt eine Synchronisierung durch, aber nicht für alle Schreibvorgänge (bessere Sicherheit, aber etwas langsamer).
+        #2: FULL – Höchste Sicherheit, bei dem alle Schreibvorgänge synchronisiert werden (höchste Sicherheit, aber auch langsamer).
+
+        #Open Database
+        $db = new SQLite3('database/db_migrations.db');
+        $db->exec('PRAGMA journal_mode = wal;');
+        $db->exec('PRAGMA synchronous = NORMAL;');
+
+        // Tabelle erstellen wenn nicht vorhanden
+        $db->exec("CREATE TABLE IF NOT EXISTS db_migrations 
+                                (
+                                  migration_key TEXT PRIMARY KEY,
+                                  migration_counter INTEGER, 
+                                  applied_at  DATETIME DEFAULT CURRENT_TIMESTAMP
+                                )
+                ");
+
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+    }
 
     return true;
 }
-function showMenuIcons()
+
+function checkDbUpgrade($database): void
+{
+    $doRestartBgProcess = false;
+    $debugFlag          = true;
+
+    #Update Datenbank meshdash mit Tabelle Firmware ab > V 1.10.02
+    if (checkVersion(VERSION,'1.10.02','>'))
+    {
+        $migrationKey = '1.10.02_db_upgrade';
+
+        if (!upgradeApplied($migrationKey, 6))
+        {
+            if ($debugFlag === true)
+            {
+                echo "<br>'1.10.02' ist kleiner oder gleich " . VERSION;
+            }
+
+            if ($database == 'meshdash')
+            {
+                // SQLite3-Datenbank prüfen ob in Datenbank meshdash die Tabelle firmware existiert
+                if (!columnExists($database, 'meshdash', 'firmware') && $database === 'meshdash')
+                {
+                    // Spalte hinzufügen
+                    addColumn($database, 'meshdash', 'firmware');
+
+                    $doRestartBgProcess = true;
+                }
+
+                if (!columnExists($database, 'meshdash', 'fw_sub') && $database === 'meshdash')
+                {
+                    // Spalte hinzufügen
+                    addColumn($database, 'meshdash', 'fw_sub');
+                    $doRestartBgProcess = true;
+                }
+
+                if (!columnExists($database, 'meshdash', 'beaconEnabledStatusSend') && $database === 'meshdash')
+                {
+                    // Spalte hinzufügen
+                    addColumn($database, 'meshdash', 'beaconEnabledStatusSend', 'INTEGER', 0);
+                    $doRestartBgProcess = true;
+                }
+
+                #Setzte diverse Indizes auf den Datenbanken
+                #addIndex('meshdash', 'meshdash','idx_timestamps', 'timestamps'); // Wird nicht benötigt
+                delIndex('meshdash', 'idx_timestamps'); // lösche alten indizes
+
+                #addIndex('meshdash', 'meshdash','idx_dst', 'dst'); // wird nicht benötigt
+                delIndex('meshdash', 'idx_dst'); // lösche alten indizes
+
+                #addIndex('meshdash', 'meshdash','idx_type', 'type'); // Wird nicht benötigt
+                delIndex('meshdash', 'idx_type'); // lösche alten indizes
+
+                addIndex('meshdash', 'meshdash', 'idx_ack_type_ts', 'msgIsAck, type, timestamps DESC');
+                addIndex('meshdash', 'meshdash', 'idx_check_msg', 'type, dst, timestamps');
+                addIndex('meshdash', 'meshdash', 'idx_ack_ts', 'msgIsAck, timestamps DESC');
+                addIndex('meshdash', 'meshdash', 'idx_ack_dst_ts', 'msgIsAck, dst, timestamps DESC');
+
+                #Markieren als ausgeführt
+                markUpgradeApplied($migrationKey);
+            }
+
+            if ($database == 'sensordata')
+            {
+                if (!columnExists($database, 'sensordata', 'ina226vBus') && $database === 'sensordata')
+                {
+                    // Spalte hinzufügen
+                    addColumn($database, 'sensordata', 'ina226vBus');
+                    addColumn($database, 'sensordata', 'ina226vShunt');
+                    addColumn($database, 'sensordata', 'ina226vCurrent');
+                    addColumn($database, 'sensordata', 'ina226vPower');
+                }
+
+                #addIndex('sensordata', 'sensordata','idx_timestamps', 'timestamps'); // Kein Index nötig. SQL optimiert.
+                delIndex('sensordata', 'idx_timestamps'); // lösche alten indizes
+
+
+                #Markieren als ausgeführt
+                markUpgradeApplied($migrationKey);
+            }
+
+            if ($database == 'mheard')
+            {
+                if (!columnExists($database, 'mheard', 'mhType') && $database === 'mheard')
+                {
+                    // Spalte hinzufügen
+                    addColumn($database, 'mheard', 'mhType');
+                }
+
+                delIndex('mheard', 'idx_timestamps'); // Neuer Index ist optimiert
+                addIndex('mheard', 'mheard', 'idx_timestamps', 'timestamps, mhTime DESC');
+
+                #Markieren als ausgeführt
+                markUpgradeApplied($migrationKey);
+            }
+
+            if ($database == 'groups')
+            {
+                if (!columnExists($database, 'groups', 'groupSound') && $database === 'groups')
+                {
+                    // Spalte hinzufügen
+                    addColumn($database, 'groups', 'groupSound');
+                }
+
+
+                #Markieren als ausgeführt
+                markUpgradeApplied($migrationKey);
+            }
+
+            if ($database == 'keywords')
+            {
+                if (!columnExists($database, 'keywords', 'execScript') && $database === 'keywords')
+                {
+                    // Spalte hinzufügen
+                    addColumn($database, 'keywords', 'execScript');
+                    addColumn($database, 'keywords', 'execTimestamp');
+                    addColumn($database, 'keywords', 'execTrigger');
+                    addColumn($database, 'keywords', 'execReturnMsg');
+                    addColumn($database, 'keywords', 'execGroup');
+                    addColumn($database, 'keywords', 'execMsgSend', 'INTEGER', 0);
+                    addColumn($database, 'keywords', 'execMsgSendTimestamp', 'TEXT', '0000-00-00 00:00:00');
+                    $doRestartBgProcess = true;
+                }
+
+                #Markieren als ausgeführt
+                markUpgradeApplied($migrationKey);
+            }
+
+            #Setzte diverse Indizes auf den Datenbanken
+            if ($database === 'tx_queue')
+            {
+                #txQueue
+                delIndex('tx_queue', 'idx_txInsertTimestamp'); // Neuer Index ist optimiert
+                addIndex('tx_queue', 'txQueue', 'idx_txFlag_qid', 'txFlag, txQueueId');
+
+
+                #Markieren als ausgeführt
+                markUpgradeApplied($migrationKey);
+            }
+        }
+    }
+
+    if (checkVersion(VERSION,'1.10.40','>='))
+    {
+        $migrationKey = '1.10.40_db_upgrade';
+
+        if (!upgradeApplied($migrationKey))
+        {
+            if ($debugFlag === true)
+            {
+                echo "<br>'1.10.40' ist kleiner oder gleich " . VERSION;
+            }
+
+            // Enable bubble-style view if not specified. As of V1.10.40
+            if (getParamData('bubbleStyleView') === '')
+            {
+                setParamData('bubbleStyleView', 1);
+            }
+
+            #Markieren als ausgeführt
+            markUpgradeApplied($migrationKey);
+        }
+    }
+
+    if (checkVersion(VERSION, '1.10.72', '>='))
+    {
+        if ($database == 'translation')
+        {
+            $migrationKey = '1.10.72_db_upgrade';
+
+            if (!upgradeApplied($migrationKey))
+            {
+                if ($debugFlag === true)
+                {
+                    echo "<br>'1.10.72' ist kleiner oder gleich " . VERSION;
+                }
+
+                insertUpdateRow(
+                    'translation',
+                    'translation',
+                    [
+                        'key' => 'menu.plot',
+                        'de'  => 'Auswertung',
+                        'en'  => 'Evaluation',
+                        'fr'  => 'Analyse',
+                        'es'  => 'Evaluación',
+                        'it'  => 'Valutazione',
+                        'nl'  => 'Analyse'
+                    ],
+                    'key',
+                    'insert'
+                );
+
+                #Markieren als ausgeführt
+                markUpgradeApplied($migrationKey);
+            }
+        }
+    }
+
+    if (checkVersion(VERSION, '1.10.78', '>='))
+    {
+        if ($database == 'write_mutex')
+        {
+            $migrationKey = '1.10.78_db_upgrade';
+
+            if (!upgradeApplied($migrationKey))
+            {
+                if ($debugFlag === true)
+                {
+                    echo "<br>'1.10.78' ist kleiner oder gleich " . VERSION;
+                }
+
+                if (!columnExists($database, 'purge_lock', 'proc_name'))
+                {
+                    // Spalte hinzufügen
+                    addColumn('write_mutex', 'purge_lock', 'proc_name');
+                }
+
+                #Markieren als ausgeführt
+                markUpgradeApplied($migrationKey);
+            }
+        }
+    }
+
+    if (checkVersion(VERSION, '1.10.82', '>='))
+    {
+        if ($database == 'translation')
+        {
+            $migrationKey = '1.10.82_db_upgrade';
+
+            if (!upgradeApplied($migrationKey))
+            {
+                if ($debugFlag === true)
+                {
+                    echo "<br>'1.10.82' ist kleiner oder gleich " . VERSION;
+                }
+
+                insertUpdateRow(
+                    'translation',
+                    'translation',
+                    [
+                        'key' => 'submenu.sensor_threshold.lbl.tx-interval',
+                        'de'  => 'Intervall (1-1439 min)',
+                        'en'  => 'Interval (1-1439 min)',
+                        'fr'  => 'Intervalle (1-1439 min)',
+                        'es'  => 'Intervalo (1-1439 min)',
+                        'it'  => 'Intervallo (1-1439 min)',
+                        'nl'  => 'Interval (1-1439 min)',
+                    ],
+                    'key',
+                    'update'
+                );
+
+                insertUpdateRow(
+                    'translation',
+                    'translation',
+                    [
+                        'key' => 'submenu.sensor_threshold.lbl.header-text',
+                        'de'  => 'Sensor-Meldungen',
+                        'en'  => 'Sensor messages',
+                        'fr'  => 'Messages du capteur',
+                        'es'  => 'Mensajes del sensor',
+                        'it'  => 'Messaggi del sensore',
+                        'nl'  => 'Sensormeldingen',
+                    ],
+                    'key',
+                    'update'
+                );
+
+                insertUpdateRow(
+                    'translation',
+                    'translation',
+                    [
+                        'key' => 'submenu.sensor_threshold.lbl.temp-status',
+                        'de'  => 'Temp',
+                        'en'  => 'Temp',
+                        'fr'  => 'Temp',
+                        'es'  => 'Temp',
+                        'it'  => 'Temp',
+                        'nl'  => 'Temp',
+                    ],
+                    'key',
+                    'update'
+                );
+
+                insertUpdateRow(
+                    'translation',
+                    'translation',
+                    [
+                        'key' => 'submenu.sensor_threshold.lbl.tout-status',
+                        'de'  => 'Tout',
+                        'en'  => 'Tout',
+                        'fr'  => 'Tout',
+                        'es'  => 'Tout',
+                        'it'  => 'Tout',
+                        'nl'  => 'Tout',
+                    ],
+                    'key',
+                    'update'
+                );
+
+                insertUpdateRow(
+                    'translation',
+                    'translation',
+                    [
+                        'key' => 'submenu.sensor_threshold.lbl.temp-alert-msg',
+                        'de'  => 'Alarm-Meldung',
+                    ],
+                    'key',
+                    'update'
+                );
+
+                insertUpdateRow(
+                    'translation',
+                    'translation',
+                    [
+                        'key' => 'submenu.sensor_threshold.lbl.tout-alert-msg',
+                        'de'  => 'Alarm-Meldung',
+                    ],
+                    'key',
+                    'update'
+                );
+
+                $arrayIna226TranslateAlert = [
+                    'submenu.sensor_threshold.lbl.ina226vbus-alert-msg',
+                    'submenu.sensor_threshold.lbl.ina226vshunt-alert-msg',
+                    'submenu.sensor_threshold.lbl.ina226vcurrent-alert-msg',
+                    'submenu.sensor_threshold.lbl.ina226vpower-alert-msg',
+                ];
+
+                foreach ($arrayIna226TranslateAlert as $pkeyValue)
+                {
+                    insertUpdateRow(
+                        'translation',
+                        'translation',
+                        [
+                            'key' => $pkeyValue,
+                            'de'  => 'Alarm-Meldung',
+                            'en'  => 'Alert-Message',
+                            'fr'  => "Message d''alerte",
+                            'es'  => 'Mensaje de alerta',
+                            'it'  => 'Messaggio di allerta',
+                            'nl'  => 'Waarschuwing bericht',
+                        ],
+                        'key',
+                        'insert'
+                    );
+                }
+
+                $arrayIna226TranslateGroup = [
+                    'submenu.sensor_threshold.lbl.ina226vbus-dm-group',
+                    'submenu.sensor_threshold.lbl.ina226vshunt-dm-group',
+                    'submenu.sensor_threshold.lbl.ina226vcurrent-dm-group',
+                    'submenu.sensor_threshold.lbl.ina226vpower-dm-group',
+                ];
+
+                foreach ($arrayIna226TranslateGroup as $pkeyValue)
+                {
+                    insertUpdateRow(
+                        'translation',
+                        'translation',
+                        [
+                            'key' => $pkeyValue,
+                            'de'  => 'DM-Gruppe/Call',
+                            'en'  => 'DM-Group/Call',
+                            'fr'  => 'Groupe DM/Appel',
+                            'es'  => 'Grupo DM/Llamada',
+                            'it'  => 'Gruppo DM/Chiamata',
+                            'nl'  => 'DM-groep/Call',
+                        ],
+                        'key',
+                        'insert'
+                    );
+                }
+
+                // Enable festiveModeEnable if not specified. As of V1.10.82
+                if (getParamData('festiveModeEnable') === '')
+                {
+                    setParamData('festiveModeEnable', 1);
+                }
+
+                #Markieren als ausgeführt
+                markUpgradeApplied($migrationKey);
+            }
+        }
+    }
+
+    if ($doRestartBgProcess === true)
+    {
+        ## Prozess neu laden damit Feld befüllt wird
+        # Stop BG-Process
+        $paramBgProcess['task'] = 'udp';
+        stopBgProcess($paramBgProcess);
+
+        ##start BG-Process
+        $paramStartBgProcess['task'] = 'udp';
+        startBgProcess($paramStartBgProcess);
+    }
+}
+function showMenuIcons(): void
 {
     echo '<div id="menu-icon" class="topMenu">&#9776;</div>';
     echo '<div id="menu">';
@@ -1019,7 +1476,8 @@ function showMenuIcons()
     echo '</ul>';
     echo '</div>';
 }
-function initSetBaseParam()
+#[NoReturn]
+function initSetBaseParam(): void
 {
     $loraIp   = trim($_REQUEST['paramSetLoraIp'] ?? '0.0.0.0');
     $callSign = strtoupper(trim($_REQUEST['inputParamCallSign'] ?? 'DB0ABC-99'));
@@ -1086,7 +1544,8 @@ function checkBaseParam($param)
         return false;
     }
 }
-function checkExtension($param)
+#[NoReturn]
+function checkExtension($param): void
 {
     $debugFlag     = $param['debugFlag'] ?? false;
     $chkExtension1 = $param['chkExtension1'] ?? false;
@@ -1206,7 +1665,7 @@ function checkExtension($param)
 
     exit();
 }
-function setNewMsgBgColor()
+function setNewMsgBgColor(): void
 {
     $newMsgBgColor = getParamData('newMsgBgColor');
     $newMsgBgColor = $newMsgBgColor === '' ? '#FFFFFF' : $newMsgBgColor;
@@ -1243,3 +1702,557 @@ function setNewMsgAudioItems(): bool
 
     return true;
 }
+function checkVersion($currentVersion, $targetVersion, $operator): bool|int
+{
+    $currentVersion = preg_replace('/[^0-9.]/', '', $currentVersion);
+    $targetVersion  = preg_replace('/[^0-9.]/', '', $targetVersion);
+
+    return version_compare($currentVersion, $targetVersion, $operator);
+}
+function columnExists($database, $tabelle, $spalte): bool
+{
+    if (!file_exists('database/' . $database . '.db'))
+    {
+        return false;
+    }
+
+    // SQLite3-Datenbank öffnen
+    $db = new SQLite3('database/' . $database . '.db');
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
+
+    $query  = "PRAGMA table_info('$tabelle')";
+
+    $logArray   = array();
+    $logArray[] = "columnExists: Database: $database";
+    $logArray[] = "columnExists: tabelle: $tabelle";
+
+    $result = safeDbRun( $db,  $query, 'query', $logArray);
+
+    if ($result === false)
+    {
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+
+        return false;
+    }
+
+    while ($row = $result->fetchArray(SQLITE3_ASSOC))
+    {
+        if ($row['name'] === $spalte)
+        {
+            $db->close();
+            unset($db);
+            return true; // Spalte existiert
+        }
+    }
+
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
+    return false; // Spalte existiert nicht
+}
+function addColumn($database, $tabelle, $spalte, $typ = 'TEXT', $default = null): bool
+{
+    // Den Standardwert hinzufügen, wenn er angegeben wurde
+    $defaultSql = '';
+
+    // SQLite3-Datenbank öffnen
+    $db = new SQLite3('database/' . $database . '.db');
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
+
+    // Sicherstellen, dass der Typ gültig ist
+    if (empty($typ))
+    {
+        $typ = 'TEXT';  // Standardwert verwenden, wenn kein Typ angegeben ist
+    }
+
+    if ($default !== null)
+    {
+        // Wenn ein Standardwert übergeben wurde, wird dieser hinzugefügt
+        $defaultSql = " DEFAULT '" . SQLite3::escapeString($default) . "'";
+
+        if ($typ == 'INTEGER')
+        {
+            $defaultSql = " DEFAULT " . (int) $default;
+        }
+    }
+
+    // SQL Befehl zum Hinzufügen der Spalte mit Typ und optionalem Standardwert
+    $query = "ALTER TABLE $tabelle ADD COLUMN $spalte $typ" . $defaultSql;
+
+    $logArray   = array();
+    $logArray[] = "addColumn: database: $database";
+    $logArray[] = "addColumn: spalte: $spalte";
+    $logArray[] = "addColumn: tabelle: $tabelle";
+
+    $res = safeDbRun( $db,  $query, 'exec', $logArray);
+
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
+    if ($res === false)
+    {
+        return false;
+    }
+
+    return true;
+}
+function addIndex($database, $tabelle, $IndexName, $indexField): bool
+{
+    // SQLite3-Datenbank öffnen
+    $db = new SQLite3('database/' . $database . '.db');
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
+
+    // SQL Befehl zum Hinzufügen des Index
+    $indexFields = implode(',', array_map('trim', explode(',', $indexField)));
+
+    $query = "CREATE INDEX IF NOT EXISTS '$IndexName' ON '$tabelle' ($indexFields);";
+
+    $logArray   = array();
+    $logArray[] = "addColumn: database: $database";
+    $logArray[] = "addColumn: IndexName: $IndexName";
+    $logArray[] = "addColumn: indexField: $indexField";
+
+    $res = safeDbRun( $db,  $query, 'exec', $logArray);
+
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
+    if ($res === false)
+    {
+        return false;
+    }
+
+    return true;
+}
+function delIndex($database, $IndexName): bool
+{
+    // SQLite3-Datenbank öffnen
+    $db = new SQLite3('database/' . $database . '.db');
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
+
+    // SQL Befehl zum Löschen des Index
+    $query = "DROP INDEX IF EXISTS '$IndexName';";
+
+    $logArray   = array();
+    $logArray[] = "addColumn: database: $database";
+    $logArray[] = "addColumn: IndexName: $IndexName";
+
+    $res = safeDbRun( $db,  $query, 'exec', $logArray);
+
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
+    if ($res === false)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+/**
+ * Fügt einen Datensatz ein oder updated ihn anhand des Primärschlüssels
+ *
+ * @param string $database Datenbankname ohne .db
+ * @param string $table Tabellenname
+ * @param array  $data Assoziatives Array Feld => Wert
+ *
+ * @param string $pkeyFieldName Primärschlüssel NULL = Insert
+ * @param string $mode insert|update
+ *
+ * @return bool
+ */
+function insertUpdateRow(string $database, string $table, array $data, string $pkeyFieldName, string $mode): bool
+{
+    # Wenn keine Daten im Array, dann false
+    if (empty($data))
+    {
+        return false;
+    }
+
+    $db = new SQLite3('database/' . $database . '.db');
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT);
+
+    // UPDATE-Part
+    if ($mode === 'update')
+    {
+        # PKeyFieldName muss im Array sein, wenn nicht → false
+        if (!isset($data[$pkeyFieldName]))
+        {
+            $db->close();
+            unset($db);
+            return false;
+        }
+
+        # Merke mir Wert in PKeyFieldName für WHERE-Clause
+        $pkValue = $data[$pkeyFieldName];
+        unset($data[$pkeyFieldName]);
+
+        # Prüfe ob PKeyFieldName das einzige Element im Array war.
+        # Wenn ja → false
+        if (empty($data))
+        {
+            $db->close();
+            unset($db);
+            return false;
+        }
+
+        # Lese Daten-Array für Update-SET
+        $setParts = [];
+        foreach ($data as $field => $value)
+        {
+            $setParts[] = "$field = :" . $field;
+        }
+
+        $sql  = "UPDATE $table SET " . implode(', ', $setParts) . " WHERE $pkeyFieldName = :pk";
+        $stmt = $db->prepare($sql);
+
+        foreach ($data as $field => $value)
+        {
+            $stmt->bindValue(':' . $field, $value);
+        }
+
+        $stmt->bindValue(':pk', $pkValue);
+    }
+    elseif ($mode === 'insert')
+    {
+        // INSERT-Part
+
+        # PK-Feld muss im Array sein
+        if (!isset($data[$pkeyFieldName]))
+        {
+            $db->close();
+            unset($db);
+            return false;
+        }
+
+        # Optional: Prüfen, ob Datensatz schon existiert
+        $exists = $db->querySingle(
+            "SELECT 1 FROM $table WHERE $pkeyFieldName = '" . SQLite3::escapeString($data[$pkeyFieldName]) . "'"
+        );
+
+        if ($exists)
+        {
+            $db->close();
+            unset($db);
+            return false; // Datensatz existiert schon
+        }
+
+        $fields       = array_keys($data);
+        $placeholders = array_map(fn($f) => ':' . $f, $fields);
+
+        $sql  = "INSERT INTO $table (" . implode(', ', $fields) . ") VALUES (" . implode(', ', $placeholders) . ")";
+        $stmt = $db->prepare($sql);
+
+        foreach ($data as $field => $value)
+        {
+            $stmt->bindValue(':' . $field, $value);
+        }
+    }
+    else
+    {
+        // Ungültiger Modus
+        $db->close();
+        unset($db);
+        return false;
+    }
+
+    $res = $stmt->execute();
+    $stmt->close();
+
+    $db->close();
+    unset($db);
+
+    return $res !== false;
+}
+function checkDbIntegrity($database): void
+{
+    $realDatabasePath   = 'database/' . $database . '.db';
+    $fileDbIntegrityLog = 'log/db_integrity_error_' . date('Ymd') . '.log';
+
+    $dbFileSize = is_readable($realDatabasePath) ? filesize($realDatabasePath) : -1; // Prevents if File is locked
+    $sizeKB     = round($dbFileSize / 1024, 1);
+
+    if ($sizeKB == 0)
+    {
+        @unlink($realDatabasePath);
+        initSQLiteDatabase($database);
+
+        $errorText = date('Y-m-d H:i:s') . ' Database: ' . $database . ' faulty integration. Reinitialize' . "\n";
+        file_put_contents($fileDbIntegrityLog, $errorText, FILE_APPEND);
+    }
+}
+
+function checkLoraNewGui(): bool
+{
+    $loraIp      = getParamData('loraIp');
+    $actualHost  = 'http';
+    $triggerLink = $actualHost . '://' . $loraIp . '/getparam/?setcall=';
+
+    $ch = curl_init($triggerLink);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10); // 10 Sekunden Timeout da bei 3 oft Fehler
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    if ($response === false)
+    {
+        // Curl Fehler, eventuell Log schreiben
+        echo '<br><span class="failureHint">Kann Node mit IP: ' . $loraIp . ' zur Prüfung auf neue GUI nicht erreichen!</span>';
+        return false;
+    }
+
+    $jsonContent = json_decode($response, true);
+
+    #Alte GUI erkannt
+    if ($jsonContent === null || !isset($jsonContent['returncode']))
+    {
+        setParamData('isNewMeshGui',0);
+        return false;
+    }
+
+    #Neue GUI erkannt
+    setParamData('isNewMeshGui',1);
+    return true;
+}
+function deleteOldCron(): bool
+{
+    $osIssWindows  = chkOsIsWindows();
+
+    #Prüfe ob Alter Cron noch existiert und lösche ihn
+    if ($osIssWindows === false)
+    {
+        // Eingabewerte
+        $skriptPfad = '/usr/bin/wget -q -O /dev/null ' . BASE_PATH_URL . 'cron_loop.php';
+
+        // Die Crontab auslesen
+        exec('crontab -l 2>/dev/null', $cronJobs);
+
+        // Prüfen, ob der alte Cronjob noch existiert und lösche ihn
+        foreach ($cronJobs as $index => $existingJob)
+        {
+            if (strpos($existingJob, $skriptPfad) !== false)
+            {
+                unset($cronJobs[$index]);
+
+                // Crontab aktualisieren
+                file_put_contents('/tmp/crontab_loop.txt', implode("\n", $cronJobs) . "\n");
+                exec('crontab /tmp/crontab_loop.txt');
+            }
+        }
+    }
+
+    if (file_exists('log/cron_loop.lock'))
+    {
+        @unlink('log/cron_loop.lock');
+    }
+
+    return true;
+}
+function deleteAllSensorDataCronItems(): bool
+{
+    $osIssWindows  = chkOsIsWindows();
+
+    #Prüfe ob Alter Cron noch existiert und lösche ihn
+    if ($osIssWindows === false)
+    {
+        // Eingabewerte
+        $skriptPfad = '/usr/bin/wget -q -O /dev/null ' . BASE_PATH_URL . 'get_sensor_data.php';
+
+        // Die Crontab auslesen
+        exec('crontab -l 2>/dev/null', $cronJobs);
+
+        // Prüfen, ob der alte Cronjob noch existiert und lösche ihn
+        foreach ($cronJobs as $index => $existingJob)
+        {
+            if (strpos($existingJob, $skriptPfad) !== false)
+            {
+                unset($cronJobs[$index]);
+
+                // Crontab aktualisieren
+                file_put_contents('/tmp/crontab_loop.txt', implode("\n", $cronJobs) . "\n");
+                exec('crontab /tmp/crontab_loop.txt');
+            }
+        }
+    }
+
+    return true;
+}
+function upgradeApplied(string $migration_key, int $migration_counter = 1): bool
+{
+    $db = new SQLite3('database/db_migrations.db', SQLITE3_OPEN_READONLY);
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT);
+
+    $sql = "SELECT 1 
+              FROM  db_migrations 
+             WHERE migration_key = '" . SQLite3::escapeString($migration_key) . "'
+             AND migration_counter = '$migration_counter'
+           ";
+
+    $exists = $db->querySingle($sql);
+
+    $db->close();
+    unset($db);
+
+    return (bool) $exists;
+}
+function markUpgradeApplied(string $migration_key): void
+{
+    $db = new SQLite3('database/db_migrations.db');
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT);
+
+    // 1) Existiert der Key schon?
+    $sqlCheck = "SELECT migration_counter FROM db_migrations WHERE migration_key = :migration_key";
+    $stmtCheck = $db->prepare($sqlCheck);
+    $stmtCheck->bindValue(':migration_key', $migration_key, SQLITE3_TEXT);
+    $current = $stmtCheck->execute()->fetchArray(SQLITE3_ASSOC);
+    $stmtCheck->close();
+
+    if ($current === false) {
+        // Key existiert nicht → Insert mit Counter = increment
+        $sqlInsert = "INSERT INTO db_migrations (migration_key, migration_counter) VALUES (:migration_key, :counter)";
+        $stmtInsert = $db->prepare($sqlInsert);
+        $stmtInsert->bindValue(':migration_key', $migration_key, SQLITE3_TEXT);
+        $stmtInsert->bindValue(':counter', 1, SQLITE3_INTEGER);
+        $stmtInsert->execute();
+        $stmtInsert->close();
+    } else {
+        // Key existiert → Counter erhöhen
+        $new_counter = $current['migration_counter'] + 1;
+        $sqlUpdate = "UPDATE db_migrations SET migration_counter = :counter WHERE migration_key = :migration_key";
+        $stmtUpdate = $db->prepare($sqlUpdate);
+        $stmtUpdate->bindValue(':counter', $new_counter, SQLITE3_INTEGER);
+        $stmtUpdate->bindValue(':migration_key', $migration_key, SQLITE3_TEXT);
+        $stmtUpdate->execute();
+        $stmtUpdate->close();
+    }
+
+    $db->close();
+    unset($db);
+}
+function getFestiveTitle(string $baseTitle, int $festiveModeEnable): string
+{
+    $now               = new DateTime();
+
+    // Testdatum setzen
+    //$now = new DateTime('2026-5-24'); // Ostersonntag
+
+    $year     = (int) $now->format('Y');
+    $month    = (int) $now->format('m');
+    $day      = (int) $now->format('d');
+    $isMobile = isMobile();
+
+    if ($isMobile === true || $festiveModeEnable == 0)
+    {
+        return $baseTitle;
+    }
+
+    $prefix = $suffix = '';
+
+    // Weitere Feste können hier ergänzt werden, z.B. Silvester, Valentinstag, etc.
+
+    // Berechne variable Feiertage
+    $easter    = getEasterDate($year);
+    $pfingsten = getPentecostDate($year);
+    $carnival  = getCarnivalMonday($year);
+
+    // Neujahr: 1. Januar
+    if ($month === 1 && $day === 1) {
+        $prefix = $suffix = '&#127878;&#10024;'; // 🎆✨
+    }
+
+    // Valentinstag: 14. Februar
+    if ($month === 2 && $day === 14) {
+        $prefix = $suffix = '&#10084;&#65039;&#128140;'; // ❤️💌
+    }
+
+    // Fasching / Karneval (Rosenmontag)
+    if ($now->format('Y-m-d') == $carnival->format('Y-m-d')) {
+        $prefix = $suffix = '&#127917;&#129313;'; // 🎭🤡
+    }
+
+    // Ostern (z.B. 3 Tage rund um Ostersonntag)
+    if ($now >= (clone $easter)->modify('-1 day') && $now <= (clone $easter)->modify('+1 day')) {
+        $prefix = $suffix = '&#128007;&#127799;&#129370;'; // 🐇🌷🥚
+    }
+
+    // Tag der Arbeit: 1. Mai
+    if ($month === 5 && $day === 1) {
+        $prefix = $suffix = '&#128736;&#65039;&#127801;'; // 🛠️🌹
+    }
+
+    // Muttertag: 2. Sonntag im Mai
+    $secondSundayMay = (new DateTime('second sunday of May ' . $now->format('Y')))->format('d');
+    if ($month === 5 && $day == $secondSundayMay) {
+        $prefix = $suffix = '&#128144;&#10084;&#65039;'; // 💐❤️
+    }
+
+    // Pfingsten (Sonntag)
+    if ($now->format('Y-m-d') == $pfingsten->format('Y-m-d')) {
+        $prefix = $suffix = '&#128276;&#127807;'; // 🔔🌿
+    }
+
+    // Halloween: 31. Oktober
+    if ($month === 10 && $day === 31) {
+        $prefix = $suffix = '&#127875;&#128123;'; // 🎃👻
+    }
+
+    // Reformationstag: 31. Oktober
+    if ($month === 10 && $day === 31) {
+        $prefix = $suffix = '&#10013;&#65039;&#128214;'; // ✝️📖
+    }
+
+    // Allerheiligen: 1. November
+    if ($month === 11 && $day === 1) {
+        $prefix = $suffix = '&#128367;&#65039;&#9962;'; // 🕯️⛪
+    }
+
+    // Nikolaus: 6. Dezember
+    if ($month === 12 && $day === 6) {
+        $prefix = $suffix = '&#127877;&#128066;'; // 🎅👢
+    }
+
+    // Weihnachten: 24.–26. Dezember
+    if ($month === 12 && $day >= 24 && $day <= 26) {
+        $prefix = '&#127876;&#10052;&#127873;'; // 🎄❄️🎁
+        $suffix = '&#127876;&#10052;&#127873;'; // 🎄❄️🎁
+    }
+
+    // Silvester: 31. Dezember
+    if ($month === 12 && $day === 31) {
+        $prefix = $suffix = '&#127878;&#129346;'; // 🎆🥂
+    }
+
+    return $prefix . ' ' . $baseTitle . ' ' . $suffix;
+}
+// Berechnet das Osterdatum für ein bestimmtes Jahr
+function getEasterDate(int $year): DateTime {
+    $easter = new DateTime();
+    $easter->setTimestamp(easter_date($year)); // PHP eingebaute Funktion
+    return $easter;
+}
+// Gibt die Pfingstsonntage zurück (50 Tage nach Ostern)
+function getPentecostDate(int $year): DateTime {
+    $easter = getEasterDate($year);
+    $pfingsten = clone $easter;
+    $pfingsten->modify('+49 days'); // 50 Tage inklusive Ostersonntag = 49 Tage dazwischen
+    return $pfingsten;
+}
+// Fasching: Rosenmontag = 48 Tage vor Ostern
+function getCarnivalMonday(int $year): DateTime {
+    $easter = getEasterDate($year);
+    $carnival = clone $easter;
+    $carnival->modify('-48 days'); // Rosenmontag
+    return $carnival;
+}
+
+
+
+
+

@@ -198,267 +198,6 @@ function setBeaconData($key, $value, $mode = 'int'): bool
 
     return true;
 }
-function setThTempData($arrayParam): bool
-{
-    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
-    $basename       = pathinfo(getcwd())['basename'];
-    $dbFilenameSub  = '../database/sensor_th_temp.db';
-    $dbFilenameRoot = 'database/sensor_th_temp.db';
-    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
-    $timeStamps     = date('Y-m-d H:i:s');
-
-    $db = new SQLite3($dbFilename);
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
-    $db->exec('PRAGMA synchronous = NORMAL;');
-
-    $sensorThTempIntervallMin = $arrayParam['sensorThTempIntervallMin'];
-
-    $sensorThTempEnabled  = $arrayParam['sensorThTempEnabled'];
-    $sensorThTempMinValue = $arrayParam['sensorThTempMinValue'];
-    $sensorThTempMaxValue = $arrayParam['sensorThTempMaxValue'];
-    $sensorThTempAlertMsg = $arrayParam['sensorThTempAlertMsg'];
-    $sensorThTempDmGrpId  = $arrayParam['sensorThTempDmGrpId'];
-
-    $sensorThToutEnabled  = $arrayParam['sensorThToutEnabled'];
-    $sensorThToutMinValue = $arrayParam['sensorThToutMinValue'];
-    $sensorThToutMaxValue = $arrayParam['sensorThToutMaxValue'];
-    $sensorThToutAlertMsg = $arrayParam['sensorThToutAlertMsg'];
-    $sensorThToutDmGrpId  = $arrayParam['sensorThToutDmGrpId'];
-
-    #Escape Value
-    $sensorThTempIntervallMin = SQLite3::escapeString($sensorThTempIntervallMin);
-
-    $sensorThTempEnabled  = SQLite3::escapeString($sensorThTempEnabled);
-    $sensorThTempMinValue = SQLite3::escapeString($sensorThTempMinValue);
-    $sensorThTempMaxValue = SQLite3::escapeString($sensorThTempMaxValue);
-    $sensorThTempAlertMsg = SQLite3::escapeString($sensorThTempAlertMsg);
-    $sensorThTempDmGrpId  = SQLite3::escapeString($sensorThTempDmGrpId);
-
-    $sensorThToutEnabled  = SQLite3::escapeString($sensorThToutEnabled);
-    $sensorThToutMinValue = SQLite3::escapeString($sensorThToutMinValue);
-    $sensorThToutMaxValue = SQLite3::escapeString($sensorThToutMaxValue);
-    $sensorThToutAlertMsg = SQLite3::escapeString($sensorThToutAlertMsg);
-    $sensorThToutDmGrpId  = SQLite3::escapeString($sensorThToutDmGrpId);
-
-    $sqlTemp = "REPLACE INTO sensorThTemp (sensorThTempId,
-                                           timestamps, 
-                                           sensorThTempIntervallMin,
-                                           sensorThTempEnabled, 
-                                           sensorThTempMinValue, 
-                                           sensorThTempMaxValue, 
-                                           sensorThTempAlertMsg, 
-                                           sensorThTempDmGrpId, 
-                                           sensorThToutEnabled, 
-                                           sensorThToutMinValue, 
-                                           sensorThToutMaxValue, 
-                                           sensorThToutAlertMsg, 
-                                           sensorThToutDmGrpId)
-                     VALUES ('1',
-                             '$timeStamps',
-                             '$sensorThTempIntervallMin',
-                             '$sensorThTempEnabled',
-                             '$sensorThTempMinValue',
-                             '$sensorThTempMaxValue',
-                             '$sensorThTempAlertMsg',
-                             '$sensorThTempDmGrpId',
-                             '$sensorThToutEnabled',
-                             '$sensorThToutMinValue',
-                             '$sensorThToutMaxValue',
-                             '$sensorThToutAlertMsg',
-                             '$sensorThToutDmGrpId'
-                           );
-                    ";
-
-    $logArray   = array();
-    $logArray[] = "setThTempData: Database: $dbFilename";
-
-    $res = safeDbRun( $db,  $sqlTemp, 'exec', $logArray);
-
-    #Close and write Back WAL
-    $db->close();
-    unset($db);
-
-    if ($res === false)
-    {
-        return false;
-    }
-
-    return true;
-}
-function setThIna226Data($arrayParam): bool
-{
-    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
-    $basename       = pathinfo(getcwd())['basename'];
-    $dbFilenameSub  = '../database/sensor_th_ina226.db';
-    $dbFilenameRoot = 'database/sensor_th_ina226.db';
-    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
-    $timeStamps     = date('Y-m-d H:i:s');
-
-    $db = new SQLite3($dbFilename);
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
-    $db->exec('PRAGMA synchronous = NORMAL;');
-
-    $sensorThIna226IntervallMin = $arrayParam['sensorThIna226IntervallMin'] ?? 60;
-
-    $sensorThIna226vBusEnabled  = $arrayParam['sensorThIna226vBusEnabled'] ?? 0;
-    $sensorThIna226vBusMinValue = $arrayParam['sensorThIna226vBusMinValue'] ?? '';
-    $sensorThIna226vBusMaxValue = $arrayParam['sensorThIna226vBusMaxValue'] ?? '';
-    $sensorThIna226vBusAlertMsg = $arrayParam['sensorThIna226vBusAlertMsg'] ?? '';
-    $sensorThIna226vBusDmGrpId  = $arrayParam['sensorThIna226vBusDmGrpId'] ?? '*';
-
-    $sensorThIna226vShuntEnabled  = $arrayParam['sensorThIna226vShuntEnabled'] ?? 0;
-    $sensorThIna226vShuntMinValue = $arrayParam['sensorThIna226vShuntMinValue'] ?? '';
-    $sensorThIna226vShuntMaxValue = $arrayParam['sensorThIna226vShuntMaxValue'] ?? '';
-    $sensorThIna226vShuntAlertMsg = $arrayParam['sensorThIna226vShuntAlertMsg'] ?? '';
-    $sensorThIna226vShuntDmGrpId  = $arrayParam['sensorThIna226vShuntDmGrpId'] ?? '999';
-
-    $sensorThIna226vCurrentEnabled  = $arrayParam['sensorThIna226vCurrentEnabled'] ?? 0;
-    $sensorThIna226vCurrentMinValue = $arrayParam['sensorThIna226vCurrentMinValue'] ?? '';
-    $sensorThIna226vCurrentMaxValue = $arrayParam['sensorThIna226vCurrentMaxValue'] ?? '';
-    $sensorThIna226vCurrentAlertMsg = $arrayParam['sensorThIna226vCurrentAlertMsg'] ?? '';
-    $sensorThIna226vCurrentDmGrpId  = $arrayParam['sensorThIna226vCurrentDmGrpId'] ?? '999';
-
-    $sensorThIna226vPowerEnabled  = $_REQUEST['sensorThIna226vPowerEnabled'] ?? 0;
-    $sensorThIna226vPowerMinValue = $_REQUEST['sensorThIna226vPowerMinValue'] ?? '';
-    $sensorThIna226vPowerMaxValue = $_REQUEST['sensorThIna226vPowerMaxValue'] ?? '';
-    $sensorThIna226vPowerAlertMsg = $_REQUEST['sensorThIna226vPowerAlertMsg'] ?? '';
-    $sensorThIna226vPowerDmGrpId  = $_REQUEST['sensorThIna226vPowerDmGrpId'] ?? '999';
-
-    #Escape Value
-    $sensorThIna226vBusEnabled  = SQLite3::escapeString($sensorThIna226vBusEnabled);
-    $sensorThIna226vBusMinValue = SQLite3::escapeString($sensorThIna226vBusMinValue);
-    $sensorThIna226vBusMaxValue = SQLite3::escapeString($sensorThIna226vBusMaxValue);
-    $sensorThIna226vBusAlertMsg = SQLite3::escapeString($sensorThIna226vBusAlertMsg);
-    $sensorThIna226vBusDmGrpId  = SQLite3::escapeString($sensorThIna226vBusDmGrpId);
-
-    $sensorThIna226vShuntEnabled  = SQLite3::escapeString($sensorThIna226vShuntEnabled);
-    $sensorThIna226vShuntMinValue = SQLite3::escapeString($sensorThIna226vShuntMinValue);
-    $sensorThIna226vShuntMaxValue = SQLite3::escapeString($sensorThIna226vShuntMaxValue);
-    $sensorThIna226vShuntAlertMsg = SQLite3::escapeString($sensorThIna226vShuntAlertMsg);
-    $sensorThIna226vShuntDmGrpId  = SQLite3::escapeString($sensorThIna226vShuntDmGrpId);
-
-    $sensorThIna226vCurrentEnabled  = SQLite3::escapeString($sensorThIna226vCurrentEnabled);
-    $sensorThIna226vCurrentMinValue = SQLite3::escapeString($sensorThIna226vCurrentMinValue);
-    $sensorThIna226vCurrentMaxValue = SQLite3::escapeString($sensorThIna226vCurrentMaxValue);
-    $sensorThIna226vCurrentAlertMsg = SQLite3::escapeString($sensorThIna226vCurrentAlertMsg);
-    $sensorThIna226vCurrentDmGrpId  = SQLite3::escapeString($sensorThIna226vCurrentDmGrpId);
-
-    $sensorThIna226vPowerEnabled  = SQLite3::escapeString($sensorThIna226vPowerEnabled);
-    $sensorThIna226vPowerMinValue = SQLite3::escapeString($sensorThIna226vPowerMinValue);
-    $sensorThIna226vPowerMaxValue = SQLite3::escapeString($sensorThIna226vPowerMaxValue);
-    $sensorThIna226vPowerAlertMsg = SQLite3::escapeString($sensorThIna226vPowerAlertMsg);
-    $sensorThIna226vPowerDmGrpId  = SQLite3::escapeString($sensorThIna226vPowerDmGrpId);
-
-    $sql = "REPLACE INTO sensorThIna226 (sensorThIna226Id,
-                                         timestamps, 
-                                         sensorThIna226IntervallMin,
-                                         sensorThIna226vBusEnabled, 
-                                         sensorThIna226vBusMinValue, 
-                                         sensorThIna226vBusMaxValue, 
-                                         sensorThIna226vBusAlertMsg, 
-                                         sensorThIna226vBusDmGrpId, 
-                                         sensorThIna226vShuntEnabled, 
-                                         sensorThIna226vShuntMinValue, 
-                                         sensorThIna226vShuntMaxValue, 
-                                         sensorThIna226vShuntAlertMsg, 
-                                         sensorThIna226vShuntDmGrpId, 
-                                         sensorThIna226vCurrentEnabled, 
-                                         sensorThIna226vCurrentMinValue, 
-                                         sensorThIna226vCurrentMaxValue, 
-                                         sensorThIna226vCurrentAlertMsg, 
-                                         sensorThIna226vCurrentDmGrpId, 
-                                         sensorThIna226vPowerEnabled, 
-                                         sensorThIna226vPowerMinValue, 
-                                         sensorThIna226vPowerMaxValue, 
-                                         sensorThIna226vPowerAlertMsg, 
-                                         sensorThIna226vPowerDmGrpId)
-               VALUES ('1',
-                       '$timeStamps',
-                       '$sensorThIna226IntervallMin',
-                       '$sensorThIna226vBusEnabled', 
-                       '$sensorThIna226vBusMinValue', 
-                       '$sensorThIna226vBusMaxValue', 
-                       '$sensorThIna226vBusAlertMsg', 
-                       '$sensorThIna226vBusDmGrpId', 
-                       '$sensorThIna226vShuntEnabled', 
-                       '$sensorThIna226vShuntMinValue', 
-                       '$sensorThIna226vShuntMaxValue', 
-                       '$sensorThIna226vShuntAlertMsg', 
-                       '$sensorThIna226vShuntDmGrpId', 
-                       '$sensorThIna226vCurrentEnabled', 
-                       '$sensorThIna226vCurrentMinValue', 
-                       '$sensorThIna226vCurrentMaxValue', 
-                       '$sensorThIna226vCurrentAlertMsg', 
-                       '$sensorThIna226vCurrentDmGrpId', 
-                       '$sensorThIna226vPowerEnabled', 
-                       '$sensorThIna226vPowerMinValue', 
-                       '$sensorThIna226vPowerMaxValue', 
-                       '$sensorThIna226vPowerAlertMsg', 
-                       '$sensorThIna226vPowerDmGrpId'
-                     );
-         ";
-
-    $logArray   = array();
-    $logArray[] = "setThIna226Data: Database: $dbFilename";
-
-    $res = safeDbRun( $db,  $sql, 'exec', $logArray);
-
-    #Close and write Back WAL
-    $db->close();
-    unset($db);
-
-    if ($res === false)
-    {
-        return false;
-    }
-
-    return true;
-}
-function disableAllIna226Sensors(): bool
-{
-    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
-    $basename       = pathinfo(getcwd())['basename'];
-    $dbFilenameSub  = '../database/sensor_th_ina226.db';
-    $dbFilenameRoot = 'database/sensor_th_ina226.db';
-    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
-    $timeStamps     = date('Y-m-d H:i:s');
-
-    $db = new SQLite3($dbFilename);
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
-    $db->exec('PRAGMA synchronous = NORMAL;');
-
-    $sql = "REPLACE INTO sensorThIna226 (sensorThIna226Id,
-                                         timeStamps,
-                                         sensorThIna226vBusEnabled, 
-                                         sensorThIna226vShuntEnabled, 
-                                         sensorThIna226vCurrentEnabled, 
-                                         sensorThIna226vPowerEnabled
-                                        )
-                                 VALUES ('1',
-                                         '$timeStamps',
-                                         '0',
-                                         '0',
-                                         '0', 
-                                         '0'
-                                         );
-                    ";
-
-    $logArray = array();
-    $logArray[] = "disableAllIna226Sensors: Database: $dbFilename";
-
-    $res = safeDbRun( $db,  $sql, 'exec', $logArray);
-
-    #Close and write Back WAL
-    $db->close();
-    unset($db);
-
-    if ($res === false)
-    {
-        return false;
-    }
-
-    return true;
-}
 function getThTempData()
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
@@ -795,253 +534,6 @@ function chkOsIsWindows(): bool
 
     return false;
 }
-function setMheardData($heardData): bool
-{
-    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
-    $basename       = pathinfo(getcwd())['basename'];
-    $dbFilenameSub  = '../database/mheard.db';
-    $dbFilenameRoot = 'database/mheard.db';
-    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
-    $mhTimeStamps   = date('Y-m-d H:i:s');
-
-    $db = new SQLite3($dbFilename);
-    $db->exec('PRAGMA synchronous = NORMAL;');
-
-    foreach ($heardData AS $key)
-    {
-        $callSign = SQLite3::escapeString($key['callSign'] ?? '');
-        $date     = SQLite3::escapeString($key['date'] ?? '');
-        $time     = SQLite3::escapeString($key['time'] ?? '');
-        $mhType   = SQLite3::escapeString($key['mhType'] ?? '');
-        $hardware = SQLite3::escapeString($key['hardware'] ?? '');
-        $mod      = SQLite3::escapeString($key['mod'] ?? '');
-        $rssi     = SQLite3::escapeString($key['rssi'] ?? '');
-        $snr      = SQLite3::escapeString($key['snr'] ?? '');
-        $dist     = SQLite3::escapeString($key['dist'] ?? '');
-        $pl       = SQLite3::escapeString($key['pl'] ?? '');
-        $m        = SQLite3::escapeString($key['m'] ?? '');
-
-        $sql = "REPLACE INTO mheard (timestamps, 
-                                     mhCallSign, 
-                                     mhDate, 
-                                     mhTime, 
-                                     mhType,
-                                     mhHardware, 
-                                     mhMod, 
-                                     mhRssi, 
-                                     mhSnr, 
-                                     mhDist, 
-                                     mhPl, 
-                                     mhM
-                                    )
-                             VALUES ('$mhTimeStamps',
-                                     '$callSign',
-                                     '$date',
-                                     '$time',
-                                     '$mhType',
-                                     '$hardware',
-                                     '$mod',
-                                     '$rssi',
-                                     '$snr',
-                                     '$dist',
-                                     '$pl',
-                                     '$m'
-                                    );
-                    ";
-
-        $logArray   = array();
-        $logArray[] = "setMheardData: Database: $dbFilename";
-
-        $res = safeDbRun( $db,  $sql, 'exec', $logArray);
-
-        if ($res === false)
-        {
-            #Close and write Back WAL
-            $db->close();
-            unset($db);
-
-            return false;
-        }
-    }
-
-    #Close and write Back WAL
-    $db->close();
-    unset($db);
-
-    return true;
-}
-function setSensorData($sensorData): bool
-{
-    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
-    $basename       = pathinfo(getcwd())['basename'];
-    $dbFilenameSub  = '../database/sensordata.db';
-    $dbFilenameRoot = 'database/sensordata.db';
-    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
-    $timeStamps     = date('Y-m-d H:i:s');
-
-    $db = new SQLite3($dbFilename);
-    $db->exec('PRAGMA synchronous = NORMAL;');
-
-    $bme280         = SQLite3::escapeString($sensorData['BME(P)280'] ?? '');
-    $bme680         = SQLite3::escapeString($sensorData['BME680'] ?? '');
-    $mcu811         = SQLite3::escapeString($sensorData['MCU811'] ?? '');
-    $lsp33          = SQLite3::escapeString($sensorData['LPS33'] ?? '');
-    $oneWire        = SQLite3::escapeString($sensorData['ONEWIRE'] ?? '');
-    $tout           = SQLite3::escapeString($sensorData['TOUT'] ?? '');
-    $temp           = SQLite3::escapeString($sensorData['TEMP'] ?? '');
-    $hum            = SQLite3::escapeString($sensorData['HUM'] ?? '');
-    $qfe            = SQLite3::escapeString($sensorData['QFE'] ?? '');
-    $qnh            = SQLite3::escapeString($sensorData['QNH'] ?? '');
-    $altAsl         = SQLite3::escapeString($sensorData['ALT asl'] ?? '');
-    $gas            = SQLite3::escapeString($sensorData['GAS'] ?? '');
-    $eCo2           = SQLite3::escapeString($sensorData['eCO2'] ?? '');
-    $ina226vBus     = SQLite3::escapeString($sensorData['vBUS'] ?? '');
-    $ina226vShunt   = SQLite3::escapeString($sensorData['vSHUNT'] ?? '');
-    $ina226vCurrent = SQLite3::escapeString($sensorData['vCURRENT'] ?? '');
-    $ina226vPower   = SQLite3::escapeString($sensorData['vPOWER'] ?? '');
-
-    $sql = "REPLACE INTO sensordata (timestamps,
-                                     bme280,
-                                     bme680,
-                                     mcu811,
-                                     lsp33,
-                                     oneWire,
-                                     temp,
-                                     tout,
-                                     hum,
-                                     qfe,
-                                     qnh,
-                                     altAsl,
-                                     gas,
-                                     eCo2,
-                                     ina226vBus,
-                                     ina226vShunt,
-                                     ina226vCurrent,
-                                     ina226vPower
-                                    )
-                             VALUES ('$timeStamps',
-                                     '$bme280',
-                                     '$bme680',
-                                     '$mcu811',
-                                     '$lsp33',
-                                     '$oneWire',
-                                     '$temp',
-                                     '$tout',
-                                     '$hum',
-                                     '$qfe',
-                                     '$qnh',
-                                     '$altAsl',
-                                     '$gas',
-                                     '$eCo2',
-                                     '$ina226vBus',
-                                     '$ina226vShunt',
-                                     '$ina226vCurrent',
-                                     '$ina226vPower'
-                                    );
-                    ";
-
-    $logArray   = array();
-    $logArray[] = "setSensorData: Database: $dbFilename";
-
-    $res = safeDbRun( $db,  $sql, 'exec', $logArray);
-
-    #Close and write Back WAL
-    $db->close();
-    unset($db);
-
-    if ($res === false)
-    {
-        return false;
-    }
-
-    return true;
-}
-function setSensorData2($sensorData): bool
-{
-    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
-    $basename       = pathinfo(getcwd())['basename'];
-    $dbFilenameSub  = '../database/sensordata.db';
-    $dbFilenameRoot = 'database/sensordata.db';
-    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
-    $timeStamps     = date('Y-m-d H:i:s');
-
-    $db = new SQLite3($dbFilename);
-    $db->exec('PRAGMA synchronous = NORMAL;');
-
-    $bme280         = SQLite3::escapeString($sensorData['bme_p_280'] ?? '');
-    $bme680         = SQLite3::escapeString($sensorData['bme680'] ?? '');
-    $mcu811         = SQLite3::escapeString($sensorData['mcu811'] ?? '');
-    $lsp33          = SQLite3::escapeString($sensorData['lps33'] ?? '');
-    $oneWire        = SQLite3::escapeString($sensorData['1_wire'] ?? '');
-    $tout           = SQLite3::escapeString($sensorData['tout'] ?? '');
-    $temp           = SQLite3::escapeString($sensorData['temperature'] ?? '');
-    $hum            = SQLite3::escapeString($sensorData['humidity'] ?? '');
-    $qfe            = SQLite3::escapeString($sensorData['qfe'] ?? '');
-    $qnh            = SQLite3::escapeString($sensorData['qnh'] ?? '');
-    $altAsl         = SQLite3::escapeString($sensorData['altitude_asl'] ?? '');
-    $gas            = SQLite3::escapeString($sensorData['gas'] ?? '');
-    $eCo2           = SQLite3::escapeString($sensorData['eco2'] ?? '');
-    $ina226vBus     = SQLite3::escapeString($sensorData['vBUS'] ?? '');
-    $ina226vShunt   = SQLite3::escapeString($sensorData['vSHUNT'] ?? '');
-    $ina226vCurrent = SQLite3::escapeString($sensorData['vCURRENT'] ?? '');
-    $ina226vPower   = SQLite3::escapeString($sensorData['vPOWER'] ?? '');
-
-    $sql = "REPLACE INTO sensordata (timestamps,
-                                     bme280,
-                                     bme680,
-                                     mcu811,
-                                     lsp33,
-                                     oneWire,
-                                     temp,
-                                     tout,
-                                     hum,
-                                     qfe,
-                                     qnh,
-                                     altAsl,
-                                     gas,
-                                     eCo2,
-                                     ina226vBus,
-                                     ina226vShunt,
-                                     ina226vCurrent,
-                                     ina226vPower
-                                    )
-                             VALUES ('$timeStamps',
-                                     '$bme280',
-                                     '$bme680',
-                                     '$mcu811',
-                                     '$lsp33',
-                                     '$oneWire',
-                                     '$temp',
-                                     '$tout',
-                                     '$hum',
-                                     '$qfe',
-                                     '$qnh',
-                                     '$altAsl',
-                                     '$gas',
-                                     '$eCo2',
-                                     '$ina226vBus',
-                                     '$ina226vShunt',
-                                     '$ina226vCurrent',
-                                     '$ina226vPower'
-                                    );
-                    ";
-
-    $logArray   = array();
-    $logArray[] = "setSensorData2: Database: $dbFilename";
-
-    $res = safeDbRun( $db,  $sql, 'exec', $logArray);
-
-    #Close and write Back WAL
-    $db->close();
-    unset($db);
-
-    if ($res === false)
-    {
-        return false;
-    }
-
-    return true;
-}
 function updateMeshDashData($msgId, $key, $value, $doNothing = false): bool
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
@@ -1085,366 +577,6 @@ function updateMeshDashData($msgId, $key, $value, $doNothing = false): bool
 
     return true;
 }
-function remoteStartBeacon(): bool
-{
-    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
-    $basename       = pathinfo(getcwd())['basename'];
-    $dbFilenameSub  = '../database/beacon.db';
-    $dbFilenameRoot = 'database/beacon.db';
-    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
-
-    $db = new SQLite3($dbFilename);
-    $db->exec('PRAGMA synchronous = NORMAL;');
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
-
-    $sql = "UPDATE beacon
-               SET 
-                   param_text  = CASE WHEN param_key = 'beaconOtp'        THEN '' END,
-                   param_text  = CASE WHEN param_key = 'beaconInitSendTs' THEN '0000-00-00 00:00:00' END,
-                   param_text  = CASE WHEN param_key = 'beaconLastSendTs' THEN '0000-00-00 00:00:00' END,
-                   param_value = CASE WHEN param_key = 'beaconCount'      THEN 0 END,
-                   param_value = CASE WHEN param_key = 'beaconEnabled'    THEN 1 END
-             WHERE param_key IN ('beaconOtp', 'beaconEnabled');
-           ";
-
-    $logArray   = array();
-    $logArray[] = "updateBeaconOtp: OTP";
-    $logArray[] = "updateBeaconOtp: Enable Beacon";
-    $logArray[] = "updateBeaconOtp: Database: $dbFilename";
-
-    $res = safeDbRun( $db,  $sql, 'exec', $logArray);
-
-    #Close and write Back WAL
-    $db->close();
-    unset($db);
-
-    if ($res === false)
-    {
-        return false;
-    }
-
-    #Aktiviere Bake
-    $beaconInterval = getBeaconData('beaconInterval') ?? 0;
-    $beaconInterval = $beaconInterval == '' ? 5 : $beaconInterval;
-
-    setBeaconCronInterval($beaconInterval, 1);
-
-    return true;
-}
-function columnExists($database, $tabelle, $spalte): bool
-{
-    if (!file_exists('database/' . $database . '.db'))
-    {
-        return false;
-    }
-
-    // SQLite3-Datenbank öffnen
-    $db = new SQLite3('database/' . $database . '.db');
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
-
-    $query  = "PRAGMA table_info('$tabelle')";
-
-    $logArray   = array();
-    $logArray[] = "columnExists: Database: $database";
-    $logArray[] = "columnExists: tabelle: $tabelle";
-
-    $result = safeDbRun( $db,  $query, 'query', $logArray);
-
-    if ($result === false)
-    {
-        #Close and write Back WAL
-        $db->close();
-        unset($db);
-
-        return false;
-    }
-
-    while ($row = $result->fetchArray(SQLITE3_ASSOC))
-    {
-        if ($row['name'] === $spalte)
-        {
-            $db->close();
-            unset($db);
-            return true; // Spalte existiert
-        }
-    }
-
-    #Close and write Back WAL
-    $db->close();
-    unset($db);
-
-    return false; // Spalte existiert nicht
-}
-function checkVersion($currentVersion, $targetVersion, $operator)
-{
-    $currentVersion = preg_replace('/[^0-9.]/', '', $currentVersion);
-    $targetVersion  = preg_replace('/[^0-9.]/', '', $targetVersion);
-
-    return version_compare($currentVersion, $targetVersion, $operator);
-}
-
-function checkDbUpgrade($database)
-{
-    $debugFlag          = false;
-    $doRestartBgProcess = false;
-
-    #Update Datenbank meshdash mit Tabelle Firmware ab > V 1.10.02
-    if (checkVersion(VERSION,'1.10.02','>'))
-    {
-        if ($debugFlag === true)
-        {
-            echo "<br>'1.10.02' ist kleiner oder gleich " . VERSION;
-        }
-
-        // SQLite3-Datenbank prüfen ob in Datenbank meshdash die Tabelle firmware existiert
-        if (!columnExists($database, 'meshdash', 'firmware') && $database === 'meshdash')
-        {
-            // Spalte hinzufügen
-            addColumn($database, 'meshdash', 'firmware');
-
-            $doRestartBgProcess = true;
-        }
-
-        if (!columnExists($database, 'meshdash', 'fw_sub') && $database === 'meshdash')
-        {
-            // Spalte hinzufügen
-            addColumn($database, 'meshdash', 'fw_sub');
-            $doRestartBgProcess = true;
-        }
-
-        if (!columnExists($database, 'meshdash', 'beaconEnabledStatusSend') && $database === 'meshdash')
-        {
-            // Spalte hinzufügen
-            addColumn($database, 'meshdash', 'beaconEnabledStatusSend', 'INTEGER', 0);
-            $doRestartBgProcess = true;
-        }
-
-        if (!columnExists($database, 'sensordata', 'ina226vBus') && $database === 'sensordata')
-        {
-            // Spalte hinzufügen
-            addColumn($database, 'sensordata', 'ina226vBus');
-            addColumn($database, 'sensordata', 'ina226vShunt');
-            addColumn($database, 'sensordata', 'ina226vCurrent');
-            addColumn($database, 'sensordata', 'ina226vPower');
-        }
-
-        if (!columnExists($database, 'mheard', 'mhType') && $database === 'mheard')
-        {
-            // Spalte hinzufügen
-            addColumn($database, 'mheard', 'mhType');
-        }
-
-        if (!columnExists($database, 'groups', 'groupSound') && $database === 'groups')
-        {
-            // Spalte hinzufügen
-            addColumn($database, 'groups', 'groupSound');
-        }
-
-        if (!columnExists($database, 'keywords', 'execScript') && $database === 'keywords')
-        {
-            // Spalte hinzufügen
-            addColumn($database, 'keywords', 'execScript');
-            addColumn($database, 'keywords', 'execTimestamp');
-            addColumn($database, 'keywords', 'execTrigger');
-            addColumn($database, 'keywords', 'execReturnMsg');
-            addColumn($database, 'keywords', 'execGroup');
-            addColumn($database, 'keywords', 'execMsgSend', 'INTEGER', 0);
-            addColumn($database, 'keywords', 'execMsgSendTimestamp', 'TEXT', '0000-00-00 00:00:00');
-            $doRestartBgProcess = true;
-        }
-
-        #Setzte diverse Indizes auf den Datenbanken
-
-        #Meshdash
-        if ($database === 'meshdash')
-        {
-            #addIndex('meshdash', 'meshdash','idx_timestamps', 'timestamps'); // Wird nicht benötigt
-            delIndex('meshdash', 'idx_timestamps'); // lösche alten indizes
-
-            #addIndex('meshdash', 'meshdash','idx_dst', 'dst'); // wird nicht benötigt
-            delIndex('meshdash', 'idx_dst'); // lösche alten indizes
-
-            #addIndex('meshdash', 'meshdash','idx_type', 'type'); // Wird nicht benötigt
-            delIndex('meshdash', 'idx_type'); // lösche alten indizes
-
-            addIndex('meshdash', 'meshdash', 'idx_ack_type_ts', 'msgIsAck, type, timestamps DESC');
-            addIndex('meshdash', 'meshdash', 'idx_check_msg', 'type, dst, timestamps');
-            addIndex('meshdash', 'meshdash', 'idx_ack_ts', 'msgIsAck, timestamps DESC');
-            addIndex('meshdash', 'meshdash', 'idx_ack_dst_ts', 'msgIsAck, dst, timestamps DESC');
-        }
-
-        #sensordata
-        if ($database === 'sensordata')
-        {
-            #addIndex('sensordata', 'sensordata','idx_timestamps', 'timestamps'); // Kein Index nötig. SQL optimiert.
-            delIndex('sensordata', 'idx_timestamps'); // lösche alten indizes
-        }
-
-        #mheard
-        if ($database === 'mheard')
-        {
-            delIndex('mheard', 'idx_timestamps'); // Neuer Index ist optimiert
-            addIndex('mheard', 'mheard', 'idx_timestamps', 'timestamps, mhTime DESC');
-        }
-
-        if ($database === 'tx_queue')
-        {
-            #txQueue
-            delIndex('tx_queue', 'idx_txInsertTimestamp'); // Neuer Index ist optimiert
-            addIndex('tx_queue', 'txQueue', 'idx_txFlag_qid', 'txFlag, txQueueId');
-        }
-    }
-
-    if (checkVersion(VERSION,'1.10.40','>='))
-    {
-        // Enable bubble-style view if not specified. As of V1.10.40
-        if (getParamData('bubbleStyleView') === '')
-        {
-            setParamData('bubbleStyleView', 1);
-        }
-    }
-
-    if (checkVersion(VERSION,'1.10.72','>='))
-    {
-        insertIfNotExists(
-            'database/translation.db',
-            'translation',
-            'key',
-            'menu.plot',
-            [
-                'de' => 'Auswertung',
-                'en' => 'Evaluation',
-                'fr' => 'Analyse',
-                'es' => 'Evaluación',
-                'it' => 'Valutazione',
-                'nl' => 'Analyse'
-            ]
-        );
-    }
-
-    if (checkVersion(VERSION, '1.10.78', '>='))
-    {
-        if (!columnExists($database, 'purge_lock', 'proc_name') && $database === 'write_mutex')
-        {
-            // Spalte hinzufügen
-            addColumn('write_mutex', 'purge_lock', 'proc_name');
-        }
-    }
-
-    if ($doRestartBgProcess === true)
-    {
-        ## Prozess neu laden damit Feld befüllt wird
-        # Stop BG-Process
-        $paramBgProcess['task'] = 'udp';
-        stopBgProcess($paramBgProcess);
-
-        ##start BG-Process
-        $paramStartBgProcess['task'] = 'udp';
-        startBgProcess($paramStartBgProcess);
-    }
-}
-function addColumn($database, $tabelle, $spalte, $typ = 'TEXT', $default = null): bool
-{
-    // Den Standardwert hinzufügen, wenn er angegeben wurde
-    $defaultSql = '';
-
-    // SQLite3-Datenbank öffnen
-    $db = new SQLite3('database/' . $database . '.db');
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
-
-    // Sicherstellen, dass der Typ gültig ist
-    if (empty($typ))
-    {
-        $typ = 'TEXT';  // Standardwert verwenden, wenn kein Typ angegeben ist
-    }
-
-    if ($default !== null)
-    {
-        // Wenn ein Standardwert übergeben wurde, wird dieser hinzugefügt
-        $defaultSql = " DEFAULT '" . SQLite3::escapeString($default) . "'";
-
-        if ($typ == 'INTEGER')
-        {
-            $defaultSql = " DEFAULT " . (int) $default;
-        }
-    }
-
-    // SQL Befehl zum Hinzufügen der Spalte mit Typ und optionalem Standardwert
-    $query = "ALTER TABLE $tabelle ADD COLUMN $spalte $typ" . $defaultSql;
-
-    $logArray   = array();
-    $logArray[] = "addColumn: database: $database";
-    $logArray[] = "addColumn: spalte: $spalte";
-    $logArray[] = "addColumn: tabelle: $tabelle";
-
-    $res = safeDbRun( $db,  $query, 'exec', $logArray);
-
-    #Close and write Back WAL
-    $db->close();
-    unset($db);
-
-    if ($res === false)
-    {
-        return false;
-    }
-
-    return true;
-}
-function addIndex($database, $tabelle, $IndexName, $indexField): bool
-{
-    // SQLite3-Datenbank öffnen
-    $db = new SQLite3('database/' . $database . '.db');
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
-
-    // SQL Befehl zum Hinzufügen des Index
-    $indexFields = implode(',', array_map('trim', explode(',', $indexField)));
-
-    $query = "CREATE INDEX IF NOT EXISTS '$IndexName' ON '$tabelle' ($indexFields);";
-
-    $logArray   = array();
-    $logArray[] = "addColumn: database: $database";
-    $logArray[] = "addColumn: IndexName: $IndexName";
-    $logArray[] = "addColumn: indexField: $indexField";
-
-    $res = safeDbRun( $db,  $query, 'exec', $logArray);
-
-    #Close and write Back WAL
-    $db->close();
-    unset($db);
-
-    if ($res === false)
-    {
-        return false;
-    }
-
-    return true;
-}
-function delIndex($database, $IndexName): bool
-{
-    // SQLite3-Datenbank öffnen
-    $db = new SQLite3('database/' . $database . '.db');
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
-
-    // SQL Befehl zum Löschen des Index
-    $query = "DROP INDEX IF EXISTS '$IndexName';";
-
-    $logArray   = array();
-    $logArray[] = "addColumn: database: $database";
-    $logArray[] = "addColumn: IndexName: $IndexName";
-
-    $res = safeDbRun( $db,  $query, 'exec', $logArray);
-
-    #Close and write Back WAL
-    $db->close();
-    unset($db);
-
-    if ($res === false)
-    {
-        return false;
-    }
-
-    return true;
-}
 function getTaskCmd($mode)
 {
     #Check what oS is running
@@ -1457,6 +589,9 @@ function getTaskCmd($mode)
 
     $cronMheardLoopPid     = getParamData('cronLoopMheardPid');
     $cronMheardLoopPidFile = 'log/' . MHEARD_CRON_PID_FILE;
+
+    $cronGetSensorDataLoopPid     = getParamData('cronLoopGetSensorDataPid');
+    $cronGetSensorDataLoopPidFile = 'log/' . GET_SENSOR_DATA_CRON_PID_FILE;
 
     $mode                  = $mode == '' ? 'udp' : $mode;  // default UDP
 
@@ -1533,16 +668,37 @@ function getTaskCmd($mode)
         }
     }
 
+    if ($mode == 'cronGetSensorData')
+    {
+        #Hinweis Pgrep -x funktioniert nicht, wenn man die PHP Datei ermitteln muss
+        if ($cronGetSensorDataLoopPid == '')
+        {
+            # Wenn keine Pid, dann über Pid-File Status ermitteln.
+            # Wenn Pid-File fehlt, dann unter Windows über Dummy einen leeren Eintrag zurückgeben lassen mittels Dummy
+            if (!file_exists($cronGetSensorDataLoopPidFile))
+            {
+                return $osIssWindows === true ? 'tasklist | find "dummyFile.exe"' : "pgrep -a -f " . GET_SENSOR_DATA_CRON_PROC_FILE . " | grep -v pgrep | awk '{print $1}'";
+            }
+
+            return $osIssWindows === true ? 'tasklist | find "php.exe"' : "pgrep -a -f " . GET_SENSOR_DATA_CRON_PROC_FILE . " | grep -v pgrep | awk '{print $1}'";
+        }
+        else
+        {
+            return $osIssWindows === true ? 'tasklist /FI "PID eq ' . $cronGetSensorDataLoopPid . '" | findstr /I "php.exe"' : "pgrep -a -f " . GET_SENSOR_DATA_CRON_PROC_FILE . " | grep -v pgrep | awk '{print $1}'";
+        }
+    }
+
     return false;
 }
 function getTaskKillCmd($mode = 'udp')
 {
     #Check what oS is running
-    $osIssWindows    = chkOsIsWindows();
-    $udpReceiverPid  = getParamData('udpReceiverPid');
-    $cronLoopPid     = getParamData('cronLoopPid');
-    $cronBeaconPid   = getParamData('cronBeaconLoopPid');
-    $cronMheardPid   = getParamData('cronLoopMheardPid');
+    $osIssWindows         = chkOsIsWindows();
+    $udpReceiverPid       = getParamData('udpReceiverPid');
+    $cronLoopPid          = getParamData('cronLoopPid');
+    $cronBeaconPid        = getParamData('cronBeaconLoopPid');
+    $cronMheardPid        = getParamData('cronLoopMheardPid');
+    $cronGetSensorDataPid = getParamData('cronLoopGetSensorDataPid');
 
     if ($mode == 'udp')
     {
@@ -1596,6 +752,20 @@ function getTaskKillCmd($mode = 'udp')
         else
         {
             return $osIssWindows === true ? 'taskkill /F /PID ' . $cronMheardPid : 'pkill -9 -f "' . MHEARD_CRON_PROC_FILE . '"';
+        }
+    }
+
+    if ($mode == 'cronGetSensorData')
+    {
+        #Hinweis Pgrep -x funktioniert nicht, wenn man die PHP Datei ermitteln muss
+        if ($cronGetSensorDataPid == '')
+        {
+            # Wenn keine Pid, dann All-Kill für Windows.
+            return $osIssWindows === true ? 'taskkill /f /fi "imagename eq php.exe"' : 'pkill -9 -f "' . GET_SENSOR_DATA_CRON_PROC_FILE . '"';
+        }
+        else
+        {
+            return $osIssWindows === true ? 'taskkill /F /PID ' . $cronGetSensorDataPid : 'pkill -9 -f "' . GET_SENSOR_DATA_CRON_PROC_FILE . '"';
         }
     }
 
@@ -1760,122 +930,9 @@ function isMobile(): bool
 {
     return (bool) preg_match('/(android|iphone|ipad|ipod|blackberry|windows phone)/i', $_SERVER['HTTP_USER_AGENT']);
 }
-function setCronSensorInterval($intervallInMinuten, $deleteFlag): bool
-{
-    $delete    = $deleteFlag == 1;
-    $debugFlag = false;
-
-    $skriptPfad = '/usr/bin/wget -q -O /dev/null ' . BASE_PATH_URL . 'get_sensor_data.php';
-
-    $cronJobsNeu = [];
-
-    if ($intervallInMinuten < 1)
-    {
-        if ($debugFlag)
-        {
-            echo "Intervall muss >= 1 sein.\n";
-        }
-
-        return false;
-    }
-
-    if ($intervallInMinuten < 60)
-    {
-        // Einfache Minuten-Intervalle
-        $cronJobsNeu[] = "*/$intervallInMinuten * * * * $skriptPfad";
-    }
-    else
-    {
-        $gesamtMinuten = 24 * 60;
-        $countItems    = intdiv($gesamtMinuten, $intervallInMinuten);
-        $rest          = $gesamtMinuten % $intervallInMinuten;
-
-        if ($rest > 0 && $debugFlag)
-        {
-            echo "⚠️ Achtung: Intervall von $intervallInMinuten Minuten passt nicht exakt in 24h.<br>";
-            echo "Es verbleiben $rest Minuten Rest am Tagesende.<br>";
-        }
-
-        $zeitpunkte = [];
-        for ($i = 0; $i < $countItems; $i++)
-        {
-            $minuteTotal = $i * $intervallInMinuten;
-            $stunde      = floor($minuteTotal / 60);
-            $minute      = $minuteTotal % 60;
-
-            $zeitpunkte[] = ['hour' => $stunde, 'minute' => $minute];
-        }
-
-        // Gruppieren nach Minutenwert
-        $gruppen = [];
-        foreach ($zeitpunkte as $zeit)
-        {
-            $gruppen[$zeit['minute']][] = $zeit['hour'];
-        }
-
-        foreach ($gruppen as $minute => $stundenArray)
-        {
-            sort($stundenArray);
-            $stundenListe  = implode(',', $stundenArray);
-            $cronJobsNeu[] = "$minute $stundenListe * * * $skriptPfad";
-        }
-    }
-
-    // Bestehende Crontab einlesen
-    exec('crontab -l 2>/dev/null', $cronJobsAlt);
-
-    // Löschen aller Jobs, die dieses Skript enthalten
-    $cronJobsAlt = array_filter($cronJobsAlt, function ($zeile) use ($skriptPfad) {
-        return strpos($zeile, $skriptPfad) === false;
-    });
-
-    if (!$delete)
-    {
-        $cronJobsAlt = array_merge($cronJobsAlt, $cronJobsNeu);
-    }
-
-    file_put_contents('/tmp/crontab.txt', implode("\n", $cronJobsAlt) . "\n");
-    exec('crontab /tmp/crontab.txt');
-
-    return true;
-}
 function checkBgTask($task)
 {
     return shell_exec(getTaskCmd($task));
-}
-function deleteOldCron(): bool
-{
-    $osIssWindows  = chkOsIsWindows();
-
-    #Prüfe ob Alter Cron noch existiert und lösche ihn
-    if ($osIssWindows === false)
-    {
-        // Eingabewerte
-        $skriptPfad = '/usr/bin/wget -q -O /dev/null ' . BASE_PATH_URL . 'cron_loop.php';
-
-        // Die Crontab auslesen
-        exec('crontab -l 2>/dev/null', $cronJobs);
-
-        // Prüfen, ob der alte Cronjob noch existiert und lösche ihn
-        foreach ($cronJobs as $index => $existingJob)
-        {
-            if (strpos($existingJob, $skriptPfad) !== false)
-            {
-                unset($cronJobs[$index]);
-
-                // Crontab aktualisieren
-                file_put_contents('/tmp/crontab_loop.txt', implode("\n", $cronJobs) . "\n");
-                exec('crontab /tmp/crontab_loop.txt');
-            }
-        }
-    }
-
-    if (file_exists('log/cron_loop.lock'))
-    {
-        @unlink('log/cron_loop.lock');
-    }
-
-    return true;
 }
 function setTxQueue($txQueueData): bool
 {
@@ -2153,213 +1210,6 @@ function updateTxQueue($txQueueId): bool
 
     return true;
 }
-function setSensorAlertCounter($sensor, $sensorType): bool
-{
-    if ($sensor == 'temp')
-    {
-        #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
-        $basename       = pathinfo(getcwd())['basename'];
-        $dbFilenameSub  = '../database/sensor_th_temp.db';
-        $dbFilenameRoot = 'database/sensor_th_temp.db';
-        $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
-        $timeStamps     = date('Y-m-d H:i:s');
-
-        $db = new SQLite3($dbFilename);
-        $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
-        $db->exec('PRAGMA synchronous = NORMAL;');
-
-        $queryTemp = " UPDATE sensorThTemp SET sensorThTempAlertCount = sensorThTempAlertCount + 1,
-                                               sensorThTempAlertTimestamp = '$timeStamps';
-                    ";
-
-        if ($sensorType == 'Tout')
-        {
-            $queryTemp = " UPDATE sensorThTemp SET sensorThToutAlertCount = sensorThToutAlertCount + 1,
-                                                   sensorThToutAlertTimestamp = '$timeStamps';
-                         ";
-        }
-
-        $logArray = array();
-        $logArray[] = "setSensorAlertCounter_temp: Database: $dbFilename";
-        $logArray[] = "setSensorAlertCounter_temp: sensor: $sensor";
-        $logArray[] = "setSensorAlertCounter_temp: sensorType: $sensorType";
-        $logArray[] = "setSensorAlertCounter_temp: timeStamps: $timeStamps";
-
-        $res = safeDbRun( $db,  $queryTemp, 'exec', $logArray);
-
-        #Close and write Back WAL
-        $db->close();
-        unset($db);
-
-        if ($res === false)
-        {
-            return false;
-        }
-    }
-
-    if ($sensor == 'ina226')
-    {
-        #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
-        $basenameIna226       = pathinfo(getcwd())['basename'];
-        $dbFilenameSubIna226  = '../database/sensor_th_ina226.db';
-        $dbFilenameRootIna226 = 'database/sensor_th_ina226.db';
-        $dbFilenameIna226     = $basenameIna226 == 'menu' ? $dbFilenameSubIna226 : $dbFilenameRootIna226;
-        $timeStampIna226      = date('Y-m-d H:i:s');
-
-        $dbIna266 = new SQLite3($dbFilenameIna226);
-        $dbIna266->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
-        $dbIna266->exec('PRAGMA synchronous = NORMAL;');
-
-        $queryIna226 = " UPDATE sensorThIna226 SET sensorThIna226vBusAlertCount = sensorThIna226vBusAlertCount + 1,
-                                                   sensorThIna226vBusAlertTimestamp = '$timeStampIna226';
-                         ";
-
-        if ($sensorType == 'vShunt')
-        {
-            $queryIna226 = " UPDATE sensorThIna226 SET sensorThIna226vShuntAlertCount = sensorThIna226vShuntAlertCount + 1,
-                                                       sensorThIna226vShuntAlertTimestamp = '$timeStampIna226';
-                         ";
-        }
-
-        if ($sensorType == 'vCurrent')
-        {
-            $queryIna226 = " UPDATE sensorThIna226 SET sensorThIna226vCurrentAlertCount = sensorThIna226vCurrentAlertCount + 1,
-                                                       sensorThIna226vCurrentAlertTimestamp = '$timeStampIna226';
-                         ";
-        }
-
-        if ($sensorType == 'vPower')
-        {
-            $queryIna226 = " UPDATE sensorThIna226 SET sensorThIna226vPowerAlertCount = sensorThIna226vPowerAlertCount + 1,
-                                                       sensorThIna226vPowerAlertTimestamp = '$timeStampIna226';
-                         ";
-        }
-
-        $logArray = array();
-        $logArray[] = "setSensorAlertCounter_ina266: Database: $dbFilenameIna226";
-        $logArray[] = "setSensorAlertCounter_ina266: sensor: $sensor";
-        $logArray[] = "setSensorAlertCounter_ina266: sensorType: $sensorType";
-        $logArray[] = "setSensorAlertCounter_ina266: timeStamps: $timeStampIna226";
-
-        $resIna266 = safeDbRun( $dbIna266,  $queryIna226, 'exec', $logArray);
-
-        #Close and write Back WAL
-        $dbIna266->close();
-        unset($dbIna266);
-
-        if ($resIna266 === false)
-        {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-/** @noinspection SqlWithoutWhere
- * @noinspection SqlWithoutWhere
- * @noinspection SqlWithoutWhere
- */
-function resetSensorAlertCounter($sensor, $sensorType): bool
-{
-    if ($sensor == 'temp')
-    {
-        #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
-        $basename       = pathinfo(getcwd())['basename'];
-        $dbFilenameSub  = '../database/sensor_th_temp.db';
-        $dbFilenameRoot = 'database/sensor_th_temp.db';
-        $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
-        $timeStamps     = date('Y-m-d H:i:s');
-
-        $db = new SQLite3($dbFilename);
-        $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
-        $db->exec('PRAGMA synchronous = NORMAL;');
-
-        $queryTemp = " UPDATE sensorThTemp SET sensorThTempAlertCount = 0,
-                                               sensorThTempAlertTimestamp = '$timeStamps';
-                    ";
-
-        if ($sensorType == 'Tout')
-        {
-            $queryTemp = " UPDATE sensorThTemp SET sensorThToutAlertCount = 0,
-                                                   sensorThToutAlertTimestamp = '$timeStamps';
-                         ";
-        }
-
-        $logArray   = array();
-        $logArray[] = "resetSensorAlertCounter_temp: Database: $dbFilename";
-        $logArray[] = "setSensorAlertCounter_temp: sensor: $sensor";
-        $logArray[] = "setSensorAlertCounter_temp: sensorType: $sensorType";
-        $logArray[] = "setSensorAlertCounter_temp: timeStamps: $timeStamps";
-
-        $res = safeDbRun( $db,  $queryTemp, 'exec', $logArray);
-
-        #Close and write Back WAL
-        $db->close();
-        unset($db);
-
-        if ($res === false)
-        {
-            return false;
-        }
-    }
-
-    if ($sensor == 'ina226')
-    {
-        #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
-        $basename       = pathinfo(getcwd())['basename'];
-        $dbFilenameSub  = '../database/sensor_th_ina226.db';
-        $dbFilenameRoot = 'database/sensor_th_ina226.db';
-        $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
-        $timeStamps     = date('Y-m-d H:i:s');
-
-        $dbIna226 = new SQLite3($dbFilename);
-        $dbIna226->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
-        $dbIna226->exec('PRAGMA synchronous = NORMAL;');
-
-        $queryIna226vBus = " UPDATE sensorThIna226 SET sensorThIna226vBusAlertCount = 0,
-                                                       sensorThIna226vBusAlertTimestamp = '$timeStamps';
-                         ";
-
-        if ($sensorType == 'vShunt')
-        {
-            $queryIna226vBus = " UPDATE sensorThIna226 SET sensorThIna226vShuntAlertCount = 0,
-                                                           sensorThIna226vShuntAlertTimestamp = '$timeStamps';
-                         ";
-        }
-        else if ($sensorType == 'vCurrent')
-        {
-            $queryIna226vBus = " UPDATE sensorThIna226 SET sensorThIna226vCurrentAlertCount = 0,
-                                                           sensorThIna226vCurrentAlertTimestamp = '$timeStamps';
-                         ";
-        }
-        else if ($sensorType == 'vPower')
-        {
-            $queryIna226vBus = " UPDATE sensorThIna226 SET sensorThIna226vPowerAlertCount = 0,
-                                                           sensorThIna226vPowerAlertTimestamp = '$timeStamps';
-                         ";
-        }
-
-        $logArray   = array();
-        $logArray[] = "resetSensorAlertCounterIna226: Database: $dbFilename";
-        $logArray[] = "setSensorAlertCounter_temp: sensor: $sensor";
-        $logArray[] = "setSensorAlertCounter_temp: sensorType: $sensorType";
-        $logArray[] = "setSensorAlertCounter_temp: timeStamps: $timeStamps";
-
-        $resIna226 = safeDbRun( $dbIna226,  $queryIna226vBus, 'exec', $logArray);
-
-        #Close and write Back WAL
-        $dbIna226->close();
-        unset($dbIna226);
-
-        if ($resIna226 === false)
-        {
-            return false;
-        }
-    }
-
-    return true;
-}
 function getStatusIcon(string $status, bool $withLabel = false): string
 {
     # HTML-Entity-Format
@@ -2484,13 +1334,17 @@ function stopBgProcess($paramBgProcess)
             $bgPidFile = MHEARD_CRON_PID_FILE;
             $bgTaskPid = getParamData('cronLoopMheardPid');
             break;
+        case 'cronGetSensorData':
+            $bgPidFile = GET_SENSOR_DATA_CRON_PID_FILE;
+            $bgTaskPid = getParamData('cronLoopGetSensorDataPid');
+            break;
         default:
             $bgPidFile = CRON_PID_FILE;
             $bgTaskPid = getParamData('cronLoopPid');
     }
 
     #Pidfile liegt im Log Verzeichnis
-    if ($taskBg  == 'cron' || $taskBg == 'cronBeacon' || $taskBg == 'cronMheard')
+    if ($taskBg  == 'udp' || $taskBg  == 'cron' || $taskBg == 'cronBeacon' || $taskBg == 'cronMheard' || $taskBg == 'cronGetSensorData')
     {
         $execDir         = 'log';
         $basename        = pathinfo(getcwd())['basename'];
@@ -2551,7 +1405,7 @@ function stopBgProcess($paramBgProcess)
     }
 
     #Gib 1sek Zeit
-    sleep(1);
+    sleep(2);
 
     #Prüfe, ob Prozess wirklich beendet wurde
     if ($osIssWindows === true)
@@ -2593,6 +1447,9 @@ function startBgProcess($paramStartBgProcess)
         case 'cronMheard':
             $bgProcFile = MHEARD_CRON_PROC_FILE;
             break;
+        case 'cronGetSensorData':
+            $bgProcFile = GET_SENSOR_DATA_CRON_PROC_FILE;
+            break;
         case 'cronBeacon':
             $bgProcFile = CRON_BEACON_PROC_FILE;
             break;
@@ -2600,35 +1457,32 @@ function startBgProcess($paramStartBgProcess)
             $bgProcFile = CRON_PROC_FILE;
     }
 
+    #Ermittel korrekte Aufruf Pfad unter Linux,
+    #wenn aus Submenü gestartet wird.
+    #Hier stimmen dann die relativen Pfade nicht mehr
+    #Wichtig ist das "chdir(__DIR__);" im aufzurufenden Skript als Erstes steht!
+    #Sonst stimmen die reaktiven Pfade nicht mehr.
     if ($osIsWindows === false)
     {
         $basename       = pathinfo(getcwd())['basename'];
-        $bgProcFileSub  = '../' . $bgProcFile;
-        $bgProcFileRoot = $bgProcFile;
-        $bgProcFile     = $basename == 'menu' ? $bgProcFileSub : $bgProcFileRoot;
+        $bgProcFileSub  = realpath(__DIR__ . '/../') . '/' . $bgProcFile;
+        $bgProcFile     = $basename == 'menu' ? $bgProcFileSub : $bgProcFile;
     }
 
     if ($debugFlag === true)
     {
-        echo "<br>#1956#startBgProcess# task:" . $taskBg . ' Task-Result:' . $taskResult;
-        echo "<br>#1956#startBgProcess#Taskresult taskCmd:" . $taskCmd;
-        echo "<br>#1956#startBgProcess#Taskresult bgProcFile:" . $bgProcFile;
+        echo "<br>#1956#startBgProcess# task: " . $taskBg . ' Task-Result:' . $taskResult;
+        echo "<br>#1956#startBgProcess# taskCmd: " . $taskCmd;
+        echo "<br>#1956#startBgProcess# bgProcFile: " . $bgProcFile;
         echo "<br>osIsWindows:";
         var_dump($osIsWindows);
     }
 
     if (empty($taskResult))
     {
-        if ($debugFlag === true)
-        {
-            echo "<br>#2609#startBgProcess#Taskresult EMpty: task:" . $taskBg . ' Task-Result:' . $taskResult;
-            echo "<br>#2610#startBgProcess#Taskresult taskCmd:" . $taskCmd;
-            echo "<br>#2611#startBgProcess#Taskresult bgProcFile:" . $bgProcFile;
-        }
-
         if($osIsWindows === true)
         {
-            #Unter Windows mit Curl Starten
+            #Unter Windows über task_bg.php mit Curl Starten
             callWindowsBackgroundTask($bgProcFile);
         }
         else
@@ -2637,7 +1491,7 @@ function startBgProcess($paramStartBgProcess)
             exec('nohup php ' . $bgProcFile . ' >/dev/null 2>&1 &');
         }
 
-        sleep(1);
+        sleep(2);
 
         $checkTaskCmd = getTaskCmd($taskBg);
         $taskResult   = shell_exec($checkTaskCmd);
@@ -2764,56 +1618,6 @@ function callMessagePage(): bool
 
     return true;
 }
-
-function checkLoraNewGui(): bool
-{
-    $loraIp      = getParamData('loraIp');
-    $actualHost  = 'http';
-    $triggerLink = $actualHost . '://' . $loraIp . '/getparam/?setcall=';
-
-    $ch = curl_init($triggerLink);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10); // 10 Sekunden Timeout da bei 3 oft Fehler
-    $response = curl_exec($ch);
-    curl_close($ch);
-
-    if ($response === false)
-    {
-        // Curl Fehler, eventuell Log schreiben
-        echo '<br><span class="failureHint">Kann Node mit IP: ' . $loraIp . ' zur Prüfung auf neue GUI nicht erreichen!</span>';
-        return false;
-    }
-
-    $jsonContent = json_decode($response, true);
-
-    #Alte GUI erkannt
-    if ($jsonContent === null || !isset($jsonContent['returncode']))
-    {
-        setParamData('isNewMeshGui',0);
-        return false;
-    }
-
-    #Neue GUI erkannt
-    setParamData('isNewMeshGui',1);
-    return true;
-}
-function checkDbIntegrity($database)
-{
-    $realDatabasePath   = 'database/' . $database . '.db';
-    $fileDbIntegrityLog = 'log/db_integrity_error_' . date('Ymd') . '.log';
-
-    $dbFileSize = is_readable($realDatabasePath) ? filesize($realDatabasePath) : -1; // Prevents if File is locked
-    $sizeKB     = round($dbFileSize / 1024, 1);
-
-    if ($sizeKB == 0)
-    {
-        @unlink($realDatabasePath);
-        initSQLiteDatabase($database);
-
-        $errorText = date('Y-m-d H:i:s') . ' Database: ' . $database . ' faulty integration. Reinitialize' . "\n";
-        file_put_contents($fileDbIntegrityLog, $errorText, FILE_APPEND);
-    }
-}
 function debugLog($logArray): bool
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
@@ -2900,7 +1704,7 @@ function safeDbRun(SQLite3 $db, string $sql, string $method = 'exec', array $log
 
     return false;
 }
-function showBackups()
+function showBackups(): void
 {
     $maxBackups      = 5; //max. Anzahl Backups
     $maxBackupsCount = 0; //Counter für Backups
@@ -3052,9 +1856,6 @@ function autoPurgeTable(string $tableName, string $paramEnable, string $paramDay
         $logArray = ["AutoPurge $tableName DELETE"];
         $res      = safeDbRun($dbWrite, $sqlDelete, 'exec', $logArray);
 
-//        $errorText = "Führe $tableName autopurge aus #3061# EXEC at " . date('Y-m-d H:i:s') . "\n";
-//        file_put_contents('autopurge.log', $errorText,FILE_APPEND);
-
         $dbWrite->close();
         unset($dbWrite);
 
@@ -3067,8 +1868,6 @@ function autoPurgeTable(string $tableName, string $paramEnable, string $paramDay
         markPurgeChecked($tableName, $procName);
     }
 }
-
-// Aufruf
 function autoPurgeData(): bool
 {
     autoPurgeTable('meshdash', 'enableMsgPurge', 'daysMsgPurge', 'enableMsgPurge', 'meshdash.db');
@@ -3076,8 +1875,6 @@ function autoPurgeData(): bool
 
     return true;
 }
-
-
 function setBeaconCronInterval($beaconInterval,$beaconEnabled): bool
 {
     $delete                         = $beaconEnabled == 0; // Wenn 0 = true
@@ -3112,7 +1909,7 @@ function setBeaconCronInterval($beaconInterval,$beaconEnabled): bool
 
     return true;
 }
-function sqliteWALCheckpoint(string $database): bool
+function sqliteGetWALCheckpoint(string $database): bool
 {
     #Schreibe Daten aus WAL sofort in DB zurück.
     $database = $database . '.db';
@@ -3159,52 +1956,6 @@ function sqliteWALCheckpoint(string $database): bool
              #   [checkpointed] => 20 // Anzahl der Seiten, die gerade zurück in die Haupt-DB geschrieben wurden.
              #)
         }
-    }
-
-    // DB schließen
-    $db->close();
-    unset($db);
-
-    return true;
-}
-function insertIfNotExists($dbFile, $table, $keyColumn, $keyValue, array $data): bool
-{
-    if (!file_exists($dbFile))
-    {
-        return false;
-    }
-
-    // SQLite öffnen
-    $db = new SQLite3($dbFile);
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
-
-    // Prüfen, ob Key existiert
-    $stmt = $db->prepare("SELECT 1 FROM $table WHERE $keyColumn = :key LIMIT 1");
-    $stmt->bindValue(':key', $keyValue, SQLITE3_TEXT);
-    $res    = $stmt->execute();
-    $exists = $res->fetchArray();
-    $res->finalize();
-    $stmt->close();
-
-    // Insert-Statement falls nicht existiert
-    if (!$exists)
-    {
-        $dataWithKey             = $data;
-        $dataWithKey[$keyColumn] = $keyValue; // sicherstellen, dass keyColumn immer drin ist
-
-        $columns      = array_keys($dataWithKey);
-        $placeholders = array_map(fn($c) => ':' . $c, $columns);
-
-        $sql    = "INSERT INTO $table (" . implode(',', $columns) . ") VALUES (" . implode(',', $placeholders) . ")";
-        $insert = $db->prepare($sql);
-
-        foreach ($dataWithKey as $col => $val)
-        {
-            $insert->bindValue(':' . $col, $val, SQLITE3_TEXT);
-        }
-
-        $insert->execute();
-        $insert->close();
     }
 
     // DB schließen
@@ -3333,7 +2084,7 @@ function isPurgeDue(string $tableName, int $mode = 1): bool
 
     if (!$row)
     {
-        // Kein Eintrag = KEIN Purge fällig
+        // Kein Eintrag = KEIN Purge fällig. Frei
         return true;
     }
 
@@ -3347,7 +2098,7 @@ function isPurgeDue(string $tableName, int $mode = 1): bool
     {
         if ((int) $row['is_locked'] === 0)
         {
-            // Gerade läuft kein Purge
+            // Gerade läuft kein Purge. Frei
             return true;
         }
     }
@@ -3414,8 +2165,121 @@ function markPurgeChecked(string $tableName, string $procName): void
     $db->close();
     unset($db);
 }
+function getPhpExeAndVersion(string $phpExePath = ''): array
+{
+    if ($phpExePath === '')
+    {
+        $output   = [];
+        $exitCode = 0;
 
+        exec('where php 2>NUL', $output, $exitCode);
 
+        if ($exitCode !== 0 || empty($output))
+        {
+            return [
+                'path'      => null,
+                'version'   => null,
+                'isPhp8Up'  => false
+            ];
+        }
 
+        $phpExePath = trim($output[0]);
+    }
 
+    $versionOutput = [];
+    exec('"' . $phpExePath . '" -v', $versionOutput, $versionExitCode);
 
+    if ($versionExitCode !== 0 || empty($versionOutput))
+    {
+        return [
+            'path'      => $phpExePath,
+            'version'   => null,
+            'isPhp8Up'  => false
+        ];
+    }
+
+    // Erste Zeile: "PHP 7.4.33 (cli)"
+    $versionLine = $versionOutput[0];
+
+    if (!preg_match('/^PHP\s+(\d+\.\d+\.\d+)\s+\(cli\)/', $versionLine, $m))
+    {
+        return [
+            'path'      => $phpExePath,
+            'version'   => null,
+            'isPhp8Up'  => false
+        ];
+    }
+
+    $versionNumber = $m[1];           // z.B. 7.4.33
+    $phpVersion    = 'PHP ' . $versionNumber . ' (cli)';
+
+    // Versionsvergleich
+    $isPhp8Up = version_compare($versionNumber, '8.0.0', '>=');
+
+    return [
+        'path'      => $phpExePath,
+        'version'   => $phpVersion,
+        'isPhp8Up'  => $isPhp8Up
+    ];
+}
+function getPidFromCmd(?string $cmd)
+{
+    if(!$cmd)
+    {
+        return false;
+    }
+
+    #Wenn Linux hat cmd schon die PID
+    if (chkOsIsWindows() === false)
+    {
+        return $cmd;
+    }
+
+    #preg_match('/PID eq (\d+)/i', $cmd, $matches);
+    preg_match('/php\.exe\s+(\d+)/i', $cmd, $matches);
+    return $matches[1] ?? false;
+}
+
+function acquireAutoPurgeLock(): bool
+{
+    $lockFile = AUTO_PURGE_LOCK_FILE;
+
+    // Prüfen, ob Lock existiert
+    if (file_exists($lockFile))
+    {
+        $lockTime = @filemtime($lockFile);
+        if ($lockTime === false)
+        {
+            // Datei existiert, aber Zugriff verweigert, ignorieren
+        }
+        else
+        {
+            $age = time() - $lockTime;
+            if ($age < AUTO_PURGE_LOCK_TIMEOUT)
+            {
+                return false; // Lock noch gültig
+            }
+            // Lock abgelaufen → alte Datei entfernen
+            @unlink($lockFile);
+        }
+    }
+
+    // Lock atomar erzeugen
+    $fp = @fopen($lockFile, 'x'); // "x" erstellt nur, wenn Lock-File nicht existiert
+    if ($fp === false)
+    {
+        return false; // Ein anderer Prozess hat gerade Lock erzeugt
+    }
+
+    fwrite($fp, date('Y-m-d H:i:s'));
+    fclose($fp);
+    return true;
+}
+
+function releaseAutoPurgeLock(): void
+{
+    $lockFile = AUTO_PURGE_LOCK_FILE;
+    if (file_exists($lockFile)) {
+        @unlink($lockFile);
+    }
+}

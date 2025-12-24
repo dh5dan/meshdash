@@ -1,5 +1,5 @@
 <?php
-const VERSION = '1.10.80';
+const VERSION = '1.10.82';
 date_default_timezone_set('Europe/Berlin');
 
 if (PHP_SAPI === 'cli')
@@ -13,10 +13,12 @@ if (PHP_SAPI === 'cli')
     while (!empty($parts))
     {
         $testPath = implode(DIRECTORY_SEPARATOR, $parts) . DIRECTORY_SEPARATOR . $knownRootFile;
+
         if (file_exists($testPath))
         {
             break;
         }
+
         array_pop($parts);
     }
 
@@ -50,16 +52,16 @@ if (PHP_SAPI === 'cli')
 else
 {
     // Web-Modus wie gehabt
-    $protocol = $_SERVER['REQUEST_SCHEME'] . '://';
-    $host     = $_SERVER['HTTP_HOST'];
-
+    $protocol   = $_SERVER['REQUEST_SCHEME'] . '://';
+    $host       = $_SERVER['HTTP_HOST'];
     $scriptName = $_SERVER['SCRIPT_NAME'];
     $scriptDir  = dirname($scriptName);
+    $baseDir    = explode('/', trim($scriptDir, '/'));
 
-    $baseDir = explode('/', trim($scriptDir, '/'));
     while (!empty($baseDir))
     {
         $path = '/' . implode('/', $baseDir) . '/';
+
         if (file_exists($_SERVER['DOCUMENT_ROOT'] . $path . 'index.php'))
         {
             break;
@@ -82,26 +84,31 @@ const AUTO_PURGE_LOCK_TIMEOUT = 300; // Sekunden, z.B. 5 Minuten
 
 $triggerLinkSendQueue = BASE_PATH_URL . 'send_queue.php';
 define('TRIGGER_LINK_SEND_QUEUE', $triggerLinkSendQueue);
+###################################
 const CRON_PID_FILE = 'cron_loop.pid';
 const CRON_CONF_FILE = 'cron_interval.conf';
 const CRON_STOP_FILE = 'cron_stop';
 const CRON_PROC_FILE = 'cron_loop.php';
-
+###################################
 const MHEARD_CRON_PID_FILE = 'cron_loop_mheard.pid';
 const MHEARD_CRON_STOP_FILE = 'cron_mheard_stop';
 const MHEARD_CRON_PROC_FILE = 'cron_loop_mheard.php';
-
+###################################
+const GET_SENSOR_DATA_CRON_PID_FILE = 'cron_loop_get_sensordata.pid';
+const GET_SENSOR_DATA_CRON_STOP_FILE = 'cron_get_sensordata_stop';
+const GET_SENSOR_DATA_CRON_PROC_FILE = 'cron_loop_get_sensordata.php';
+###################################
 $triggerLinkSendBeacon = BASE_PATH_URL . 'send_beacon.php';
 define('TRIGGER_LINK_SEND_BEACON', $triggerLinkSendBeacon);
 const CRON_BEACON_PID_FILE = 'cron_beacon_loop.pid';
 const CRON_BEACON_CONF_FILE = 'cron_beacon_interval.conf';
 const CRON_BEACON_STOP_FILE = 'cron_beacon_stop';
 const CRON_BEACON_PROC_FILE = 'cron_beacon_loop.php';
-
+###################################
 const UPD_PID_FILE = 'udp.pid';
 const UPD_STOP_FILE = 'udp_stop';
 const UDP_PROC_FILE = 'udp_receiver.php';
-
+###################################
 const SQLITE3_BUSY_TIMEOUT = 15000;  //Sqlite3 Timeout on Busy
 const SQLITE3_LOCK_RETRY_MAX_ATTEMPTS = 5; //Sqlite3 max. retry counts
 const SQLITE3_LOCK_RETRY_DELAY_MS = 100; //Sqlite3 max. Wait in ms between retry counts

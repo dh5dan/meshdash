@@ -1,0 +1,58 @@
+/* Container ON/OFF Switch */
+.switch {
+    position: relative;
+    display: inline-block;
+    /*width: 50px;   !* Breite des Schalters *!*/
+    /*height: 28px;  !* Höhe des Schalters *!*/
+
+    width: 40px;   /* neue Breite */
+    height: 22px;  /* neue Höhe */
+
+    vertical-align: middle;  /* hebt ihn in die Mitte der Zeile */
+    /*margin-left: 8px;*/
+}
+
+/* Checkbox ausblenden */
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* Slider */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ccc;  /* Aus-Zustand */
+    transition: 0.4s;
+    border-radius: 28px;
+}
+
+/* Kreis innerhalb des Schalters */
+.slider::before {
+    position: absolute;
+    content: "";
+    /*height: 22px;*/
+    /*width: 22px;*/
+    /*left: 3px;*/
+    /*bottom: 3px;*/
+    height: 18px;  /* Kreisgröße anpassen */
+    width: 18px;   /* Kreisgröße anpassen */
+    left: 2px;     /* Abstand vom linken Rand */
+    bottom: 2px;   /* Abstand vom unteren Rand */
+
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+/* Checkbox aktiv */
+input:checked + .slider {
+    background-color: #4caf50;  /* An-Zustand */
+}
+
+input:checked + .slider::before {
+    /*transform: translateX(22px);*/
+    transform: translateX(18px); /* Verschiebung angepasst an neue Breite */
+}

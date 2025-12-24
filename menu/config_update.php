@@ -199,28 +199,86 @@ if ($sendData === '1')
                     cleanUp($tempDir);
                     echo '<br><span class="successHint">Temp-Dateien gelöscht.</span>';
 
-                    //Prozess neu starten
-                    $sendQueueEnabled           = (int) getParamData('sendQueueMode');
-                    $paramUdpBgProcess['task']  = 'udp';
-                    $paramCronBgProcess['task'] = 'cron';
+                    //Prozessstatus ermitteln und ggf. neu starten
+                    $sendQueueEnabled     = (int) getParamData('sendQueueMode');
+                    $beaconEnabled        = (int) getParamData('beaconEnabled');
+                    $mheardCronEnable     = (int) getParamData('mheardCronEnable');
+                    $sensorPollingEnabled = (int) getParamData('sensorPollingEnabled');
+
+                    #Der UDP-receiver wird immer neu gestartet
+                    $paramUdpBgProcess['task'] = 'udp';
 
                     #Stop udp
                     stopBgProcess($paramUdpBgProcess);
+
+                    #Gebe den Prozessen Zeit.
+                    sleep(2);
 
                     #Start Udp
                     startBgProcess($paramUdpBgProcess);
 
                     echo '<br><span class="successHint">UDP-Task neu gestartet.</span>';
-                    #Prüfe ob SendQueue Aktiv ist und starte Cron-loop
+
+                    #Prüfe, ob laufende Prozesse aktiv sind und starte sie neu
                     if ($sendQueueEnabled == 1)
                     {
+                        $paramCronLoopBgProcess['task'] = 'cron';
+
                         #Stop Cron
-                        stopBgProcess($paramCronBgProcess);
+                        stopBgProcess($paramCronLoopBgProcess);
+
+                        #Gebe den Prozessen Zeit.
+                        sleep(2);
 
                         #Start Cron
-                        startBgProcess($paramCronBgProcess);
+                        startBgProcess($paramCronLoopBgProcess);
 
                         echo '<br><span class="successHint">CRON-Loop Task neu gestartet.</span>';
+                    }
+                    if ($beaconEnabled == 1)
+                    {
+                        $paramCronBeaconBgProcess['task'] = 'cronBeacon';
+
+                        #Stop Cron
+                        stopBgProcess($paramCronBeaconBgProcess);
+
+                        #Gebe den Prozessen Zeit.
+                        sleep(2);
+
+                        #Start Cron
+                        startBgProcess($paramCronBeaconBgProcess);
+
+                        echo '<br><span class="successHint">CRON-Beacon Task neu gestartet.</span>';
+                    }
+                    if ($mheardCronEnable == 1)
+                    {
+                        $paramCronMheardBgProcess['task'] = 'cronMheard';
+
+                        #Stop Cron
+                        stopBgProcess($paramCronMheardBgProcess);
+
+                        #Gebe den Prozessen Zeit.
+                        sleep(2);
+
+                        #Start Cron
+                        startBgProcess($paramCronMheardBgProcess);
+
+                        echo '<br><span class="successHint">CRON-Mheard Task neu gestartet.</span>';
+                    }
+                    if ($sensorPollingEnabled == 1)
+                    {
+                        $paramCronGetSensorDataBgProcess['task'] = 'cronGetSensorData';
+
+                        #Stop Cron
+                        stopBgProcess($paramCronGetSensorDataBgProcess);
+
+                        #Gebe den Prozessen 1Sek Zeit.
+                        sleep(2);
+
+                        #Start Cron
+                        startBgProcess($paramCronGetSensorDataBgProcess);
+
+                        echo '<br><span class="successHint">CRON-SensorPolling Task neu gestartet.</span>';
                     }
 
                     echo '<br><span class="successHint">Update abgeschlossen!</span>';

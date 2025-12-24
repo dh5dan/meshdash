@@ -42,6 +42,7 @@ echo '</head>';
 echo '<body>';
 
 require_once '../include/func_php_sensor_plot.php';
+require_once '../include/func_php_sensor_data.php';
 require_once '../include/func_js_sensor_plot.php';
 require_once '../include/func_php_lora_info.php';
 require_once '../include/func_js_core.php';
@@ -51,6 +52,16 @@ error_reporting(E_ALL);
 ini_set('display_errors',1);
 
 $lineBreak = '<span class="lineBreak">';
+
+#Check new GUI
+if (getParamData('isNewMeshGui') == 1)
+{
+    $resGetSensorData = getSensorData2(getParamData('loraIp'),1);
+}
+else
+{
+    $resGetSensorData = getSensorData(getParamData('loraIp'),1);
+}
 
 echo '<h2><span data-i18n="submenu.sensor_plot.lbl.header-text">Sensordaten-Diagramm</span></h2>';
 
@@ -75,7 +86,7 @@ echo '<tr>';
     echo '</td>';
     echo '<td>';
             echo '<select id="sensorType">';
-            selectSensorType();
+            selectSensorType($resGetSensorData);
             echo '</select>';
             echo "&nbsp;&nbsp;";
             echo '<button type="button" class="btnPlotSensorChart" id="btnPlotSensorChart">';

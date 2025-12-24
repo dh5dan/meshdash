@@ -1,7 +1,6 @@
 <?php
-function getSensorData($loraIp, int $mode = 0)
+function getSensorData($loraIp, int $mode = 0): bool|array
 {
-
     $url       = "http" . "://" . $loraIp . "/wx";
     $wxArray   = array();
     $debugFlag = false;
@@ -70,7 +69,7 @@ function getSensorData($loraIp, int $mode = 0)
 
     return true;
 }
-function getSensorData2($loraIp, int $mode = 0)
+function getSensorData2($loraIp, int $mode = 0): bool|array
 {
     $url       = 'http://' . $loraIp . '/?page=wx';
     $wxArray   = array();
@@ -232,12 +231,13 @@ function showSensorData(): bool
         $ina226vCurrent = $dsData['ina226vCurrent'];
         $ina226vPower   = $dsData['ina226vPower'];
 
+        echo '<tr>';
+        echo '<th>BME(P)280</th>';
+        echo '<th>BME680</th>';
+        echo '<th>MCU811</th>';
+
         if ($deviceIsMobile === false)
         {
-            echo '<tr>';
-            echo '<th>BME(P)280</th>';
-            echo '<th>BME680</th>';
-            echo '<th>MCU811</th>';
             echo '<th>LPS33</th>';
             echo '<th>ONEWIRE</th>';
             echo '</tr>';
@@ -297,10 +297,6 @@ function showSensorData(): bool
         }
         else
         {
-            echo '<tr>';
-            echo '<th>BME(P)280</th>';
-            echo '<th>BME680</th>';
-            echo '<th>MCU811</th>';
             echo '</tr>';
 
             echo '<tr>';
@@ -856,18 +852,6 @@ function checkSensor($resGetSensorData): bool
             disableAllIna226Sensors();
             $anyIna226SensorActive = false;
         }
-
-        # Wenn kein Ina226 vorhanden InaSensor inaktiv und TempSensor inaktiv
-        # dann Cron abschalten
-        if ($hasIna226 === false && $anyIna226SensorActive === false && $anyTemSensorAktive === false)
-        {
-            #Lösche Cron komplett, nur wenn Linux OS
-            if ($osIssWindows === false)
-            {
-                echo "<br>Lösche Cron komplett!";
-                setCronSensorInterval(1, 1);
-            }
-        }
     }
 
     return true;
@@ -1121,6 +1105,429 @@ function checkSensorAlertCount(): bool
         }
     }
 
+    return true;
+}
+
+/** @noinspection SqlWithoutWhere
+ * @noinspection SqlWithoutWhere
+ * @noinspection SqlWithoutWhere
+ */
+function resetSensorAlertCounter($sensor, $sensorType): bool
+{
+    if ($sensor == 'temp')
+    {
+        #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+        $basename       = pathinfo(getcwd())['basename'];
+        $dbFilenameSub  = '../database/sensor_th_temp.db';
+        $dbFilenameRoot = 'database/sensor_th_temp.db';
+        $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+        $timeStamps     = date('Y-m-d H:i:s');
+
+        $db = new SQLite3($dbFilename);
+        $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
+        $db->exec('PRAGMA synchronous = NORMAL;');
+
+        $queryTemp = " UPDATE sensorThTemp SET sensorThTempAlertCount = 0,
+                                               sensorThTempAlertTimestamp = '$timeStamps';
+                    ";
+
+        if ($sensorType == 'Tout')
+        {
+            $queryTemp = " UPDATE sensorThTemp SET sensorThToutAlertCount = 0,
+                                                   sensorThToutAlertTimestamp = '$timeStamps';
+                         ";
+        }
+
+        $logArray   = array();
+        $logArray[] = "resetSensorAlertCounter_temp: Database: $dbFilename";
+        $logArray[] = "setSensorAlertCounter_temp: sensor: $sensor";
+        $logArray[] = "setSensorAlertCounter_temp: sensorType: $sensorType";
+        $logArray[] = "setSensorAlertCounter_temp: timeStamps: $timeStamps";
+
+        $res = safeDbRun( $db,  $queryTemp, 'exec', $logArray);
+
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+
+        if ($res === false)
+        {
+            return false;
+        }
+    }
+
+    if ($sensor == 'ina226')
+    {
+        #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+        $basename       = pathinfo(getcwd())['basename'];
+        $dbFilenameSub  = '../database/sensor_th_ina226.db';
+        $dbFilenameRoot = 'database/sensor_th_ina226.db';
+        $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+        $timeStamps     = date('Y-m-d H:i:s');
+
+        $dbIna226 = new SQLite3($dbFilename);
+        $dbIna226->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
+        $dbIna226->exec('PRAGMA synchronous = NORMAL;');
+
+        $queryIna226vBus = " UPDATE sensorThIna226 SET sensorThIna226vBusAlertCount = 0,
+                                                       sensorThIna226vBusAlertTimestamp = '$timeStamps';
+                         ";
+
+        if ($sensorType == 'vShunt')
+        {
+            $queryIna226vBus = " UPDATE sensorThIna226 SET sensorThIna226vShuntAlertCount = 0,
+                                                           sensorThIna226vShuntAlertTimestamp = '$timeStamps';
+                         ";
+        }
+        else if ($sensorType == 'vCurrent')
+        {
+            $queryIna226vBus = " UPDATE sensorThIna226 SET sensorThIna226vCurrentAlertCount = 0,
+                                                           sensorThIna226vCurrentAlertTimestamp = '$timeStamps';
+                         ";
+        }
+        else if ($sensorType == 'vPower')
+        {
+            $queryIna226vBus = " UPDATE sensorThIna226 SET sensorThIna226vPowerAlertCount = 0,
+                                                           sensorThIna226vPowerAlertTimestamp = '$timeStamps';
+                         ";
+        }
+
+        $logArray   = array();
+        $logArray[] = "resetSensorAlertCounterIna226: Database: $dbFilename";
+        $logArray[] = "setSensorAlertCounter_temp: sensor: $sensor";
+        $logArray[] = "setSensorAlertCounter_temp: sensorType: $sensorType";
+        $logArray[] = "setSensorAlertCounter_temp: timeStamps: $timeStamps";
+
+        $resIna226 = safeDbRun( $dbIna226,  $queryIna226vBus, 'exec', $logArray);
+
+        #Close and write Back WAL
+        $dbIna226->close();
+        unset($dbIna226);
+
+        if ($resIna226 === false)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+function setSensorAlertCounter($sensor, $sensorType): bool
+{
+    if ($sensor == 'temp')
+    {
+        #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+        $basename       = pathinfo(getcwd())['basename'];
+        $dbFilenameSub  = '../database/sensor_th_temp.db';
+        $dbFilenameRoot = 'database/sensor_th_temp.db';
+        $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+        $timeStamps     = date('Y-m-d H:i:s');
+
+        $db = new SQLite3($dbFilename);
+        $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
+        $db->exec('PRAGMA synchronous = NORMAL;');
+
+        $queryTemp = " UPDATE sensorThTemp SET sensorThTempAlertCount = sensorThTempAlertCount + 1,
+                                               sensorThTempAlertTimestamp = '$timeStamps';
+                    ";
+
+        if ($sensorType == 'Tout')
+        {
+            $queryTemp = " UPDATE sensorThTemp SET sensorThToutAlertCount = sensorThToutAlertCount + 1,
+                                                   sensorThToutAlertTimestamp = '$timeStamps';
+                         ";
+        }
+
+        $logArray = array();
+        $logArray[] = "setSensorAlertCounter_temp: Database: $dbFilename";
+        $logArray[] = "setSensorAlertCounter_temp: sensor: $sensor";
+        $logArray[] = "setSensorAlertCounter_temp: sensorType: $sensorType";
+        $logArray[] = "setSensorAlertCounter_temp: timeStamps: $timeStamps";
+
+        $res = safeDbRun( $db,  $queryTemp, 'exec', $logArray);
+
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+
+        if ($res === false)
+        {
+            return false;
+        }
+    }
+
+    if ($sensor == 'ina226')
+    {
+        #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+        $basenameIna226       = pathinfo(getcwd())['basename'];
+        $dbFilenameSubIna226  = '../database/sensor_th_ina226.db';
+        $dbFilenameRootIna226 = 'database/sensor_th_ina226.db';
+        $dbFilenameIna226     = $basenameIna226 == 'menu' ? $dbFilenameSubIna226 : $dbFilenameRootIna226;
+        $timeStampIna226      = date('Y-m-d H:i:s');
+
+        $dbIna266 = new SQLite3($dbFilenameIna226);
+        $dbIna266->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
+        $dbIna266->exec('PRAGMA synchronous = NORMAL;');
+
+        $queryIna226 = " UPDATE sensorThIna226 SET sensorThIna226vBusAlertCount = sensorThIna226vBusAlertCount + 1,
+                                                   sensorThIna226vBusAlertTimestamp = '$timeStampIna226';
+                         ";
+
+        if ($sensorType == 'vShunt')
+        {
+            $queryIna226 = " UPDATE sensorThIna226 SET sensorThIna226vShuntAlertCount = sensorThIna226vShuntAlertCount + 1,
+                                                       sensorThIna226vShuntAlertTimestamp = '$timeStampIna226';
+                         ";
+        }
+
+        if ($sensorType == 'vCurrent')
+        {
+            $queryIna226 = " UPDATE sensorThIna226 SET sensorThIna226vCurrentAlertCount = sensorThIna226vCurrentAlertCount + 1,
+                                                       sensorThIna226vCurrentAlertTimestamp = '$timeStampIna226';
+                         ";
+        }
+
+        if ($sensorType == 'vPower')
+        {
+            $queryIna226 = " UPDATE sensorThIna226 SET sensorThIna226vPowerAlertCount = sensorThIna226vPowerAlertCount + 1,
+                                                       sensorThIna226vPowerAlertTimestamp = '$timeStampIna226';
+                         ";
+        }
+
+        $logArray = array();
+        $logArray[] = "setSensorAlertCounter_ina266: Database: $dbFilenameIna226";
+        $logArray[] = "setSensorAlertCounter_ina266: sensor: $sensor";
+        $logArray[] = "setSensorAlertCounter_ina266: sensorType: $sensorType";
+        $logArray[] = "setSensorAlertCounter_ina266: timeStamps: $timeStampIna226";
+
+        $resIna266 = safeDbRun( $dbIna266,  $queryIna226, 'exec', $logArray);
+
+        #Close and write Back WAL
+        $dbIna266->close();
+        unset($dbIna266);
+
+        if ($resIna266 === false)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}
+function setSensorData2($sensorData): bool
+{
+    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    $basename       = pathinfo(getcwd())['basename'];
+    $dbFilenameSub  = '../database/sensordata.db';
+    $dbFilenameRoot = 'database/sensordata.db';
+    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+    $timeStamps     = date('Y-m-d H:i:s');
+
+    $db = new SQLite3($dbFilename);
+    $db->exec('PRAGMA synchronous = NORMAL;');
+
+    $bme280         = SQLite3::escapeString($sensorData['bme_p_280'] ?? '');
+    $bme680         = SQLite3::escapeString($sensorData['bme680'] ?? '');
+    $mcu811         = SQLite3::escapeString($sensorData['mcu811'] ?? '');
+    $lsp33          = SQLite3::escapeString($sensorData['lps33'] ?? '');
+    $oneWire        = SQLite3::escapeString($sensorData['1_wire'] ?? '');
+    $tout           = SQLite3::escapeString($sensorData['tout'] ?? '');
+    $temp           = SQLite3::escapeString($sensorData['temperature'] ?? '');
+    $hum            = SQLite3::escapeString($sensorData['humidity'] ?? '');
+    $qfe            = SQLite3::escapeString($sensorData['qfe'] ?? '');
+    $qnh            = SQLite3::escapeString($sensorData['qnh'] ?? '');
+    $altAsl         = SQLite3::escapeString($sensorData['altitude_asl'] ?? '');
+    $gas            = SQLite3::escapeString($sensorData['gas'] ?? '');
+    $eCo2           = SQLite3::escapeString($sensorData['eco2'] ?? '');
+    $ina226vBus     = SQLite3::escapeString($sensorData['vBUS'] ?? '');
+    $ina226vShunt   = SQLite3::escapeString($sensorData['vSHUNT'] ?? '');
+    $ina226vCurrent = SQLite3::escapeString($sensorData['vCURRENT'] ?? '');
+    $ina226vPower   = SQLite3::escapeString($sensorData['vPOWER'] ?? '');
+
+    $sql = "REPLACE INTO sensordata (timestamps,
+                                     bme280,
+                                     bme680,
+                                     mcu811,
+                                     lsp33,
+                                     oneWire,
+                                     temp,
+                                     tout,
+                                     hum,
+                                     qfe,
+                                     qnh,
+                                     altAsl,
+                                     gas,
+                                     eCo2,
+                                     ina226vBus,
+                                     ina226vShunt,
+                                     ina226vCurrent,
+                                     ina226vPower
+                                    )
+                             VALUES ('$timeStamps',
+                                     '$bme280',
+                                     '$bme680',
+                                     '$mcu811',
+                                     '$lsp33',
+                                     '$oneWire',
+                                     '$temp',
+                                     '$tout',
+                                     '$hum',
+                                     '$qfe',
+                                     '$qnh',
+                                     '$altAsl',
+                                     '$gas',
+                                     '$eCo2',
+                                     '$ina226vBus',
+                                     '$ina226vShunt',
+                                     '$ina226vCurrent',
+                                     '$ina226vPower'
+                                    );
+                    ";
+
+    $logArray   = array();
+    $logArray[] = "setSensorData2: Database: $dbFilename";
+
+    $res = safeDbRun( $db,  $sql, 'exec', $logArray);
+
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
+    if ($res === false)
+    {
+        return false;
+    }
+
+    return true;
+}
+function setSensorData($sensorData): bool
+{
+    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    $basename       = pathinfo(getcwd())['basename'];
+    $dbFilenameSub  = '../database/sensordata.db';
+    $dbFilenameRoot = 'database/sensordata.db';
+    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+    $timeStamps     = date('Y-m-d H:i:s');
+
+    $db = new SQLite3($dbFilename);
+    $db->exec('PRAGMA synchronous = NORMAL;');
+
+    $bme280         = SQLite3::escapeString($sensorData['BME(P)280'] ?? '');
+    $bme680         = SQLite3::escapeString($sensorData['BME680'] ?? '');
+    $mcu811         = SQLite3::escapeString($sensorData['MCU811'] ?? '');
+    $lsp33          = SQLite3::escapeString($sensorData['LPS33'] ?? '');
+    $oneWire        = SQLite3::escapeString($sensorData['ONEWIRE'] ?? '');
+    $tout           = SQLite3::escapeString($sensorData['TOUT'] ?? '');
+    $temp           = SQLite3::escapeString($sensorData['TEMP'] ?? '');
+    $hum            = SQLite3::escapeString($sensorData['HUM'] ?? '');
+    $qfe            = SQLite3::escapeString($sensorData['QFE'] ?? '');
+    $qnh            = SQLite3::escapeString($sensorData['QNH'] ?? '');
+    $altAsl         = SQLite3::escapeString($sensorData['ALT asl'] ?? '');
+    $gas            = SQLite3::escapeString($sensorData['GAS'] ?? '');
+    $eCo2           = SQLite3::escapeString($sensorData['eCO2'] ?? '');
+    $ina226vBus     = SQLite3::escapeString($sensorData['vBUS'] ?? '');
+    $ina226vShunt   = SQLite3::escapeString($sensorData['vSHUNT'] ?? '');
+    $ina226vCurrent = SQLite3::escapeString($sensorData['vCURRENT'] ?? '');
+    $ina226vPower   = SQLite3::escapeString($sensorData['vPOWER'] ?? '');
+
+    $sql = "REPLACE INTO sensordata (timestamps,
+                                     bme280,
+                                     bme680,
+                                     mcu811,
+                                     lsp33,
+                                     oneWire,
+                                     temp,
+                                     tout,
+                                     hum,
+                                     qfe,
+                                     qnh,
+                                     altAsl,
+                                     gas,
+                                     eCo2,
+                                     ina226vBus,
+                                     ina226vShunt,
+                                     ina226vCurrent,
+                                     ina226vPower
+                                    )
+                             VALUES ('$timeStamps',
+                                     '$bme280',
+                                     '$bme680',
+                                     '$mcu811',
+                                     '$lsp33',
+                                     '$oneWire',
+                                     '$temp',
+                                     '$tout',
+                                     '$hum',
+                                     '$qfe',
+                                     '$qnh',
+                                     '$altAsl',
+                                     '$gas',
+                                     '$eCo2',
+                                     '$ina226vBus',
+                                     '$ina226vShunt',
+                                     '$ina226vCurrent',
+                                     '$ina226vPower'
+                                    );
+                    ";
+
+    $logArray   = array();
+    $logArray[] = "setSensorData: Database: $dbFilename";
+
+    $res = safeDbRun( $db,  $sql, 'exec', $logArray);
+
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
+    if ($res === false)
+    {
+        return false;
+    }
+
+    return true;
+}
+function disableAllIna226Sensors(): bool
+{
+    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    $basename       = pathinfo(getcwd())['basename'];
+    $dbFilenameSub  = '../database/sensor_th_ina226.db';
+    $dbFilenameRoot = 'database/sensor_th_ina226.db';
+    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+    $timeStamps     = date('Y-m-d H:i:s');
+
+    $db = new SQLite3($dbFilename);
+    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
+    $db->exec('PRAGMA synchronous = NORMAL;');
+
+    $sql = "REPLACE INTO sensorThIna226 (sensorThIna226Id,
+                                         timeStamps,
+                                         sensorThIna226vBusEnabled, 
+                                         sensorThIna226vShuntEnabled, 
+                                         sensorThIna226vCurrentEnabled, 
+                                         sensorThIna226vPowerEnabled
+                                        )
+                                 VALUES ('1',
+                                         '$timeStamps',
+                                         '0',
+                                         '0',
+                                         '0', 
+                                         '0'
+                                         );
+                    ";
+
+    $logArray = array();
+    $logArray[] = "disableAllIna226Sensors: Database: $dbFilename";
+
+    $res = safeDbRun( $db,  $sql, 'exec', $logArray);
+
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
+    if ($res === false)
+    {
+        return false;
+    }
 
     return true;
 }

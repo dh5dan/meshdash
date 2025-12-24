@@ -442,7 +442,7 @@ function showMheard($localCallSign): bool
 
     return true;
 }
-function getOwnPosition($callSign)
+function getOwnPosition($callSign): bool|array
 {
     $returnArray = array();
     $debugFlag   = false;
@@ -521,4 +521,79 @@ function validateMheardValue(string $value, string $type): bool
         default:
             return false;
     }
+}
+function setMheardData($heardData): bool
+{
+    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    $basename       = pathinfo(getcwd())['basename'];
+    $dbFilenameSub  = '../database/mheard.db';
+    $dbFilenameRoot = 'database/mheard.db';
+    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+    $mhTimeStamps   = date('Y-m-d H:i:s');
+
+    $db = new SQLite3($dbFilename);
+    $db->exec('PRAGMA synchronous = NORMAL;');
+
+    foreach ($heardData AS $key)
+    {
+        $callSign = SQLite3::escapeString($key['callSign'] ?? '');
+        $date     = SQLite3::escapeString($key['date'] ?? '');
+        $time     = SQLite3::escapeString($key['time'] ?? '');
+        $mhType   = SQLite3::escapeString($key['mhType'] ?? '');
+        $hardware = SQLite3::escapeString($key['hardware'] ?? '');
+        $mod      = SQLite3::escapeString($key['mod'] ?? '');
+        $rssi     = SQLite3::escapeString($key['rssi'] ?? '');
+        $snr      = SQLite3::escapeString($key['snr'] ?? '');
+        $dist     = SQLite3::escapeString($key['dist'] ?? '');
+        $pl       = SQLite3::escapeString($key['pl'] ?? '');
+        $m        = SQLite3::escapeString($key['m'] ?? '');
+
+        $sql = "REPLACE INTO mheard (timestamps, 
+                                     mhCallSign, 
+                                     mhDate, 
+                                     mhTime, 
+                                     mhType,
+                                     mhHardware, 
+                                     mhMod, 
+                                     mhRssi, 
+                                     mhSnr, 
+                                     mhDist, 
+                                     mhPl, 
+                                     mhM
+                                    )
+                             VALUES ('$mhTimeStamps',
+                                     '$callSign',
+                                     '$date',
+                                     '$time',
+                                     '$mhType',
+                                     '$hardware',
+                                     '$mod',
+                                     '$rssi',
+                                     '$snr',
+                                     '$dist',
+                                     '$pl',
+                                     '$m'
+                                    );
+                    ";
+
+        $logArray   = array();
+        $logArray[] = "setMheardData: Database: $dbFilename";
+
+        $res = safeDbRun( $db,  $sql, 'exec', $logArray);
+
+        if ($res === false)
+        {
+            #Close and write Back WAL
+            $db->close();
+            unset($db);
+
+            return false;
+        }
+    }
+
+    #Close and write Back WAL
+    $db->close();
+    unset($db);
+
+    return true;
 }

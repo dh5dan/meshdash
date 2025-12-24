@@ -52,7 +52,7 @@ input[type="checkbox"] {
 .failureHint {
     display: block;
     padding: 10px;
-    margin: 10px 0;
+    margin: 4px 0;
     text-align: center;
 }
 
@@ -78,6 +78,37 @@ select {
     width: 70px !important;
     box-sizing: border-box !important;
 }
+
+.full-width-input {
+    max-width: none !important;
+    width: auto !important;
+}
+
+.row-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.row-flex input {
+    flex: 1;
+    max-width: none;
+}
+
+.msg-compact {
+    display: block;
+    max-width: 100%;
+    box-sizing: border-box;
+
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-break: normal;
+
+    padding-right: 6px;   /* verhindert Touch-Overflow */
+}
+
+
 
 @media (max-width: 600px) {
 

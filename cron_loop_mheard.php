@@ -1,7 +1,13 @@
 <?php
+# Wichtig!
+# Gewährleistet, das das Skript immer aus dem Verzeichnis ausgeführt ist, wo es liegt.
+# Alle relativen Pfade bleiben somit erhalten, auch wenn es aus dem SubMenü aufgerufen wird.
+chdir(__DIR__);
+
 require_once 'dbinc/param.php';
 require_once 'include/func_php_core.php';
 require_once 'include/func_php_mheard.php';
+
 ignore_user_abort(true);
 set_time_limit(0);
 
@@ -12,22 +18,20 @@ if (php_sapi_name() !== 'cli')
 }
 
 // Relativer Pfad zu deinem Webverzeichnis
-$basePath    = __DIR__;
-$execDir     = 'log';
-$pidFile     = "$basePath/$execDir/" . MHEARD_CRON_PID_FILE;
-$stopFile    = "$basePath/$execDir/" .MHEARD_CRON_STOP_FILE;
-$debugLogFile   = "log/cron_loop_mheard_debug.log";
-$debugTime   = date('Y-m-d H:i:s');
+$basePath     = __DIR__;
+$execDir      = 'log';
+$pidFile      = "$basePath/$execDir/" . MHEARD_CRON_PID_FILE;
+$stopFile     = "$basePath/$execDir/" . MHEARD_CRON_STOP_FILE;
+$debugLogFile = "$basePath/$execDir/" . 'debug_cron_loop_mheard_' . date('Ymd') . '.log';
 
 #Check what oS is running
 $osIssWindows = chkOsIsWindows();
 $debugFlag    = false;
 
-$mheardCronEnable     = getParamData('mheardCronEnable') ?? 0;
-$mheardCronIntervall  = getParamData('mheardCronIntervall') ?? 1; // Intervall in vollen Stunden 1-4
-$cron_loop_mheard_pid = getParamData('cronLoopMheardPid');
+$cronLoopMheardPid   = getParamData('cronLoopMheardPid');
+$mheardCronIntervall = getParamData('mheardCronIntervall') ?? 1; // Intervall in vollen Stunden 1-4
 
-if ($cron_loop_mheard_pid != '')
+if ($cronLoopMheardPid != '')
 {
     // Prüfen, ob bereits eine Instanz läuft
     if (file_exists($pidFile))
@@ -51,16 +55,16 @@ if ($cron_loop_mheard_pid != '')
     {
         #Wenn Pid File nicht vorhanden prüfen, ob zuletzt gespeicherte PID aktiv ist.
         #Wenn aktiv, Pid-File rekonstruieren.
-        if ($cron_loop_mheard_pid != '')
+        if ($cronLoopMheardPid != '')
         {
-            if (getmypid() == (int) $cron_loop_mheard_pid)
+            if (getmypid() == (int) $cronLoopMheardPid)
             {
                 file_put_contents($pidFile, getmypid());
-                echo "Pid-File NICHT vorhanden. Mheard-Cron Skript bereits gestartet mit (PID: $cron_loop_mheard_pid)";
+                echo "Pid-File NICHT vorhanden. Mheard-Cron Skript bereits gestartet mit (PID: $cronLoopMheardPid)";
 
                 if ($debugFlag === true)
                 {
-                    $debugMsgText = "Pid-File NICHT vorhanden. Mheard-Cron Skript bereits gestartet mit (PID: $cron_loop_mheard_pid)" . date('Y-m-d H:i:s') . "\n";
+                    $debugMsgText = "Pid-File NICHT vorhanden. Mheard-Cron Skript bereits gestartet mit (PID: $cronLoopMheardPid)" . date('Y-m-d H:i:s') . "\n";
                     file_put_contents($debugLogFile, $debugMsgText, FILE_APPEND);
                 }
 
@@ -79,6 +83,7 @@ setParamData('cronLoopMheardPidTs', date('Y-m-d H:i:s'),'txt');
 
 if ($debugFlag === true)
 {
+    $mheardCronIntervall = getParamData('mheardCronIntervall') ?? 1; // Intervall in vollen Stunden 1-4
     $debugMsgText = "DEBUG: Cron_mheard gestartet mit PID: ".getmypid()." und Intervall $mheardCronIntervall um: " . date('Y-m-d H:i:s') . "\n";
     file_put_contents($debugLogFile, $debugMsgText, FILE_APPEND);
 }

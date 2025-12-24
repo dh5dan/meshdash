@@ -27,6 +27,7 @@ else
     echo '<link rel="stylesheet" href="../css/normal_mode.css?' . microtime() . '">';
 }
 
+echo '<link rel="stylesheet" href="../css/core.css?' . microtime() . '">';
 echo '<link rel="stylesheet" href="../css/config_data_purge_auto.css?' . microtime() . '">';
 echo '<link rel="stylesheet" href="../css/loader.css?' . microtime() . '">';
 echo '</head>';
@@ -67,7 +68,6 @@ $enableMsgPurgeChecked    = $enableMsgPurge == 1 ? 'checked' : '';
 $enableSensorPurgeChecked = $enableSensorPurge == 1 ? 'checked' : '';
 
 echo '<span class="unsetDisplayFlex">';
-echo "<br>";
 
 echo "<h2>Auto-Purge Nachrichten/Sensordaten</h2>";
 
@@ -80,8 +80,14 @@ echo '<td colspan="2"><hr></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>MSG-Löschen Enable[AN]:</td>';
-echo '<td><input type="checkbox" name="enableMsgPurge" ' . $enableMsgPurgeChecked . ' id="enableMsgPurge" value="1" /></td>';
+echo '<td>MSG-Löschen:</td>';
+echo '<td>';
+echo '<label class="switch">';
+echo '<input type="checkbox" name="enableMsgPurge" ' . $enableMsgPurgeChecked . ' id="enableMsgPurge" value="1" />';
+echo '<span class="slider"></span>';
+echo '</label>';
+echo '</td>';
+
 echo '</tr>';
 
 echo '<tr>';
@@ -94,8 +100,15 @@ echo '<td colspan="2"><hr></td>';
 echo '</tr>';
 
 echo '<tr>';
-echo '<td>Sensor-Daten Löschen nach x Tagen Enable[AN]:</td>';
-echo '<td><input type="checkbox" name="enableSensorPurge" ' . $enableSensorPurgeChecked . ' id="enableSensorPurge" value="1" /></td>';
+echo '<td>Sensor-Daten Löschen nach x Tagen:</td>';
+
+echo '<td>';
+echo '<label class="switch">';
+echo '<input type="checkbox" name="enableSensorPurge" ' . $enableSensorPurgeChecked . ' id="enableSensorPurge" value="1" />';
+echo '<span class="slider"></span>';
+echo '</label>';
+echo '</td>';
+
 echo '</tr>';
 
 echo '<tr>';

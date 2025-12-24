@@ -620,7 +620,8 @@ if ($result !== false)
             #Prüfe ob ack vorliegt und wenn ja, packe es zur korrespondierenden Nachricht
             $resCheckMsgAck = checkMsgAck($msg);
 
-            #Wenn MSg ein Ack ist dann nicht anzeigen aber auswerten
+            #Wenn MSg ein Ack ist (msgIsAck =1) dann nicht anzeigen aber auswerten
+            #Dies ist nur eine Bestätigung des Nodes
             if ($resCheckMsgAck === true)
             {
                 #Wird jetzt in SQL abgefangen
