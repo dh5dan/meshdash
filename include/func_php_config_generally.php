@@ -33,9 +33,9 @@ function saveGenerallySettings(): bool
     $festiveModeEnable       = $_REQUEST['festiveModeEnable'] ?? 0; // checkbox
     $mheardCronEnable        = (int)($_REQUEST['mheardCronEnable'] ?? 0);
     $mheardCronIntervall     = (int)($_REQUEST['mheardCronIntervall'] ?? 1);
-    $winPhpCliPath           = trim($_REQUEST['winPhpCliPath']) ?? '';
+    $winPhpCliPath           = trim($_REQUEST['winPhpCliPath']  ?? '');
 
-    if (!file_exists($winPhpCliPath))
+    if (!file_exists($winPhpCliPath) && chkOsIsWindows() === true)
     {
         echo '<tr>';
         echo '<td colspan="2">';
