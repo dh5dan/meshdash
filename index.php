@@ -85,20 +85,20 @@ if ($phpVersionMajor < 8)
 }
 
 #betrifft nur Windows
-if(chkOsIsWindows() === true)
+if(chkOsIsWindows() === true && file_exists('database/parameter.db'))
 {
     $winPhpCliPath = (string) (getParamData('winPhpCliPath') ?? ''); // Nur für Windows. Pfad zur php.exe CLI
     $phpExe = getPhpExeAndVersion($winPhpCliPath);
 
     if ($phpExe['path'] === null)
     {
-        echo '<span class="failureHint">php.exe ist nicht im Windows-PATH vorhanden.<br>';
+        echo '<span class="failureHint">php.exe (CLI) ist nicht im Windows-PATH vorhanden.<br>';
         echo 'Pfad muss in Windows oder in MeshDash-Einstellungen gesetzt sein.<br>';
         echo '</span>';
     }
     else if ($phpExe['isPhp8Up'] === false)
     {
-        echo '<span class="failureHint">Die ermittelte PHP Version muss >= V8.xx sein!</span>';
+        echo '<span class="failureHint">Die ermittelte PHP-CLI Version muss >= V8.xx sein!</span>';
     }
 }
 
