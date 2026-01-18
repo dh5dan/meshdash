@@ -1,3 +1,8 @@
+Version 1.10.84 SQL
+
+BUGFIX: Inkonsistente Datensätze im Map-Routing (Absender = Ziel) werden nun ignoriert.
+
+##############
 Version 1.10.82 SQL
 
 BUGFIX:  Auswahlliste bei Sensordaten Plot zeigte auch inaktive Sensoren an.

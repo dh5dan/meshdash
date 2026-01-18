@@ -16,14 +16,14 @@ auf eine webbasierte Plattform bringen soll.
 MeshDash-SQL wurde primär für den Einsatz auf einem Raspberry Pi mit Linux entwickelt.  
 Es ist aber auch auf jedem Debian-OS in einer VM bis einschliesslich Trixie und sogar Docker lauffähig.  
 Unter Windows ist MeshDash auch lauffähig mit etwas fundierten kenntnissen über Apache/PHP.   
-PHP (mindestens Version 7.4) ist nötig.  
-Benötigt werden u.a. die PHP-Module: socket, sqlite3, curl, zip und unzip.  
+Benötigt werden u.a. die PHP-Module: socket, sqlite3, curl, zip und unzip.
+
 
 [***Zu MeshDash auf Docker gibt es im letzten Abschnitt weitere Infos.***](#meshdash-auf-docker)
 
 ### ⚠️ Hinweis
-Die Unterstützung für **PHP 7.4** wird in zukünftigen Versionen entfallen (deprecated).   
-Eine Umstellung auf **PHP >= 8.x** ist daher empfohlen.
+Die Unterstützung für **PHP 7.4** wird nur noch bis **v1.10.82** angeboten.  
+Ab **v1.10.84** ist **PHP >= 8.x** Voraussetzung!
 
 ---
 
@@ -275,8 +275,8 @@ Sensordaten können nun grafisch als Diagramm dargestellt werden.
 Es ist möglich MeshDash auch in einer Docker-Umgebung laufen zu lassen.  
 Ich habe dies experimentell mal auf einer Synology DS1522+ eingerichtet.  
 Zum Einsatz kommen 2 Image-Container: PHP + nginx (Webserver).   
-Version nginx: nginx:1.29.1-bookworm-perl  
-Version php  : php:8.4.12-fpm-trixie  
+Version nginx: nginx:1.29.1-bookworm-perl  (oder höher)
+Version php  : php:8.4.12-fpm-trixie       (oder höher)
 
 #### Es gibt 3 Mountpoints:
 - html   (für den Webinhalt)
@@ -355,7 +355,7 @@ FROM php:8.4.12-fpm-trixie
 RUN apt-get update && apt-get install -y procps net-tools libzip-dev unzip && rm -rf /var/lib/apt/lists/*
 
 # PHP-Sockets installieren
-RUN docker-php-ext-install sockets zip
+RUN docker-php-ext-install sockets zip calendar
 
 WORKDIR /usr/share/nginx/html
 

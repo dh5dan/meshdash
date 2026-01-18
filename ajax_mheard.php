@@ -281,7 +281,7 @@ if ($enablePathNodes === true)
             {
                 $pathCallSign = $dsDataMdPath['ziel'] ?? 0;
 
-                if (in_array($pathCallSign, $localMheardCalls) === true)
+                if (in_array($pathCallSign, $localMheardCalls) === true || $pathCallSign === $ownCallSign)
                 {
                     continue;
                 }
