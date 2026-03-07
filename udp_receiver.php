@@ -118,6 +118,14 @@ else
             $pidSplit   = explode('/', $pid);
             $pidId      = $pidSplit[0];
 
+            if ($pidId == '-')
+            {
+                $errorText = date('Y-m-d H:i:s') . " - Linux: Prozess wurde nicht als Owner: www-data gestartet pid: [$pidId]" . "\n";
+                $errorText .= date('Y-m-d H:i:s') . " - Prüfen ob alter Cron-Eintrag existiert und diesen Löschen! Abbruch." . "\n";
+                file_put_contents($errorFile, $errorText,FILE_APPEND);
+                exit();
+            }
+
             $errorText = date('Y-m-d H:i:s') . " - Linux: Kill process with pid: [$pidId]" . "\n";
             file_put_contents($errorFile, $errorText,FILE_APPEND);
 
