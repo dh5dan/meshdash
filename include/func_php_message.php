@@ -118,7 +118,7 @@ function checkMsgAck($msg): bool
 
     return $ackFound;
 }
-function checkMheard($msgId, $msg, $src, $dst, $callSign, $loraIp, $mhTargetFlag)
+function checkMheard($msgId, $msg, $src, $dst, $callSign, $loraIp, $mhTargetFlag): void
 {
     #Eliminiere Hops in Quelle und Ziel
     $src = explode(',', $src)[0];
@@ -400,7 +400,7 @@ function hasKeywordTimePassed(string $startTs, string $endTs, int $limitSeconds)
         return false;
     }
 }
-function getCallNotices()
+function getCallNotices(): bool|array
 {
     $arrayCallSign      = array();
     $arrayCleanCallSign = array(); //zu korrigierende CallSign mit Hochkomma
@@ -459,7 +459,7 @@ function getCallNotices()
 
     return $arrayCallSign;
 }
-function updateCallNoticeDb(array $arrayCleanCallSign)
+function updateCallNoticeDb(array $arrayCleanCallSign): void
 {
     $db = new SQLite3('database/call_notice.db', SQLITE3_OPEN_READWRITE);
     $db->busyTimeout(SQLITE3_BUSY_TIMEOUT);

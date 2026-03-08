@@ -107,7 +107,7 @@ function deleteNotifyItem($deleteNotifyItemId): bool
     return true;
 }
 
-function showAlertMediaFiles(bool $showTable = true)
+function showAlertMediaFiles(bool $showTable = true): bool|array
 {
     $returnArray   = array();
     $soundDir      = dirname(__DIR__) . '/sound';
@@ -215,7 +215,7 @@ function showAlertMediaFiles(bool $showTable = true)
 
     return $returnArray;
 }
-function selectSoundFile($arrayFiles, $selectedFile)
+function selectSoundFile($arrayFiles, $selectedFile): void
 {
     if (empty($arrayFiles) === true)
     {
@@ -239,7 +239,7 @@ function selectSoundFile($arrayFiles, $selectedFile)
         }
     }
 }
-function getNotificationData(string $mode = 'all')
+function getNotificationData(string $mode = 'all'): bool|array
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
     $basename          = pathinfo(getcwd())['basename'];

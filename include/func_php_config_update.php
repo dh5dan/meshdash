@@ -199,7 +199,7 @@ function updateFiles($updateDir, $targetDir, $protectedDirs): bool
     return true;
 }
 
-function setPermissions($dir)
+function setPermissions($dir): void
 {
     $iterator = new RecursiveIteratorIterator(
         new RecursiveDirectoryIterator($dir),
@@ -229,6 +229,20 @@ function setPermissions($dir)
                     @chmod($subFile->getPathname(), 0755);
                 }
             }
+
+            // Falls das Verzeichnis "script" heißt, setze auch seinen Inhalt auf 755
+            if ($file->getFilename() === 'script')
+            {
+                $subIterator = new RecursiveIteratorIterator(
+                    new RecursiveDirectoryIterator($filePath, FilesystemIterator::SKIP_DOTS),
+                    RecursiveIteratorIterator::SELF_FIRST
+                );
+
+                foreach ($subIterator as $subFile)
+                {
+                    @chmod($subFile->getPathname(), 0755);
+                }
+            }
         }
         else
         {
@@ -238,7 +252,7 @@ function setPermissions($dir)
     }
 }
 
-function cleanUp($tempDir)
+function cleanUp($tempDir): void
 {
     // Löscht den temporären Ordner nach der Aktualisierung
     $files = new RecursiveIteratorIterator(
@@ -321,7 +335,7 @@ function checkValidUpdatePackage($uploadFile, $debugFlag)
     }
 }
 
-function getLatestRelease()
+function getLatestRelease(): void
 {
     // get_latest_release.php
 

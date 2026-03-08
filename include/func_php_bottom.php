@@ -1,6 +1,6 @@
 <?php
 
-function selectEmoticons()
+function selectEmoticons(): void
 {
     $arrayHtmlEntities = array(
         "&#128521;",    // 😉

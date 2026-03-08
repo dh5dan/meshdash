@@ -96,7 +96,7 @@ function saveGroupsSettings(): bool
     return true;
 }
 
-function getGroupParameter(int $mode = 0)
+function getGroupParameter(int $mode = 0): bool|array
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
     $basename       = pathinfo(getcwd())['basename'];
@@ -178,7 +178,7 @@ function getGroupParameter(int $mode = 0)
     return $returnValue;
 }
 
-function getGroupTabsJson()
+function getGroupTabsJson(): bool|string
 {
     $tabs     = array();
     $callSign = getParamData('callSign');

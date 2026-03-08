@@ -105,7 +105,7 @@ function getLocalIpAddressesWin(): array
     }
     return $ips;
 }
-function getSendCmdFavorites()
+function getSendCmdFavorites(): bool|array
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
     $basename       = pathinfo(getcwd())['basename'];
