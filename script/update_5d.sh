@@ -1,6 +1,6 @@
 #!/bin/bash
 clear
-echo "MeshDash Update-Script V 1.00.48"
+echo "MeshDash Update-Script V 1.00.50"
 echo
 echo "UPDATE einer bestehenden MeshDash SQL Installation."
 echo "Es wird nur das MeshDash installiert, kein PHP oder sonstige Tools."
@@ -89,6 +89,8 @@ check_home_pi() {
 # Dateien, die kopiert werden sollen
 FILE1="install_5d.sh"
 FILE2="update_5d.sh"
+FILE3="autostart_install.sh"
+FILE4="autostart_uninstall.sh"
 ZIPFILE=$(ls *.zip)
 
 # Funktion zum Kopieren der Dateien
@@ -103,6 +105,14 @@ copy_files() {
      if [ -f "$FILE2" ]; then
           sudo cp "$FILE2" /home/pi/
      fi
+
+     if [ -f "$FILE3" ]; then
+          sudo cp "$FILE3" /home/pi/
+    fi
+
+    if [ -f "$FILE4" ]; then
+          sudo cp "$FILE4" /home/pi/
+    fi
 
     # Überprüfen, ob eine .zip Datei existiert
     if [ -z "$ZIPFILE" ]; then
@@ -201,16 +211,11 @@ sudo chmod -R 755 /var/www/html/5d/execute
 #Setzte Owner und Gruppe für Web-Server im gesamten Verzeichnis
 sudo chown -R www-data:www-data /var/www/html/5d
 echo
-echo "Kopiere Dateien und setzte Rechte für Systemdienst checkmh.service"
-sudo chmod -R 755 script/checkmh.sh
-sudo chmod -R 644 script/checkmh.service
-sudo cp script/checkmh.service /etc/systemd/system/
-sudo cp script/checkmh.sh ../meshdash/
+echo "Setzte Rechte für Skript-Ordner"
+sudo chmod -R 755 /var/www/html/5d/script
 echo
-echo "Aktiviere Systemdienst checkmh.service"
+echo "Lade systemdienste neu"
 sudo systemctl daemon-reload
-sudo systemctl enable checkmh.service
-sudo systemctl start checkmh.service
 echo
 ###############################################
 ### Starte jetzt lighthttpd

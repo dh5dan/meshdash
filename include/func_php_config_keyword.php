@@ -113,7 +113,7 @@ function deleteHookItem($deleteHookItemId): bool
     return true;
 }
 
-function getKeyWordHooks(string $mode = 'all')
+function getKeyWordHooks(string $mode = 'all'): bool|array
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
     $basename          = pathinfo(getcwd())['basename'];
@@ -177,7 +177,7 @@ function getKeyWordHooks(string $mode = 'all')
     return $arrayReturn;
 }
 
-function selectScriptFile($arrayFiles, $selectedFile)
+function selectScriptFile($arrayFiles, $selectedFile): void
 {
     if (empty($arrayFiles) === true)
     {
@@ -202,7 +202,7 @@ function selectScriptFile($arrayFiles, $selectedFile)
     }
 }
 
-function showKeyScriptFiles(bool $showTable = true)
+function showKeyScriptFiles(bool $showTable = true): bool|array
 {
     $returnArray   = array();
     $executeDir    = dirname(__DIR__) . '/execute';

@@ -1,5 +1,5 @@
 <?php
-const VERSION = '1.10.86';
+const VERSION = '1.10.88';
 date_default_timezone_set('Europe/Berlin');
 
 if (PHP_SAPI === 'cli')
@@ -81,6 +81,10 @@ ini_set("pcre.jit", "0");
 
 const AUTO_PURGE_LOCK_FILE = 'auto_purge.lock';
 const AUTO_PURGE_LOCK_TIMEOUT = 300; // Sekunden, z.B. 5 Minuten
+
+
+$triggerLinkAutostart = BASE_PATH_URL . 'index.php';
+define('TRIGGER_LINK_AUTOSTART', $triggerLinkAutostart);
 
 $triggerLinkSendQueue = BASE_PATH_URL . 'send_queue.php';
 define('TRIGGER_LINK_SEND_QUEUE', $triggerLinkSendQueue);

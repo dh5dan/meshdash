@@ -198,7 +198,7 @@ function setBeaconData($key, $value, $mode = 'int'): bool
 
     return true;
 }
-function getThTempData()
+function getThTempData(): bool|array
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
     $basename       = pathinfo(getcwd())['basename'];
@@ -263,7 +263,7 @@ function getThTempData()
 
     return $arrayReturn;
 }
-function getThIna226Data()
+function getThIna226Data(): bool|array
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
     $basename       = pathinfo(getcwd())['basename'];
@@ -344,7 +344,7 @@ function getThIna226Data()
 
     return $arrayReturn;
 }
-function getKeywordsData($msgId)
+function getKeywordsData($msgId): bool|array
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
     $basename       = pathinfo(getcwd())['basename'];
@@ -577,7 +577,7 @@ function updateMeshDashData($msgId, $key, $value, $doNothing = false): bool
 
     return true;
 }
-function getTaskCmd($mode)
+function getTaskCmd($mode): bool|string
 {
     #Check what oS is running
     $osIssWindows          = chkOsIsWindows();
@@ -690,7 +690,7 @@ function getTaskCmd($mode)
 
     return false;
 }
-function getTaskKillCmd($mode = 'udp')
+function getTaskKillCmd($mode = 'udp'): bool|string
 {
     #Check what oS is running
     $osIssWindows         = chkOsIsWindows();
@@ -772,7 +772,7 @@ function getTaskKillCmd($mode = 'udp')
     return false;
 }
 
-function logRotate()
+function logRotate(): bool|array
 {
     $debugFlag = false;
 
@@ -930,7 +930,7 @@ function isMobile(): bool
 {
     return (bool) preg_match('/(android|iphone|ipad|ipod|blackberry|windows phone)/i', $_SERVER['HTTP_USER_AGENT']);
 }
-function checkBgTask($task)
+function checkBgTask($task): bool|string|null
 {
     return shell_exec(getTaskCmd($task));
 }
@@ -1090,7 +1090,7 @@ function setTxQueue($txQueueData): bool
 
     return true;
 }
-function getTxQueue()
+function getTxQueue(): bool|array
 {
     #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
     $basename          = pathinfo(getcwd())['basename'];
@@ -1308,7 +1308,7 @@ function getStatusIcon(string $status, bool $withLabel = false): string
         ? '<span class="menu-icon">' . $entry['symbol'] . '</span> ' .'<span data-i18n="'.htmlspecialchars($entry['label']).'">'. htmlspecialchars($entry['label']). '</span> '
         : '<span class="menu-icon">' . $entry['symbol'] . '</span>';
 }
-function stopBgProcess($paramBgProcess)
+function stopBgProcess($paramBgProcess): bool|string|null
 {
     $osIssWindows   = chkOsIsWindows();
     $taskBg         = $paramBgProcess['task'] ?? '';
@@ -1428,7 +1428,7 @@ function stopBgProcess($paramBgProcess)
 
     return true;
 }
-function startBgProcess($paramStartBgProcess)
+function startBgProcess($paramStartBgProcess): bool|string|null
 {
     $osIsWindows = chkOsIsWindows();
     $taskBg      = $paramStartBgProcess['task'] ?? 'udp';
@@ -1644,7 +1644,7 @@ function debugLog($logArray): bool
     return true;
 }
 
-function safeDbRun(SQLite3 $db, string $sql, string $method = 'exec', array $logArray = [], int $retries = SQLITE3_LOCK_RETRY_MAX_ATTEMPTS, int $waitMs = SQLITE3_LOCK_RETRY_DELAY_MS)
+function safeDbRun(SQLite3 $db, string $sql, string $method = 'exec', array $logArray = [], int $retries = SQLITE3_LOCK_RETRY_MAX_ATTEMPTS, int $waitMs = SQLITE3_LOCK_RETRY_DELAY_MS): bool|SQLite3Result
 {
     $method = strtolower($method);
 
@@ -2222,7 +2222,7 @@ function getPhpExeAndVersion(string $phpExePath = ''): array
         'isPhp8Up'  => $isPhp8Up
     ];
 }
-function getPidFromCmd(?string $cmd)
+function getPidFromCmd(?string $cmd): bool|string
 {
     if(!$cmd)
     {

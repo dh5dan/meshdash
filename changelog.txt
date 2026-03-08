@@ -1,3 +1,10 @@
+Version 1.10.86 SQL
+
+BUGFIX:  Start aller aktiven Dienste beim Seitenaufruf behoben.
+FEATURE: Optionaler Autostart beim Reboot über Install-Skript hinzugefügt.
+         Es werden 4 Webserver unterstützt: apache2, lighttpd, httpd und nginx.
+
+##############
 Version 1.10.84 SQL
 
 BUGFIX:  Node Map: Anzeige minimaler Einträge bei inkonsistenten Basisdaten korrigiert.

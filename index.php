@@ -189,6 +189,48 @@ if ($autostartBgProcess === true && $sendData !== '1')
         $paramStartCronBgProcess['task'] = 'cron';
         startBgProcess($paramStartCronBgProcess);
     }
+
+    #Prüfe ob CronBeacon aktiv ist und der Task rennt
+    if (getBeaconData('beaconEnabled') == 1)
+    {
+        $checkTaskCmdCronBeacon = getTaskCmd('cronBeacon');
+        $taskResultCronBeacon   = shell_exec($checkTaskCmdCronBeacon); //Prüfe Hintergrundprozess
+        $statusCronBeacon       = $taskResultCronBeacon != '';
+
+        if ($statusCronBeacon === false)
+        {
+            $paramStartCronBeacon['task'] = 'cronBeacon';
+            startBgProcess($paramStartCronBeacon);
+        }
+    }
+
+    #Prüfe ob CronMheard aktiv ist und der Task rennt
+    if (getParamData('mheardCronEnable') == 1)
+    {
+        $checkTaskCmdCronMheard = getTaskCmd('cronMheard');
+        $taskResultCronMheard   = shell_exec($checkTaskCmdCronMheard); //Prüfe Hintergrundprozess
+        $statusCronMheard       = $taskResultCronMheard != '';
+
+        if ($statusCronMheard === false)
+        {
+            $paramStartCronMheard['task'] = 'cronMheard';
+            startBgProcess($paramStartCronMheard);
+        }
+    }
+
+    #Prüfe ob CronSensorPolling aktiv ist und der Task rennt
+    if (getParamData('sensorPollingEnabled') == 1)
+    {
+        $checkTaskCmdCronSensorData = getTaskCmd('cronGetSensorData');
+        $taskResultCronSensorData   = shell_exec($checkTaskCmdCronSensorData); //Prüfe Hintergrundprozess
+        $statusCronSensorData       = $taskResultCronSensorData != '';
+
+        if ($statusCronSensorData === false)
+        {
+            $paramStartCron['task'] = 'cronGetSensorData';
+            startBgProcess($paramStartCron);
+        }
+    }
 }
 
 #Check TaskStatus
