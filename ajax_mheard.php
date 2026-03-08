@@ -10,6 +10,14 @@ if (!file_exists('database/mheard.db') || !file_exists('database/meshdash.db'))
 }
 
 $debugFlag        = false;
+$debugFlag1       = false; // check pos local
+
+if ($debugFlag === true)
+{
+    $_POST['dateFrom'] = '2026-02-21';
+    $_POST['dateTo'] = '2026-03-07';
+}
+
 $returnArray      = array();
 $ownCallSign      = getParamData('callSign');
 $localMheardCalls = array();
@@ -17,15 +25,15 @@ $dateFrom         = $_POST['dateFrom'] ?? date('Y-m-d', strtotime('-7 days'));
 $dateTo           = $_POST['dateTo'] ?? date('Y-m-d');
 
 // Für die Abfrage das Datum auf den gesamten Tag erweitern
-$from = $dateFrom . ' 00:00:00';
-$to   = $dateTo   . ' 23:59:59';
+$fromTs = $dateFrom . ' 00:00:00';
+$toTs   = $dateTo   . ' 23:59:59';
 
 $db = new SQLite3('database/mheard.db', SQLITE3_OPEN_READONLY);
 $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
 
 $sqlMh = "SELECT *             
             FROM mheard
-           WHERE timestamps between '$from' AND '$to'
+           WHERE timestamps between '$fromTs' AND '$toTs'
         ORDER BY mhTime DESC;
         ";
 
@@ -50,17 +58,16 @@ if ($resultMh === false)
 
 if ($debugFlag === true)
 {
-    echo "<br>#74#resultMh Select 1#<br>";
-    echo "<br>from:$from";
-    echo "<br>to:$to";
+    echo "<br>#60#resultMh Select 1#<br>";
+    echo "<br>from:$fromTs";
+    echo "<br>to:$toTs";
     echo "<br>sqlMh:$sqlMh";
-    echo "<br>resultMh:";
+    echo "<br>result Mh:";
     var_dump($resultMh);
 }
 
 if ($resultMh !== false)
 {
-
     $dbMd1 = new SQLite3('database/meshdash.db', SQLITE3_OPEN_READONLY);
     $dbMd1->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
 
@@ -92,7 +99,7 @@ if ($resultMh !== false)
                      FROM meshdash
                     WHERE src = '$callSign'
                       AND type = 'pos'
-                      AND timestamps between '$from' AND '$to'
+                      AND timestamps between '$fromTs' AND '$toTs'
                  ORDER BY timestamps DESC
                     LIMIT 1;
                  ";
@@ -118,9 +125,9 @@ if ($resultMh !== false)
 
         $dsDataMd1 = $resultMd1->fetchArray(SQLITE3_ASSOC);
 
-        if ($debugFlag === true)
+        if ($debugFlag1 === true)
         {
-            echo "<br>sqlmd1: sqlMd1:<br>$sqlMd1";
+            echo "<br>#129#Check Pos:sqlmd1: sqlMd1:<br>$sqlMd1";
             echo "<br>dsDataMd1:";
             var_dump($dsDataMd1);
         }
@@ -141,13 +148,13 @@ if ($resultMh !== false)
             $returnArray[$callSign]['snr']        = $snr;
             $returnArray[$callSign]['range']      = 'local';
 
-            if ($debugFlag === true)
+            if ($debugFlag1 === true)
             {
                 echo "<pre>";
                 print_r($returnArray);
                 echo "</pre>";
 
-                echo "<br>#74#resultMh#";
+                echo "<br>#156#resultMh#";
                 echo "<br>callSign:$callSign";
                 echo "<br>---------------------------";
             }
@@ -207,7 +214,7 @@ if (!empty($dsDataMdOwn) === true)
         print_r($dsDataMdOwn);
         echo "</pre>";
 
-        echo "<br>#74#resultMh#";
+        echo "<br>#217#resultMh#";
         echo "<br>ownCallSign:$ownCallSign";
         echo "<br>---------------------------";
     }
@@ -250,14 +257,23 @@ if ($enablePathNodes === true)
                            MAX(timestamps) AS max_ts
                       FROM meshdash
                      WHERE instr(src, ',') > 0
-                       AND timestamps between '$from' AND '$to'
+                       AND timestamps between '$fromTs' AND '$toTs'
+                       AND type = 'pos'
                   GROUP BY ziel
                 ) latest
               ON latest.ziel = substr(m.src, 1, instr(m.src, ',') - 1)
              AND latest.max_ts = m.timestamps
            WHERE instr(m.src, ',') > 0
-             AND m.timestamps between '$from' AND '$to';
+             AND m.timestamps between '$fromTs' AND '$toTs'
+             AND m.latitude != '';
                 ";
+
+    if ($debugFlag === true)
+    {
+        echo "<pre>";
+        echo $sqlMd3;
+        echo "</pre>";
+    }
 
     $logArray   = array();
     $logArray[] = "ajax_mheard_sqlMd3: Database: database/mheard.db";
@@ -311,6 +327,71 @@ if ($enablePathNodes === true)
                     echo "<br>#74#resultMh#";
                     echo "<br>pathCallSign:$pathCallSign";
                     echo "<br>---------------------------";
+                }
+            }
+        }
+
+        // Schritt 2: fehlende Calls prüfen
+        foreach ($returnArray as $pathCallSign => $data) {
+            $fullPath = $data['path'] ?? '';
+            if (empty($fullPath)) continue;
+
+            $pathCalls = array_map('trim', explode(',', $fullPath));
+
+            foreach ($pathCalls as $callInPath) {
+                // prüfen, ob der Call noch nicht im Array ist
+                if (!isset($returnArray[$callInPath])) {
+
+                   # echo "<br>kein Pos zu Call: $callInPath";
+
+                    $dbMd4 = new SQLite3('database/meshdash.db', SQLITE3_OPEN_READONLY);
+                    $dbMd4->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
+
+                    $sqlMd4 = "SELECT * 
+                                 FROM meshdash
+                                WHERE type='pos'
+                                  AND src LIKE '$callInPath%'
+                                  AND latitude != ''
+                             ORDER BY timestamps DESC
+                                LIMIT 1;
+                               ";
+
+                    $logArray   = array();
+                    $logArray[] = "ajax_mheard_sqlMd4: Database: database/mheard.db";
+
+                    $resultMd4 = safeDbRun($dbMd4, $sqlMd4, 'query', $logArray);
+
+                    if ($resultMd4 === false)
+                    {
+                        #Close and write Back WAL
+                        $dbMd4->close();
+                        unset($dbMd4);
+
+                        exit();
+                    }
+
+                    while ($dsDataMd4 = $resultMd4->fetchArray(SQLITE3_ASSOC))
+                    {
+                        if (!empty($dsDataMd4) === true)
+                        {
+                            $pathCallSignAdd = $callInPath;
+                            $returnArray[$pathCallSignAdd]['timestamps'] = $dsDataMd4['timestamps'] ?? 0;
+                            $returnArray[$pathCallSignAdd]['latitude']   = substr($dsDataMd4['latitude'] ?? 0, 0, 7);
+                            $returnArray[$pathCallSignAdd]['longitude']  = substr($dsDataMd4['longitude'] ?? 0, 0, 6);
+                            $returnArray[$pathCallSignAdd]['altitude']   = number_format((((float) $dsDataMd4['altitude'] ?? 0) * 0.3048)); // Umrechnung Fuss -> Meter;
+                            $returnArray[$pathCallSignAdd]['firmware']   = $dsDataMd4['firmware'] ?? 0;
+                            $returnArray[$pathCallSignAdd]['fw_sub']     = $dsDataMd4['fw_sub'] ?? 0;
+                            $returnArray[$pathCallSignAdd]['batt']       = $dsDataMd4['batt'] ?? 0;
+                            $returnArray[$pathCallSignAdd]['dist']       = substr($dsDataMd4['dist'] ?? 0, 0, 5);
+                            $returnArray[$pathCallSignAdd]['callSign']   = $pathCallSignAdd;
+                            $returnArray[$pathCallSignAdd]['repeater']   = $dsDataMd4['repeater'] ?? 0;
+                            $returnArray[$pathCallSignAdd]['range']      = 'path';
+                            $returnArray[$pathCallSignAdd]['hwId']       = $dsDataMd4['hw_id'] ?? 0;
+
+                            $returnArray[$pathCallSignAdd]['path'] = $dsDataMd4['src'] ?? 0;
+                            $returnArray[$pathCallSignAdd]['connection'] = count(explode(',', $dsDataMd4['src'])) === 2 ? 'direct' : 'indirect';
+                        }
+                    }
                 }
             }
         }

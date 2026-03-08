@@ -1,6 +1,8 @@
 Version 1.10.84 SQL
 
-BUGFIX: Inkonsistente Datensätze im Map-Routing (Absender = Ziel) werden nun ignoriert.
+BUGFIX:  Node Map: Anzeige minimaler Einträge bei inkonsistenten Basisdaten korrigiert.
+Fetaure: DebugInfo erweitert: Hinweis ergänzt, wenn ein erkannter Prozess nicht vom Owner www-data gestartet wurde.
+         Ursache kann ein veralteter Cronjob sein, der Prozesse als root startet.
 
 ##############
 Version 1.10.82 SQL
