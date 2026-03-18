@@ -2283,3 +2283,82 @@ function releaseAutoPurgeLock(): void
         @unlink($lockFile);
     }
 }
+
+/**
+ * @param string $dbFilename
+ * @param string $table
+ * @param string $column
+ *
+ * @return bool
+ * @throws Exception
+ */
+function ensureColumnIsReal(string $dbFilename, string $table, string $column): bool
+{
+    $sqliteVersion = SQLite3::version()['versionString'];
+    $sqliteVersionRaw = SQLite3::version()['versionNumber'];
+
+    if ($sqliteVersionRaw < 3035000)
+    {
+        #echo "<br>SqliteVersion $sqliteVersion ist < 3.35 Drop wird nicht unterstützt!";
+        return false;
+    }
+
+    # DB-Pfad ermitteln
+    $basename       = pathinfo(getcwd())['basename'];
+    $dbFilenameSub  = '../database/' . $dbFilename . ".db";
+    $dbFilenameRoot = 'database/' . $dbFilename . ".db";
+    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+
+    $db = new SQLite3($dbFilename);
+    $db->busyTimeout(5000);
+
+    // Spalteninfo abrufen
+    $result  = $db->query("PRAGMA table_info($table);");
+    $colInfo = [];
+    while ($row = $result->fetchArray(SQLITE3_ASSOC))
+    {
+        $colInfo[$row['name']] = strtoupper($row['type']);
+    }
+
+    if (!isset($colInfo[$column]))
+    {
+        throw new Exception("Spalte '$column' existiert nicht in Tabelle '$table'");
+    }
+
+    // Prüfen, ob INTEGER
+    if ($colInfo[$column] === 'INTEGER')
+    {
+        echo "<br>Konvertiere $column mit Datentyp: REAL in Datenbank: $dbFilename. Dies ist ein einmaliger Vorgang.";
+        // Transaktion starten (wichtig!)
+        $db->exec("BEGIN;");
+
+        // 1. Temp-Spalte anlegen
+        $sql1 = "ALTER TABLE $table ADD COLUMN {$column}_temp REAL;";
+        safeDbRun($db, $sql1, 'exec');
+
+        // 2. Daten übernehmen (nur gültige Werte)
+        $sql2 = "UPDATE $table 
+                    SET {$column}_temp = $column 
+                  WHERE $column IS NOT NULL 
+                    AND $column != '';";
+        safeDbRun($db, $sql2, 'exec');
+
+        // 3. Alte Spalte löschen
+        $sql3 = "ALTER TABLE $table DROP COLUMN $column;";
+        safeDbRun($db, $sql3, 'exec');
+
+        // 4. Temp-Spalte umbenennen
+        $sql4 = "ALTER TABLE $table RENAME COLUMN {$column}_temp TO $column;";
+        safeDbRun($db, $sql4, 'exec');
+
+        // Transaktion abschließen
+        $db->exec("COMMIT;");
+
+        echo "<br>Konvertierung geendet.";
+    }
+
+    $db->close();
+    unset($db);
+
+    return true;
+}

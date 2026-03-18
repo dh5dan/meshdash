@@ -89,7 +89,7 @@ if (strtoupper(substr(php_uname('s'), 0, 3)) === 'WIN')
 else
 {
     #Part if OS is Linux
-    $getPortInUse = shell_exec('netstat -nlpu|grep 1799');
+    $getPortInUse = trim(shell_exec("netstat -nlpu | grep -E '(:1799$|:1799 )'"));
 
     #If UDP 1799 in Use then kill Process
     if ($getPortInUse != '')
