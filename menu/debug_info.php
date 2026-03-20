@@ -41,11 +41,19 @@ ini_set('display_errors',1);
 $sendData = $_REQUEST['sendData'] ?? 0;
 
 #Check what oS is running
-$osIssWindows = chkOsIsWindows();
-$osName       = $osIssWindows === true ? 'Windows' : 'Linux';
-$hardware     = '';
-$architecture = php_uname('m');
-$debugFlag = true;
+$osIssWindows  = chkOsIsWindows();
+$osName        = $osIssWindows === true ? 'Windows' : 'Linux';
+$hardware      = '';
+$architecture  = php_uname('m');
+$debugFlag     = true;
+$loraIp        = getParamData('loraIp');
+$nodeGuiLocked = false;
+
+#Prüfe, ob Node-Passwort gesetzt ist und entsperre Node
+$resCheckLoraNewGui = checkLoraNewGui();
+
+#Doublecheck, wenn erste Abfrage den Node entsperrt hat.
+$resCheckLoraNewGui = $resCheckLoraNewGui['nodeStatus'] == 'locked' ? checkLoraNewGui() : $resCheckLoraNewGui;
 
 if ($osIssWindows === true && $debugFlag === true)
 {
@@ -238,6 +246,13 @@ echo '</td>';
 echo '</tr>';
 
 echo '<tr>';
+echo '<td><span data-i18n="submenu.debug_info.lbl.nodeIp">Node-IP</span>:</td>';
+echo '<td>';
+echo  $loraIp;
+echo '</td>';
+echo '</tr>';
+
+echo '<tr>';
 echo '<td><span data-i18n="submenu.debug_info.lbl.uptime">System Uptime</span>:</td>';
 echo '<td>';
 echo gmdate("d",getSystemUptimeSeconds()). 'Tage ' .gmdate("H:i:s",getSystemUptimeSeconds());
@@ -253,17 +268,73 @@ echo '</tr>';
 echo '<tr>';
 echo '<td><span data-i18n="submenu.debug_info.lbl.node-firmware">Lora-Node GUI-Status</span>:</td>';
 echo '<td>';
-#Check new GUI
-if (getParamData('isNewMeshGui') == 1)
+
+echo '<span class="status-line">';
+if ($resCheckLoraNewGui['nodeStatus'] == 'locked')
 {
-    echo "<br> FW >= v4.34x.05.18 mit neuer GUI erkannt";
+    echo '<span class="status-icon">' . getStatusIcon('blocked') . '</span>';
+    echo '<span class="status-text">Node-GUI ist gesperrt!</span>';
+    echo '</span>';
+
+    $nodeGuiLocked = true;
 }
 else
 {
-    echo "<br> FW mit alter GUI erkannt";
+    echo '<span class="status-icon">' . getStatusIcon('ok') . '</span>';
+    echo '<span class="status-text">Node-GUI ist entsperrt.</span>';
+    echo '</span>';
 }
+
 echo '</td>';
 echo '</tr>';
+
+echo '<tr>';
+echo '<td>&nbsp;</td>';
+echo '<td>';
+
+if ($nodeGuiLocked === false)
+{
+    echo !empty($resCheckLoraNewGui['isNewMeshGui'])
+        ? "FW >= v4.34x.05.18 mit neuer Node-GUI erkannt."
+        : "FW mit alter Node-GUI erkannt.";
+}
+else
+{
+    echo '<span class="status-line">';
+    echo '<span class="status-icon">' . getStatusIcon('warning') . '</span>';
+    echo '<span class="status-text">Gui-Version kann wegen Node-GUI Sperre nicht ermittelt werden!</span>';
+    echo '</span>';
+}
+
+echo '</td>';
+echo '</tr>';
+
+if ($resCheckLoraNewGui['errorUnlockingNodeSite'] == 1)
+{
+    echo '<tr>';
+    echo '<td>&nbsp;</td>';
+    echo '<td>';
+        echo '<span class="status-line">';
+        echo '<span class="status-icon">' . getStatusIcon('warning') . '</span>';
+        echo '<span class="status-text">Es gab einen Fehler bein Entsperren der Node-GUI!</span>';
+        echo '</span>';
+    echo '</td>';
+    echo '</tr>';
+}
+
+#Check new GUI
+if ($resCheckLoraNewGui['errorGetNodeSite'] == 1)
+{
+    echo '<tr>';
+    echo '<td>&nbsp;</td>';
+    echo '<td>';
+        echo '<span class="status-line">';
+        echo '<span class="status-icon">' . getStatusIcon('warning') . '</span>';
+        echo '<span class="status-text">Es gab einen Fehler bein Zugriff auf die Node-GUI. Log Prüfen!</span>';
+        echo '</span>';
+    echo '</td>';
+    echo '</tr>';
+}
 
 echo '<tr>';
 echo '<td colspan="2"><hr></td>';

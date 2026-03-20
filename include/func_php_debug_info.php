@@ -602,7 +602,7 @@ function getWindowsPhpProcesses(?string $scriptName = null): array
         }
 
         // CSV-Zeile in Felder aufsplitten
-        $parts = str_getcsv($line);
+        $parts = str_getcsv($line, ",", '"', "\\"); //Optimized Escaping for PHP 8.4.19
         if (count($parts) < 5)
         {
             continue;

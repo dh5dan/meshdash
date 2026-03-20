@@ -105,6 +105,9 @@ echo '</form>';
 
 if($sendData == 1)
 {
+    #Prüfe, ob Node-Passwort gesetzt ist und entsperre Node
+    checkLoraNewGui();
+
     $resGetMheard = getMheard($loraIp);
 
     if ($resGetMheard === true)

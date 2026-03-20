@@ -39,7 +39,7 @@ td {
     vertical-align: middle;
 }
 
-input[type="text"] {
+input[type="text"], input[type="password"] {
     width: 100%;
     max-width: 140px;
     padding: 5px;
@@ -108,9 +108,19 @@ select {
     padding-right: 6px;   /* verhindert Touch-Overflow */
 }
 
+#nodePassword {
+    max-width: 425px !important;   /* oder 100% wenn du volle Breite willst */
+    width: 100% !important;
+    box-sizing: border-box;
+    padding-right: 30px;
+}
 
 
 @media (max-width: 600px) {
+
+    #nodePassword {
+        max-width: 160px !important; /* etwas kleiner wegen Eye */
+    }
 
     select {
         font-size: 1em;

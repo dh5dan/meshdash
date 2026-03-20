@@ -65,6 +65,9 @@ echo '</form>';
 
 if ($sendData == 1)
 {
+    #Prüfe, ob Node-Passwort gesetzt ist und entsperre Node
+    checkLoraNewGui();
+
     #Check new GUI
     if (getParamData('isNewMeshGui') == 1)
     {

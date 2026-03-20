@@ -34,6 +34,7 @@ function saveGenerallySettings(): bool
     $mheardCronEnable        = (int)($_REQUEST['mheardCronEnable'] ?? 0);
     $mheardCronIntervall     = (int)($_REQUEST['mheardCronIntervall'] ?? 1);
     $winPhpCliPath           = trim($_REQUEST['winPhpCliPath']  ?? '');
+    $nodePassword            = trim($_REQUEST['nodePassword']  ?? '');
 
     if (!file_exists($winPhpCliPath) && chkOsIsWindows() === true)
     {
@@ -78,6 +79,7 @@ function saveGenerallySettings(): bool
     setParamData('mheardCronEnable', $mheardCronEnable);
     setParamData('mheardCronIntervall', $mheardCronIntervall);
     setParamData('winPhpCliPath', $winPhpCliPath, 'txt');
+    setParamData('nodePassword', $nodePassword, 'txt');
 
     #Hintergrundprozess für Mheard-Cron
     $paramBgProcess['task'] = 'cronMheard';

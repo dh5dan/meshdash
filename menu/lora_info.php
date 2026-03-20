@@ -59,7 +59,9 @@ echo '</tr>';
 
 if ($sendData == 1)
 {
-       showLoraInfo(getLoraInfo($loraIp));
+    #Prüfe, ob Node-Passwort gesetzt ist und entsperre Node
+    checkLoraNewGui();
+    showLoraInfo(getLoraInfo($loraIp));
 }
 
 echo '<table>';

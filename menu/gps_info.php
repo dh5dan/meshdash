@@ -60,7 +60,10 @@ echo '</tr>';
 
 if ($sendData == 1)
 {
-       showGpsInfo(getGpsInfo($loraIp));
+    #Prüfe, ob Node-Passwort gesetzt ist und entsperre Node
+    checkLoraNewGui();
+
+    showGpsInfo(getGpsInfo($loraIp));
 }
 
 echo '<table>';
