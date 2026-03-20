@@ -66,105 +66,111 @@ if ($debugFlag === true)
     var_dump($resultMh);
 }
 
-if ($resultMh !== false)
+$dbMd1 = new SQLite3('database/meshdash.db', SQLITE3_OPEN_READONLY);
+$dbMd1->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
+
+while ($row = $resultMh->fetchArray(SQLITE3_ASSOC))
 {
-    $dbMd1 = new SQLite3('database/meshdash.db', SQLITE3_OPEN_READONLY);
-    $dbMd1->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
+    ###############################################
+    #Common
+    $callSign = $row['mhCallSign'] ?? 0;
+    $type     = $row['mhType'] ?? 0;
+    $hardware = $row['mhHardware'] ?? 0;
+    $mod      = $row['mhMod'] ?? 0;
+    $rssi     = $row['mhRssi'] ?? 0;
+    $snr      = $row['mhSnr'] ?? 0;
+    $dist     = $row['mhDist'] ?? 0;
+    $pl       = $row['mhPl'] ?? 0;
+    $m        = $row['mhM'] ?? 0;
 
-    while ($row = $resultMh->fetchArray(SQLITE3_ASSOC))
+    $localMheardCalls[$callSign] = $localMheardCalls[$callSign] ?? '';
+
+    if ($callSign === $localMheardCalls[$callSign])
     {
-        ###############################################
-        #Common
-        $callSign = $row['mhCallSign'] ?? 0;
-        $type     = $row['mhType'] ?? 0;
-        $hardware = $row['mhHardware'] ?? 0;
-        $mod      = $row['mhMod'] ?? 0;
-        $rssi     = $row['mhRssi'] ?? 0;
-        $snr      = $row['mhSnr'] ?? 0;
-        $dist     = $row['mhDist'] ?? 0;
-        $pl       = $row['mhPl'] ?? 0;
-        $m        = $row['mhM'] ?? 0;
+        continue;
+    }
 
-        $localMheardCalls[$callSign] = $localMheardCalls[$callSign] ?? '';
+    $localMheardCalls[$callSign] = $callSign;
 
-        if ($callSign === $localMheardCalls[$callSign])
+    // Hole mir die pos-Daten aus der Datenbank
+    $sqlMd1 = "SELECT * 
+                 FROM meshdash
+                WHERE src = '$callSign'
+                  AND type = 'pos'
+                  AND timestamps between '$fromTs' AND '$toTs'
+                  AND latitude IS NOT NULL
+                  AND longitude IS NOT NULL
+                  AND latitude != ''
+                  AND longitude != ''
+             ORDER BY timestamps DESC
+                LIMIT 1;
+             ";
+
+    $logArray   = array();
+    $logArray[] = "ajax_mheard_sqlMd1: Database: database/mheard.db";
+
+    $resultMd1 = safeDbRun($dbMd1, $sqlMd1, 'query', $logArray);
+
+    if ($resultMd1 === false)
+    {
+        #Close and write Back WAL
+        $dbMd1->close();
+        unset($dbMd1);
+
+        if ($debugFlag === true)
         {
+            echo "<br>Peng! resultMd = false";
+        }
+
+        exit();
+    }
+
+    $dsDataMd1 = $resultMd1->fetchArray(SQLITE3_ASSOC);
+
+    if ($debugFlag1 === true)
+    {
+        echo "<br>#129#Check Pos:sqlmd1: sqlMd1:<br>$sqlMd1";
+        echo "<br>dsDataMd1:";
+        var_dump($dsDataMd1);
+    }
+
+    if (!empty($dsDataMd1) === true)
+    {
+        if (!is_numeric($dsDataMd1['latitude']) || !is_numeric($dsDataMd1['longitude'])) {
             continue;
         }
 
-        $localMheardCalls[$callSign] = $callSign;
-
-        // Hole mir die pos-Daten aus der Datenbank
-        $sqlMd1 = "SELECT * 
-                     FROM meshdash
-                    WHERE src = '$callSign'
-                      AND type = 'pos'
-                      AND timestamps between '$fromTs' AND '$toTs'
-                 ORDER BY timestamps DESC
-                    LIMIT 1;
-                 ";
-
-        $logArray   = array();
-        $logArray[] = "ajax_mheard_sqlMd1: Database: database/mheard.db";
-
-        $resultMd1 = safeDbRun($dbMd1, $sqlMd1, 'query', $logArray);
-
-        if ($resultMd1 === false)
-        {
-            #Close and write Back WAL
-            $dbMd1->close();
-            unset($dbMd1);
-
-            if ($debugFlag === true)
-            {
-                echo "<br>Peng! resultMd = false";
-            }
-
-            exit();
-        }
-
-        $dsDataMd1 = $resultMd1->fetchArray(SQLITE3_ASSOC);
+        $returnArray[$callSign]['timestamps'] = $dsDataMd1['timestamps'];
+        $returnArray[$callSign]['latitude']   = (float)$dsDataMd1['latitude'];
+        $returnArray[$callSign]['longitude']  = (float)$dsDataMd1['longitude'];
+        $returnArray[$callSign]['altitude']   = number_format((($dsDataMd1['altitude'] ?? 0) * 0.3048)); // Umrechnung von Fuss -> Meter;
+        $returnArray[$callSign]['firmware']   = $dsDataMd1['firmware'] ?? 0;
+        $returnArray[$callSign]['fw_sub']     = $dsDataMd1['fw_sub'] ?? 0;
+        $returnArray[$callSign]['batt']       = $dsDataMd1['batt'] ?? 0;
+        $returnArray[$callSign]['dist']       = (float)$dist;
+        $returnArray[$callSign]['callSign']   = $callSign;
+        $returnArray[$callSign]['hardware']   = $hardware;
+        $returnArray[$callSign]['rssi']       = $rssi;
+        $returnArray[$callSign]['snr']        = $snr;
+        $returnArray[$callSign]['range']      = 'local';
 
         if ($debugFlag1 === true)
         {
-            echo "<br>#129#Check Pos:sqlmd1: sqlMd1:<br>$sqlMd1";
-            echo "<br>dsDataMd1:";
-            var_dump($dsDataMd1);
-        }
+            echo "<pre>";
+            print_r($returnArray);
+            echo "</pre>";
 
-        if (!empty($dsDataMd1) === true)
-        {
-            $returnArray[$callSign]['timestamps'] = $dsDataMd1['timestamps'];
-            $returnArray[$callSign]['latitude']   = substr($dsDataMd1['latitude'] ?? 0,0,7);
-            $returnArray[$callSign]['longitude']  = substr($dsDataMd1['longitude'] ?? 0,0,6);
-            $returnArray[$callSign]['altitude']   = number_format((($dsDataMd1['altitude'] ?? 0) * 0.3048)); // Umrechnung von Fuss -> Meter;
-            $returnArray[$callSign]['firmware']   = $dsDataMd1['firmware'] ?? 0;
-            $returnArray[$callSign]['fw_sub']     = $dsDataMd1['fw_sub'] ?? 0;
-            $returnArray[$callSign]['batt']       = $dsDataMd1['batt'] ?? 0;
-            $returnArray[$callSign]['dist']       = substr($dist,0,5);
-            $returnArray[$callSign]['callSign']   = $callSign;
-            $returnArray[$callSign]['hardware']   = $hardware;
-            $returnArray[$callSign]['rssi']       = $rssi;
-            $returnArray[$callSign]['snr']        = $snr;
-            $returnArray[$callSign]['range']      = 'local';
-
-            if ($debugFlag1 === true)
-            {
-                echo "<pre>";
-                print_r($returnArray);
-                echo "</pre>";
-
-                echo "<br>#156#resultMh#";
-                echo "<br>callSign:$callSign";
-                echo "<br>---------------------------";
-            }
+            echo "<br>#156#resultMh#";
+            echo "<br>callSign:$callSign";
+            echo "<br>---------------------------";
         }
     }
-
-    #Close and write Back WAL
-    $dbMd1->close();
-    unset($dbMd1);
 }
+
+#Close and write Back WAL
+$dbMd1->close();
+unset($dbMd1);
+
 
 ########### Own Pos
 
@@ -175,6 +181,10 @@ $sqlMd2 = "SELECT *
              FROM meshdash
             WHERE src = '$ownCallSign'
               AND type = 'pos'
+              AND latitude IS NOT NULL
+              AND longitude IS NOT NULL
+              AND latitude != ''
+              AND longitude != ''
          ORDER BY timestamps DESC
             LIMIT 1;
                 ";
@@ -195,16 +205,15 @@ if ($resultMdOwn === false)
 
 $dsDataMdOwn = $resultMdOwn->fetchArray(SQLITE3_ASSOC);
 
-if (!empty($dsDataMdOwn) === true)
+if (!empty($dsDataMdOwn) === true && is_numeric($dsDataMdOwn['latitude']) && is_numeric($dsDataMdOwn['longitude']))
 {
     $returnArray[$ownCallSign]['timestamps'] = $dsDataMdOwn['timestamps'] ?? 0;
-    $returnArray[$ownCallSign]['latitude']   = substr($dsDataMdOwn['latitude'] ?? 0,0,7);
-    $returnArray[$ownCallSign]['longitude']  = substr($dsDataMdOwn['longitude'] ?? 0,0,6);
+    $returnArray[$ownCallSign]['latitude']   = (float)$dsDataMdOwn['latitude'];
+    $returnArray[$ownCallSign]['longitude']  = (float)$dsDataMdOwn['longitude'];
     $returnArray[$ownCallSign]['altitude']   = number_format((($dsDataMdOwn['altitude'] ?? 0) * 0.3048)); // Umrechnung Fuss -> Meter;
     $returnArray[$ownCallSign]['firmware']   = $dsDataMdOwn['firmware'] ?? 0;
     $returnArray[$ownCallSign]['fw_sub']     = $dsDataMdOwn['fw_sub'] ?? 0;
     $returnArray[$ownCallSign]['batt']       = $dsDataMdOwn['batt'] ?? 0;
-    $returnArray[$ownCallSign]['dist']       = substr($dsDataMdOwn['dist'] ?? 0,0,5);
     $returnArray[$ownCallSign]['callSign']   = $ownCallSign;
     $returnArray[$ownCallSign]['range']      = 'own';
 
@@ -265,7 +274,10 @@ if ($enablePathNodes === true)
              AND latest.max_ts = m.timestamps
            WHERE instr(m.src, ',') > 0
              AND m.timestamps between '$fromTs' AND '$toTs'
-             AND m.latitude != '';
+             AND m.latitude != ''
+             AND m.longitude != ''
+             AND m.latitude IS NOT NULL
+             AND m.longitude IS NOT NULL;
                 ";
 
     if ($debugFlag === true)
@@ -302,14 +314,18 @@ if ($enablePathNodes === true)
                     continue;
                 }
 
+                if (!is_numeric($dsDataMdPath['latitude']) || !is_numeric($dsDataMdPath['longitude'])) {
+                    continue;
+                }
+
                 $returnArray[$pathCallSign]['timestamps'] = $dsDataMdPath['timestamps'] ?? 0;
-                $returnArray[$pathCallSign]['latitude']   = substr($dsDataMdPath['latitude'] ?? 0, 0, 7);
-                $returnArray[$pathCallSign]['longitude']  = substr($dsDataMdPath['longitude'] ?? 0, 0, 6);
+                $returnArray[$pathCallSign]['latitude']   = (float)$dsDataMdPath['latitude'];
+                $returnArray[$pathCallSign]['longitude']  = (float)$dsDataMdPath['longitude'];
                 $returnArray[$pathCallSign]['altitude']   = number_format((((float) $dsDataMdPath['altitude'] ?? 0) * 0.3048)); // Umrechnung Fuss -> Meter;
                 $returnArray[$pathCallSign]['firmware']   = $dsDataMdPath['firmware'] ?? 0;
                 $returnArray[$pathCallSign]['fw_sub']     = $dsDataMdPath['fw_sub'] ?? 0;
                 $returnArray[$pathCallSign]['batt']       = $dsDataMdPath['batt'] ?? 0;
-                $returnArray[$pathCallSign]['dist']       = substr($dsDataMdPath['dist'] ?? 0, 0, 5);
+                $returnArray[$pathCallSign]['dist']       = (float)$dsDataMdPath['dist'];
                 $returnArray[$pathCallSign]['callSign']   = $pathCallSign;
                 $returnArray[$pathCallSign]['repeater']   = $dsDataMdPath['repeater'] ?? 0;
                 $returnArray[$pathCallSign]['range']      = 'path';
@@ -351,7 +367,10 @@ if ($enablePathNodes === true)
                                  FROM meshdash
                                 WHERE type='pos'
                                   AND src LIKE '$callInPath%'
+                                  AND latitude IS NOT NULL
+                                  AND longitude IS NOT NULL
                                   AND latitude != ''
+                                  AND longitude != ''
                              ORDER BY timestamps DESC
                                 LIMIT 1;
                                ";
@@ -374,15 +393,19 @@ if ($enablePathNodes === true)
                     {
                         if (!empty($dsDataMd4) === true)
                         {
+                            if (!is_numeric($dsDataMd4['latitude']) || !is_numeric($dsDataMd4['longitude'])) {
+                                continue;
+                            }
+
                             $pathCallSignAdd = $callInPath;
                             $returnArray[$pathCallSignAdd]['timestamps'] = $dsDataMd4['timestamps'] ?? 0;
-                            $returnArray[$pathCallSignAdd]['latitude']   = substr($dsDataMd4['latitude'] ?? 0, 0, 7);
-                            $returnArray[$pathCallSignAdd]['longitude']  = substr($dsDataMd4['longitude'] ?? 0, 0, 6);
+                            $returnArray[$pathCallSignAdd]['latitude']   = (float)$dsDataMd4['latitude'];
+                            $returnArray[$pathCallSignAdd]['longitude']  = (float)$dsDataMd4['longitude'];
                             $returnArray[$pathCallSignAdd]['altitude']   = number_format((((float) $dsDataMd4['altitude'] ?? 0) * 0.3048)); // Umrechnung Fuss -> Meter;
                             $returnArray[$pathCallSignAdd]['firmware']   = $dsDataMd4['firmware'] ?? 0;
                             $returnArray[$pathCallSignAdd]['fw_sub']     = $dsDataMd4['fw_sub'] ?? 0;
                             $returnArray[$pathCallSignAdd]['batt']       = $dsDataMd4['batt'] ?? 0;
-                            $returnArray[$pathCallSignAdd]['dist']       = substr($dsDataMd4['dist'] ?? 0, 0, 5);
+                            $returnArray[$pathCallSignAdd]['dist']       = (float)$dsDataMd4['dist'];
                             $returnArray[$pathCallSignAdd]['callSign']   = $pathCallSignAdd;
                             $returnArray[$pathCallSignAdd]['repeater']   = $dsDataMd4['repeater'] ?? 0;
                             $returnArray[$pathCallSignAdd]['range']      = 'path';

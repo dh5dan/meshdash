@@ -443,7 +443,7 @@ function initSQLiteDatabase($database): bool
                                   mhMod INTEGER,
                                   mhRssi INTEGER,
                                   mhSnr INTEGER,
-                                  mhDist INTEGER,
+                                  mhDist REAL,
                                   mhPl INTEGER,
                                   mhM INTEGER
                                 )
@@ -999,6 +999,9 @@ function initSQLiteDatabase($database): bool
     return true;
 }
 
+/**
+ * @throws Exception
+ */
 function checkDbUpgrade($database): void
 {
     $doRestartBgProcess = false;
@@ -1382,6 +1385,21 @@ function checkDbUpgrade($database): void
                 #Markieren als ausgeführt
                 markUpgradeApplied($migrationKey);
             }
+        }
+    }
+
+    if (checkVersion(VERSION, '1.10.88', '>='))
+    {
+        $migrationKey = '1.10.88_db_upgrade';
+
+        if (!upgradeApplied($migrationKey))
+        {
+            ensureColumnIsReal('meshdash', 'meshdash', 'latitude');
+            ensureColumnIsReal('meshdash', 'meshdash', 'longitude');
+            ensureColumnIsReal('mheard', 'mheard', 'mhDist');
+
+            #Markieren als ausgeführt
+            markUpgradeApplied($migrationKey);
         }
     }
 

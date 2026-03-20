@@ -1,15 +1,27 @@
-Version 1.10.86 SQL
+Version 1.10.90 SQL
+
+BUGFIX: Lat/Lon/Dist auf float (PHP) gesetzt für höhere Genauigkeit, SQL-Abfragen angepasst.
+BUGFIX: Linux: Prüfung des UDP-Ports 1799 implementiert, um Falschtreffer zu vermeiden
+BUGFIX: Datenbankkonvertierung der Felder Latitude/Longitude in Meshdash.db und mhDist in Mheard.db von Integer auf REAL.
+
+##############
+Version 1.10.88 SQL
 
 BUGFIX:  Start aller aktiven Dienste beim Seitenaufruf behoben.
 FEATURE: Optionaler Autostart beim Reboot über Install-Skript hinzugefügt.
          Es werden 4 Webserver unterstützt: apache2, lighttpd, httpd und nginx.
 
 ##############
-Version 1.10.84 SQL
+Version 1.10.86 SQL
 
 BUGFIX:  Node Map: Anzeige minimaler Einträge bei inkonsistenten Basisdaten korrigiert.
-Fetaure: DebugInfo erweitert: Hinweis ergänzt, wenn ein erkannter Prozess nicht vom Owner www-data gestartet wurde.
+FEATURE: DebugInfo erweitert: Hinweis ergänzt, wenn ein erkannter Prozess nicht vom Owner www-data gestartet wurde.
          Ursache kann ein veralteter Cronjob sein, der Prozesse als root startet.
+
+##############
+Version 1.10.84 SQL
+
+BUGFIX: Inkonsistente Datensätze im Map-Routing (Absender = Ziel) werden nun ignoriert.
 
 ##############
 Version 1.10.82 SQL
