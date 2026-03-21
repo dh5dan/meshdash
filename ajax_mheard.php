@@ -15,14 +15,19 @@ $debugFlag1       = false; // check pos local
 if ($debugFlag === true)
 {
     $_POST['dateFrom'] = '2026-02-21';
-    $_POST['dateTo'] = '2026-03-07';
+    $_POST['dateTo']   = '2026-03-07';
 }
+
+$tmpTimestamp   = date('YmdHis');
+$tmpJson        = 'export/nodemap/nodemap_' . $tmpTimestamp . '.json';
+$jsonMheardFile = 'export/nodemap/nodemap.json';
 
 $returnArray      = array();
 $ownCallSign      = getParamData('callSign');
 $localMheardCalls = array();
 $dateFrom         = $_POST['dateFrom'] ?? date('Y-m-d', strtotime('-7 days'));
 $dateTo           = $_POST['dateTo'] ?? date('Y-m-d');
+$nodemapFlag      = $_POST['nodemap'] ?? 0;
 
 // Für die Abfrage das Datum auf den gesamten Tag erweitern
 $fromTs = $dateFrom . ' 00:00:00';
@@ -405,7 +410,6 @@ if ($enablePathNodes === true)
                             $returnArray[$pathCallSignAdd]['firmware']   = $dsDataMd4['firmware'] ?? 0;
                             $returnArray[$pathCallSignAdd]['fw_sub']     = $dsDataMd4['fw_sub'] ?? 0;
                             $returnArray[$pathCallSignAdd]['batt']       = $dsDataMd4['batt'] ?? 0;
-                            $returnArray[$pathCallSignAdd]['dist']       = (float)$dsDataMd4['dist'];
                             $returnArray[$pathCallSignAdd]['callSign']   = $pathCallSignAdd;
                             $returnArray[$pathCallSignAdd]['repeater']   = $dsDataMd4['repeater'] ?? 0;
                             $returnArray[$pathCallSignAdd]['range']      = 'path';
@@ -438,6 +442,17 @@ if ($debugFlag === false)
 else
 {
     echo "<br>";
+}
+
+if ($nodemapFlag == 1)
+{
+    file_put_contents($tmpJson, json_encode($returnArray));
+    @rename($tmpJson, $jsonMheardFile);
+
+    if (file_exists($tmpJson))
+    {
+        @unlink($tmpJson);
+    }
 }
 
 echo json_encode($returnArray);

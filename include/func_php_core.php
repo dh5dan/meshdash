@@ -2458,3 +2458,41 @@ function checkNodePassword($loraIp): array
 
     return $returnArray; // kein Login notwendig
 }
+
+/**
+ * @throws Exception
+ */
+function callAjaxMheard(): bool|string
+{
+    $getDaysPast = (int)(getParamData('nodemapDaysPast') ?: 0);
+    $url         = BASE_PATH_URL . 'ajax_mheard.php';
+    $dateFrom    = date('Y-m-d', strtotime("-{$getDaysPast} days"));
+    $dateTo      = date('Y-m-d');
+
+    $postData      = array(
+        'dateFrom' => $dateFrom,
+        'dateTo'   => $dateTo,
+        'nodemap'   => 1,
+    );
+
+    $ch = curl_init($url);
+
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
+
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+
+    $response = curl_exec($ch);
+
+    if ($response === false)
+    {
+        $error = curl_error($ch);
+        curl_close($ch);
+        throw new Exception("callAjaxMheard: cURL Fehler: " . $error);
+    }
+
+    curl_close($ch);
+
+    return $response;
+}

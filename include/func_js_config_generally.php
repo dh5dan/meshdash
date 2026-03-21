@@ -24,6 +24,8 @@
             let numberPattern   = /^\d+$/;
             let mDnsPatter      = /^[a-zA-Z0-9\-]+\.local$/;
 
+            let nodemapDaysPast = $("#nodemapDaysPast").val().trim();
+
             if (loraIp === '')
             {
                 outputMsg = 'Bitte die Ip im IPv4/mDNS Format angeben.';
@@ -152,6 +154,14 @@
             {
                 width = 600;
                 outputMsg = 'Der Wertebereich ist hier 40-100 für die max. Bubblebreite';
+                dialog(outputMsg, titleMsg, width);
+                return false;
+            }
+
+            if (nodemapDaysPast === '' || nodemapDaysPast < 0 || isNaN(nodemapDaysPast))
+            {
+                width = 600;
+                outputMsg = 'Der Wertebereich für den Rückblick der Tage ist 0 oder größer';
                 dialog(outputMsg, titleMsg, width);
                 return false;
             }

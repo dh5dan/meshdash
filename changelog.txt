@@ -1,3 +1,12 @@
+Version 1.10.94 SQL
+
+FEATURE: Node-Map als Standalone-Version implementiert unter export/nodemap.
+         Die Nutzung ist nun unabhängig von MeshDash möglich.
+         Die JSON-Daten werden weiterhin vom System bereitgestellt.
+
+BUGFIX: Fehlerhafte JSON-Ausgabe bei AJAX-Mheard behoben.
+        Das Problem trat ausschließlich auf, wenn PHP-Warnings aktiviert waren.
+##############
 Version 1.10.92 SQL
 
 FEATURE: Unterstützung für Node-GUI Passwort unter Einstellung/Allgemein eingebaut.

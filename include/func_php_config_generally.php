@@ -1,4 +1,7 @@
 <?php
+/**
+ * @throws Exception
+ */
 function saveGenerallySettings(): bool
 {
     $noPosData               = $_REQUEST['noPosData'] ?? 0; // checkbox
@@ -35,6 +38,7 @@ function saveGenerallySettings(): bool
     $mheardCronIntervall     = (int)($_REQUEST['mheardCronIntervall'] ?? 1);
     $winPhpCliPath           = trim($_REQUEST['winPhpCliPath']  ?? '');
     $nodePassword            = trim($_REQUEST['nodePassword']  ?? '');
+    $nodemapDaysPast         = (int)($_REQUEST['nodemapDaysPast'] ?? 0);
 
     if (!file_exists($winPhpCliPath) && chkOsIsWindows() === true)
     {
@@ -80,6 +84,10 @@ function saveGenerallySettings(): bool
     setParamData('mheardCronIntervall', $mheardCronIntervall);
     setParamData('winPhpCliPath', $winPhpCliPath, 'txt');
     setParamData('nodePassword', $nodePassword, 'txt');
+    setParamData('nodemapDaysPast', $nodemapDaysPast);
+
+    write_ini_file(); //Speicher Ini neu, wenn sich Tage rückwirkend geändert haben
+    callAjaxMheard();
 
     #Hintergrundprozess für Mheard-Cron
     $paramBgProcess['task'] = 'cronMheard';

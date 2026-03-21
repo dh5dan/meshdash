@@ -59,6 +59,8 @@ require_once 'include/func_php_index.php';
 require_once 'include/func_js_index.php';
 require_once 'include/func_js_core.php';
 require_once 'include/func_php_grp_definition.php';
+require_once 'include/func_php_mheard.php';
+require_once 'include/func_php_copy_nodemap.php';
 
 #Show all Errors for debugging
 error_reporting(E_ALL);
@@ -161,9 +163,60 @@ if ($sendData === '1')
     $paramBgProcess['task'] = 'udp';
     stopBgProcess($paramBgProcess);
 }
+
 #Lösche alten Linux-Cron Eintrag, wenn vorhanden
 deleteOldCron();
 deleteAllSensorDataCronItems();
+
+#Prüfe ob daten kopiert für NodeMap-Standalone
+$currentNmBuildVersion = NODEMAP_BUILD_VERSION;
+$baseSrc               = __DIR__; // dein Projekt-Root
+$baseDst               = __DIR__ . '/export/nodemap';
+$versionFile           = $baseDst . '/.build_version';
+
+$copyConfig = [
+    'full' => [
+        'jquery/leaflet',
+        'jquery/css'
+    ],
+    'files' => [
+        'jquery/jquery.min.js',
+        'jquery/jquery-ui.css',
+        'jquery/jquery-ui.js',
+        'css/loader.css',
+        'css/mheard.css',
+        'css/normal_mode.css',
+        'favicon.png',
+        'nodemap_standalone.php',
+        'include/func_js_nodemap_standalone.php',
+        'include/func_php_nodemap_standalone.php',
+    ]
+];
+
+if (shouldBuild($versionFile, $currentNmBuildVersion)) {
+
+    // wichtig: alten Stand entfernen
+    deleteDir($baseDst);
+
+    // neu aufbauen
+    buildNodeMap($baseSrc, $baseDst, $copyConfig);
+
+    // Ini File erzeugen
+    write_ini_file();
+
+    // Version setzen
+    writeVersion($versionFile, $currentNmBuildVersion);
+
+    //Hole aktuelle Nodemap.json
+    try
+    {
+        callAjaxMheard();
+    }
+    catch (Exception $e)
+    {
+        echo "<br>Nodemap Fehler in callAjaxMheard: " . htmlspecialchars($e->getMessage());
+    }
+}
 
 #####################################################################################
 ##########  Top-Bereich
