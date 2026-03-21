@@ -141,6 +141,7 @@ $darkMode            = getParamData('darkMode') ?? 0; // 1= Dark-Mode aktiv
 $festiveModeEnable   = getParamData('festiveModeEnable') ?? 1; // 1= Festive-Mode aktiv
 $mheardCronEnable    = getParamData('mheardCronEnable') ?? 0; // 1= Aktiviere Mheard-Cron und frage MH im Intervall ab
 $mheardCronIntervall = getParamData('mheardCronIntervall') ?? 1; // Intervall in vollen Stunden 1-4
+$nodePassword        = (string) (getParamData('nodePassword') ?? ''); // Node-Password
 
 $openStreetTileServerUrl = trim(getParamData('openStreetTileServerUrl')) ?? 'tile.openstreetmap.org';
 $openStreetTileServerUrl = $openStreetTileServerUrl == '' ? 'tile.openstreetmap.org' : $openStreetTileServerUrl;
@@ -197,6 +198,7 @@ echo '</tr>';
 if($osIssWindows === true)
 {
     $winPhpCliPath = (string) (getParamData('winPhpCliPath') ?? ''); // Nur für Windows. Pfad zur php.exe CLI
+
     $phpExe           = getPhpExeAndVersion($winPhpCliPath);
     $winPhpCliVersion = '';
     $isPhp8Up         = true;
@@ -527,6 +529,31 @@ echo '<td>';
 echo '<select name="selLanguage" id="selLanguage">';
 selectLanguage($selLanguage);
 echo '</select>';
+echo '</td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td colspan="2">';
+echo '<div style="display:flex; align-items:center; gap:10px;">';
+echo '<span data-i18n="submenu.config_generally.lbl.nodePassword">Node-Passwort</span>:';
+echo '<div style="position:relative; flex:1;">';
+echo '<input type="password" name="nodePassword" id="nodePassword" class="full-width-input"
+    value="' . htmlspecialchars($nodePassword) . '">';
+
+echo '<span 
+    id="togglePassword"
+    style="
+        position:absolute;
+        right:8px;
+        top:50%;
+        transform:translateY(-50%);
+        cursor:pointer;
+        user-select:none;
+    "
+>👁</span>';
+
+echo '</div>'; // input wrapper
+echo '</div>'; // flex
 echo '</td>';
 echo '</tr>';
 

@@ -40,7 +40,7 @@ html {
 }
 
 .failureHint {
-    background-color: var(--sensor-data-bg-color-success);
+    background-color: var(--sensor-data-bg-color-failure);
     color: var(--sensor-data-text-color-failure);
     font-weight: bold;
 }

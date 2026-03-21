@@ -52,15 +52,19 @@ error_reporting(E_ALL);
 ini_set('display_errors',1);
 
 $lineBreak = '<span class="lineBreak">';
+$loraIp    = getParamData('loraIp');
 
-#Check new GUI
+#Prüfe, ob Node-Passwort gesetzt ist und entsperre Node
+checkLoraNewGui();
+
+#Check new GUI und hole verfügbare Sensoren
 if (getParamData('isNewMeshGui') == 1)
 {
-    $resGetSensorData = getSensorData2(getParamData('loraIp'),1);
+    $resGetSensorData = getSensorData2($loraIp,1);
 }
 else
 {
-    $resGetSensorData = getSensorData(getParamData('loraIp'),1);
+    $resGetSensorData = getSensorData($loraIp,1);
 }
 
 echo '<h2><span data-i18n="submenu.sensor_plot.lbl.header-text">Sensordaten-Diagramm</span></h2>';

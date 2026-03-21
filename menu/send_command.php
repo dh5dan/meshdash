@@ -57,6 +57,9 @@ $countIps = count($ips);
 
 if ($sendData === '1')
 {
+    #Prüfe, ob Node-Passwort gesetzt ist und entsperre Node
+    checkLoraNewGui();
+
     $resSendCommand = sendCommand($sendCommand, $loraIp);
 
     if ($resSendCommand)

@@ -1,3 +1,8 @@
+Version 1.10.92 SQL
+
+FEATURE: Unterstützung für Node-GUI Passwort unter Einstellung/Allgemein eingebaut.
+
+##############
 Version 1.10.90 SQL
 
 BUGFIX: Lat/Lon/Dist auf float (PHP) gesetzt für höhere Genauigkeit, SQL-Abfragen angepasst.

@@ -2006,39 +2006,6 @@ function checkDbIntegrity($database): void
         file_put_contents($fileDbIntegrityLog, $errorText, FILE_APPEND);
     }
 }
-
-function checkLoraNewGui(): bool
-{
-    $loraIp      = getParamData('loraIp');
-    $actualHost  = 'http';
-    $triggerLink = $actualHost . '://' . $loraIp . '/getparam/?setcall=';
-
-    $ch = curl_init($triggerLink);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10); // 10 Sekunden Timeout da bei 3 oft Fehler
-    $response = curl_exec($ch);
-    curl_close($ch);
-
-    if ($response === false)
-    {
-        // Curl Fehler, eventuell Log schreiben
-        echo '<br><span class="failureHint">Kann Node mit IP: ' . $loraIp . ' zur Prüfung auf neue GUI nicht erreichen!</span>';
-        return false;
-    }
-
-    $jsonContent = json_decode($response, true);
-
-    #Alte GUI erkannt
-    if ($jsonContent === null || !isset($jsonContent['returncode']))
-    {
-        setParamData('isNewMeshGui',0);
-        return false;
-    }
-
-    #Neue GUI erkannt
-    setParamData('isNewMeshGui',1);
-    return true;
-}
 function deleteOldCron(): bool
 {
     $osIssWindows  = chkOsIsWindows();

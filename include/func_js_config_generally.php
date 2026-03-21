@@ -161,6 +161,13 @@
             return false;
         });
 
+        $("#togglePassword").on("click", function (){
+            let input = $('#nodePassword');
+
+            let type = input.attr('type') === 'password' ? 'text' : 'password';
+            input.attr('type', type);
+        });
+
         function dialogConfirm(output_msg, title_msg, width, sendData) {
             width      = !width ? 300 : width;
             title_msg  = !title_msg ? '' : title_msg;

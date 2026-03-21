@@ -2362,3 +2362,99 @@ function ensureColumnIsReal(string $dbFilename, string $table, string $column): 
 
     return true;
 }
+
+function checkLoraNewGui(): array
+{
+    $loraIp      = getParamData('loraIp');
+    $actualHost  = 'http';
+    $triggerLink = $actualHost . '://' . $loraIp . '/getparam/?setcall=';
+
+    $logPath   = realpath(__DIR__ . '/../log');
+    $errorFile = "$logPath/" . 'error_check_node_' . date('Ymd') . '.log';
+
+    #Prüfe, ob Node-Passwort gesetzt ist und entsperre Node
+    $returnArray = checkNodePassword($loraIp);
+
+    $ch = curl_init($triggerLink);
+    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5); // 5 Sekunden Connect-Timeout
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15); // 15 Sekunden Timeout
+    $response = curl_exec($ch);
+
+    if ($response === false)
+    {
+        $errorNo  = curl_errno($ch);
+        $errorMsg = curl_error($ch);
+
+        $errorText  = 'Kann Node mit IP: ' . $loraIp . ' zur Prüfung auf neue GUI nicht erreichen!' . "\n";
+        $errorText .= date('Y-m-d H:i:s') . " - errorNo:$errorNo errorMsg:$errorMsg" . "\n";
+
+        // Curl Fehler in Log schreiben
+        file_put_contents($errorFile, $errorText,FILE_APPEND);
+
+        echo '<br><span class="failureHint">Kann Node mit IP: ' . $loraIp . ' zur Prüfung auf neue GUI nicht erreichen!</span>';
+        curl_close($ch);
+        return $returnArray;
+    }
+
+    curl_close($ch);
+    $jsonContent = json_decode($response, true);
+
+    #Alte GUI erkannt
+    if ($jsonContent === null || !isset($jsonContent['returncode']))
+    {
+        setParamData('isNewMeshGui',0);
+        $returnArray['isNewMeshGui'] = 0;
+        return $returnArray;
+    }
+
+    #Neue GUI erkannt
+    setParamData('isNewMeshGui',1);
+    $returnArray['isNewMeshGui'] = 1;
+    return $returnArray;
+}
+
+function checkNodePassword($loraIp): array
+{
+    // URL der Seite
+    $actualHost    = 'http';
+    $url           = $actualHost . '://' . $loraIp;
+    $returnArray   = array();
+
+    $returnArray['errorGetNodeSite']       = 0;
+    $returnArray['errorUnlockingNodeSite'] = 0;
+    $returnArray['nodeStatus']             = 'unlocked';
+
+    $nodePassword  = getParamData('nodePassword');
+    $urlUnlockNode = $actualHost . '://' . $loraIp . '?nodepassword=' . $nodePassword;
+
+    // HTML-Inhalt abrufen
+    $html = @file_get_contents($url);
+
+    if ($html === false)
+    {
+        $returnArray['errorGetNodeSite'] = 1;
+        return $returnArray; // oder Fehlerstatus
+    }
+
+    // Schnellprüfung auf eindeutige Marker
+    if (
+        stripos($html, 'Login required') !== false &&
+        stripos($html, 'Enter Password') !== false
+    )
+    {
+        // Unlock Node
+        $htmlUnlockNode            = @file_get_contents($urlUnlockNode);
+        $returnArray['nodeStatus'] = 'locked';
+
+        if ($htmlUnlockNode === false)
+        {
+            $returnArray['errorUnlockingNodeSite'] = 1;
+            return $returnArray; // oder Fehlerstatus
+        }
+
+        return $returnArray; // Passwort erforderlich
+    }
+
+    return $returnArray; // kein Login notwendig
+}
