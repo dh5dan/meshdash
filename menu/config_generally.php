@@ -36,6 +36,8 @@ require_once '../include/func_js_config_generally.php';
 require_once '../include/func_php_config_generally.php';
 require_once '../include/func_php_send_command.php';
 require_once '../include/func_js_core.php';
+require_once '../include/func_php_copy_nodemap.php';
+require_once '../include/func_php_mheard.php';
 
 #Show all Errors for debugging
 error_reporting(E_ALL);
@@ -127,6 +129,7 @@ $doNotBackupDb       = getParamData('doNotBackupDb');
 $clickOnCall         = getParamData('clickOnCall');
 $chronLogEnable      = getParamData('chronLogEnable');
 $retentionDays       = getParamData('retentionDays'); //Tage logs behalten
+$nodemapDaysPast     = getParamData('nodemapDaysPast') ?: 0; //Tage rückwirkend
 $chronMode           = getParamData('chronMode'); // zip|delete
 $strictCallEnable    = getParamData('strictCallEnable'); // Strict Call Flag
 $udpForwardingEnable = getParamData('udpForwardingEnable') ?? 0; // UDP-Weiterleitung
@@ -443,7 +446,6 @@ echo '</tr>';
 
 echo '<tr>';
 echo '<td><span data-i18n="submenu.config_generally.lbl.mheard_cron_intervall">Mheard-Cron Intervall (volle Stunde)</span>:</td>';
-
 echo '<td>';
 echo '<select class="selectMhIntervall" name="mheardCronIntervall" id="mheardCronIntervall">';
 
@@ -457,6 +459,11 @@ for ($i = 0; $i <= 4; $i++)
 
 echo '</select>';
 echo '</td>';
+echo '</tr>';
+
+echo '<tr>';
+echo '<td><span data-i18n="submenu.config_generally.lbl.nodemap-past-days">Nodemap (Standalone) Rückblick (Tage)</span>:</td>';
+echo '<td><input type="text" name="nodemapDaysPast" id="nodemapDaysPast" style="width: auto" size="2" maxlength="3" value="' . $nodemapDaysPast . '" /></td>';
 echo '</tr>';
 
 echo '<tr>';

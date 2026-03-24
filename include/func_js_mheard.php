@@ -60,7 +60,6 @@
            let indirectHitboxes   = []; // Array für die indirekten Klick-Links (repeater)
            let indirectCallLabels = []; // Call-Text unter indirekten Nodes
 
-
            let allPolygonVisible      = true; // Initialer Status: Alle Polygone sind sichtbar
            let indirectPolygonVisible = true; // Initialer Status: Alle indirekten Polygone sind sichtbar
            let indirectIconsVisible   = true; // Initialer Status: Alle indirekten Nodes sind sichtbar

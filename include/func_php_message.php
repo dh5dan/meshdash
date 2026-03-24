@@ -118,6 +118,10 @@ function checkMsgAck($msg): bool
 
     return $ackFound;
 }
+
+/**
+ * @throws Exception
+ */
 function checkMheard($msgId, $msg, $src, $dst, $callSign, $loraIp, $mhTargetFlag): void
 {
     #Eliminiere Hops in Quelle und Ziel

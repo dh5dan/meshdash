@@ -1,5 +1,5 @@
 <?php
-const VERSION = '1.10.92';
+const VERSION = '1.10.94';
 date_default_timezone_set('Europe/Berlin');
 
 if (PHP_SAPI === 'cli')
@@ -78,6 +78,9 @@ else
 
 #Prevents Warning: preg_replace(): Allocation of JIT memory failed, PCRE JIT will be disabled.
 ini_set("pcre.jit", "0");
+
+#Set Nodemap Standalone Build-version
+const NODEMAP_BUILD_VERSION = '1.10.94';
 
 const AUTO_PURGE_LOCK_FILE = 'auto_purge.lock';
 const AUTO_PURGE_LOCK_TIMEOUT = 300; // Sekunden, z.B. 5 Minuten

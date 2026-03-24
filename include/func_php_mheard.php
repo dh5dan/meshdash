@@ -1,4 +1,7 @@
 <?php
+/**
+ * @throws Exception
+ */
 function getMheard($loraIp): bool
 {
     // Array, um die Daten zu speichern
@@ -31,7 +34,7 @@ function getMheard($loraIp): bool
     libxml_clear_errors();
 
     // Suchen nach der Tabelle mit den relevanten Daten
-    $tableRows = $doc->getElementsByTagName('tr');
+    $tableRows          = $doc->getElementsByTagName('tr');
     $mheardValueIsValid = true;
 
     foreach ($tableRows as $row)
@@ -121,8 +124,14 @@ function getMheard($loraIp): bool
         return false;
     }
 
+    callAjaxMheard();
+
     return true;
 }
+
+/**
+ * @throws Exception
+ */
 function getMheard2($loraIp): bool
 {
     // Array, um die Daten zu speichern
@@ -301,6 +310,8 @@ function getMheard2($loraIp): bool
         return false;
     }
 
+    callAjaxMheard();
+
     return true;
 }
 function showMheard($localCallSign): bool
@@ -447,7 +458,13 @@ function getOwnPosition($callSign): bool|array
     $returnArray = array();
     $debugFlag   = false;
 
-    $dbMd = new SQLite3('database/meshdash.db', SQLITE3_OPEN_READONLY);
+    # DB-Pfad ermitteln
+    $basename       = pathinfo(getcwd())['basename'];
+    $dbFilenameSub  = '../database/meshdash.db';
+    $dbFilenameRoot = 'database/meshdash.db';
+    $dbFilename     = $basename == 'menu' ? $dbFilenameSub : $dbFilenameRoot;
+
+    $dbMd = new SQLite3($dbFilename, SQLITE3_OPEN_READONLY);
     $dbMd->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in millisekunden
 
     // Hole mir die pos-Daten aus der Datenbank
@@ -483,8 +500,8 @@ function getOwnPosition($callSign): bool|array
 
     if (!empty($dsDataMdOwn) === true)
     {
-        $returnArray['latitude']   = substr($dsDataMdOwn['latitude'],0,7);
-        $returnArray['longitude']  = substr($dsDataMdOwn['longitude'],0,6);
+        $returnArray['latitude']  = (float) $dsDataMdOwn['latitude'];
+        $returnArray['longitude'] = (float) $dsDataMdOwn['longitude'];
 
         if ($debugFlag === true)
         {

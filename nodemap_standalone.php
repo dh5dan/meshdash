@@ -1,10 +1,7 @@
 <?php
-require_once 'dbinc/param.php';
-require_once 'include/func_php_core.php';
-
 echo '<!DOCTYPE html>';
 echo '<html lang="de">';
-echo '<head><title>FullSize Node-Map OpenStreet</title>';
+echo '<head><title>Node-Map OpenStreet</title>';
 
 #Prevnts UTF8 Errors on misconfigured php.ini
 ini_set( 'default_charset', 'UTF-8' );
@@ -25,47 +22,52 @@ echo'<script src="jquery/leaflet/leaflet.js"></script>';
 echo'<script src="jquery/leaflet/plugin/custom_control/leaflet.control.custom.js"></script>';
 
 echo '<link rel="icon" type="image/png" sizes="16x16" href="favicon.png">';
+
+echo '<meta http-equiv="refresh" content="300">'; // Alle 300 sek = 5Min
 echo '</head>';
 echo '<body>';
 
-
-require_once 'include/func_php_mheard.php';
-require_once 'include/func_js_mheard.php';
+require_once 'include/func_php_nodemap_standalone.php';
+require_once 'include/func_js_nodemap_standalone.php';
 
 #Show all Errors for debugging
 error_reporting(E_ALL);
 ini_set('display_errors',1);
 
+if (!file_exists('nodemap.ini'))
+{
+    echo "<br>Die Datei: <b>nodemap.ini</b> wurde nicht gefunden!";
+    exit();
+}
+
+$config                  = parse_ini_file('nodemap.ini');
 $debugFlag               = false;
-$callSign                = trim(getParamData('callSign'));
-$resGetOwnPosition       = getOwnPosition($callSign); // Für Init OpenStreet View
-$openStreetTileServerUrl = trim(getParamData('openStreetTileServerUrl')) ?? 'tile.openstreetmap.org';
-$openStreetTileServerUrl = $openStreetTileServerUrl == '' ? 'tile.openstreetmap.org' : $openStreetTileServerUrl;
+$callSign                = $config['callSign'];
+$latitude                = $config['latitude'];
+$longitude               = $config['longitude'];
+$openStreetTileServerUrl = $config['openStreetTileServerUrl'];
+$nodeMapJsonFile         = 'nodemap.json';
+$dateFrom                = $config['dateFrom'];
+$dateTo                  = date('Y-m-d');
 
-if ($resGetOwnPosition !== false)
-{
-    $longitude = $resGetOwnPosition['longitude'] == '' ? 7.3 : $resGetOwnPosition['longitude'];
-    $latitude  = $resGetOwnPosition['latitude'] == '' ? 51.5 : $resGetOwnPosition['latitude'];
+date_default_timezone_set('Europe/Berlin'); // setze korrekte Zeitzone
 
-    echo '<input type="hidden" id="latitude" value="' . $latitude . '" />';
-    echo '<input type="hidden" id="longitude" value="' . $longitude . '" />';
-}
-else
+if (!file_exists($nodeMapJsonFile))
 {
-    #Fallback
-    echo '<input type="hidden" id="latitude" value="51.5" />';
-    echo '<input type="hidden" id="longitude" value="7.3" />';
+    echo "<br>Die Datei: <b>$nodeMapJsonFile</b> wurde nicht gefunden!";
+    exit();
 }
+
+$nodeMapJsonFileTS =  date('d.m.Y H:i:s', filemtime($nodeMapJsonFile));
+
+echo '<input type="hidden" id="latitude" value="' . $latitude . '" />';
+echo '<input type="hidden" id="longitude" value="' . $longitude . '" />';
 
 echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
 echo '<input type="hidden" id="ownCallSign" value="' . $callSign . '" />';
 echo '<input type="hidden" id="openStreetTileServerUrl" value="' . $openStreetTileServerUrl . '" />';
 
 echo '<div id="map" style="width:100vw; height:100vh;"></div>';
-
-// Defaultwerte: Heute und 7 Tage zurück
-$dateFrom = $_POST['date_from'] ?? date('Y-m-d', strtotime('-7 days'));
-$dateTo   = $_POST['date_to'] ?? date('Y-m-d');
 
 echo '<script>';
 echo "
@@ -76,6 +78,7 @@ $(function () {
         window.innerWidth,
         '$dateFrom',
         '$dateTo',
+        '$nodeMapJsonFileTS',
         'fullscreen'
     );
 });
