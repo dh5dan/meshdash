@@ -96,8 +96,9 @@ if ($sendData === '1')
 
 if ($osIssWindows === false)
 {
-    $cpuInfo      = file_get_contents('/proc/cpuinfo');
-    $hardware     = "Kein Raspberry Pi";
+    $cpuInfo  = file_get_contents('/proc/cpuinfo');
+    $hardware = "Kein Raspberry Pi";
+    $hostName = php_uname('n');
 
     if (file_exists('/sys/class/dmi/id/product_name'))
     {
@@ -113,8 +114,14 @@ if ($osIssWindows === false)
 }
 else
 {
-    $osBuild = explode(' ', php_uname('v')); //Build Version
-    $osName .= ' ' . (int) php_uname('r') . ' (' . $osBuild[0] . ' ' . $osBuild[1] . ')';
+    preg_match('/build\s+(\d+)/i', php_uname('v'), $matchesBuild);
+    $build = (int)($matchesBuild[1] ?? 0);
+
+    $version = php_uname('v');
+    preg_match('/\(([^)]+)\)/', $version, $os);
+
+    $osName =  $os[1] . ' (build ' . $build. ')';
+    $hostName = php_uname('n');
 }
 
 $noPosData           = getParamData('noPosData');
@@ -183,6 +190,10 @@ $udpFwPort     = $udpFwPort == 0 ? '' : $udpFwPort;
 echo '<tr>';
     echo '<td>OS:</td>';
     echo '<td>'. $osName . '</td>';
+echo '</tr>';
+echo '<tr>';
+echo '<td>Hostname:</td>';
+echo '<td>'. $hostName . '</td>';
 echo '</tr>';
 
 if ($hardware != '')
