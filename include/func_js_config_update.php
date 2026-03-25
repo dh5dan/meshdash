@@ -92,6 +92,57 @@
             return false;
         });
 
+        $('#updateFile').on('change', function () {
+
+            const file   = this.files[0];
+            let titleMsg = 'Hinweis!';
+            let outputMsg;
+            let width = 500;
+
+            if (!file) return;
+
+            const uploadLimit = parseSize($('#upload_max_filesize').val());
+            const postLimit   = parseSize($('#post_max_size').val());
+            const maxAllowed  = Math.min(uploadLimit, postLimit);
+
+            if (file.size > maxAllowed)
+            {
+                outputMsg = "Upload-Datei: <b>" + file.name + "</b><br>";
+                outputMsg += "mit Größe von: " + formatBytes(file.size) + " ";
+                outputMsg += "ist zu groß!<br>";
+                outputMsg += "Maximal sind: " + formatBytes(maxAllowed) + " erlaubt.";
+                dialog(outputMsg, titleMsg, width);
+
+                $(this).val(''); // reset
+                return false;
+            }
+        });
+
+        function parseSize(size)
+        {
+            const units = {K: 1024, M: 1024 * 1024, G: 1024 * 1024 * 1024};
+
+            const match = size.match(/^(\d+)([KMG])?$/i);
+            if (!match) return parseInt(size);
+
+            const value = parseInt(match[1]);
+            const unit  = match[2] ? match[2].toUpperCase() : '';
+
+            return value * (units[unit] || 1);
+        }
+
+        function formatBytes(bytes)
+        {
+            if (bytes === 0) return '0 B';
+
+            const k     = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+            return (bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i];
+        }
+
         function dialogConfirm(output_msg, title_msg, width, sendData) {
             width      = !width ? 300 : width;
             title_msg  = !title_msg ? '' : title_msg;

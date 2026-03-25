@@ -1481,6 +1481,7 @@ function showMenuIcons(): void
             echo '</ul>';
         echo '</li>';
 
+        echo '<li class="menuitem" data-action="nina_info">' . getStatusIcon('nina-info', true) . '</li>';
         echo '<li class="menuitem" data-action="beacon">' . getStatusIcon('beacon', true) . '</li>';
 
 
@@ -2237,6 +2238,61 @@ function getCarnivalMonday(int $year): DateTime {
     return $carnival;
 }
 
+function importNinaArs()
+{
+    $dbFile = 'database/nina_ars.db';
+
+    if (file_exists($dbFile)) {
+        return false;
+    }
+
+    // SQLite Verbindung (DB wird automatisch erstellt)
+    $db = new PDO('sqlite:' . $dbFile);
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    // Tabelle erstellen (falls nicht existiert)
+    $db->exec("
+    CREATE TABLE IF NOT EXISTS nina_ars (
+        arsId TEXT PRIMARY KEY,
+        stadt TEXT,
+        info TEXT
+    )
+");
+
+    // JSON laden
+    $json = file_get_contents('nina_ars.json');
+    $json = preg_replace('/^\xEF\xBB\xBF/', '', $json);
+    $data = json_decode($json, true);
+
+    // Sicherheitscheck
+    if (!is_array($data)) {
+        die("Ungültiges JSON Format");
+    }
+
+    // Performance-Boost
+    $db->exec("PRAGMA journal_mode = MEMORY");
+    $db->exec("PRAGMA synchronous = OFF");
+
+    // Transaction für Speed
+    $db->beginTransaction();
+
+    $stmt = $db->prepare(
+        "INSERT OR REPLACE INTO nina_ars (arsId, stadt, info)
+                                VALUES (?, ?, ?)
+               ");
+
+    foreach ($data as $row) {
+        $stmt->execute([
+            $row[0], // arsId
+            $row[1], // stadt
+            $row[2]  // info
+        ]);
+    }
+
+    $db->commit();
+
+    echo "NINA-ARS DB-Import fertig\n";
+}
 
 
 

@@ -1,3 +1,14 @@
+Version 1.10.98 SQL
+
+FEATURE: Implementierung des NINA Warnsystems in MeshDash (nur Abfrage).
+FEATURE: Anpassung Install-Script (V1.00.98) zur Installation von php-mbstring.
+FEATURE: Erhöhung der maximalen Ausführungszeit für Update-/Backup auf 50 Minuten für große Backups.
+FEATURE: callAjaxMheard Curl Timeout von 10 auf 100 Sekunden erhöht. Exception-Handling entfernt.
+         Fehler werden nun in PHP error_log geschrieben und in Kurzform ausgegeben (kontrollierter Fehlerfluss statt Exception).
+FEATURE: .user.ini: post_max_size auf 38 MB erhöht.
+FEATURE: max_execution_time bei Update-Prozessen auf 10 Minuten gesetzt.
+FEATURE: Client- und serverseitige Prüfung der maximalen Upload-Dateigröße gegen Server-Limit.
+##############
 Version 1.10.96 SQL
 
 BUGFIX: Warning in "func_php_copy_nodemap.php" behoben, wenn die Own-Position noch nicht verfügbar ist.
