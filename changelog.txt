@@ -1,3 +1,11 @@
+Version 1.10.96 SQL
+
+BUGFIX: Warning in "func_php_copy_nodemap.php" behoben, wenn die Own-Position noch nicht verfügbar ist.
+        Fallback auf latitude 51.5 / longitude 7.3.
+
+BUGFIX: Ajax-Mheard schreibt beim Abruf zusätzlich zur JSON-Datei auch die INI für die Standalone-Nodemap.
+        Dadurch wird sichergestellt, dass eine verfügbare Own-Position zeitnah in die INI übernommen wird.
+##############
 Version 1.10.94 SQL
 
 FEATURE: Node-Map als Standalone-Version implementiert unter export/nodemap.

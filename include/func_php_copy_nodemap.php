@@ -129,8 +129,20 @@ function write_ini_file(): void
     $nodemapDaysPast         = getParamData('nodemapDaysPast') ?: 0; //Tage rückwirkend
     $dateFrom                = date('Y-m-d', strtotime("-{$nodemapDaysPast} days"));
 
-    $longitude = $resGetOwnPosition['longitude'] == '' ? 51.5 : $resGetOwnPosition['longitude'];
-    $latitude  = $resGetOwnPosition['latitude'] == '' ? 7.3 : $resGetOwnPosition['latitude'];
+    // Defaultwerte zentral definieren
+    $latitude  = 51.5;
+    $longitude = 7.3;
+
+    // Nur überschreiben, wenn valide
+    if (
+        is_array($resGetOwnPosition) &&
+        isset($resGetOwnPosition['latitude'], $resGetOwnPosition['longitude']) &&
+        is_numeric($resGetOwnPosition['latitude']) &&
+        is_numeric($resGetOwnPosition['longitude'])
+    ) {
+        $latitude  = (float)$resGetOwnPosition['latitude'];
+        $longitude = (float)$resGetOwnPosition['longitude'];
+    }
 
     # INI-Pfad ermitteln
     $basename     = pathinfo(getcwd())['basename'];
