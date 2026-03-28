@@ -1,6 +1,8 @@
 <?php
 require_once 'dbinc/param.php';
 require_once 'include/func_php_core.php';
+require_once 'include/func_php_mheard.php';
+require_once 'include/func_php_copy_nodemap.php';
 
 #Wenn Datei nicht existiert, dann exit.
 #Verhindert das ein offener Browser eine 0 byte Datei erzeugt
@@ -453,6 +455,8 @@ if ($nodemapFlag == 1)
     {
         @unlink($tmpJson);
     }
+
+    write_ini_file();
 }
 
 echo json_encode($returnArray);

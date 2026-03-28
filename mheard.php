@@ -59,8 +59,8 @@ echo '<input type="hidden" id="group" value="' . $groupId . '" />';
 
 if ($resGetOwnPosition !== false)
 {
-    $longitude = $resGetOwnPosition['longitude'] == '' ? 51.5 : $resGetOwnPosition['longitude'];
-    $latitude  = $resGetOwnPosition['latitude'] == '' ? 7.3 : $resGetOwnPosition['latitude'];
+    $longitude = $resGetOwnPosition['longitude'] == '' ? 7.3 : $resGetOwnPosition['longitude'];
+    $latitude  = $resGetOwnPosition['latitude'] == '' ? 51.5 : $resGetOwnPosition['latitude'];
 
     echo '<input type="hidden" id="latitude" value="' . $latitude . '" />';
     echo '<input type="hidden" id="longitude" value="' . $longitude . '" />';
