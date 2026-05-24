@@ -574,6 +574,9 @@
                case 'gps_info':
                    iframeSrc = 'menu/gps_info.php';
                    break;
+               case 'nina_info':
+                   iframeSrc = 'menu/nina_info.php';
+                   break;
                case 'mHeard':
                    iframeSrc = 'mheard.php';
                    break;

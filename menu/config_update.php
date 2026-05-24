@@ -40,14 +40,15 @@ require_once '../include/func_js_core.php';
 error_reporting(E_ALL);
 ini_set('display_errors',1);
 
-ini_set('upload_max_filesize', '30M'); // Erhöht die maximale Upload-Dateigröße auf 20 MB (2M)
-ini_set('post_max_size', '30M'); // Erhöht die maximale POST-Daten-Größe auf 25 MB (8M)
+$upload_max_filesize = ini_get('upload_max_filesize'); // Hole die maximale Upload-Dateigröße
+$post_max_size       = ini_get('post_max_size'); // Hole die maximale Upload-Dateigröße
 ini_set('memory_limit', '256M'); // Falls nötig das Speicherlimit erhöhen (128M)
-ini_set('max_execution_time', '300'); // Ausführungszeit auf 5min bei nicht performanten Geräten
+ini_set('max_execution_time', '600'); // Ausführungszeit auf 10min bei nicht performanten Geräten
 
-$sendData      = $_REQUEST['sendData'] ?? 0;
-$debugFlag     = false;
-$doUpdate      = true;
+$sendData        = ($_POST['sendData'] ?? 0);
+$debugFlag       = false;
+$doUpdate        = true;
+$uploadErrorFlag = false;
 
 if ($doUpdate === false)
 {
@@ -77,6 +78,11 @@ if ($debugFlag === true)
 {
     $errorText = date('Y-m-d H:i:s') . ' SendData:' . $sendData . "\n";
     file_put_contents('../log/debug_update.log', $errorText, FILE_APPEND);
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST) && empty($_FILES) && $sendData === '0')
+{
+    echo '<br><span class="failureHint">Datei überschreitet Serverlimit von ' . $upload_max_filesize . ' oder PostMaxSize von ' . $post_max_size.'</span>';
 }
 
 #Update
@@ -294,6 +300,7 @@ if ($sendData === '1')
                 else
                 {
                     echo '<br><span class="failureHint">Fehler beim Entpacken der Update-Datei!</span>';
+                    $uploadErrorFlag = true;
 
                     if ($debugFlag === true)
                     {
@@ -308,6 +315,7 @@ if ($sendData === '1')
         else
         {
             echo '<br><span class="failureHint">Dies ist kein gültiges Meshdash-SQL Update_Datei!</span>';
+            $uploadErrorFlag = true;
 
             if ($debugFlag === true)
             {
@@ -320,7 +328,23 @@ if ($sendData === '1')
     }
     else
     {
-        echo '<br><span class="failureHint">Keine Datei hochgeladen oder Fehler beim Upload!</span>';
+        $msg = '';
+        if (isset($_FILES['updateFile']))
+        {
+            $msg = match ($_FILES['updateFile']['error'])
+            {
+                UPLOAD_ERR_INI_SIZE => "Datei überschreitet Serverlimit",
+                UPLOAD_ERR_FORM_SIZE => "Datei überschreitet Formularlimit",
+                UPLOAD_ERR_NO_FILE => "Keine Datei ausgewählt",
+                UPLOAD_ERR_PARTIAL => "Upload unvollständig",
+                default => "Unbekannter Upload-Fehler (" . $_FILES['updateFile']['error'] . ")"
+            };
+        }
+
+        echo '<br><span class="failureHint">Keine Datei hochgeladen oder Fehler beim Upload!';
+        echo '<br>'.$msg.'</span>';
+        $uploadErrorFlag = true;
+
         if ($debugFlag === true)
         {
             $tt        = "Keine Datei hochgeladen oder Fehler beim Upload!\n";
@@ -412,6 +436,9 @@ echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
 echo '<input type="hidden" name="deleteFileImage" id="deleteFileImage" value="" />';
 echo '<input type="hidden" name="MAX_FILE_SIZE" value="30000000" />';
 
+echo '<input type="hidden" id="upload_max_filesize" value="' . $upload_max_filesize . '" />';
+echo '<input type="hidden" id="post_max_size" value="' . $post_max_size . '" />';
+
 echo '<table>';
 echo '<tr>';
 if ($sendData != 1)
@@ -462,22 +489,25 @@ if ($sendData != 1)
 }
 else
 {
-    echo '<td colspan="2">&nbsp;</td>';
-    echo '</tr>';
+    if ($uploadErrorFlag === false)
+    {
+        echo '<td colspan="2">&nbsp;</td>';
+        echo '</tr>';
 
-    echo '<tr>';
-    echo '<td ><label for="btnConfigUpdateReload" class="reloadMsg failureHint">Wichtig!<br>MeshDash jetzt neu laden!</label>&nbsp;</td>';
+        echo '<tr>';
+        echo '<td ><label for="btnConfigUpdateReload" class="reloadMsg failureHint">Wichtig!<br>MeshDash jetzt neu laden!</label>&nbsp;</td>';
 
-    echo '<td>
+        echo '<td>
         <button type="button" class="failureHint reloadButton" id="btnConfigUpdateReload">
             <span data-i18n="submenu.config_update.btn.reload">MeshDash hier neu laden!</span>
         </button>
       </td>';
 
-    echo '</tr>';
+        echo '</tr>';
 
-    echo '<tr>';
-    echo '<td colspan="2">&nbsp;</td>';
+        echo '<tr>';
+        echo '<td colspan="2">&nbsp;</td>';
+    }
 }
 echo '</tr>';
 echo '</table>';

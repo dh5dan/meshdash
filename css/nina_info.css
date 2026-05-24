@@ -1,0 +1,171 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 0;
+    background-color: var(--gps-info-bg-color-body);
+    color: var(--gps-info-text-color-body);
+}
+
+.table {
+    width: auto;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    color: #333;
+}
+
+.table th,
+.table td {
+    border: 1px solid var(--gps-info-border-color-tableTd);
+    padding: 10px;
+    text-align: left;
+    color: var(--gps-info-text-color-tableTd);
+}
+
+.table th {
+    background-color: var(--gps-info-bg-color-tableTh);
+    font-weight: bold;
+}
+
+.table tr:nth-child(even) {
+    background-color: var(--gps-info-bg-color-tableChild);
+}
+
+.table tr:hover {
+    background-color: var(--gps-info-bg-color-tableTrHover);
+}
+
+.btnLoadLoraNinaInfo {
+    font-size: 14px;
+    padding: 8px 15px;
+    border: none;
+    background-color: var(--gps-info-bg-color-btn);
+    color: var(--gps-info-text-color-btn);
+    cursor: pointer;
+    border-radius: 5px;
+    width: 100%;
+}
+
+.successHint {
+    background-color: var( --gps-info-bg-color-success);
+    color: var( --gps-info-text-color-success);
+    font-weight: bold;
+}
+
+.failureHint {
+    background-color: var( --gps-info-bg-color-failure);
+    color: var( --gps-info-text-color-failure);
+    font-weight: bold;
+    display: block;
+}
+
+.nina-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    background: #1e1e1e;
+    color: #eaeaea;
+}
+
+.nina-table th {
+    text-align: left;
+    padding: 10px;
+    background: #2a2a2a;
+    border-bottom: 1px solid #444;
+}
+
+.nina-table td {
+    padding: 10px;
+    border-bottom: 1px solid #333;
+    vertical-align: top;
+}
+
+.nina-table tr:hover {
+    background: #2f2f2f;
+}
+
+.col-title {
+    max-width: 400px;
+}
+
+/* Severity Badges */
+.badge {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    display: inline-block;
+}
+
+.badge-minor {
+    background: #2ecc71;
+    color: #000;
+}
+
+.badge-moderate {
+    background: #f1c40f;
+    color: #000;
+}
+
+.badge-severe {
+    background: #e74c3c;
+    color: #fff;
+}
+
+/* Empty state */
+.nina-empty {
+    padding: 10px;
+    background: #222;
+    color: #aaa;
+    border: 1px dashed #444;
+}
+
+.autocompleteForceCustomNinaInfo {
+
+    font-size:10px !important;
+}
+
+@media (max-width: 600px) {
+
+    .successHint, .failureHint {
+        display: block;
+        padding: 10px;
+        margin: 10px 0;
+        text-align: center;
+    }
+
+    table {
+        font-size: 14px;
+    }
+
+    td:first-child {
+        white-space: nowrap;
+    }
+
+    input[type="text"] {
+        max-width: 162px; /* Oder andere passende Breite */
+    }
+
+    input[type="button"] {
+        width: 100%;
+        padding: 10px;
+        font-size: 14px;
+    }
+}
+
+/* Media Query für Smartphones */
+@media (max-width: 768px) {
+
+    h2 {
+        font-size: medium;
+    }
+
+    input[type="button"] {
+        display: inline-block;
+        background-color: var(--gps-info-bg-color-btn);
+        color: var(--gps-info-text-color-btn);
+        /*padding: 5px 10px;*/
+        border-radius: 5px;
+        cursor: pointer;
+    }
+}

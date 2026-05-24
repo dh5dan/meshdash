@@ -1226,6 +1226,8 @@ function getStatusIcon(string $status, bool $withLabel = false): string
         'off'        => ['symbol' => '&#x1F4F4;', 'label' => 'Ausgeschaltet'],  // 📴
         'attention'  => ['symbol' => '&#10071;', 'label' => 'Achtung'],         // ❗
 
+        'nina-info' => ['symbol' => '&#x1F6A8;', 'label' => 'NINA-Info'], // 🚨
+
 
         'locked'     => ['symbol' => '&#128274;', 'label' => 'Gesperrt'],       // 🔒
         'unlocked'   => ['symbol' => '&#128275;', 'label' => 'Entsperrt'],      // 🔓
@@ -2480,8 +2482,7 @@ function callAjaxMheard(): bool|string
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
-
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 100);
 
     $response = curl_exec($ch);
 
@@ -2489,10 +2490,127 @@ function callAjaxMheard(): bool|string
     {
         $error = curl_error($ch);
         curl_close($ch);
-        throw new Exception("callAjaxMheard: cURL Fehler: " . $error);
+
+        // KEINE Exception mehr
+        echo "<br>callAjaxMheard cURL Fehler: " . $error."<br>";
+        error_log("callAjaxMheard cURL Fehler: " . $error);
+        return false;
     }
 
     curl_close($ch);
 
     return $response;
+}
+
+#Workaraound wenn php-mbstring nicht installiert ist.
+if (!function_exists('mb_strlen')) {
+    function mb_strlen($str) {
+        return strlen($str);
+    }
+}
+
+#Workaraound wenn php-mbstring nicht installiert ist.
+if (!function_exists('mb_stripos')) {
+    function mb_stripos($haystack, $needle, $offset = 0) {
+        return stripos($haystack, $needle, $offset);
+    }
+}
+
+#Workaraound wenn php-mbstring nicht installiert ist.
+if (!function_exists('mb_substr')) {
+    function mb_substr($str, $start, $length = null) {
+        return substr($str, $start, $length);
+    }
+}
+function mbStringPosAll($haystack, $needle): bool | array
+{
+    $s = 0;
+    $i = 0;
+
+    while (is_integer($i))
+    {
+
+        $i = mb_stripos($haystack, $needle, $s);
+
+        if (is_integer($i))
+        {
+            $aStrPos[] = $i;
+            $s         = $i + mb_strlen($needle);
+        }
+    }
+
+    return $aStrPos ?? false;
+}
+function apply_highlight($a_json, $parts)
+{
+    $p    = count($parts);
+    $rows = count($a_json);
+
+    for ($row = 0; $row < $rows; $row++)
+    {
+        //Suchziel, worin gesucht werden soll
+        $label         = $a_json[$row]["label"];
+        $a_label_match = array();
+
+        for ($i = 0; $i < $p; $i++)
+        {
+            //Länge Suchstring
+            $part_len      = mb_strlen($parts[$i]);
+            $a_match_start = mbStringPosAll($label, $parts[$i]);
+
+            // Wenn kein Treffer dann nächsten Eintrag nehmen
+            if ($a_match_start === false)
+            {
+                continue;
+            }
+
+            foreach ($a_match_start AS $part_pos)
+            {
+                $overlap = false;
+                foreach ($a_label_match AS $pos => $len)
+                {
+                    if ($part_pos - $pos >= 0 && $part_pos - $pos < $len)
+                    {
+                        $overlap = true;
+                        break;
+                    }
+                }
+                if (!$overlap)
+                {
+                    $a_label_match[$part_pos] = $part_len;
+                }
+            }
+        }
+
+        if (count($a_label_match) > 0)
+        {
+            ksort($a_label_match);
+
+            $label_highlight = '';
+            $start           = 0;
+            $label_len       = mb_strlen($label);
+
+            foreach ($a_label_match as $pos => $len)
+            {
+                if ($pos - $start > 0)
+                {
+                    $no_highlight    = mb_substr($label, $start, $pos - $start);
+                    $label_highlight .= $no_highlight;
+                }
+                $highlight       = '<span class="hl_results">' . mb_substr($label, $pos, $len) . '</span>';
+                $label_highlight .= $highlight;
+                $start           = $pos + $len;
+            }
+
+            if ($label_len - $start > 0)
+            {
+                $no_highlight    = mb_substr($label, $start);
+                $label_highlight .= $no_highlight;
+            }
+
+            $a_json[$row]["label"] = $label_highlight;
+        }
+    }
+
+    return $a_json;
 }

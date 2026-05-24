@@ -108,6 +108,9 @@ if(chkOsIsWindows() === true && file_exists('database/parameter.db'))
 #Muss immer zuerst stattfinden!
 initDatabases();
 
+#Import ARS Nina Regionalcodes in Sqlite-DB
+importNinaArs();
+
 $sendQueueEnabled = (int) getParamData('sendQueueMode');
 
 echo '<input type="hidden" id="version" value="' . VERSION . '"/>';
