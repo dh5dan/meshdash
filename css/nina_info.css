@@ -125,6 +125,15 @@ body {
     font-size:10px !important;
 }
 
+.nina-label {
+    cursor: pointer;
+    color: #1a73e8;   /* klassisches “link-artiges” Blau */
+}
+
+.nina-label:hover {
+    text-decoration: underline;
+}
+
 @media (max-width: 600px) {
 
     .successHint, .failureHint {
