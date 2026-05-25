@@ -11,17 +11,21 @@ require_once 'dbinc/param.php';
 require_once 'include/func_php_core.php';
 
 // Relativer Pfad zu deinem Webverzeichnis
-$basePath     = __DIR__;
-$execDir      = 'log';
-$errorCode      = '';
-$errorMsg       = '';
-$errorFile      = "$basePath/$execDir/" . 'error_udp_receiver_' . date('Ymd') . '.log';
-$debugLogFile   = "$basePath/$execDir/" . 'debug_udp_receiver_' . date('Ymd') . '.log';
-$udpPidFile     = "$basePath/$execDir/". UPD_PID_FILE;
-$udpStopFile    = "$basePath/$execDir/". UPD_STOP_FILE;
-$outDataArray   = array();
-$osTypeIsLinux  = true;
-$debugFlag      = false;
+$basePath        = __DIR__;
+$execDir         = 'log';
+$errorCode       = '';
+$errorMsg        = '';
+$errorFile       = "$basePath/$execDir/" . 'error_udp_receiver_' . date('Ymd') . '.log';
+$debugLogFile    = "$basePath/$execDir/" . 'debug_udp_receiver_' . date('Ymd') . '.log';
+$udpPidFile      = "$basePath/$execDir/" . UPD_PID_FILE;
+$udpStopFile     = "$basePath/$execDir/" . UPD_STOP_FILE;
+$outDataArray    = array();
+$osTypeIsLinux   = true;
+$debugFlag       = false;
+$debugSocketFlag = false;
+$createSocket    = false;
+$socketFile      = "$basePath/$execDir/" . "meshdash.sock"; // SocketFilename
+$sock            = null; // Socket Link
 
 #Scriptexecution Time endless
 ini_set('max_execution_time', 0);
@@ -48,7 +52,7 @@ if ($debugFlag === true)
 }
 
 #Check if Windows-OS is running
-if (strtoupper(substr(php_uname('s'), 0, 3)) === 'WIN')
+if ($osIssWindows === true)
 {
     $osTypeIsLinux = false;
 
@@ -224,6 +228,79 @@ while (true)
     $udpFwIp             = getParamData('udpFwIp') ?? ''; // UDP-Weiterleitung IP
     $udpFwPort           = getParamData('udpFwPort') ?? 0; // UDP-Weiterleitung Port
 
+    ####################### Socket-Forwarding ##############################################################
+
+    if ($createSocket === true && $osIssWindows === false && file_exists($socketFile) && !is_writable($socketFile) && $debugSocketFlag === true)
+    {
+        $debugText = date('Y-m-d H:i:s') . " - SocketFile existiert, hat aber keine Schreibrechte" . "\n";
+        file_put_contents($debugLogFile, $debugText, FILE_APPEND);
+        $createSocket = false;
+    }
+
+    if ($createSocket === true && $osIssWindows === false && file_exists($socketFile) && is_writable($socketFile) && $sock === null)
+    {
+        $sock = socket_create(AF_UNIX, SOCK_DGRAM, 0);
+
+        if ($debugSocketFlag === true)
+        {
+            $debugText = date('Y-m-d H:i:s') . " - Socket erzeugt sock" . "\n";
+            file_put_contents($debugLogFile, $debugText, FILE_APPEND);
+        }
+    }
+
+    if ($createSocket === true && $osIssWindows === false && $sock !== null && file_exists($socketFile) && is_writable($socketFile))
+    {
+        $res = @socket_sendto($sock, $udpBuffer, $receivedBytes, 0, $socketFile);
+
+        if ($debugSocketFlag === true)
+        {
+            $debugText = date('Y-m-d H:i:s') . " - Socket Daten gesendet" . "\n";
+            file_put_contents($debugLogFile, $debugText, FILE_APPEND);
+        }
+
+        if ($res === false) {
+
+            $errCode = socket_last_error($sock);
+            $errMsg  = socket_strerror($errCode);
+            socket_clear_error($sock);
+
+            $errorText  = date('Y-m-d H:i:s') . " - Error in Forwarding SOCKET-Data to SocketFile: $socketFile" . "\n";
+            $errorText .= date('Y-m-d H:i:s') . " - Err:$errCode ErrMsg: $errMsg\n";
+            file_put_contents($errorFile, $errorText, FILE_APPEND);
+
+            // 🔴 wichtig
+            socket_close($sock);
+
+            $sock = null;
+        }
+    }
+
+    if ($debugSocketFlag === true)
+    {
+        $debugText = date('Y-m-d H:i:s')
+            . " - Socket Loop Debug" . "\n";
+
+        $debugText .= date('Y-m-d H:i:s')
+            . " - Socket Loop Debug. socket createSocket:"
+            . var_export($createSocket, true) . "\n";
+
+        $debugText .= date('Y-m-d H:i:s')
+            . " - Socket Loop Debug. socket Value:"
+            . var_export($sock, true) . "\n";
+
+        $debugText .= date('Y-m-d H:i:s')
+            . " - Socket Loop Debug. FileExists: $socketFile  Bool:"
+            . var_export(file_exists($socketFile), true) . "\n";
+
+        $debugText .= date('Y-m-d H:i:s')
+            . " - Socket Loop Debug. Schreibrechte: Bool:"
+            . var_export(is_writable($socketFile), true) . "\n";
+
+        file_put_contents($debugLogFile, $debugText, FILE_APPEND);
+    }
+
+    ####################################################################################################
+
     # Wenn aktiv dann weiterleiten
     if ($udpForwardingEnable == 1 && $udpFwIp != '' && $udpFwPort != 0)
     {
@@ -396,6 +473,11 @@ while (true)
         file_put_contents($errorFile, $errorText,FILE_APPEND);
         @unlink($udpStopFile);
         @unlink($udpPidFile);
+
+        if ($createSocket === true && $osIssWindows === false && $sock !== null)
+        {
+            socket_close($sock);
+        }
 
         exit();
     }
