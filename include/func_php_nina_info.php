@@ -3,7 +3,7 @@ function showNinaInfo($ninaResponse,  $params)
 {
     $mowasType = $params['mowasType'] ?? '';
     $ars       = $params['ars'] ?? '';
-    $katId     = $params['katId'] ?? '';
+    $katId     = $params['warningId'] ?? '';
 
     $debugFlag = false;
 
@@ -12,7 +12,11 @@ function showNinaInfo($ninaResponse,  $params)
         echo "<br>Keine Infodaten empfangen für:";
         echo "<br>Mowas-Type: $mowasType";
         echo "<br>Ars-ID:: $ars";
-        echo "<br>Kat-MSG-ID: $katId";
+        if ($mowasType == 'warning' || $mowasType == 'warningsGeo')
+        {
+            echo "<br>Kat-MSG-ID: $katId";
+        }
+        echo "<br>--------------------------";
         return false;
     }
 

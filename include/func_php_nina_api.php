@@ -115,6 +115,11 @@ function getNinaData(array $params): array|bool
 
     curl_close($ch);
 
+    if (empty($response))
+    {
+        return $response;
+    }
+
     $data = json_decode($response, true);
 
     if (json_last_error() !== JSON_ERROR_NONE)
@@ -123,6 +128,7 @@ function getNinaData(array $params): array|bool
         echo "<br>Json Error: " . json_last_error();
         echo "<br>url:$url";
         echo "<br>resonse: $response";
+
         return false;
     }
 

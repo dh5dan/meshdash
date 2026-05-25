@@ -1,6 +1,9 @@
 Version 1.11.00 SQL
-FEATURE: MeshDash Unix Socket Forwarding für 3rd-party Integration
 
+FEATURE: Unix-Socket-Forwarding in MeshDash zur Anbindung externer Prozesse/Services.
+FEATURE: Manuelle ARS-ID Eingabe mit automatischer Normalisierung auf 12 Stellen (Ziffernfilter + Zero-Padding).
+BUGFIX:  Korrekte Auswahl der NINA ARS bei mehrfach vorhandenen Einträgen mit identischem Namen.
+BUGFIX:  Stabileres NINA Error-Handling bei leerer oder ungültiger JSON-Antwort.
 ##############
 Version 1.10.98 SQL
 

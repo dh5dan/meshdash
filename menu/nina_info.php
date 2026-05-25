@@ -50,7 +50,6 @@ $mowasTypeChecked = $_POST['ninaMowsTypeChkBox'] ?? [];
 $ninaArsId        = trim($_POST['ninaArsId'] ?? '');
 $warningId        = trim($_POST['warningId'] ?? '');
 $ninaArsRegion    = trim($_POST['ninaArsRegion'] ?? '');
-$ninaArsId        = $ninaArsId != '' ? substr($ninaArsId, 0, 5) . '0000000' : '';
 
 $dashboardChk = in_array('nina', $mowasTypeChecked) ? 'checked' : '';
 $katwarnChk   = in_array('katwarn', $mowasTypeChecked) ? 'checked' : '';
@@ -61,17 +60,10 @@ $lhpChk       = in_array('lhp', $mowasTypeChecked) ? 'checked' : '';
 $policeChk    = in_array('police', $mowasTypeChecked) ? 'checked' : '';
 $warningChk   = in_array('warning', $mowasTypeChecked) ? 'checked' : '';
 
-$ninaArsRegion = $ninaArsRegion == '' ? getParamData('ninaArsRegion') : $ninaArsRegion;
-$ninaArsId     = $ninaArsId == '' ? getParamData('ninaArsId') : $ninaArsId;
-
-if ($ninaArsRegion != '')
+if ($sendData == 0)
 {
-    setParamData('ninaArsRegion', $ninaArsRegion, 'text');
-}
-
-if ($ninaArsId != '')
-{
-    setParamData('ninaArsRegion', $ninaArsRegion, 'text');
+    $ninaArsRegion = $ninaArsRegion == '' ? getParamData('ninaArsRegion') : $ninaArsRegion;
+    $ninaArsId     = $ninaArsId == '' ? getParamData('ninaArsId') : $ninaArsId;
 }
 
 echo '<h2><span data-i18n="submenu.info_info.lbl.title">NINA-Warnsystem</span></h2>';
@@ -89,28 +81,17 @@ echo '</tr>';
 
 echo '<tr>';
 echo '<td colspan="3">
-        ARS-Regionalschlüssel:<input type="text" disabled readonly value="' . $ninaArsId . '" />
+        ARS-Regionalschlüssel:<input type="text" name="ninaArsId" id="ninaArsId" value="' . $ninaArsId . '" />
       </td>';
 echo '</tr>';
-echo '<input type="hidden" readonly name="ninaArsId" id="ninaArsId" value="' . $ninaArsId . '" />';
 
 echo '<tr>';
 echo '<td colspan="3">
-        Warning-ID:<input type="text" name="warningId" id="warningId" value="' . $warningId . '" />
+        Warning KAT-ID:<input type="text" name="warningId" id="warningId" size="40"  value="' . $warningId . '" />
       </td>';
 echo '</tr>';
 
 echo '<tr>';
-//echo '<td colspan="3">
-//    Nina <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $dashboardChk . ' value="nina" /> |
-//    Katwarn <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $katwarnChk . ' value="katwarn" /> |
-//    Biwapp <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $biwappChk . ' value="biwapp" /> |
-//    Mowas <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $mowasChk . ' value="mowas" /> |
-//    Dwd <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $dwdChk . ' value="dwd" /> |
-//    Lhp <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $lhpChk . ' value="lhp" /> |
-//    Police <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $policeChk . ' value="police" /> |
-//    Warnung <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $warningChk . ' value="warning" />
-//</td>';
 
 echo '<td colspan="3">
     <span class="nina-label" data-type="nina">Nina</span> <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $dashboardChk . ' value="nina" /> | 
@@ -133,6 +114,9 @@ echo '</tr>';
 
 if ($sendData == 1)
 {
+    setParamData('ninaArsRegion', $ninaArsRegion, 'text');
+    setParamData('ninaArsId', $ninaArsId, 'text');
+
     foreach ($mowasTypeChecked AS $mowasType)
     {
         $params = [
