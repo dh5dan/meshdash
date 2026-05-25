@@ -1,3 +1,7 @@
+Version 1.11.00 SQL
+FEATURE: MeshDash Unix Socket Forwarding für 3rd-party Integration
+
+##############
 Version 1.10.98 SQL
 
 FEATURE: Implementierung des NINA Warnsystems in MeshDash (nur Abfrage).

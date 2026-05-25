@@ -16,6 +16,7 @@ function backupApp($sourceDir, $backupDir): bool|string
         'export/',     // komplettes Verzeichnis
         '.gitignore', // einzelne Datei
         'auto_purge.lock', // einzelne Datei
+        'log/meshdash.sock', // einzelne Datei
     ];
 
     // Nur diese Dateitypen in "execute/" sichern
