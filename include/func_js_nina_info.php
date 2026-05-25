@@ -73,6 +73,41 @@
             $("#frmNinaInfo").trigger('submit');
         });
 
+        $(".nina-label").on("click", function ()
+        {
+            let type     = $(this).data('type');
+            let titleMsg = 'Hinweis!';
+            let outputMsg;
+            let width    = 600;
+
+            const warnText = {
+                nina: "Nina – Offizielle Warn-App des BBK für Gefahrenlagen in Deutschland",
+                katwarn: "Katwarn – Regionales Warnsystem für Katastrophen- und Gefahrenmeldungen",
+                biwapp: "Biwapp – Bürger-Info- und Warn-App für kommunale und regionale Meldungen",
+                mowas: "Mowas – Modular aufgebautes Warn- und Informationssystem für behördliche Gefahrenmeldungen",
+                dwd: "Dwd – Wetter- und Unwetterwarnungen des Deutschen Wetterdienstes",
+                lhp: "Lhp – Regionale/kommunale Informations- und Warnmeldungen",
+                police: "Police – Polizeiliche Warn- und Einsatzmeldungen (z. B. Fahndungen, Gefahrenlage)",
+                warning: "Warnung – Generische Sammelkategorie für allgemeine oder nicht klassifizierte Warnmeldungen"
+            };
+
+            // Checkbox im gleichen TD finden
+            //let $checkbox = $(this).nextAll('input[value="' + type + '"]').first();
+
+            // Toggle oder State auslesen
+            //let isChecked = $checkbox.prop('checked');
+
+            // Beispiel: Toggle
+            //$checkbox.prop('checked', !isChecked);
+
+            // hier dein Dialog triggern
+
+            outputMsg = warnText[type] || "Unbekannter Typ";
+
+
+            dialog(outputMsg, titleMsg, width)
+        });
+
         function dialogConfirm(output_msg, title_msg, width, sendData) {
             width      = !width ? 300 : width;
             title_msg  = !title_msg ? '' : title_msg;

@@ -101,16 +101,28 @@ echo '<td colspan="3">
 echo '</tr>';
 
 echo '<tr>';
+//echo '<td colspan="3">
+//    Nina <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $dashboardChk . ' value="nina" /> |
+//    Katwarn <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $katwarnChk . ' value="katwarn" /> |
+//    Biwapp <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $biwappChk . ' value="biwapp" /> |
+//    Mowas <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $mowasChk . ' value="mowas" /> |
+//    Dwd <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $dwdChk . ' value="dwd" /> |
+//    Lhp <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $lhpChk . ' value="lhp" /> |
+//    Police <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $policeChk . ' value="police" /> |
+//    Warnung <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $warningChk . ' value="warning" />
+//</td>';
+
 echo '<td colspan="3">
-    Nina <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $dashboardChk . ' value="nina" /> | 
-    Katwarn <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $katwarnChk . ' value="katwarn" /> |
-    Biwapp <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $biwappChk . ' value="biwapp" /> |
-    Mowas <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $mowasChk . ' value="mowas" /> |
-    Dwd <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $dwdChk . ' value="dwd" /> |
-    Lhp <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $lhpChk . ' value="lhp" /> |
-    Police <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $policeChk . ' value="police" /> |
-    Warnung <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $warningChk . ' value="warning" />
+    <span class="nina-label" data-type="nina">Nina</span> <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $dashboardChk . ' value="nina" /> | 
+    <span class="nina-label" data-type="katwarn">Katwarn</span> <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $katwarnChk . ' value="katwarn" /> |
+    <span class="nina-label" data-type="biwapp">Biwapp</span> <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $biwappChk . ' value="biwapp" /> |
+    <span class="nina-label" data-type="mowas">Mowas</span> <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $mowasChk . ' value="mowas" /> |
+    <span class="nina-label" data-type="dwd">Dwd</span> <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $dwdChk . ' value="dwd" /> |
+    <span class="nina-label" data-type="lhp">Lhp</span> <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $lhpChk . ' value="lhp" /> |
+    <span class="nina-label" data-type="police">Police</span> <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $policeChk . ' value="police" /> |
+    <span class="nina-label" data-type="warning">Warnung</span> <input type="checkbox" name="ninaMowsTypeChkBox[]" ' . $warningChk . ' value="warning" />
 </td>';
+
 echo '<tr>';
 
 echo '<td colspan="3">
