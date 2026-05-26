@@ -27,6 +27,11 @@
             }
         });
 
+        $("#ninaArsRegion, #ninaArsId").on("focus", function () {
+            $("#ninaArsRegion").val('');
+            $("#ninaArsId").val('');
+        });
+
         $("#btnNinaMowasType").on("click", function ()
         {
             let sendData  = 1;
@@ -64,6 +69,40 @@
             // Fehler vorhanden → abbrechen
             if (errors.length > 0) {
                 outputMsg = errors.join("<br>");
+                dialog(outputMsg, titleMsg, width)
+                return false;
+            }
+
+            ////ARS formatieren
+            if ($('#ninaArsId').val() != '')
+            {
+                let $field = $('#ninaArsId');
+
+                let arsId = $field.val();
+
+                // 1. harte Validierung: nur Zahlen + Leerzeichen erlaubt
+                if (/[^0-9\s]/.test(arsId)) {
+                    outputMsg = 'Nur Zahlen erlaubt';
+                    dialog(outputMsg, titleMsg, width)
+                    return false;
+                }
+
+                // 1. alles außer Zahlen raus
+                arsId = arsId.replace(/\D/g, '');
+
+
+
+                // 2. rechts mit 0 auf 12 Stellen auffüllen
+                arsId = arsId.padEnd(12, '0');
+
+                // 3. begrenzen auf exakt 12 Zeichen
+                arsId = arsId.substring(0, 12);
+
+                $field.val(arsId);
+            }
+            else
+            {
+                outputMsg = 'ARS-Regionalschlüssel eingeben oder über ARS-Region Suchen.';
                 dialog(outputMsg, titleMsg, width)
                 return false;
             }
