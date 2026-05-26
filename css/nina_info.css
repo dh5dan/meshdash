@@ -133,8 +133,29 @@ body {
 .nina-label:hover {
     text-decoration: underline;
 }
+.ninaInfo {
+    font-size: 12px;
+}
+
+.nina-types {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.nina-option {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+}
 
 @media (max-width: 600px) {
+
+    /* Labels + Text im TD */
+    .table td {
+        display: block;
+    }
 
     .successHint, .failureHint {
         display: block;
@@ -147,18 +168,30 @@ body {
         font-size: 14px;
     }
 
-    td:first-child {
-        white-space: nowrap;
-    }
-
-    input[type="text"] {
-        max-width: 162px; /* Oder andere passende Breite */
+    /* Input unter den Text zwingen */
+    .table td input[type="text"] {
+        display: block;
+        width: 100%;
+        margin-top: 5px;
+        box-sizing: border-box;
     }
 
     input[type="button"] {
         width: 100%;
         padding: 10px;
         font-size: 14px;
+    }
+
+    .ui-dialog {
+        width: 90% !important;
+        left: 5% !important;
+        right: 5% !important;
+        max-width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    .ui-dialog .ui-dialog-content {
+        overflow-x: auto;
     }
 }
 

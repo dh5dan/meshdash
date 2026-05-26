@@ -14,7 +14,7 @@ auf eine webbasierte Plattform bringen soll.
 ![RELEASE](/docs/front_menu.jpg)
 
 MeshDash-SQL wurde primär für den Einsatz auf einem Raspberry Pi mit Linux entwickelt.  
-Es ist aber auch auf jedem Debian-OS in einer VM bis einschliesslich Trixie und sogar Docker lauffähig.  
+Es ist aber auch auf jedem Debian-OS in einer VM bis einschließlich Trixie und sogar Docker lauffähig.  
 Unter Windows ist MeshDash auch lauffähig mit etwas fundierten kenntnissen über Apache/PHP.   
 Benötigt werden u.a. die PHP-Module: socket, sqlite3, curl, zip und unzip.
 
@@ -22,7 +22,6 @@ Benötigt werden u.a. die PHP-Module: socket, sqlite3, curl, zip und unzip.
 [***Zu MeshDash auf Docker gibt es im letzten Abschnitt weitere Infos.***](#meshdash-auf-docker)
 
 ### ⚠️ Hinweis
-Die Unterstützung für **PHP 7.4** wird nur noch bis **v1.10.82** angeboten.  
 Ab **v1.10.84** ist **PHP >= 8.x** Voraussetzung!
 
 ---
@@ -57,6 +56,7 @@ Ab **v1.10.84** ist **PHP >= 8.x** Voraussetzung!
 - [UDP-Datagramm Weiterleitung](#hier-noch-ein-paar-bilder-aus-den-menüpunkten)
 - [MeshDash in Docker-Umgebung](#meshdash-auf-docker)
 - [Sensordaten-Diagramm](#sensordaten-diagramm)
+- [NINA-API integriert (derzeit nur Abfragen)](#nina-api) 
   
 Sollten Probleme auftreten, bitte im GitHub-Issue-Bereich melden – falls das Problem  
 noch nicht dort beschrieben ist.
@@ -97,6 +97,7 @@ Hier mal ein Beispiel:
 - install.sh - Installationsskript (bei Neuinstallation)
 - update_5d.sh - Update-Skript - (optional, da Webupdate möglich)
 - Manual-MeshDas-SQL.pdf - Ausführliches Benutzerhandbuch
+- Optional eine Autostart-Funktion von MeshDash (kein einmaliger Browseraufruf mehr nötig).
 
 ![FILES](/docs/files.jpg)
 
@@ -170,6 +171,11 @@ Aktivierung des Dark-Mode in den Basiseinstellungen
 <a id="send-command"></a>
 ![FILES](/docs/30_send_command.jpg)
 
+Hier mit ausgeklappter Favoritenliste.  
+Diese kann individuell an die eigenen Bedürfnisse angepasst werden.  
+![FILES](/docs/30_send_command_favorite.jpg)
+
+Komplette Kommandoliste mit Funktionsbeschreibung 
 ![FILES](/docs/31_send_command.jpg)
 
 ---
@@ -255,6 +261,31 @@ Eine Legende über die Bedeutung der farblichen Node-Icons.
 PopUp zu jedem Icon/Verbindung mit weiteren Informationen sofern verfügbar.
 
 ![FILES](/docs/mheard_osm.jpg)
+
+---
+<a id="nina-api"></a>
+### NINA-Api Abfrage
+Seit Version 1.10.98 ist die NINA-API in MeshDash integriert.  
+Aktuell werden ausschließlich Abfragen der einzelnen Warnkategorien unterstützt.  
+Die zuletzt verwendete ARS-Eingabe wird gespeichert.
+
+Hinweis zum amtlichen Regionalschlüssel (12 Stellen):  
+Die NINA-API stellt Daten ausschließlich auf Kreisebene bereit.  
+Bei manueller Eingabe wird der ARS automatisch mit Nullen auf 12 Stellen ergänzt.
+![FILES](/docs/nina_menu.jpg)
+
+Die Suche der ARS-Region verfügt über eine Autovervollständigung,  
+die ab dem dritten eingegebenen Buchstaben aktiviert wird.  
+Die zugrunde liegende Datenbank basiert auf dem Stand vom 31.07.2021.
+![FILES](/docs/nina_ars_region.jpg)
+
+Die Erläuterungen zu den Warnkategorien werden über ein Pop-up angezeigt.  
+Durch Klick auf eine Warnkategorie öffnet sich die entsprechende Beschreibung.
+![FILES](/docs/nina_hint.jpg)
+
+Hier eine Beispielabfrage der Warnkategorie NINA für **Rosenheim**  
+inklusive der Warnkategorie MOWAS.
+![FILES](/docs/nina_abfrage.jpg)
 
 ---
 

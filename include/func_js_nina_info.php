@@ -56,14 +56,14 @@
 
             let errors = [];
 
-            // Dashboard → braucht ARS
-            if (types.includes('dashboard') && ninaArsId === '') {
-                errors.push('ARS-ID fehlt!');
+            // NINA → braucht ARS
+            if (types.includes('nina') && ninaArsId === '') {
+                errors.push('ARS-Regionalschlüssel eingeben oder über ARS-Region Suchen.');
             }
 
-            // Katwarn → braucht Warning-ID
+            // Warnung → braucht Warning-ID
             if (types.includes('warning') && warningId === '') {
-                errors.push('Warning-ID fehlt!');
+                errors.push('Warning KAT-ID fehlt!');
             }
 
             // Fehler vorhanden → abbrechen
@@ -100,34 +100,32 @@
 
                 $field.val(arsId);
             }
-            else
-            {
-                outputMsg = 'ARS-Regionalschlüssel eingeben oder über ARS-Region Suchen.';
-                dialog(outputMsg, titleMsg, width)
-                return false;
-            }
 
             $("#pageLoading").show();
             $("#sendData").val(sendData);
             $("#frmNinaInfo").trigger('submit');
         });
 
-        $(".nina-label").on("click", function ()
+        $(".nina-label").on("click", function (e)
         {
             let type     = $(this).data('type');
             let titleMsg = 'Hinweis!';
             let outputMsg;
             let width    = 600;
 
+            //Verhindert, das Klick auf Text die Checkbox aktiviert wird.
+            e.preventDefault();
+            e.stopPropagation();
+
             const warnText = {
-                nina: "Nina – Offizielle Warn-App des BBK für Gefahrenlagen in Deutschland",
+                nina: "Nina – Offizielle Warn-App des BBK für Gefahrenlagen in Deutschland. Benötigt ARS-Regionsschlüssel",
                 katwarn: "Katwarn – Regionales Warnsystem für Katastrophen- und Gefahrenmeldungen",
                 biwapp: "Biwapp – Bürger-Info- und Warn-App für kommunale und regionale Meldungen",
                 mowas: "Mowas – Modular aufgebautes Warn- und Informationssystem für behördliche Gefahrenmeldungen",
                 dwd: "Dwd – Wetter- und Unwetterwarnungen des Deutschen Wetterdienstes",
                 lhp: "Lhp – Regionale/kommunale Informations- und Warnmeldungen",
                 police: "Police – Polizeiliche Warn- und Einsatzmeldungen (z. B. Fahndungen, Gefahrenlage)",
-                warning: "Warnung – Generische Sammelkategorie für allgemeine oder nicht klassifizierte Warnmeldungen"
+                warning: "Warnung – Generische Sammelkategorie für allgemeine oder nicht klassifizierte Warnmeldungen. Benötigt Warning KAT-ID"
             };
 
             // Checkbox im gleichen TD finden

@@ -1,3 +1,9 @@
+Version 1.11.02 SQL
+
+FEATURE: Anpassung des Responsive-Designs der NINA-API.
+BUGFIX:  ARS-Regionalschlüssel nur für die Warnkategorie NINA erforderlich.
+
+##############
 Version 1.11.00 SQL
 
 FEATURE: Unix-Socket-Forwarding in MeshDash zur Anbindung externer Prozesse/Services.
