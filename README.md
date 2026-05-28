@@ -6,6 +6,11 @@ MeshDash-SQL ist eine webbasierte Client-Anwendung zur Anzeige und Verwaltung vo
 auf Geräten mit der Firmware MeshCom.  
 Die Datenverarbeitung und -speicherung erfolgt über SQLite3, daher der Zusatz "SQL".
 
+MeshDash ist bewusst als PHP-basierte Web-Appliance gebaut.  
+Installation und Betrieb sollen ohne Linux-Kenntnisse über  
+die Weboberfläche möglich sein. Darum werden Hintergrundprozesse,  
+Zeitsteuerung, Updates, Backups und Diagnose innerhalb des PHP/Apache-Kontexts verwaltet.  
+
 Dieses Projekt basiert ursprünglich auf der Arbeit von DL4QB.  
 Mit seiner tatkräftigen Unterstützung wurde daraus dieses Projekt entwickelt.  
 Es handelt sich um ein Freizeit-Hobbyprojekt, das die Anwendung und Bedienung von MeshCom  

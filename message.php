@@ -425,6 +425,7 @@ else
     $sql = "SELECT * 
               FROM meshdash
              WHERE msgIsAck = 0
+               AND type != 'tele' 
                    $sqlAddon
           ORDER BY timestamps DESC
              LIMIT $maxScrollBackRows";
@@ -606,7 +607,6 @@ if ($result !== false)
             {
                 echo '</h3><hr>';
             }
-
         }
         else if ($type === 'msg')
         {

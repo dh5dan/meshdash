@@ -145,6 +145,15 @@ function initDatabases(): bool
         checkDbUpgrade('write_mutex');
     }
 
+    if (!file_exists('database/telemetrie_data.db'))
+    {
+        initSQLiteDatabase('telemetrie_data');
+    }
+    else
+    {
+        checkDbIntegrity('telemetrie_data');
+    }
+
     return true;
 }
 function initSQLiteDatabase($database): bool
@@ -994,6 +1003,45 @@ function initSQLiteDatabase($database): bool
         #Close and write Back WAL
         $db->close();
         unset($db);
+    }
+    elseif ($database == 'telemetrie_data')
+    {
+        #0: OFF – SQLite führt keine Synchronisierung durch (geringe Sicherheit, aber schnellere Schreiboperationen).
+        #1: NORMAL – Standardmodus, SQLite führt eine Synchronisierung durch, aber nicht für alle Schreibvorgänge (bessere Sicherheit, aber etwas langsamer).
+        #2: FULL – Höchste Sicherheit, bei dem alle Schreibvorgänge synchronisiert werden (höchste Sicherheit, aber auch langsamer).
+
+        #Open Database
+        $db = new SQLite3('database/telemetrie_data.db');
+        $db->exec('PRAGMA journal_mode = wal;');
+        $db->exec('PRAGMA synchronous = NORMAL;');
+
+        // Tabelle erstellen wenn nicht vorhanden
+        $db->exec("CREATE TABLE IF NOT EXISTS telemetrie_data 
+                                (
+                                  telemetrieId INTEGER PRIMARY KEY AUTOINCREMENT,              
+                                  timestamps DATETIME DEFAULT CURRENT_TIMESTAMP,
+                                  src_type TEXT,
+                                  type TEXT,
+                                  src TEXT,
+                                  via TEXT,
+                                  temp1 REAL,
+                                  temp2 REAL,
+                                  hum REAL,
+                                  qfe REAL,
+                                  qnh REAL,
+                                  gas REAL,
+                                  co2 REAL
+                                )
+                ");
+
+        #Close and write Back WAL
+        $db->close();
+        unset($db);
+
+        #Set Index
+        addIndex('telemetrie_data', 'telemetrie_data','idx_timestamps', 'timestamps');
+        addIndex('telemetrie_data', 'telemetrie_data','idx_src', 'src');
+        addIndex('telemetrie_data', 'telemetrie_data','idx_src_ts', 'src, timestamps');
     }
 
     return true;
