@@ -90,7 +90,7 @@ if ($phpVersionMajor < 8)
 if(chkOsIsWindows() === true && file_exists('database/parameter.db'))
 {
     $winPhpCliPath = (string) (getParamData('winPhpCliPath') ?? ''); // Nur für Windows. Pfad zur php.exe CLI
-    $phpExe = getPhpExeAndVersion($winPhpCliPath);
+    $phpExe        = getPhpExeAndVersion($winPhpCliPath);
 
     if ($phpExe['path'] === null)
     {

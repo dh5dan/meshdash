@@ -1,3 +1,10 @@
+Version 1.11.04 SQL
+
+FEATURE: Erfassung von Telemetriedaten in separater Datenbank.
+BUGFIX:  Korrektur Datenbankspeicherung als Type "EXEC"
+
+
+##############
 Version 1.11.02 SQL
 
 FEATURE: Anpassung des Responsive-Designs der NINA-API.

@@ -9,6 +9,7 @@ ini_set( 'default_charset', 'UTF-8' );
 
 require_once 'dbinc/param.php';
 require_once 'include/func_php_core.php';
+require_once 'include/func_php_index.php';
 
 // Relativer Pfad zu deinem Webverzeichnis
 $basePath        = __DIR__;
@@ -33,7 +34,7 @@ ini_set('max_execution_time', 0);
 #Check ob aufruf via CLI
 if (php_sapi_name() !== 'cli')
 {
-    die("Aufruf nur via CLI. Abbruch.");
+   die("Aufruf nur via CLI. Abbruch.");
 }
 
 ini_set('serialize_precision', 14); //Must set it's a Bug in PHP > 7.1.x
@@ -41,6 +42,12 @@ ini_set('precision', 14);
 
 #Check what oS is running
 $osIssWindows = chkOsIsWindows();
+
+#FALLBACK. Wenn Datenbank noch nicht existiert, dann neu initiieren.
+#Muss immer zuerst stattfinden!
+#Wird zwar auch in index gemacht aber beim Update,
+#wenn der Prozess neu gestartet wird, ist sie u.U. noch nicht da
+initDatabases();
 
 if ($debugFlag === true)
 {
@@ -119,12 +126,12 @@ else
 
         if ($pid != 0)
         {
-            $pidSplit   = explode('/', $pid);
-            $pidId      = $pidSplit[0];
+            $pidSplit = explode('/', $pid);
+            $pidId    = $pidSplit[0];
 
             if ($pidId == '-')
             {
-                $errorText = date('Y-m-d H:i:s') . " - Linux: Prozess wurde nicht als Owner: www-data gestartet pid: [$pidId]" . "\n";
+                $errorText  = date('Y-m-d H:i:s') . " - Linux: Prozess wurde nicht als Owner: www-data gestartet pid: [$pidId]" . "\n";
                 $errorText .= date('Y-m-d H:i:s') . " - Prüfen ob alter Cron-Eintrag existiert und diesen Löschen! Abbruch." . "\n";
                 file_put_contents($errorFile, $errorText,FILE_APPEND);
                 exit();
@@ -161,12 +168,6 @@ if (!($sendSock = socket_create(AF_INET, SOCK_DGRAM, 0)))
     exit();
 }
 
-// Socket Option
-#Reuse an existing Address SO_REUSEADDR
-#socket_set_option ($sock, SOL_SOCKET, SO_REUSEADDR, 1);
-#Reuse an existing Port SO_REUSEPort ->error
-#socket_set_option ($sock, SOL_SOCKET, 15, 1);
-
 // Bind the source address to Socket and listen on all Ip at Port 1799
 if (!@socket_bind($receiveSock, "0.0.0.0", 1799))
 {
@@ -201,10 +202,11 @@ while (true)
         file_put_contents($debugLogFile, $debugText, FILE_APPEND);
     }
 
-    $logFileName    = 'log/udp_msg_data_' . date('Ymd') . '.log';
-    $errorFile      = 'log/udp_receiver_error_' . date('Ymd') . '.log';
-    $callMsgLogFile = 'log/call_message_' . date('Ymd') . '.log';
-    $fileUdpForward = 'log/udp_forward_msg_data_' . date('Ymd') . '.log';
+    $logFileName     = 'log/udp_msg_data_' . date('Ymd') . '.log';
+    $logTeleFileName = 'log/udp_tele_msg_data_' . date('Ymd') . '.log';
+    $errorFile       = 'log/udp_receiver_error_' . date('Ymd') . '.log';
+    $callMsgLogFile  = 'log/call_message_' . date('Ymd') . '.log';
+    $fileUdpForward  = 'log/udp_forward_msg_data_' . date('Ymd') . '.log';
 
     $receivedBytes  = socket_recvfrom($receiveSock, $udpBuffer, 512, 0, $remote_ip, $remote_port);
 
@@ -299,7 +301,7 @@ while (true)
         file_put_contents($debugLogFile, $debugText, FILE_APPEND);
     }
 
-    ####################################################################################################
+    ########################################################################################################
 
     # Wenn aktiv dann weiterleiten
     if ($udpForwardingEnable == 1 && $udpFwIp != '' && $udpFwPort != 0)
@@ -324,8 +326,17 @@ while (true)
         }
     }
 
+    #Decode JSON into Array
+    $bufJsonDecodedArray = json_decode($udpBuffer, true); // Decode JSON aus udpBuffer
+
+    #Wenn ungültiges JSON erkannt, Fehler loggen und auf nächstes Paket warten.
+    if (!is_array($bufJsonDecodedArray)) {
+        $errorText = date('Y-m-d H:i:s') . " - Invalid JSON UDP packet: $udpBuffer\n";
+        file_put_contents($errorFile, $errorText, FILE_APPEND);
+        continue;
+    }
+
     #Add Timestamp to JSON
-    $bufJsonDecodedArray              = json_decode($udpBuffer, true); // Decode JSON aus udpBuffer
     $bufJsonDecodedArray['timestamp'] = date('Y-m-d H:i:s'); // Füge Datum an
     $bufJsonTs                        = json_encode($bufJsonDecodedArray); //Encode wieder als JSON
 
@@ -352,7 +363,7 @@ while (true)
     $aprsSymbolGroup = $dbArraySqliteJson['aprs_symbol_group'] ?? ''; // /
     $hwId            = $dbArraySqliteJson['hw_id'] ?? ''; // 3
     $altitude        = $dbArraySqliteJson['alt'] ?? ''; // 344 (Höhe in m)
-    $battery         = $dbArraySqliteJson['batt'] ?? '';  // Batterie-Kapazität in %
+    $battery         = $dbArraySqliteJson['batt'] ?? 0;  // Batterie-Kapazität in %
     $dst             = $dbArraySqliteJson['dst'] ?? ''; // 995 | call
     $firmware        = $dbArraySqliteJson['firmware'] ?? ''; // Firmware 4.34
     $fwSubVersion    = $dbArraySqliteJson['fw_sub'] ?? ''; // FirmwareSUb Version: v
@@ -375,16 +386,22 @@ while (true)
         file_put_contents($debugLogFile, $debugText, FILE_APPEND);
     }
 
-    #Open Database
-    $db = new SQLite3('database/meshdash.db');
-    $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
-    $db->exec('PRAGMA synchronous = NORMAL;');
+    #Wenn was anderes als Telemetrie erkannt dann speichern
+    if ($type !== 'tele')
+    {
+        #Open Database
+        $db = new SQLite3('database/meshdash.db');
+        $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
+        $db->exec('PRAGMA synchronous = NORMAL;');
 
-    #Escape Msg
-    $msg = SQLite3::escapeString($msg);
+        #Escape Msg
+        $msg     = SQLite3::escapeString($msg);
+        $srcType = SQLite3::escapeString($srcType);
+        $type    = SQLite3::escapeString($type);
+        $src     = SQLite3::escapeString($src);
 
-    #Store in SQLite DB
-    $sql = "REPLACE INTO meshdash (msg_id, 
+        #Store in SQLite DB
+        $sql = "REPLACE INTO meshdash (msg_id, 
                                    timestamps, 
                                    msg, 
                                    src_type, 
@@ -424,31 +441,102 @@ while (true)
                                   )
            ";
 
-    $logArray   = array();
-    $logArray[] = "udpReceiver: Database: database/meshdash.db";
+        $logArray = array();
+        $logArray[] = "udpReceiver: Database: database/meshdash.db";
 
-    $res = safeDbRun($db, $sql, 'query', $logArray);
+        $res = safeDbRun($db, $sql, 'exec', $logArray);
 
-    #Close Database connection
-    $db->close();
-    unset($db);
+        #Close Database connection
+        $db->close();
+        unset($db);
 
-    #Trigger Message-Seite via CURL um Keywords abzuarbeiten wenn Headless
-    $resCallMessagePage = callMessagePage();
+        #Trigger Message-Seite via CURL um Keywords abzuarbeiten wenn Headless
+        $resCallMessagePage = callMessagePage();
 
-    #Prüfe ob Logging aktiv ist
-    if (getParamData('doLogEnable') == 1)
+        #Prüfe ob Logging aktiv ist
+        if (getParamData('doLogEnable') == 1)
+        {
+            if ($resCallMessagePage === true)
+            {
+                $callMsgText = date('Y-m-d H:i:s') . " - Message.php Triggered via Curl:" . BASE_PATH_URL . "\n";
+            }
+            else
+            {
+                $callMsgText = date(
+                        'Y-m-d H:i:s'
+                    ) . " - Error: Message.php NOT Triggered via Curl:" . BASE_PATH_URL . "\n";
+            }
+
+            file_put_contents($callMsgLogFile, $callMsgText, FILE_APPEND);
+        }
+    }
+
+    #Wenn Telemetrie erkannt dann separat speichern
+    if ($type === 'tele')
     {
-        if ($resCallMessagePage === true)
-        {
-            $callMsgText = date('Y-m-d H:i:s') . " - Message.php Triggered via Curl:" . BASE_PATH_URL . "\n";
-        }
-        else
-        {
-            $callMsgText = date('Y-m-d H:i:s') . " - Error: Message.php NOT Triggered via Curl:" . BASE_PATH_URL . "\n";
-        }
+        #Open Database
+        $db = new SQLite3('database/telemetrie_data.db');
+        $db->busyTimeout(SQLITE3_BUSY_TIMEOUT); // warte wenn busy in Millisekunden
+        $db->exec('PRAGMA synchronous = NORMAL;');
 
-        file_put_contents($callMsgLogFile, $callMsgText, FILE_APPEND);
+        // Split nur beim ersten Komma
+        $srcParts = explode(',', $src, 2);
+        $src      = trim($srcParts[0] ?? '');
+        $via      = trim($srcParts[1] ?? '');
+
+        $src = SQLite3::escapeString($src);
+        $via = SQLite3::escapeString($via);
+
+        $temp1 = (float) ($dbArraySqliteJson['temp1'] ?? 0);
+        $temp2 = (float) ($dbArraySqliteJson['temp2'] ?? 0);
+        $hum   = (float) ($dbArraySqliteJson['hum'] ?? 0);
+        $qfe   = (float) ($dbArraySqliteJson['qfe'] ?? 0);
+        $qnh   = (float) ($dbArraySqliteJson['qnh'] ?? 0);
+        $gas   = (float) ($dbArraySqliteJson['gas'] ?? 0);
+        $co2   = (float) ($dbArraySqliteJson['co2'] ?? 0);
+
+        #Store in SQLite DB
+        $sql = "REPLACE INTO telemetrie_data (src_type, 
+                                   type, 
+                                   src, 
+                                   via,
+                                   temp1, 
+                                   temp2, 
+                                   hum, 
+                                   qfe, 
+                                   qnh, 
+                                   gas, 
+                                   co2  
+                                  ) 
+                           VALUES ('$srcType', 
+                                   '$type', 
+                                   '$src',
+                                   '$via',
+                                   '$temp1',
+                                   '$temp2',                                                 
+                                   '$hum', 
+                                   '$qfe',
+                                   '$qnh',
+                                   '$gas',
+                                   '$co2'        
+                                  )
+           ";
+
+        $logArray   = array();
+        $logArray[] = "udpReceiver: Database: database/telemetrie_data.db";
+
+        $res = safeDbRun($db, $sql, 'exec', $logArray);
+
+        #Close Database connection
+        $db->close();
+        unset($db);
+
+        #Prüfe ob Logging aktiv ist und Logge empfangenes UDP-Packet + TimeStamp
+        if (getParamData('doLogEnable') == 1)
+        {
+            $udpBufferLogText = date('Y-m-d H:i:s') . " - " . $bufJsonTs . ",\n";
+            file_put_contents($logTeleFileName, $udpBufferLogText, FILE_APPEND);
+        }
     }
 
     #Rekonstruiere PID wenn nicht vorhanden
