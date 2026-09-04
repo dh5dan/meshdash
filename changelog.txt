@@ -1,3 +1,16 @@
+Version 1.11.04 SQL
+
+FEATURE: Erfassung von Telemetriedaten in einer separaten Datenbank.
+FEATURE: Init Database im UDP-Receiver implementiert.
+         Stellt sicher, dass die Datenbank auch bei einem vorzeitigen Start des
+         Background-Prozesses bereits initialisiert wird, bevor neue Daten
+         empfangen und gespeichert werden.
+BUGFIX:  Korrektur der Datenbankspeicherung für den Typ `EXEC`.
+BUGFIX:  TELE als Message-Type bei „Kein Filter“ ergänzt.
+         Verhindert, dass Telemetriemeldungen bei kleinem Scrollback nicht
+         angezeigt werden.
+
+##############
 Version 1.11.02 SQL
 
 FEATURE: Anpassung des Responsive-Designs der NINA-API.

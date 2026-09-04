@@ -801,6 +801,7 @@ function logRotate(): bool|array
         "tx_json_data_",
         "tx_queue_json_data_",
         "udp_msg_data_",
+        "udp_tele_msg_data_",
         "send_queue_mheard_",
         "send_mheard_",
         "db_integrity_",
