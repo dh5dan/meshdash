@@ -224,8 +224,11 @@ if (shouldBuild($versionFile, $currentNmBuildVersion)) {
 #####################################################################################
 ##########  Top-Bereich
 #####################################################################################
-#Setzte flag wenn neue MeshCom Gui erkannt wurde
+#Setzte flag wenn neue MeshCom/Mheard (>=4.40) Gui erkannt wurde
 checkLoraNewGui();
+
+#Hidden Field, damit Jquery das Flag zur Menüsteuerung auswerten kann
+echo '<input type="hidden" id="isNewMheardGui" value=\'' . getParamdata('isNewMheardGui') . '\' />';
 
 // Hier definierte Menü-Tabs aus der SQLite-Datenbank im JSON-Format holen.
 $tabsJson = getGroupTabsJson();
@@ -239,7 +242,7 @@ if ($autostartBgProcess === true && $sendData !== '1')
     $paramStartUdpBgProcess['task'] = 'udp';
     startBgProcess($paramStartUdpBgProcess);
 
-    #Prüfe ob SendQueue Aktiv ist und starte Cron-loop
+    #Prüfe ob SendQueue aktiv ist und starte Cron-Loop
     if ($sendQueueEnabled == 1)
     {
         $paramStartCronBgProcess['task'] = 'cron';

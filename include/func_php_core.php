@@ -2,7 +2,7 @@
 /** @noinspection SqlWithoutWhere */
 function getParamData($key)
 {
-    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    #Ermittle Aufrufpfad, um Datenbankpfad korrekt zu setzten
     $basename       = pathinfo(getcwd())['basename'];
     $dbFilenameSub  = '../database/parameter.db';
     $dbFilenameRoot = 'database/parameter.db';
@@ -49,7 +49,7 @@ function getParamData($key)
 }
 function setParamData($key, $value, $mode = 'int'): bool
 {
-    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    #Ermittle Aufrufpfad, um Datenbankpfad korrekt zu setzten
     $basename       = pathinfo(getcwd())['basename'];
     $dbFilenameSub  = '../database/parameter.db';
     $dbFilenameRoot = 'database/parameter.db';
@@ -101,7 +101,7 @@ function setParamData($key, $value, $mode = 'int'): bool
 }
 function getBeaconData($key)
 {
-    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    #Ermittle Aufrufpfad, um Datenbankpfad korrekt zu setzten
     $basename       = pathinfo(getcwd())['basename'];
     $dbFilenameSub  = '../database/beacon.db';
     $dbFilenameRoot = 'database/beacon.db';
@@ -148,7 +148,7 @@ function getBeaconData($key)
 }
 function setBeaconData($key, $value, $mode = 'int'): bool
 {
-    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    #Ermittle Aufrufpfad, um Datenbankpfad korrekt zu setzten
     $basename       = pathinfo(getcwd())['basename'];
     $dbFilenameSub  = '../database/beacon.db';
     $dbFilenameRoot = 'database/beacon.db';
@@ -200,7 +200,7 @@ function setBeaconData($key, $value, $mode = 'int'): bool
 }
 function getThTempData(): bool|array
 {
-    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    #Ermittle Aufrufpfad, um Datenbankpfad korrekt zu setzten
     $basename       = pathinfo(getcwd())['basename'];
     $dbFilenameSub  = '../database/sensor_th_temp.db';
     $dbFilenameRoot = 'database/sensor_th_temp.db';
@@ -265,7 +265,7 @@ function getThTempData(): bool|array
 }
 function getThIna226Data(): bool|array
 {
-    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    #Ermittle Aufrufpfad, um Datenbankpfad korrekt zu setzten
     $basename       = pathinfo(getcwd())['basename'];
     $dbFilenameSub  = '../database/sensor_th_ina226.db';
     $dbFilenameRoot = 'database/sensor_th_ina226.db';
@@ -346,7 +346,7 @@ function getThIna226Data(): bool|array
 }
 function getKeywordsData($msgId): bool|array
 {
-    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    #Ermittle Aufrufpfad, um Datenbankpfad korrekt zu setzten
     $basename       = pathinfo(getcwd())['basename'];
     $dbFilenameSub  = '../database/keywords.db';
     $dbFilenameRoot = 'database/keywords.db';
@@ -417,7 +417,7 @@ function setKeywordsData(array $paramSetKeyword): bool
     $execReturnMsg = $paramSetKeyword['execReturnMsg'];
     $execGroup     = $paramSetKeyword['execGroup'];
 
-    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    #Ermittle Aufrufpfad, um Datenbankpfad korrekt zu setzten
     $basename       = pathinfo(getcwd())['basename'];
     $dbFilenameSub  = '../database/keywords.db';
     $dbFilenameRoot = 'database/keywords.db';
@@ -487,7 +487,7 @@ function updateKeywordsData(string $msgId): bool
 {
     $execMsgSendTimestamp = date('Y-m-d H:i:s');
 
-    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    #Ermittle Aufrufpfad, um Datenbankpfad korrekt zu setzten
     $basename       = pathinfo(getcwd())['basename'];
     $dbFilenameSub  = '../database/keywords.db';
     $dbFilenameRoot = 'database/keywords.db';
@@ -536,7 +536,7 @@ function chkOsIsWindows(): bool
 }
 function updateMeshDashData($msgId, $key, $value, $doNothing = false): bool
 {
-    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    #Ermittle Aufrufpfad, um Datenbankpfad korrekt zu setzten
     $basename       = pathinfo(getcwd())['basename'];
     $dbFilenameSub  = '../database/meshdash.db';
     $dbFilenameRoot = 'database/meshdash.db';
@@ -931,6 +931,12 @@ function isMobile(): bool
 {
     return (bool) preg_match('/(android|iphone|ipad|ipod|blackberry|windows phone)/i', $_SERVER['HTTP_USER_AGENT']);
 }
+
+function isMobileApple(): bool
+{
+    return (bool) preg_match('/(iphone|ipad|ipod)/i', $_SERVER['HTTP_USER_AGENT']);
+}
+
 function checkBgTask($task): bool|string|null
 {
     return shell_exec(getTaskCmd($task));
@@ -1028,7 +1034,7 @@ function setTxQueue($txQueueData): bool
         return true;
     }
 
-    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    #Ermittle Aufrufpfad, um Datenbankpfad korrekt zu setzten
     $basename        = pathinfo(getcwd())['basename'];
     $dbFilenameSub   = '../database/tx_queue.db';
     $dbFilenameRoot  = 'database/tx_queue.db';
@@ -1093,7 +1099,7 @@ function setTxQueue($txQueueData): bool
 }
 function getTxQueue(): bool|array
 {
-    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    #Ermittle Aufrufpfad, um Datenbankpfad korrekt zu setzten
     $basename          = pathinfo(getcwd())['basename'];
     $dbFilenameSub     = '../database/tx_queue.db';
     $dbFilenameRoot    = 'database/tx_queue.db';
@@ -1174,7 +1180,7 @@ function getTxQueue(): bool|array
 }
 function updateTxQueue($txQueueId): bool
 {
-    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    #Ermittle Aufrufpfad, um Datenbankpfad korrekt zu setzten
     $basename       = pathinfo(getcwd())['basename'];
     $dbFilenameSub  = '../database/tx_queue.db';
     $dbFilenameRoot = 'database/tx_queue.db';
@@ -1273,10 +1279,11 @@ function getStatusIcon(string $status, bool $withLabel = false): string
         'plot'       => ['symbol' => '&#128201;', 'label' => 'menu.plot'],  // 📉
         'gps'        => ['symbol' => '&#x1F6F0;&#65039;', 'label' => 'menu.gps-info'],  // 🛰️
 
-        'mheard'      => ['symbol' => '&#128066;&#65039;', 'label' => 'MHeard'],  // 👂
-        'mheard-page' => ['symbol' => '&#x1F3A7;&#65039;', 'label' => 'MHeard-Lokal'],  // 🎧
-        'mheard-osm'  => ['symbol' => '&#x1F5FA;&#xFE0F;', 'label' => 'MHeard-Map'],  // 🗺️
-        'mheard-osm-full'  => ['symbol' => '&#x1F5BC;&#xFE0F;', 'label' => 'Fullsize-Map'],  // 🖼️
+        'mheard'            => ['symbol' => '&#128066;&#65039;', 'label' => 'MHeard'],  // 👂
+        'mheard-page'       => ['symbol' => '&#x1F3A7;&#65039;', 'label' => 'MHeard-Lokal'],  // 🎧
+        'mheard-osm'        => ['symbol' => '&#x1F5FA;&#xFE0F;', 'label' => 'MHeard-Map'],  // 🗺️
+        'mheard-osm-full'   => ['symbol' => '&#x1F5BC;&#xFE0F;', 'label' => 'Fullsize-Map'],  // 🖼️
+        'mheard-neighbours' => ['symbol' => '&#x1F3D8;&#xFE0F;', 'label' => 'Nachbarn'],  // 🏘️
 
         'beacon'   => ['symbol' => ' &#x1F9ED;&#65039;', 'label' => 'Bake'],  // 🧭
         'send-cmd' => ['symbol' => '&#128228;', 'label' => 'menu.sende-befehl'],  // 📤
@@ -1346,7 +1353,7 @@ function stopBgProcess($paramBgProcess): bool|string|null
             $bgTaskPid = getParamData('cronLoopPid');
     }
 
-    #Pidfile liegt im Log Verzeichnis
+    #Das Pid-File liegt im Log Verzeichnis
     if ($taskBg  == 'udp' || $taskBg  == 'cron' || $taskBg == 'cronBeacon' || $taskBg == 'cronMheard' || $taskBg == 'cronGetSensorData')
     {
         $execDir         = 'log';
@@ -1366,7 +1373,7 @@ function stopBgProcess($paramBgProcess): bool|string|null
         echo "<br>#652#bgPidFile: $bgPidFile";
         echo "<br>#652#checkBgTaskCmd: $checkBgTaskCmd";
         echo "<br>#652#bgTaskKillCmd: $bgTaskKillCmd";
-        echo "<br>#652#taskResultBg: $taskResultBg<br>vardump: ";
+        echo "<br>#652#taskResultBg: $taskResultBg<br>Var-Dump: ";
         var_dump($taskResultBg);
     }
 
@@ -1623,7 +1630,7 @@ function callMessagePage(): bool
 }
 function debugLog($logArray): bool
 {
-    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    #Ermittle Aufrufpfad, um Datenbankpfad korrekt zu setzten
     $basename        = pathinfo(getcwd())['basename'];
     $logFilenameSub  = '../log/debug_log';
     $logFilenameRoot = 'log/debug_log';
@@ -1811,7 +1818,7 @@ function autoPurgeTable(string $tableName, string $paramEnable, string $paramDay
 
     $daysPurge = (int) getParamData($paramDaysParam);
 
-    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    #Ermittle Aufrufpfad, um Datenbankpfad korrekt zu setzten
     $basename       = pathinfo(getcwd())['basename'];
     $dbFilenameSub  = '../database/' . $dbFile;
     $dbFilenameRoot = 'database/' . $dbFile;
@@ -1857,16 +1864,13 @@ function autoPurgeTable(string $tableName, string $paramEnable, string $paramDay
         $dbWrite->exec('PRAGMA synchronous = NORMAL;');
 
         $logArray = ["AutoPurge $tableName DELETE"];
-        $res      = safeDbRun($dbWrite, $sqlDelete, 'exec', $logArray);
+        safeDbRun($dbWrite, $sqlDelete, 'exec', $logArray);
 
         $dbWrite->close();
         unset($dbWrite);
 
         releasePurgeLock($tableName);
 
-        if ($res === false) {
-            return; // Fehler beim Löschen
-        }
     } else {
         markPurgeChecked($tableName, $procName);
     }
@@ -1917,7 +1921,7 @@ function sqliteGetWALCheckpoint(string $database): bool
     #Schreibe Daten aus WAL sofort in DB zurück.
     $database = $database . '.db';
 
-    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    #Ermittle Aufrufpfad, um Datenbankpfad korrekt zu setzten
     $basename              = pathinfo(getcwd())['basename'];
     $dbFilenameSub         = '../database/' . $database;
     $dbFilenameRoot        = 'database/' . $database;
@@ -1969,7 +1973,7 @@ function sqliteGetWALCheckpoint(string $database): bool
 }
 function tryAcquirePurgeLock(string $tableName, string $procName): bool
 {
-    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    #Ermittle Aufrufpfad, um Datenbankpfad korrekt zu setzten
     $basename       = pathinfo(getcwd())['basename'];
     $dbFilenameSub  = '../database/write_mutex.db';
     $dbFilenameRoot = 'database/write_mutex.db';
@@ -2033,7 +2037,7 @@ function tryAcquirePurgeLock(string $tableName, string $procName): bool
 }
 function releasePurgeLock(string $tableName): void
 {
-    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    #Ermittle Aufrufpfad, um Datenbankpfad korrekt zu setzten
     $basename       = pathinfo(getcwd())['basename'];
     $dbFilenameSub  = '../database/write_mutex.db';
     $dbFilenameRoot = 'database/write_mutex.db';
@@ -2062,7 +2066,7 @@ function releasePurgeLock(string $tableName): void
 }
 function isPurgeDue(string $tableName, int $mode = 1): bool
 {
-    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    #Ermittle Aufrufpfad, um Datenbankpfad korrekt zu setzten
     $basename       = pathinfo(getcwd())['basename'];
     $dbFilenameSub  = '../database/write_mutex.db';
     $dbFilenameRoot = 'database/write_mutex.db';
@@ -2297,7 +2301,7 @@ function releaseAutoPurgeLock(): void
  */
 function ensureColumnIsReal(string $dbFilename, string $table, string $column): bool
 {
-    $sqliteVersion = SQLite3::version()['versionString'];
+    #$sqliteVersion    = SQLite3::version()['versionString'];
     $sqliteVersionRaw = SQLite3::version()['versionNumber'];
 
     if ($sqliteVersionRaw < 3035000)
@@ -2368,6 +2372,12 @@ function ensureColumnIsReal(string $dbFilename, string $table, string $column): 
 
 function checkLoraNewGui(): array
 {
+    $basename            = pathinfo(getcwd())['basename'];
+    $includeFilenameSub  = '../include/func_php_lora_info.php';
+    $includeFilenameRoot = 'include/func_php_lora_info.php';
+    $includeFilename     = $basename == 'menu' ? $includeFilenameSub : $includeFilenameRoot;
+    require_once $includeFilename;
+
     $loraIp      = getParamData('loraIp');
     $actualHost  = 'http';
     $triggerLink = $actualHost . '://' . $loraIp . '/getparam/?setcall=';
@@ -2378,10 +2388,14 @@ function checkLoraNewGui(): array
     #Prüfe, ob Node-Passwort gesetzt ist und entsperre Node
     $returnArray = checkNodePassword($loraIp);
 
+    $returnArray['isNewMheardGui'] = 0; //Setzte Defaultwert für alte Mheard GUI
+    setParamData('isNewMheardGui',0);
+
     $ch = curl_init($triggerLink);
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5); // 5 Sekunden Connect-Timeout
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_TIMEOUT, 15); // 15 Sekunden Timeout
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
     $response = curl_exec($ch);
 
     if ($response === false)
@@ -2409,6 +2423,21 @@ function checkLoraNewGui(): array
         setParamData('isNewMeshGui',0);
         $returnArray['isNewMeshGui'] = 0;
         return $returnArray;
+    }
+
+    $resGetLoraInfo2 = getLoraInfo2($loraIp);
+
+    preg_match('/^Meshcom\s+([0-9.]+)/', $resGetLoraInfo2['firmware'], $matches);
+    $firmwareVersion = $matches[1] ?? '';
+
+    preg_match('/^Meshcom\s+([0-9.a-zA-Z]+)/', $resGetLoraInfo2['firmware'], $matches);
+    $firmwareVersionFull = $matches[1] ?? '';
+    setParamData('nodeFwVersion', $firmwareVersionFull, 'text');
+
+    if ($firmwareVersion !== '' && version_compare($firmwareVersion, '4.40', '>=')) {
+        // Firmware >= 4.40
+        $returnArray['isNewMheardGui'] = 1; //Setzte Defaultwert für neue Mheard GUI
+        setParamData('isNewMheardGui',1);
     }
 
     #Neue GUI erkannt
@@ -2484,6 +2513,7 @@ function callAjaxMheard(): bool|string
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postData));
     curl_setopt($ch, CURLOPT_TIMEOUT, 100);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 
     $response = curl_exec($ch);
 
@@ -2503,21 +2533,21 @@ function callAjaxMheard(): bool|string
     return $response;
 }
 
-#Workaraound wenn php-mbstring nicht installiert ist.
+#Workaround wenn php-mbstring nicht installiert ist.
 if (!function_exists('mb_strlen')) {
     function mb_strlen($str) {
         return strlen($str);
     }
 }
 
-#Workaraound wenn php-mbstring nicht installiert ist.
+#Workaround wenn php-mbstring nicht installiert ist.
 if (!function_exists('mb_stripos')) {
     function mb_stripos($haystack, $needle, $offset = 0) {
         return stripos($haystack, $needle, $offset);
     }
 }
 
-#Workaraound wenn php-mbstring nicht installiert ist.
+#Workaround wenn php-mbstring nicht installiert ist.
 if (!function_exists('mb_substr')) {
     function mb_substr($str, $start, $length = null) {
         return substr($str, $start, $length);
@@ -2614,4 +2644,77 @@ function apply_highlight($a_json, $parts)
     }
 
     return $a_json;
+}
+
+function getLoraFw()
+{
+    $url       = 'http://' . getParamData('loraIp') . '/?page=info';
+    $info      = array();
+    $html      = @file_get_contents($url);
+
+    if ($html === false)
+    {
+        echo '<tr>';
+        echo '<th colspan="3" ><span class="failureHint">Fehler beim Abrufen der Info-Seite für FW-Abfrage.</span></th>';
+        echo '</tr>';
+
+        return $info;
+    }
+
+    $doc = new DOMDocument();
+    libxml_use_internal_errors(true);
+    $doc->loadHTML($html);
+    libxml_clear_errors();
+    libxml_use_internal_errors(false);
+
+    $xpath = new DOMXPath($doc);
+
+    #Anpassung an V 4.35c. Trigger auf Css Klasse hat sich geändert.
+    $rows  = $xpath->query('//table[contains(concat(" ", normalize-space(@class), " "), " table ")]//tr');
+
+    foreach ($rows as $row) {
+        $tds = $row->getElementsByTagName('td');
+
+        if ($tds->length === 2) {
+            $key   = trim($tds->item(0)->nodeValue);
+            $value = trim($tds->item(1)->nodeValue);
+
+            // Normalize key
+            $key = strtolower($key);
+            $key = str_replace([' ', '-', ':', '(', ')'], '_', $key);
+
+            switch ($key) {
+                case 'call':
+                case 'hardware':
+                case 'firmware':
+                case 'start_date':
+                case 'utc_offset':
+                case 'battery':
+                case 'country':
+                case 'frequency':
+                case 'bandwidth':
+                case 'spreading_factor_sf':
+                case 'coding_rate_cr':
+                case 'tx_power':
+                case 'wifi_ap':
+                case 'wifi_ssid':
+                case 'hasipaddress':
+                case 'ip_address':
+                case 'gw_address':
+                case 'dns_address':
+                case 'sub_mask':
+                    $info[$key] = $value;
+                    break;
+
+                default:
+                    // Fallback: speichern, wenn noch nicht gesetzt
+                    if (!isset($info[$key])) {
+                        $info[$key] = $value;
+                    }
+                    break;
+            }
+        }
+    }
+
+    return $info;
 }

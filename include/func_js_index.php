@@ -593,6 +593,9 @@
                    }, 50); // 50ms reichen
                    window.open('mheard_map_fullsize.php', '_blank');
                    break;
+               case 'mHeard-neighbours':
+                   iframeSrc = 'menu/mheard_neighbours.php';
+                   break;
                case 'beacon':
                    iframeSrc = 'menu/config_beacon.php';
                    break;

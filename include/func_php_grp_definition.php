@@ -1,7 +1,7 @@
 <?php
 function saveGroupsSettings(): bool
 {
-    #Ermitte Aufrufpfad um Datenbankpfad korrekt zu setzten
+    #Ermittle Aufrufpfad, um Datenbankpfad korrekt zu setzten
     $basename       = pathinfo(getcwd())['basename'];
     $dbFilenameSub  = '../database/groups.db';
     $dbFilenameRoot = 'database/groups.db';
@@ -189,7 +189,7 @@ function getGroupTabsJson(): bool|string
     $tabs[1]['id'] = -1;
     $tabs[1]['label'] = 'Kein Filter';
 
-    #Userdefined Tabs
+    #User defined Tabs
     $resGetGroupParameter = getGroupParameter(1);
 
     if ($resGetGroupParameter !== false)

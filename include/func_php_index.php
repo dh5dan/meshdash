@@ -454,7 +454,15 @@ function initSQLiteDatabase($database): bool
                                   mhSnr INTEGER,
                                   mhDist REAL,
                                   mhPl INTEGER,
-                                  mhM INTEGER
+                                  mhM INTEGER,
+                                  lastHeard TEXT,
+                                  hearsMe TEXT,
+                                  relayRole TEXT,
+                                  onlyItHears TEXT,
+                                  itHears TEXT,
+                                  itReports TEXT,
+                                  gateway TEXT,
+                                  lastFrame TEXT
                                 )
                 ");
 
@@ -469,7 +477,7 @@ function initSQLiteDatabase($database): bool
     {
         #0: OFF – SQLite führt keine Synchronisierung durch (geringe Sicherheit, aber schnellere Schreiboperationen).
         #1: NORMAL – Standardmodus, SQLite führt eine Synchronisierung durch, aber nicht für alle Schreibvorgänge (bessere Sicherheit, aber etwas langsamer).
-        #2: FULL – Höchste Sicherheit, bei dem alle Schreibvorgänge synchronisiert werden (höchste Sicherheit, aber auch langsamer).
+        #2: FULL – höchste Sicherheit, bei dem alle Schreibvorgänge synchronisiert werden (höchste Sicherheit, aber auch langsamer).
 
         #Open Database
         $db = new SQLite3('database/groups.db');
@@ -1451,6 +1459,34 @@ function checkDbUpgrade($database): void
         }
     }
 
+    if (checkVersion(VERSION, '1.11.06', '>='))
+    {
+        if ($database == 'mheard')
+        {
+            #Mheard FW >= 4.40 implementiert
+            $migrationKey = '1.11.06_db_upgrade';
+
+            if (!upgradeApplied($migrationKey))
+            {
+                if (!columnExists($database, 'mheard', 'hearsMe'))
+                {
+                    // Spalte hinzufügen
+                    addColumn($database, 'mheard', 'lastHeard');
+                    addColumn($database, 'mheard', 'hearsMe');
+                    addColumn($database, 'mheard', 'relayRole');
+                    addColumn($database, 'mheard', 'onlyItHears');
+                    addColumn($database, 'mheard', 'itHears');
+                    addColumn($database, 'mheard', 'itReports');
+                    addColumn($database, 'mheard', 'gateway');
+                    addColumn($database, 'mheard', 'lastFrame');
+                }
+
+                #Markieren als ausgeführt
+                markUpgradeApplied($migrationKey);
+            }
+        }
+    }
+
     if ($doRestartBgProcess === true)
     {
         ## Prozess neu laden damit Feld befüllt wird
@@ -1465,10 +1501,12 @@ function checkDbUpgrade($database): void
 }
 function showMenuIcons(): void
 {
+    $isNewMheardGui = (int) getParamdata('isNewMheardGui');
+
     echo '<div id="menu-icon" class="topMenu">&#9776;</div>';
     echo '<div id="menu">';
     echo '<ul>';
-       # echo '<li class="menuitem">' . getStatusIcon('configuration', true) . ' ' . getStatusIcon('right_triangle');
+
     echo '<li class="menuitem with-arrow">'
          . '<span class="menu-left">' . getStatusIcon('configuration', true) . '</span>'
          . '<span class="menu-right">' . getStatusIcon('right_triangle') . '</span>';
@@ -1516,6 +1554,12 @@ function showMenuIcons(): void
                 echo '<li class="menuitem" data-action="mHeard">' . getStatusIcon('mheard-page', true) . '</li>';
                 echo '<li data-action="mHeard-osm">' . getStatusIcon('mheard-osm', true) . '</li>';
                 echo '<li data-action="mHeard-osm-full">' . getStatusIcon('mheard-osm-full', true) . '</li>';
+
+                if ($isNewMheardGui === 1)
+                {
+                    echo '<li data-action="mHeard-neighbours">' . getStatusIcon('mHeard-neighbours', true) . '</li>';
+                }
+
             echo '</ul>';
         echo '</li>';
 

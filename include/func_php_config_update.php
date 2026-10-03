@@ -349,6 +349,7 @@ function getLatestRelease(): void
     curl_setopt($ch, CURLOPT_URL, $apiUrl);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_USERAGENT, 'MeshDash-Update-Script'); // User-Agent muss gesetzt sein
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 
     $response = curl_exec($ch);
     if (curl_errno($ch))
@@ -397,6 +398,7 @@ function getLatestChangelog()
     curl_setopt($ch, CURLOPT_URL, $apiUrl);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_USERAGENT, 'MeshDash-Update-Script'); // User-Agent muss gesetzt sein
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 
     $response = curl_exec($ch);
     if (curl_errno($ch))

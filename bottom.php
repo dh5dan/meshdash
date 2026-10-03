@@ -24,7 +24,7 @@ echo '<script type="text/javascript" src="jquery/jquery-ui.js"></script>';
 echo '<link rel="stylesheet" href="jquery/jquery-ui.css">';
 echo '<link rel="stylesheet" href="jquery/css/jq_custom.css">';
 
-#Prevnts UTF8 Errors on misconfigured php.ini
+#Prevents UTF8 Errors on misconfigured php.ini
 ini_set( 'default_charset', 'UTF-8' );
 
 echo '</head>';
@@ -34,11 +34,13 @@ require_once 'include/func_php_bottom.php';
 require_once 'include/func_js_bottom.php';
 
 
-$errMsg  = @utf8_decode($_REQUEST['errMsg'] ?? '');
-$msgText = $_REQUEST['msgText'] ?? '';
-$dm      = $_REQUEST['dm'] ?? '';
-$loraIP  = getParamData('loraIp');
-$group   = $_REQUEST['group'] ?? '';
+$errMsg        = @utf8_decode($_REQUEST['errMsg'] ?? '');
+$msgText       = $_REQUEST['msgText'] ?? '';
+$dm            = $_REQUEST['dm'] ?? '';
+$loraIp        = getParamData('loraIp');
+$group         = $_REQUEST['group'] ?? '';
+$nodeFwVersion = getParamData('nodeFwVersion');
+$loraIpText    = $nodeFwVersion != '' ? $loraIp . ' (' . $nodeFwVersion . ')' : $loraIp;
 
 $clickOnCall                = getParamData('clickOnCall'); // 0=call->DM, 1= qrz, 2=@call, 3=Notice
 $clickOnCallDMActiveCss     = $clickOnCall == 0 ? 'active' : '';
@@ -92,7 +94,7 @@ echo '</div>';
     echo'<div class="bottomStatusContainer">';
         echo '<div id="posStatus" class="bottomStatus"></div>';
         echo '<div id="noTimeSync" class="bottomStatus"></div>';
-        echo '<div id="LoraIP" class="bottomStatus">IP: ' . $loraIP . '</div>';
+        echo '<div id="LoraIP" class="bottomStatus">IP: ' . $loraIpText . '</div>';
     echo '</div>';
 echo '</form>';
 

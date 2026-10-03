@@ -1,0 +1,66 @@
+<?php
+require_once '../dbinc/param.php';
+require_once '../include/func_php_core.php';
+
+echo '<!DOCTYPE html>';
+echo '<html lang="de">';
+echo '<head><title>Mheard-Nachbarn</title>';
+
+#Prevents UTF8 Errors on misconfigured php.ini
+ini_set( 'default_charset', 'UTF-8' );
+
+echo '<script type="text/javascript" src="../jquery/jquery.min.js"></script>';
+echo '<script type="text/javascript" src="../jquery/jquery-ui.js"></script>';
+echo '<link rel="stylesheet" href="../jquery/jquery-ui.css">';
+echo '<link rel="stylesheet" href="../jquery/css/jq_custom.css">';
+echo '<link rel="stylesheet" href="../css/loader.css?' . microtime() . '">';
+
+if ((getParamData('darkMode') ?? 0) == 1)
+{
+    echo '<link rel="stylesheet" href="../css/dark_mode.css?' . microtime() . '">';
+}
+else
+{
+    echo '<link rel="stylesheet" href="../css/normal_mode.css?' . microtime() . '">';
+}
+
+echo '<link rel="stylesheet" href="../css/mheard_neighbours.css?' . microtime() . '">';
+
+echo '</head>';
+echo '<body>';
+
+
+require_once '../include/func_php_mheard_neighbours.php';
+require_once '../include/func_js_mheard_neighbours.php';
+
+#Show all Errors for debugging
+error_reporting(E_ALL);
+ini_set('display_errors',1);
+
+$debugFlag               = false;
+$loraIp                  = getParamData('loraIp');
+$callSign                = trim(getParamData('callSign'));
+$sendData                = $_REQUEST['sendData'] ?? 0;
+echo '<h2>Lokale Mheard Nachbar-Liste<span class="lineBreak">von ' . $callSign . ' mit Lora-IP: ' . $loraIp . '</span></h2>';
+
+echo '<form id="frmMheardNeighbours" method="post" action="' . $_SERVER['REQUEST_URI'] . '">';
+echo '<input type="hidden" name="sendData" id="sendData" value="0" />';
+
+echo '<table>';
+    echo '<tr>';
+    echo '<td colspan="2"><input type="button" class="btnGetMheardNeighbours" id="btnGetMheardNeighbours" value="Lokale Mheard Nachbar-Liste abfragen"  /></td>';
+    echo '</tr>';
+echo '</table>';
+echo '</form>';
+
+if($sendData == 1)
+{
+    #Prüfe, ob Node-Passwort gesetzt ist und entsperre Node
+    #checkLoraNewGui();
+    parseMheardNeighbours();
+}
+
+#echo '<div id="pageLoading" class="pageLoadingSub"></div>';
+echo '</body>';
+echo '</html>';
+

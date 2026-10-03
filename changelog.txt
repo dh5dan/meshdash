@@ -1,3 +1,11 @@
+Version 1.11.06 SQL
+
+FEATURE: MHeard-Parser für FW ≥ 4.40 an den neuen HTML-Aufbau angepasst.
+FEATURE: Mheard-Nachbarn aus Node anzeigen (ab FW ≥ 4.40)
+FEATURE: Anzeige Node-Firmware neben Node-IP im unteren Bereich.
+FIX: Darstellung der Mheard-Nachbarn-Tabelle für Apple/iOS angepasst.
+
+######################
 Version 1.11.04 SQL
 
 FEATURE: Erfassung von Telemetriedaten in einer separaten Datenbank.
@@ -86,7 +94,7 @@ BUGFIX: Inkonsistente Datensätze im Map-Routing (Absender = Ziel) werden nun ig
 Version 1.10.82 SQL
 
 BUGFIX:  Auswahlliste bei Sensordaten Plot zeigte auch inaktive Sensoren an.
-BUGFIX:  Intervallwechsel bei SensorThreshold löschte nicht alten Cron-Eintrag.
+BUGFIX:  Intervall-wechsel bei SensorThreshold löschte nicht alten Cron-Eintrag.
 BUGFIX:  Sensordaten-Plot zeigte Nachkommastellen aus der Datenbank nicht an.
 BUGFIX:  Bei Neuinstallation gab es einen Fehler beim Erzeugen der parameter.db
 BUGFIX:  Update startet nun alle vorher gestarteten Prozesse neu.
@@ -150,7 +158,7 @@ Version 1.10.76 SQL
 
 BUGFIX Fehler bei Mheard Distance wenn Wert = NULL. Zeigt dann keine Positionen an.
 FEATURE Favoritenliste für Send-Befehl dyn. erstellen.
-FEATURE Aktualisierung der Befehlsliste im Popup (Info button)
+FEATURE Aktualisierung der Befehlsliste im Popup (Info-Button)
 ####################################
 Version 1.10.74 SQL
 
@@ -380,16 +388,16 @@ Version 1.10.36 SQL
 FEATURE: Anpassung an neue MeshCom GUI >= v4.34x.05.18 mit Autoerkennung
 FEATURE: Mheard new GUI wird unterstützt
 FEATURE: Lora-Info new GUI wird unterstützt
-FEATURE: Sensordaten new GUI wird unterstützt ausser INA266
-FEATURE: Send-Befehl new GUI wird unterstützt
-BUGFIX: Diverse Anpassungen und Fehlerbehebungen
+FEATURE: Sensordaten new GUI wird unterstützt außer INA266
+FEATURE: Send-Befehl new GUI wird unterstützt.
+BUGFIX:  Diverse Anpassungen und Fehlerbehebungen
 #################################################################
 Version 1.10.34 SQL
 FEATURE: Backup der Datenbank im laufenden Betrieb.
 FEATURE: install_5d.sh mit Möglichkeit des Online-Downloads der aktuellen Release.
 FEATURE: update_5d.sh mit Möglichkeit des Online-Downloads der aktuellen Release.
 FEATURE: Restore eines vorhanden Backups ausführen.
-BUGFIX: Fehler in der Bezeichnung zum DB-Backup. Es soll heissen: "Kein DB-Backup:".
+BUGFIX: Fehler in der Bezeichnung zum DB-Backup. Es soll heißen: "Kein DB-Backup:".
 BUGFIX: udp.pid aus update_5d.sh entfernt, da nicht mehr benötigt.
 #################################################################
 Version 1.10.32 SQL
@@ -414,7 +422,7 @@ FEATURE: Mheard-Nodes können jetzt in OpenStreetMap angezeigt werden.
 FEATURE: Einstellung der OpenStreetMap Tile-Server URL
 FEATURE: UX-Textoptimierung für mobile Geräte.
 FEATURE: Anhebung von post_max_size auf 30 MB in user.ini für Updates > 8 MB.
-BUGFIX:  Fehler bei check_messages wenn noch keine Gruppe definiert wurde.
+BUGFIX:  Fehler bei "check_messages", wenn noch keine Gruppe definiert wurde.
 #################################################################
 Version 1.10.26 SQL
 FEATURE: Es kann nun die Gruppe eingestellt werden, wo eine MHeard-Abfrage reagieren soll.
@@ -446,7 +454,7 @@ FEATURE: Soundbenachrichtigung wenn neue Nachricht. Einstellbar unter Gruppen.
 #################################################################
 Version 1.10.20 SQL
 FEATURE: Bezeichnung Gruppe aus der mobilen Ansicht entfernt.
-FEATURE: Auswahl der gängigsten Emoji neben Nachrichtenfeld möglich.
+FEATURE: Auswahl der gängigsten Emojis neben Nachrichtenfeld möglich.
 FEATURE: Bei neuen Nachrichten zusätzliche Auswahl der Hintergrundfarbe möglich zum roten Punkt.
 FEATURE: Das Changelog zur aktuellen Release-Version ist nun zusätzlich Abrufbar unter Update.
 BUGFIX:  Beim Browser-Refresh wird jetzt das korrekte Tab aktiviert, welches zuletzt genutzt wurde.
@@ -498,12 +506,12 @@ BUGFIX: Mit MeshCom 4.34q (build: Mar 6 2025 / 15:17:43)
         gab es einen Fehler im <TR>-Tag der Infoseite, was die Auswertung von Call verhindert hat.
         Über einen Workaround wird dies nun korrigiert. Ist in Version R aber behoben.
 FEATURE: Mit 4.34q (build: Mar 6 2025 / 15:17:43) gibt es ein neues Info-Feld Startzeit.
-FEATURE: Schwellwertangaben für Sensordaten implementiert mit Alert-Funktion.
+FEATURE: Schwellwert-angaben für Sensordaten implementiert mit Alert-Funktion.
 FEATURE: RegEx entfernt bei Msg Eingabe. Alle Zeichen erlaubt.
 BUGFIX check_message.php verursacht einen Server 500 Error, wenn Meshdash-DB noch leer ist.
 FEATURE: Entferne Zip Datei nach erfolgreicher Installation
 Bugfix: Type-Value in Mheard mit aufgenommen
-BugFix: Löschen alter Backups, wenn max. Anzahl erreicht.
+Bugfix: Löschen alter Backups, wenn max. Anzahl erreicht.
 FEATURE: Send_queue.db damit Nachrichten im 30sek. Intervall gesendet werden
 Aktuell nur für Sensor-Meldungen eingestellt. Später für alle Nachrichten.
 INFO: Beta-Status entfernt.
@@ -591,7 +599,7 @@ Neu: Klick auf Src-Call nun wahlweise einstellbar. Qrz.com oder ins DM-Feld.
 Responsive Design: Titeltext angepasst. Font-size: medium
 #################################################################
 Version 1.09.80beta SQL
-Schalter implementiert, um DB vom Backup auszuschliessen.
+Schalter implementiert, um DB vom Backup auszuschließen.
 Dies verhindert u.U. das sich ein Backup oder Update aufhängt. (locked File)
 BUG: Beim reinen Backup wird der Button Seite neu laden angezeigt.
 Responsive Design: Anpassung Gruppen
@@ -619,7 +627,7 @@ Bugfix: DM-Rückstellung auf Filtergruppe, wenn in DM was anderes angeben wurde.
 Ausgabe einer Meldung, wenn keine MH-Liste bei Abfrage vorhanden.
 Anpassungen am CSS im Bottom-Frame
 Gruppen anlegen: Hinweistext für reload und Reload Button eingefügt.
-Update install.sh (1.00.36): unzip/lynx hinzugefügt. Check ob Gruppe gpio vorhanden bei adduser
+Update install.sh (1.00.36): unzip/lynx hinzugefügt. Check ob Gruppe GPIO vorhanden bei adduser
 #################################################################
 Version 1.09.72beta SQL
 Bugfix: DM Feld leeren nach senden, wenn im Tab own Call
@@ -800,7 +808,7 @@ Version 1.08.18
   Der Punkt ist anklickbar und triggert den Start oder 
   das Beenden des Prozesses, wenn gewünscht.
 - Favicon hinzugefügt
-- RegeX Pattern mit weiteren möglichen Eingabezeichen erweitert.
+- Regex Pattern mit weiteren möglichen Eingabezeichen erweitert.
 - Die Ausgabe der Nachrichtenbox zeigt jetzt das reale Empfangsdatum
 ##################################################################
 Version 1.08.04
