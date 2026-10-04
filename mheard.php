@@ -108,7 +108,15 @@ if($sendData == 1)
     #Prüfe, ob Node-Passwort gesetzt ist und entsperre Node
     checkLoraNewGui();
 
-    $resGetMheard = getMheard($loraIp);
+    try
+    {
+        $resGetMheard = getMheard($loraIp);
+    }
+    catch (Exception $e)
+    {
+        $resGetMheard = false;
+        echo '<span class="failureHint">' . date('H:i:s') . '-MHeard Fehler aufgetreten!</span>';
+    }
 
     if ($resGetMheard === true)
     {

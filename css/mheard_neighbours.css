@@ -39,11 +39,11 @@ html {
     width: 100%;
 }
 
-.mhCallColor {
-    /*color: mediumaquamarine;*/
-    color: var(--mheard-call-color);
-    font-weight: bold;
-}
+/* Ensure the map has a defined size */
+/*#map {*/
+/*    height: 500px;*/
+/*    width: 100%;*/
+/*}*/
 
 /* Ensure the map has a defined size */
 #map {
@@ -55,6 +55,7 @@ html {
     padding: 0 !important;
     overflow: hidden;
 }
+
 
 /* OpenStreet Map */
 .text-below-marker {

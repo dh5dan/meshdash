@@ -5,7 +5,7 @@ echo '<meta charset="UTF-8">';
 echo '<head><title>Bottom</title>';
 echo '<meta http-equiv="content-type" content="text/html; charset=utf-8">';
 
-#Prevnts UTF8 Errors on misconfigured php.ini
+#Prevents UTF8 Errors on misconfigured php.ini
 ini_set( 'default_charset', 'UTF-8' );
 
 echo '</head>';
@@ -22,13 +22,13 @@ $directMessage = $directMessage == '' ? '*' : $directMessage;
 
 if ($txMsg != '')
 {
-    $loraIP = getParamData('loraIp');
-
     #Begrenze max. Zeichenlänge
     if (strlen($txMsg) > 150)
     {
         $errMsg = htmlspecialchars(utf8_encode("Maximale Zeichen länge von 150 Zeichen überschritten. Abbruch!"));
-        header("Location: bottom.php?errMsg=" . $errMsg . "&msgText=" . $txMsg . "&dm=" . $directMessage);
+        header("Location: bottom.php?errMsg=" . $errMsg
+            . "&msgText=" . $txMsg
+            . "&dm=" . $directMessage);
         exit();
     }
 
@@ -40,12 +40,16 @@ if ($txMsg != '')
     if ($resSetTxQueue === false)
     {
         $errMsg = "Fehler beim Speichern in Send-Queue. Abbruch!";
-        header("Location: bottom.php?errMsg=" . $errMsg . "&msgText=" . $txMsg . "&dm=" . $directMessage . "&group=" . $group);
+        header("Location: bottom.php?errMsg=" . $errMsg
+            . "&msgText=" . $txMsg
+            . "&dm=" . $directMessage
+            . "&group=" . $group);
         exit();
     }
 }
 
-header("Location: bottom.php?dm=" . $directMessage . "&group=" . $group);
+header("Location: bottom.php?dm=" . $directMessage
+    . "&group=" . $group);
 
 echo '</body>';
 echo '</html>';
