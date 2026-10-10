@@ -16,7 +16,8 @@ $userLang = $userLang == '' ? 'de' : $userLang;
 
 echo '<!DOCTYPE html>';
 echo '<html lang="' . $userLang . '">';
-echo '<head><title>MeshDash-SQL</title>';
+echo '<head>';
+
   echo '<meta charset="UTF-8">';
   echo '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
   echo '<meta http-equiv="content-type" content="text/html; charset=utf-8">';
@@ -43,6 +44,12 @@ if (file_exists('database/parameter.db'))
     {
         echo '<link rel="stylesheet" href="css/normal_mode.css?' . microtime() . '">';
     }
+
+    echo '<title>MeshDash-SQL ('.getParamData('callSign').')</title>';
+}
+else
+{
+    echo '<title>MeshDash-SQL</title>';
 }
 
   echo '<link rel="stylesheet" href="css/index.css?' . microtime() . '">';
